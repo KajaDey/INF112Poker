@@ -1,0 +1,15 @@
+//JAVA
+*.class
+
+//WORD
+*.doc
+*.docx
+
+//YED
+*.graphml
+
+//FROM MAC
+*.DS_STORE
+
+//INTELLIJ
+*.idea
