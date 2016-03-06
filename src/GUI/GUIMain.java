@@ -20,10 +20,9 @@ public class GUIMain extends Application{
 
         BorderPane completeLayout = new BorderPane();
 
-
-
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout());
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);

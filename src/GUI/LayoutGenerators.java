@@ -1,6 +1,7 @@
 package GUI;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -126,6 +127,8 @@ public class LayoutGenerators {
         textLayoutVertical.getChildren().addAll(tempLabel,textLayoutHorizontallyTop);
         playerLayout.getChildren().addAll(textLayoutVertical,buttonLayout1,buttonLayout2);
 
+        playerLayout.setAlignment(Pos.BASELINE_CENTER);
+
         return playerLayout;
     }
 
@@ -134,7 +137,32 @@ public class LayoutGenerators {
         return null;
     }
 
-    public static void makeOpponentLayout(){
+    public static HBox makeOpponentLayout(){
         //TODO: Design and implement an opponent-layout. Choose return value.
+
+        Label temp1 = new Label("Insert card here!!!");
+        Label temp2 = new Label("Insert card here!!!");
+        Label name = new Label("Name: Kake");
+        Label chips = new Label("Chips: 1000");
+        Label position = new Label("Position: SB");
+        Label status = new Label("Status: Fold");
+
+        HBox horizontalLayout = new HBox();
+        VBox verticalLayout = new VBox();
+
+        verticalLayout.getChildren().addAll(name, chips, position, status);
+        verticalLayout.setSpacing(10);
+        horizontalLayout.getChildren().addAll(temp1, temp2, verticalLayout);
+        horizontalLayout.setSpacing(10);
+        horizontalLayout.setAlignment(Pos.BASELINE_CENTER);
+
+        return horizontalLayout;
+
     }
+
+    public static HBox makeOpponentLayoutWithTheRightAmout(){
+
+        return null;
+    }
+
 }
