@@ -1,6 +1,7 @@
 package GUI.JosteinGui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -53,13 +54,18 @@ public class LayoutGeneratorsJos {
         positions.setPadding(standardPadding);
 
         //Cards
-        Label temp1 = new Label("Insert card here!");
-        temp1.setFont(standardFont);
-        temp1.setPadding(standardPadding);
+        Image image = new Image("file:CardSprites/_Back.png");
 
-        Label temp2 = new Label("Insert card here!");
-        temp2.setFont(standardFont);
-        temp2.setPadding(standardPadding);
+        ImageView imageView1 = new ImageView();
+        imageView1.setImage(image);
+        imageView1.setPreserveRatio(true);
+        imageView1.setFitHeight(150);
+
+        ImageView imageView2 = new ImageView();
+        imageView2.setImage(image);
+        imageView2.setPreserveRatio(true);
+        imageView2.setFitHeight(150);
+
 
         //Amount to bet
         TextField betAmount = new TextField();
@@ -76,7 +82,7 @@ public class LayoutGeneratorsJos {
         bet.setMaxWidth(standardButton);
 
         //Check
-        Button check = new Button("Check");
+        Button check = new Button("Check/Call");
         check.setFont(standardFont);
         check.setPadding(standardPadding);
         check.setMaxWidth(standardButton);
@@ -118,17 +124,6 @@ public class LayoutGeneratorsJos {
         //Actions
         bet.setOnAction(e -> System.out.println("SetBet"));
 
-
-        Image image = new Image("file:CardSprites/_Back.png");
-        ImageView imageView1 = new ImageView();
-        imageView1.setImage(image);
-        imageView1.setPreserveRatio(true);
-        imageView1.setFitHeight(150);
-        ImageView imageView2 = new ImageView();
-        imageView2.setImage(image);
-        imageView2.setPreserveRatio(true);
-        imageView2.setFitHeight(150);
-
         //Add buttons to the buttonLayout
         buttonLayout1.getChildren().addAll(bet, check, fold);
         buttonLayout2.getChildren().addAll(pot,doubleB,max);
@@ -138,6 +133,8 @@ public class LayoutGeneratorsJos {
         textLayoutVertical.getChildren().addAll(tempLabel,textLayoutHorizontallyTop);
         playerLayout.getChildren().addAll(textLayoutVertical,buttonLayout1,buttonLayout2);
 
+        playerLayout.setAlignment(Pos.BASELINE_CENTER);
+
         return playerLayout;
     }
 
@@ -146,7 +143,41 @@ public class LayoutGeneratorsJos {
         return null;
     }
 
-    public static void makeOpponentLayout(){
-        //TODO: Design and implement an opponent-layout. Choose return value.
+    public static HBox makeOpponentLayout(String card){
+
+        System.out.println(card);
+
+        Image image = new Image(card);
+        ImageView imageViewOpponentLeft = new ImageView();
+        imageViewOpponentLeft.setImage(image);
+        imageViewOpponentLeft.setPreserveRatio(true);
+        imageViewOpponentLeft.setFitHeight(150);
+
+        ImageView imageViewOpponentRight = new ImageView();
+        imageViewOpponentRight.setImage(image);
+        imageViewOpponentRight.setPreserveRatio(true);
+        imageViewOpponentRight.setFitHeight(150);
+
+        Label name = new Label("Name: Kake");
+        Label chips = new Label("Chips: 1000");
+        Label position = new Label("Position: SB");
+        Label status = new Label("Status: Fold");
+
+        HBox horizontalLayout = new HBox();
+        VBox verticalLayout = new VBox();
+
+        verticalLayout.getChildren().addAll(name, chips, position, status);
+        verticalLayout.setSpacing(10);
+        horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
+        horizontalLayout.setSpacing(10);
+        horizontalLayout.setAlignment(Pos.BASELINE_CENTER);
+
+        return horizontalLayout;
+
+    }
+
+    public static HBox makeOpponentLayoutWithTheRightAmout(){
+
+        return null;
     }
 }

@@ -5,10 +5,10 @@ package GUI.JosteinGui;
  */
 public class ImageViewerJos {
 
-    public static void findSprite(String card){
-        String cardOut = card + ".png";
+    public static String findSprite(String card){
+        String cardOut = "file:CardSprites/" + card + ".png";
 
-
+        return cardOut;
     }
 
 }
