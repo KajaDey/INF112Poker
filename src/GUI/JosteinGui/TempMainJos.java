@@ -18,11 +18,8 @@ public class TempMainJos extends Application{
     }
 
     public void start(Stage window) throws Exception{
-        //Hallois
+        //Hei André
 
-
-        //gugygug
-        //uhhu
 
         window.setTitle("Texas Hold'em");
 
