@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -146,21 +147,17 @@ public class LayoutGenerators {
         return null;
     }
 
-<<<<<<< HEAD
-    public static HBox makeOpponentLayout(String card1, String card2){
-=======
     public static VBox makeOpponentLayout(String card){
->>>>>>> master
 
         //Branch test
 
-        Image image1 = new Image(card1);
+        Image image1 = new Image(card);
         ImageView imageViewOpponentLeft = new ImageView();
         imageViewOpponentLeft.setImage(image1);
         imageViewOpponentLeft.setPreserveRatio(true);
         imageViewOpponentLeft.setFitHeight(100);
 
-        Image image2 = new Image(card2);
+        Image image2 = new Image(card);
         ImageView imageViewOpponentRight = new ImageView();
         imageViewOpponentRight.setImage(image2);
         imageViewOpponentRight.setPreserveRatio(true);
@@ -201,7 +198,7 @@ public class LayoutGenerators {
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
-        completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1, card2));
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1));
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);
