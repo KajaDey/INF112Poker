@@ -1,0 +1,33 @@
+Møte 2 - 06.03.16, kl 12.15
+Sekretær: Ragnhild Aalvik
+
+Oppmøte:
+Morten
+Simon
+André
+Kristian
+Kaja
+Vegar
+Mariah
+Jostein
+Ragnhild
+Fraværende: Henrik
+
+Mariah presenterte seg:
+  Bakgrunn: Tredje år bachelor datateknologi på UiB. Vært borti GUI tidligere fra året i England.
+  Ønsker: GUI og dokumentasjon om det trengs.
+
+Gjort siden sist:
+- De som tok på seg oppgaven med å lage GUI har begynt å lære seg det (javaFX).
+
+Diskusjon:
+- Fordelt oppgaver blant diagrammer og modeller.
+- Laget domenemodell sammen, da den er utgangspunkt for alt annet som skal gjøres av kode.
+- Skrevet user requirements og use case text
+- Begynt på SSD
+- Kommet godt igang med GUI
+
+Plan til neste møte:
+- Etter i dag kan alle ta hver sin oppgave fra scrumboardet og jobbe mer individuelt frem til neste møte.
+
+Tid for neste møte: tirsdag 08.03.16, kl 14.15
