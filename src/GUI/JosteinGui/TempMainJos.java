@@ -18,7 +18,12 @@ public class TempMainJos extends Application{
     }
 
     public void start(Stage window) throws Exception{
-        //Hei André
+        //Hallois
+
+
+        //gugygug
+        //uhhu
+
         window.setTitle("Texas Hold'em");
 
         BorderPane completeLayout = new BorderPane();
