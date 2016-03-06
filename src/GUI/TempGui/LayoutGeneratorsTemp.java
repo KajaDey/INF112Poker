@@ -119,12 +119,12 @@ public class LayoutGeneratorsTemp {
         bet.setOnAction(e -> System.out.println("SetBet"));
 
 
-        ImageView imageView1 = new ImageView();
-        ImageView imageView2 = new ImageView();
         Image image = new Image("file:CardSprites/_Back.png");
+        ImageView imageView1 = new ImageView();
         imageView1.setImage(image);
         imageView1.setPreserveRatio(true);
         imageView1.setFitHeight(150);
+        ImageView imageView2 = new ImageView();
         imageView2.setImage(image);
         imageView2.setPreserveRatio(true);
         imageView2.setFitHeight(150);

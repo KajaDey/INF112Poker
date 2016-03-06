@@ -5,6 +5,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -53,13 +55,18 @@ public class LayoutGenerators {
         positions.setPadding(standardPadding);
 
         //Cards
-        Label temp1 = new Label("Insert card here!");
-        temp1.setFont(standardFont);
-        temp1.setPadding(standardPadding);
+        Image image = new Image("file:CardSprites/_Back.png");
 
-        Label temp2 = new Label("Insert card here!");
-        temp2.setFont(standardFont);
-        temp2.setPadding(standardPadding);
+        ImageView imageView1 = new ImageView();
+        imageView1.setImage(image);
+        imageView1.setPreserveRatio(true);
+        imageView1.setFitHeight(150);
+
+        ImageView imageView2 = new ImageView();
+        imageView2.setImage(image);
+        imageView2.setPreserveRatio(true);
+        imageView2.setFitHeight(150);
+
 
         //Amount to bet
         TextField betAmount = new TextField();
@@ -121,7 +128,7 @@ public class LayoutGenerators {
         //Add buttons to the buttonLayout
         buttonLayout1.getChildren().addAll(bet, check, fold);
         buttonLayout2.getChildren().addAll(pot,doubleB,max);
-        textLayoutHorizontallyTop.getChildren().addAll(positionsText,positions,amountOfChipsText,amountOfChipsNumber,temp1,temp2,betAmount);
+        textLayoutHorizontallyTop.getChildren().addAll(positionsText,positions,amountOfChipsText,amountOfChipsNumber,imageView1,imageView2,betAmount);
 
         //Add all the elements to the playerLayout
         textLayoutVertical.getChildren().addAll(tempLabel,textLayoutHorizontallyTop);
@@ -138,10 +145,18 @@ public class LayoutGenerators {
     }
 
     public static HBox makeOpponentLayout(){
-        //TODO: Design and implement an opponent-layout. Choose return value.
 
-        Label temp1 = new Label("Insert card here!!!");
-        Label temp2 = new Label("Insert card here!!!");
+        Image image = new Image("file:CardSprites/_Back.png");
+        ImageView imageViewOpponentLeft = new ImageView();
+        imageViewOpponentLeft.setImage(image);
+        imageViewOpponentLeft.setPreserveRatio(true);
+        imageViewOpponentLeft.setFitHeight(150);
+
+        ImageView imageViewOpponentRight = new ImageView();
+        imageViewOpponentRight.setImage(image);
+        imageViewOpponentRight.setPreserveRatio(true);
+        imageViewOpponentRight.setFitHeight(150);
+
         Label name = new Label("Name: Kake");
         Label chips = new Label("Chips: 1000");
         Label position = new Label("Position: SB");
@@ -152,7 +167,7 @@ public class LayoutGenerators {
 
         verticalLayout.getChildren().addAll(name, chips, position, status);
         verticalLayout.setSpacing(10);
-        horizontalLayout.getChildren().addAll(temp1, temp2, verticalLayout);
+        horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
         horizontalLayout.setSpacing(10);
         horizontalLayout.setAlignment(Pos.BASELINE_CENTER);
 
