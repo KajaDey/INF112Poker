@@ -8,7 +8,6 @@ public class ImageViewerAdy {
     public static void findSprite(String card){
         String cardOut = card + ".png";
 
-
     }
 
 }
