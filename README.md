@@ -4,4 +4,4 @@
 
 *[Scrum tavle](https://scrumy.com/inf112gruppe4)
 
-*[INF112 drive-mappe] (https://drive.google.com/open?id=0B8qv1PNNBC0FRWRzaVNESEJuTkk)
+*[INF112 drive-mappe](https://drive.google.com/open?id=0B8qv1PNNBC0FRWRzaVNESEJuTkk)
