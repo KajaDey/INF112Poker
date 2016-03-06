@@ -7,7 +7,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -18,19 +17,21 @@ import javafx.scene.text.Font;
  */
 public class LayoutGenerators {
 
-    public static HBox makePlayerLayout(){
+    public static VBox makePlayerLayout(){
 
         //Setting standards i want to use
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
-        int standardButton = 100;
+        int standardButton = 75;
 
         /*************************************/
 
         HBox fullBox = new HBox();
+        VBox fullBoxWithLastMove = new VBox();
         VBox stats = new VBox();
         VBox inputAndButtons = new VBox();
         HBox twoButtonsUnderInput = new HBox();
+        twoButtonsUnderInput.setMaxWidth(50);
         VBox twoButtonsLeft = new VBox();
         VBox twoButtonsRight = new VBox();
 
@@ -41,14 +42,14 @@ public class LayoutGenerators {
         amountOfChipsText.setFont(standardFont);
         amountOfChipsText.setPadding(standardPadding);
 
-        //Bet this round
-        Label betThisRound = new Label("Bet this round: 100");
-        betThisRound.setFont(standardFont);
-        betThisRound.setPadding(standardPadding);
-
         //Positions
         Label positionsText = new Label("Position: BB");
         positionsText.setFont(standardFont);
+        positionsText.setPadding(standardPadding);
+
+        //LastMove
+        Label lastMove = new Label("Fold");
+        lastMove.setFont(standardFont);
         positionsText.setPadding(standardPadding);
 
         //Cards
@@ -70,6 +71,7 @@ public class LayoutGenerators {
         betAmount.setPromptText("Amount to bet");
         betAmount.setFont(standardFont);
         betAmount.setPadding(standardPadding);
+        betAmount.setMaxWidth(standardButton * 2);
 
         //Buttons in the VBox
 
@@ -77,45 +79,37 @@ public class LayoutGenerators {
         Button bet = new Button("Place bet");
         bet.setFont(standardFont);
         bet.setPadding(standardPadding);
-        bet.setMaxWidth(standardButton);
+        bet.setMinWidth(standardButton);
 
         //Check
         Button check = new Button("Check/Call");
         check.setFont(standardFont);
         check.setPadding(standardPadding);
-        check.setMaxWidth(standardButton);
+        check.setMinWidth(standardButton);
 
         //Fold
         Button fold = new Button("Fold");
         fold.setFont(standardFont);
         fold.setPadding(standardPadding);
-        fold.setMaxWidth(standardButton);
+        fold.setMinWidth(standardButton);
 
         //Pot
         Button pot = new Button("Pot");
         pot.setFont(standardFont);
         pot.setPadding(standardPadding);
-        pot.setMaxWidth(standardButton);
+        pot.setMinWidth(standardButton);
 
         //Double
         Button doubleB = new Button("Double");
         doubleB.setFont(standardFont);
         doubleB.setPadding(standardPadding);
-        doubleB.setMaxWidth(standardButton);
+        doubleB.setMinWidth(standardButton);
 
         //Max
         Button max = new Button("Max");
         max.setFont(standardFont);
         max.setPadding(standardPadding);
-        max.setMaxWidth(standardButton);
-
-
-        ////////////////TEMP FIX/////////////////
-
-        Label tempLabel = new Label("");
-        tempLabel.setFont(standardFont);
-        tempLabel.setPadding(standardPadding);
-        tempLabel.setMaxWidth(standardButton);
+        max.setMinWidth(standardButton);
 
         /////////////////////////////////////////
 
@@ -124,22 +118,25 @@ public class LayoutGenerators {
 
         /**************/
 
-        stats.getChildren().addAll(amountOfChipsText, positionsText, betThisRound);
+        stats.getChildren().addAll(amountOfChipsText, positionsText);
         stats.setAlignment(Pos.CENTER);
         twoButtonsUnderInput.getChildren().addAll(check, fold);
-        inputAndButtons.getChildren().addAll(betAmount,twoButtonsUnderInput);
+        inputAndButtons.getChildren().addAll(betAmount, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
-        twoButtonsLeft.getChildren().addAll(bet,max);
+        twoButtonsLeft.getChildren().addAll(bet, max);
         twoButtonsLeft.setAlignment(Pos.CENTER);
-        twoButtonsRight.getChildren().addAll(doubleB,pot);
+        twoButtonsRight.getChildren().addAll(doubleB, pot);
         twoButtonsRight.setAlignment(Pos.CENTER);
-        fullBox.getChildren().addAll(stats,imageView1,imageView2,inputAndButtons,twoButtonsLeft,twoButtonsRight);
+        fullBox.getChildren().addAll(stats, imageView1, imageView2, inputAndButtons, twoButtonsLeft, twoButtonsRight);
+        fullBox.setAlignment(Pos.BOTTOM_CENTER);
+        fullBoxWithLastMove.getChildren().addAll(lastMove, fullBox);
+        fullBoxWithLastMove.setAlignment(Pos.BOTTOM_CENTER);
 
         /*************/
 
-        fullBox.setAlignment(Pos.BOTTOM_CENTER);
 
-        return fullBox;
+
+        return fullBoxWithLastMove;
     }
 
     public static GridPane makeBoardLayout(){
@@ -147,7 +144,7 @@ public class LayoutGenerators {
         return null;
     }
 
-    public static HBox makeOpponentLayout(String card){
+    public static VBox makeOpponentLayout(String card){
 
         //Branch test
 
@@ -166,19 +163,23 @@ public class LayoutGenerators {
         Label name = new Label("Name: Kake");
         Label chips = new Label("Chips: 1000");
         Label position = new Label("Position: SB");
-        Label status = new Label("Status: Fold");
+        Label status = new Label("Bet 10000");
 
         HBox horizontalLayout = new HBox();
         VBox verticalLayout = new VBox();
+        VBox fullBox = new VBox();
 
-        verticalLayout.getChildren().addAll(name, chips, position, status);
+        verticalLayout.getChildren().addAll(name, chips, position);
         verticalLayout.setSpacing(10);
         verticalLayout.setAlignment(Pos.CENTER);
         horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
         horizontalLayout.setSpacing(10);
         horizontalLayout.setAlignment(Pos.TOP_CENTER);
+        fullBox.getChildren().addAll(horizontalLayout,status);
+        fullBox.setAlignment(Pos.BOTTOM_CENTER);
 
-        return horizontalLayout;
+
+        return fullBox;
 
     }
 
