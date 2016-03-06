@@ -56,17 +56,19 @@ public class LayoutGenerators {
         positionsText.setPadding(standardPadding);
 
         //Cards
-        Image image = new Image("file:CardSprites/_Back.png");
+        Image image1 = new Image("file:CardSprites/Diamonds 12.png");
 
         ImageView imageView1 = new ImageView();
-        imageView1.setImage(image);
+        imageView1.setImage(image1);
         imageView1.setPreserveRatio(true);
-        imageView1.setFitHeight(150);
+        imageView1.setFitHeight(130);
+
+        //Image image2 = new Image(card2);
 
         ImageView imageView2 = new ImageView();
-        imageView2.setImage(image);
+        imageView2.setImage(image1);
         imageView2.setPreserveRatio(true);
-        imageView2.setFitHeight(150);
+        imageView2.setFitHeight(130);
 
 
         //Amount to bet
@@ -147,17 +149,17 @@ public class LayoutGenerators {
         return null;
     }
 
-    public static VBox makeOpponentLayout(String card){
+    public static VBox makeOpponentLayout(String card1, String card2){
 
         //Branch test
 
-        Image image1 = new Image(card);
+        Image image1 = new Image(card1);
         ImageView imageViewOpponentLeft = new ImageView();
         imageViewOpponentLeft.setImage(image1);
         imageViewOpponentLeft.setPreserveRatio(true);
         imageViewOpponentLeft.setFitHeight(100);
 
-        Image image2 = new Image(card);
+        Image image2 = new Image(card2);
         ImageView imageViewOpponentRight = new ImageView();
         imageViewOpponentRight.setImage(image2);
         imageViewOpponentRight.setPreserveRatio(true);
@@ -191,14 +193,14 @@ public class LayoutGenerators {
         return null;
     }
 
-    public static Scene makeScene(String card1, String card2){
+    public static Scene makeSceneForOpponentCards(String card1, String card2){
         Stage window = new Stage();
         BorderPane completeLayout = new BorderPane();
         completeLayout.setPadding(new Insets(10,10,10,10));
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
-        completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1));
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1, card2));
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);
@@ -206,5 +208,21 @@ public class LayoutGenerators {
 
         return scene;
     }
+
+    /*public static Scene makeSceneForPlayerCards(String card1, String card2){
+        Stage window = new Stage();
+        BorderPane completeLayout = new BorderPane();
+        completeLayout.setPadding(new Insets(10,10,10,10));
+
+        //Construct a new scene
+        completeLayout.setBottom(LayoutGenerators.makePlayerLayout(card1, card2));
+        //completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1, card2));
+        Scene scene = new Scene(completeLayout,1000,1000);
+
+        window.setScene(scene);
+        window.show();
+
+        return scene;
+    }*/
 
 }

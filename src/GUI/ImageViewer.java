@@ -18,12 +18,16 @@ public class ImageViewer {
         String card1Out = findSpritePath(card1);
         String card2Out = findSpritePath(card2);
 
-        return LayoutGenerators.makeScene(card1Out, card2Out);
+        return LayoutGenerators.makeSceneForOpponentCards(card1Out, card2Out);
     }
 
-    public void method2(){
+    /*public static Scene showPlayerCards(String card1, String card2){
         //TODO: Make code
-    }
+        String card1Out = findSpritePath(card1);
+        String card2Out = findSpritePath(card2);
+
+        return LayoutGenerators.makeSceneForPlayerCards(card1Out, card2Out);
+    }*/
 
     public void method3(){
         //TODO: Make code
