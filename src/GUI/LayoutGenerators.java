@@ -147,11 +147,11 @@ public class LayoutGenerators {
         return null;
     }
 
-    public static HBox makeOpponentLayout(){
+    public static HBox makeOpponentLayout(String card){
 
         //Branch test
 
-        Image image = new Image("file:CardSprites/_Back.png");
+        Image image = new Image(card);
         ImageView imageViewOpponentLeft = new ImageView();
         imageViewOpponentLeft.setImage(image);
         imageViewOpponentLeft.setPreserveRatio(true);

@@ -24,7 +24,7 @@ public class GUIMain extends Application{
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
-        completeLayout.setTop(LayoutGenerators.makeOpponentLayout());
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout("file:CardSprites/_Back.png"));
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);
