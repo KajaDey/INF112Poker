@@ -23,7 +23,7 @@ public class GUIMainAdy extends Application{
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGeneratorsAdy.makePlayerLayout());
-        completeLayout.setTop(LayoutGenerators.makeOpponentLayout());
+        completeLayout.setTop(LayoutGeneratorsAdy.makeOpponentLayout());
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);
