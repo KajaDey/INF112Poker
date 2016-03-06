@@ -1,4 +1,4 @@
-package GUI.TempGui;
+package GUI.JosteinGui;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -9,11 +9,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.image.*;
 
 /**
  * Created by ady on 05/03/16.
  */
-public class LayoutGeneratorsTemp {
+public class LayoutGeneratorsJos {
 
     public static HBox makePlayerLayout(){
 
@@ -117,10 +118,21 @@ public class LayoutGeneratorsTemp {
         //Actions
         bet.setOnAction(e -> System.out.println("SetBet"));
 
+
+        Image image = new Image("file:CardSprites/_Back.png");
+        ImageView imageView1 = new ImageView();
+        imageView1.setImage(image);
+        imageView1.setPreserveRatio(true);
+        imageView1.setFitHeight(150);
+        ImageView imageView2 = new ImageView();
+        imageView2.setImage(image);
+        imageView2.setPreserveRatio(true);
+        imageView2.setFitHeight(150);
+
         //Add buttons to the buttonLayout
         buttonLayout1.getChildren().addAll(bet, check, fold);
         buttonLayout2.getChildren().addAll(pot,doubleB,max);
-        textLayoutHorizontallyTop.getChildren().addAll(positionsText,positions,amountOfChipsText,amountOfChipsNumber,temp1,temp2,betAmount);
+        textLayoutHorizontallyTop.getChildren().addAll(positionsText,positions,amountOfChipsText,amountOfChipsNumber,imageView1,imageView2,betAmount);
 
         //Add all the elements to the playerLayout
         textLayoutVertical.getChildren().addAll(tempLabel,textLayoutHorizontallyTop);

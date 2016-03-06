@@ -1,17 +1,15 @@
-package GUI.TempGui;
+package GUI.MariahGui;
 
-import GUI.LayoutGenerators;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import static javafx.application.Application.launch;
-
 /**
- * Created by Jostein on 06.03.2016.
+ * Created by ady on 05/03/16.
  */
-public class TempMain extends Application{
+public class GUIMainMariah extends Application{
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -22,10 +20,9 @@ public class TempMain extends Application{
 
         BorderPane completeLayout = new BorderPane();
 
-
-
         //Construct a new scene
-        completeLayout.setBottom(LayoutGeneratorsTemp.makePlayerLayout());
+        completeLayout.setBottom(LayoutGeneratorsMariah.makePlayerLayout());
+        completeLayout.setTop(LayoutGeneratorsMariah.makeOpponentLayout());
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);
