@@ -14,7 +14,7 @@ import javafx.scene.image.*;
 /**
  * Created by ady on 05/03/16.
  */
-public class LayoutGeneratorsTemp {
+public class LayoutGeneratorsJos {
 
     public static HBox makePlayerLayout(){
 
