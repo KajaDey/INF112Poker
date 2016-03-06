@@ -1,0 +1,52 @@
+Møte 1 -  04.03.2016 , kl 10:15
+Sekretær: Kaja Alexandra Dey
+
+Prosjektdeltakere (og ønsker om oppgaver):
+
+Kristian:
+	Bakgrunn: Andre år bachelor datateknologi på UiB.
+	Ønsker: Scrum master og AI
+
+André:  
+	Bakgrunn: Andre år bachelor datateknologi på UiB og IT 1 og 2 fra VGS.
+	Ønsker: GUI
+
+Jostein:
+	Bakgrunn: Andre år bachelor datateknologi på UiB, samt IT1 og IT2 fra VGS.
+	Ønsker: GUI
+
+Ragnhild:
+	Bakgrunn: Andre år bachelor datateknologi på UiB.
+	Ønsker: Game logic (back end), Use case text
+
+Morten:
+	Bakgrunn: Andre år bachelor datateknologi på UiB.
+	Ønsker: AI
+
+Kaja:
+	Bakgrunn: Andre år bachelor datateknologi på UiB.
+	Ønsker: AI
+
+Vegar:
+	Bakgrunn: Andre år bachelor datateknologi på UiB. Har laga litt python scripts.
+	Ønsker: Allround, Maven
+
+Simon:
+	Bakgrunn: Andre år bachelor datateknologi på UiB.
+	Ønsker: Allround
+
+Mariah: Fraværende
+
+Henrik:
+    	Bakgrunn: Andre år bachelor datateknologi på UiB.
+	Ønsker: Allround
+
+Diskusjon:
+	•	Vi har bestemt oss for å bruke javaFX og intelliJ for dette prosjektet.
+	•	Kristian ble valgt som scrum master.
+	•	Alle har fått tilgang til repo i intelliJ.
+	•	All koding (inkl diagrammer) skal skrives på engelsk, minutes på norsk
+	•	Vi har opprettet et felles scrum-board på scrummy.com. User stories er lagt inn, og vi har startet med å legge inn tasks.
+	•	Alle har tilgang til felles prosjekt på gliffy.com. Dette skal brukes for å lage de ulike diagrammene.  
+
+Tid for neste møte: søndag 04.03 kl 12:15
