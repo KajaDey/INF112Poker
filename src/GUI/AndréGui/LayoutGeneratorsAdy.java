@@ -22,7 +22,7 @@ public class LayoutGeneratorsAdy {
 
         //Setting standards i want to use
         Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(10,10,10,10);
+        Insets standardPadding = new Insets(5,5,5,5);
         int standardButton = 100;
 
         /*************************************/
@@ -125,16 +125,19 @@ public class LayoutGeneratorsAdy {
         /**************/
 
         stats.getChildren().addAll(amountOfChipsText,positionsText,betThisRound);
+        stats.setAlignment(Pos.CENTER);
         twoButtonsUnderInput.getChildren().addAll(check,fold);
         inputAndButtons.getChildren().addAll(betAmount,twoButtonsUnderInput);
+        inputAndButtons.setAlignment(Pos.CENTER);
         twoButtonsLeft.getChildren().addAll(bet,max);
+        twoButtonsLeft.setAlignment(Pos.CENTER);
         twoButtonsRight.getChildren().addAll(doubleB,pot);
+        twoButtonsRight.setAlignment(Pos.CENTER);
         fullBox.getChildren().addAll(stats,imageView1,imageView2,inputAndButtons,twoButtonsLeft,twoButtonsRight);
 
         /*************/
 
-
-        fullBox.setAlignment(Pos.BASELINE_CENTER);
+        fullBox.setAlignment(Pos.BOTTOM_CENTER);
 
         return fullBox;
     }
@@ -152,12 +155,13 @@ public class LayoutGeneratorsAdy {
         ImageView imageViewOpponentLeft = new ImageView();
         imageViewOpponentLeft.setImage(image);
         imageViewOpponentLeft.setPreserveRatio(true);
-        imageViewOpponentLeft.setFitHeight(150);
+        imageViewOpponentLeft.setFitHeight(100);
+
 
         ImageView imageViewOpponentRight = new ImageView();
         imageViewOpponentRight.setImage(image);
         imageViewOpponentRight.setPreserveRatio(true);
-        imageViewOpponentRight.setFitHeight(150);
+        imageViewOpponentRight.setFitHeight(100);
 
         Label name = new Label("Name: Kake");
         Label chips = new Label("Chips: 1000");
@@ -169,9 +173,10 @@ public class LayoutGeneratorsAdy {
 
         verticalLayout.getChildren().addAll(name, chips, position, status);
         verticalLayout.setSpacing(10);
+        verticalLayout.setAlignment(Pos.CENTER);
         horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
         horizontalLayout.setSpacing(10);
-        horizontalLayout.setAlignment(Pos.BASELINE_CENTER);
+        horizontalLayout.setAlignment(Pos.TOP_CENTER);
 
         return horizontalLayout;
 

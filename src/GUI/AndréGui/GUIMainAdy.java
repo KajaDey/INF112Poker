@@ -2,6 +2,7 @@ package GUI.AndréGui;
 
 import GUI.LayoutGenerators;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ public class GUIMainAdy extends Application{
         window.setTitle("Texas Hold'em");
 
         BorderPane completeLayout = new BorderPane();
+        completeLayout.setPadding(new Insets(10,10,10,10));
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGeneratorsAdy.makePlayerLayout());
