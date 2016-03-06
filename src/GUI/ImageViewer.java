@@ -5,6 +5,10 @@ package GUI;
  */
 public class ImageViewer {
 
+    public static void findSprite(String card){
+        String cardOut = card + ".png";
 
+
+    }
 
 }

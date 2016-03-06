@@ -1,4 +1,4 @@
-package GUI.TempGui;
+package GUI.JosteinGui;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
