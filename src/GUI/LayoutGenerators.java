@@ -114,8 +114,11 @@ public class LayoutGenerators {
 
         /////////////////////////////////////////
 
+        //Actions
+        bet.setOnAction(e -> System.out.println("SetBet"));
+
         //Add buttons to the buttonLayout
-        buttonLayout1.getChildren().addAll(bet,check,fold);
+        buttonLayout1.getChildren().addAll(bet, check, fold);
         buttonLayout2.getChildren().addAll(pot,doubleB,max);
         textLayoutHorizontallyTop.getChildren().addAll(positionsText,positions,amountOfChipsText,amountOfChipsNumber,temp1,temp2,betAmount);
 
