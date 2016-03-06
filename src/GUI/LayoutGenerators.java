@@ -2,6 +2,7 @@ package GUI;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -12,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 /**
  * Created by ady on 05/03/16.
@@ -147,19 +149,19 @@ public class LayoutGenerators {
         return null;
     }
 
-    public static HBox makeOpponentLayout(String card){
+    public static HBox makeOpponentLayout(String card1, String card2){
 
         //Branch test
 
-        Image image = new Image(card);
+        Image image1 = new Image(card1);
         ImageView imageViewOpponentLeft = new ImageView();
-        imageViewOpponentLeft.setImage(image);
+        imageViewOpponentLeft.setImage(image1);
         imageViewOpponentLeft.setPreserveRatio(true);
         imageViewOpponentLeft.setFitHeight(100);
 
-
+        Image image2 = new Image(card2);
         ImageView imageViewOpponentRight = new ImageView();
-        imageViewOpponentRight.setImage(image);
+        imageViewOpponentRight.setImage(image2);
         imageViewOpponentRight.setPreserveRatio(true);
         imageViewOpponentRight.setFitHeight(100);
 
@@ -183,8 +185,24 @@ public class LayoutGenerators {
     }
 
     public static HBox makeOpponentLayoutWithTheRightAmout(){
-
+        //TODO: Fix
         return null;
+    }
+
+    public static Scene makeScene(String card1, String card2){
+        Stage window = new Stage();
+        BorderPane completeLayout = new BorderPane();
+        completeLayout.setPadding(new Insets(10,10,10,10));
+
+        //Construct a new scene
+        completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1, card2));
+        Scene scene = new Scene(completeLayout,1000,1000);
+
+        window.setScene(scene);
+        window.show();
+
+        return scene;
     }
 
 }

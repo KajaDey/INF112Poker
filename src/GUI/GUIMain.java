@@ -24,11 +24,14 @@ public class GUIMain extends Application{
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
-        completeLayout.setTop(LayoutGenerators.makeOpponentLayout("file:CardSprites/_Back.png"));
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout("file:CardSprites/_Back.png", "file:CardSprites/_Back.png"));
         Scene scene = new Scene(completeLayout,1000,1000);
+
 
         window.setScene(scene);
         window.show();
+
+        //ImageViewer.showOpponentCards("Clubs 1", "Clubs 2");
 
     }
 }
