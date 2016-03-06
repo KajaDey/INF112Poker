@@ -83,7 +83,7 @@ public class LayoutGenerators {
         bet.setMaxWidth(standardButton);
 
         //Check
-        Button check = new Button("Check");
+        Button check = new Button("Check/Call");
         check.setFont(standardFont);
         check.setPadding(standardPadding);
         check.setMaxWidth(standardButton);
