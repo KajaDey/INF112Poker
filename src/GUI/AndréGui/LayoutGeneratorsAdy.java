@@ -20,39 +20,36 @@ public class LayoutGeneratorsAdy {
 
     public static HBox makePlayerLayout(){
 
-        BorderPane completeLayout = new BorderPane();
-
         //Setting standards i want to use
         Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(20,10,20,10);
+        Insets standardPadding = new Insets(5,5,5,5);
         int standardButton = 100;
 
-        //Make a new playerLayout
-        HBox playerLayout = new HBox();
-        completeLayout.setPadding(standardPadding);
+        /*************************************/
 
-        VBox buttonLayout1 = new VBox();
-        VBox buttonLayout2 = new VBox();
-        VBox textLayoutVertical = new VBox();
-        HBox textLayoutHorizontallyTop = new HBox();
+        HBox fullBox = new HBox();
+        VBox stats = new VBox();
+        VBox inputAndButtons = new VBox();
+        HBox twoButtonsUnderInput = new HBox();
+        VBox twoButtonsLeft = new VBox();
+        VBox twoButtonsRight = new VBox();
+
+         /***********************************/
 
         //////Make all the elements i want to add to the playerLayout//////////
-        Label amountOfChipsText = new Label("Amount of chips:");
+        Label amountOfChipsText = new Label("Amount of chips: 900");
         amountOfChipsText.setFont(standardFont);
         amountOfChipsText.setPadding(standardPadding);
 
-        Label amountOfChipsNumber = new Label("1000");
-        amountOfChipsNumber.setFont(standardFont);
-        amountOfChipsNumber.setPadding(standardPadding);
+        //Bet this round
+        Label betThisRound = new Label("Bet this round: 100");
+        betThisRound.setFont(standardFont);
+        betThisRound.setPadding(standardPadding);
 
         //Positions
-        Label positionsText = new Label("Position:");
+        Label positionsText = new Label("Position: BB");
         positionsText.setFont(standardFont);
         positionsText.setPadding(standardPadding);
-
-        Label positions = new Label("BB");
-        positions.setFont(standardFont);
-        positions.setPadding(standardPadding);
 
         //Cards
         Image image = new Image("file:CardSprites/_Back.png");
@@ -125,18 +122,24 @@ public class LayoutGeneratorsAdy {
         //Actions
         bet.setOnAction(e -> System.out.println("SetBet"));
 
-        //Add buttons to the buttonLayout
-        buttonLayout1.getChildren().addAll(bet, check, fold);
-        buttonLayout2.getChildren().addAll(pot,doubleB,max);
-        textLayoutHorizontallyTop.getChildren().addAll(positionsText,positions,amountOfChipsText,amountOfChipsNumber,imageView1,imageView2,betAmount);
+        /**************/
 
-        //Add all the elements to the playerLayout
-        textLayoutVertical.getChildren().addAll(tempLabel,textLayoutHorizontallyTop);
-        playerLayout.getChildren().addAll(textLayoutVertical,buttonLayout1,buttonLayout2);
+        stats.getChildren().addAll(amountOfChipsText,positionsText,betThisRound);
+        stats.setAlignment(Pos.CENTER);
+        twoButtonsUnderInput.getChildren().addAll(check,fold);
+        inputAndButtons.getChildren().addAll(betAmount,twoButtonsUnderInput);
+        inputAndButtons.setAlignment(Pos.CENTER);
+        twoButtonsLeft.getChildren().addAll(bet,max);
+        twoButtonsLeft.setAlignment(Pos.CENTER);
+        twoButtonsRight.getChildren().addAll(doubleB,pot);
+        twoButtonsRight.setAlignment(Pos.CENTER);
+        fullBox.getChildren().addAll(stats,imageView1,imageView2,inputAndButtons,twoButtonsLeft,twoButtonsRight);
 
-        playerLayout.setAlignment(Pos.BASELINE_CENTER);
+        /*************/
 
-        return playerLayout;
+        fullBox.setAlignment(Pos.BOTTOM_CENTER);
+
+        return fullBox;
     }
 
     public static GridPane makeBoardLayout(){
@@ -146,16 +149,19 @@ public class LayoutGeneratorsAdy {
 
     public static HBox makeOpponentLayout(){
 
+        //Branch test
+
         Image image = new Image("file:CardSprites/_Back.png");
         ImageView imageViewOpponentLeft = new ImageView();
         imageViewOpponentLeft.setImage(image);
         imageViewOpponentLeft.setPreserveRatio(true);
-        imageViewOpponentLeft.setFitHeight(150);
+        imageViewOpponentLeft.setFitHeight(100);
+
 
         ImageView imageViewOpponentRight = new ImageView();
         imageViewOpponentRight.setImage(image);
         imageViewOpponentRight.setPreserveRatio(true);
-        imageViewOpponentRight.setFitHeight(150);
+        imageViewOpponentRight.setFitHeight(100);
 
         Label name = new Label("Name: Kake");
         Label chips = new Label("Chips: 1000");
@@ -167,9 +173,10 @@ public class LayoutGeneratorsAdy {
 
         verticalLayout.getChildren().addAll(name, chips, position, status);
         verticalLayout.setSpacing(10);
+        verticalLayout.setAlignment(Pos.CENTER);
         horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
         horizontalLayout.setSpacing(10);
-        horizontalLayout.setAlignment(Pos.BASELINE_CENTER);
+        horizontalLayout.setAlignment(Pos.TOP_CENTER);
 
         return horizontalLayout;
 
