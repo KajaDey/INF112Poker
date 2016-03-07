@@ -4,9 +4,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by morten on 07.03.16.
- */
 public class CardTest {
 
     Card twoOfHearts = Card.of(2, Card.Suit.HEARTS).get();
