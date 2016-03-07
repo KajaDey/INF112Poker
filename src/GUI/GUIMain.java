@@ -22,7 +22,7 @@ public class GUIMain extends Application{
     public void start(Stage window) throws Exception{
         //MainScreen.createSceneForMainScreen("kai-pus");
 
-        window.setTitle("Texas Hold'em");
+        /*window.setTitle("Texas Hold'em");
 
         GameLobby.createScreenForGameLobby();
 
