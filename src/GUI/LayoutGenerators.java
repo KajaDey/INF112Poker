@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -46,7 +45,7 @@ public class LayoutGenerators {
         Label positionsText = makeStandardLabel("Positions:","BB");
         Label lastMove = makeStandardLabel("Fold","");
 
-        ImageView imageView1 = ImageViewer.setCardImage("player","Diamonds 12");
+        ImageView imageView1 = ImageViewer.setCardImage("player","Spades 12");
         ImageView imageView2 = ImageViewer.setCardImage("player","Clubs 5");
 
         //Amount to bet
