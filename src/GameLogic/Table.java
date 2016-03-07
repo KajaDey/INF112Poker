@@ -1,13 +1,14 @@
 package GameLogic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kristianrosland on 07.03.2016.
  */
 public class Table {
 
-    private ArrayList<Card> communityCards;
+    private List<Card> communityCards;
     private Player[] players;
     private int numberOfPlayers;
 
@@ -17,7 +18,7 @@ public class Table {
         communityCards = new ArrayList<Card>(5);
     }
 
-    public ArrayList<Card> getCommunityCards() {
+    public List<Card> getCommunityCards() {
         return this.communityCards;
     }
 

@@ -1,25 +1,26 @@
 package GameLogic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kristianrosland on 07.03.2016.
  */
 public class Hand {
-    private ArrayList<Card> holeCards = new ArrayList<Card>(2);
-    private ArrayList<Card> communityCards;
+    private List<Card> holeCards = new ArrayList<Card>(2);
+    private List<Card> communityCards;
 
-    public Hand(Card card1, Card card2, ArrayList<Card> communityCards) {
+    public Hand(Card card1, Card card2, List<Card> communityCards) {
         holeCards.add(card1);
         holeCards.add(card2);
         this.communityCards = communityCards;
     }
 
-    public ArrayList<Card> getHoleCards() {
+    public List<Card> getHoleCards() {
         return holeCards;
     }
 
-    public ArrayList<Card> getCommunityCards() {
+    public List<Card> getCommunityCards() {
         return communityCards;
     }
 }

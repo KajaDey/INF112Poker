@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Deck {
 
-    private final ArrayList<Card> cards;
+    private final List<Card> cards;
 
     /**
      * Creates a new, shuffled deck
