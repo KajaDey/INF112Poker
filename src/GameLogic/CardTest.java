@@ -22,7 +22,7 @@ public class CardTest {
     }
 
     @Test
-    public void testThatTwoCardsAreTHeSameObject() {
+    public void testThatTwoCardsAreTheSameObject() {
         assertTrue(twoOfHearts == Card.of(2, Card.Suit.HEARTS).get());
     }
 
