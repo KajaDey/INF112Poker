@@ -25,12 +25,12 @@ public class ImageViewer {
 
     /**
      * Gets the name of an image, and returns the URL of the given image.
-     * @param card The name of the image
+     * @param image The name of the image
      * @return The URL for the image
      */
-    public static String returnURLPathForImages(String card){
-        String cardOut = "file:CardSprites/" + card + ".png";
-        return cardOut;
+    public static String returnURLPathForImages(String image){
+        String ImageOut = "file:Images/" + image + ".png";
+        return ImageOut;
     }
 
     /**
