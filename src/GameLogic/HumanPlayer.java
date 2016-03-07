@@ -5,8 +5,8 @@ package GameLogic;
  */
 public class HumanPlayer extends Player {
 
-    public HumanPlayer(String name, int stackSize) {
-        super(name, stackSize);
+    public HumanPlayer(String name, int stackSize, Table table) {
+        super(name, stackSize, table);
     }
 
     @Override
