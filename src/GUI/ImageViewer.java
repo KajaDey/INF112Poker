@@ -17,7 +17,18 @@ public class ImageViewer {
      * @param card The name of the card
      * @return The URL for the card
      */
-    public static String returnURLPathForSprites(String card){
+    public static String returnURLPathForCardSprites(String card){
+        String cardOut = "file:CardSprites/" + card + ".png";
+        return cardOut;
+    }
+
+
+    /**
+     * Gets the name of an image, and returns the URL of the given image.
+     * @param card The name of the image
+     * @return The URL for the image
+     */
+    public static String returnURLPathForImages(String card){
         String cardOut = "file:CardSprites/" + card + ".png";
         return cardOut;
     }
@@ -29,8 +40,8 @@ public class ImageViewer {
      * @return The new layout which contains the shown cards.
      */
     public static Scene showOpponentCards(String card1, String card2){
-        String card1Out = returnURLPathForSprites(card1);
-        String card2Out = returnURLPathForSprites(card2);
+        String card1Out = returnURLPathForCardSprites(card1);
+        String card2Out = returnURLPathForCardSprites(card2);
 
         return LayoutGenerators.makeSceneForOpponentCards(card1Out, card2Out);
     }
@@ -50,7 +61,7 @@ public class ImageViewer {
      * @return The new BorderPane
      */
     public static BorderPane setBackground(String imageIn, BorderPane borderPane){
-        Image image = new Image(returnURLPathForSprites(imageIn));
+        Image image = new Image(returnURLPathForImages(imageIn));
         BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
         Background background = new Background(backgroundImage);
         borderPane.setBackground(background);
@@ -71,7 +82,7 @@ public class ImageViewer {
         else if (player.equals("opponent"))
             imageSize = 100;
 
-        Image image = new Image(returnURLPathForSprites(imageName));
+        Image image = new Image(returnURLPathForCardSprites(imageName));
         ImageView imageView = new ImageView();
         imageView.setImage(image);
         imageView.setPreserveRatio(true);
