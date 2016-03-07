@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -63,6 +64,18 @@ public class MainScreen {
         choiceBox.setValue("Single Player");
 
         enter.setOnAction(e ->{
+            window.close();
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox);
+        });
+
+
+
+        /**
+         * Makes pressing enter key work the same way as
+         * pressing the button, for some magical, mysterious reason.
+         * I wonder why...
+         */
+        playersIn.setOnAction(e -> {
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox);
         });
