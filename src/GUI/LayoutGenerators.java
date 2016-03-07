@@ -119,7 +119,13 @@ public class LayoutGenerators {
         /////////////////////////////////////////
 
         //Actions
-        bet.setOnAction(e -> System.out.println("SetBet"));
+        bet.setOnAction(e -> System.out.println("betClick"));
+        check.setOnAction(e -> System.out.println("checkClick"));
+        fold.setOnAction(e -> System.out.println("foldClick"));
+        pot.setOnAction(e -> System.out.println("potClick"));
+        doubleB.setOnAction(e -> System.out.println("doubleClick"));
+        max.setOnAction(e -> System.out.println("maxClick"));
+
 
         /**************/
 
