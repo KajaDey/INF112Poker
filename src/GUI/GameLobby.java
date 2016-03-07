@@ -81,7 +81,7 @@ public class GameLobby {
 
     }
 
-    public static HBox createScreenForSettings(){
+    public static HBox createScreenForSettings(Stage window){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -103,7 +103,7 @@ public class GameLobby {
         Button cancel = LayoutGenerators.makeStandardButton("Cancel");
 
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener());
-        cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener());
+        cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);

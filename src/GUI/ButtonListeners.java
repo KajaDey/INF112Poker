@@ -56,7 +56,7 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings),260,200);
         settings.setScene(scene);
         settings.show();
     }
@@ -66,8 +66,9 @@ public class ButtonListeners {
 
     }
 
-    public static void cancelSettingsButtonListener() {
+    public static void cancelSettingsButtonListener(Stage window) {
         //TODO: Implement method
+        window.close();
     }
 
     public static void startGameButtonListener() {
