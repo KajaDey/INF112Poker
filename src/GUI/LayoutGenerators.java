@@ -217,4 +217,18 @@ public class LayoutGenerators {
 
         return label;
     }
+
+    public static TextField makeStandardTextField(){
+        TextField textField = new TextField();
+
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(5,5,5,5);
+        int standardButton = 75;
+
+        textField.setFont(standardFont);
+        textField.setPadding(standardPadding);
+        textField.setMaxWidth(standardButton);
+
+        return textField;
+    }
 }
