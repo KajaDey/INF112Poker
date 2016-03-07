@@ -37,6 +37,7 @@ public class GUIMain extends Application{
         BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
         Background background = new Background(backgroundImage);
         completeLayout.setBackground(background);*/
+
         Scene scene = new Scene(completeLayout,800,800);
 
         window.setScene(scene);
