@@ -3,9 +3,7 @@ package GUI;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 
 /**
  * Created by ady on 05/03/16.
@@ -62,7 +60,7 @@ public class ImageViewer {
      */
     public static BorderPane setBackground(String imageIn, BorderPane borderPane){
         Image image = new Image(returnURLPathForImages(imageIn));
-        BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, null, null);
         Background background = new Background(backgroundImage);
         borderPane.setBackground(background);
 

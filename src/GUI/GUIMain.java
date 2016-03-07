@@ -18,7 +18,7 @@ public class GUIMain extends Application{
     public void start(Stage window) throws Exception{
         MainScreen.createSceneForMainScreen("kai-pus");
 
-        window.setTitle("Texas Hold'em");
+        /*window.setTitle("Texas Hold'em");
 
         BorderPane completeLayout = new BorderPane();
         completeLayout.setPadding(new Insets(10, 10, 10, 10));
@@ -35,7 +35,7 @@ public class GUIMain extends Application{
         Scene scene = new Scene(ImageViewer.setBackground("cagey", completeLayout), 800, 800);
 
         window.setScene(scene);
-        window.show();
+        window.show();*/
 
     }
 }

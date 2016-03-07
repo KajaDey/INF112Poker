@@ -1,5 +1,7 @@
 package GUI;
 
+import javafx.scene.control.ChoiceBox;
+
 /**
  * Created by ady on 07/03/16.
  */
@@ -46,4 +48,15 @@ public class ButtonListeners {
     public static void potButtonListener(){
         //TODO: Implement method
     }
+
+    /**
+     *
+     */
+    public static void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox){
+        System.out.println(name);
+        System.out.println(numOfPlayers);
+        System.out.println(choiceBox.getValue());
+
+    }
+
 }
