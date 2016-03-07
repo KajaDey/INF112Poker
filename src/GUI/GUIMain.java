@@ -27,12 +27,9 @@ public class GUIMain extends Application{
 
         completeLayout.setTop(LayoutGenerators.makeOpponentLayout("_Back", "_Back"));
 
-        /*Image image = new Image("file:CardSprites/_Info.png");
-        BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
-        Background background = new Background(backgroundImage);
-        completeLayout.setBackground(background);*/
 
-        Scene scene = new Scene(completeLayout,800,800);
+        //Scene scene = new Scene(completeLayout,800,800);
+        Scene scene = new Scene(ImageViewer.setBackground("cagey", completeLayout), 800, 800);
 
         window.setScene(scene);
         window.show();

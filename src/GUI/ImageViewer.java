@@ -50,8 +50,6 @@ public class ImageViewer {
      * @return The new BorderPane
      */
     public static BorderPane setBackground(String imageIn, BorderPane borderPane){
-        //TODO: Make it possible for backgrounds to be changed dynamically
-
         Image image = new Image(returnURLPathForSprites(imageIn));
         BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
         Background background = new Background(backgroundImage);
