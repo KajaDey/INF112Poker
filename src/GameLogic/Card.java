@@ -13,11 +13,11 @@ public class Card implements Comparable<Card> {
     // Initialize cards
     static {
         for (int i = 0; i < 52; i+= 4) {
-            int rank = i + 2;
+            int rank = i / 4 + 2;
             cards[i] = new Card(rank, Suit.SPADES);
             cards[i + 1] = new Card(rank, Suit.HEARTS);
-            cards[i + 1] = new Card(rank, Suit.DIAMONDS);
-            cards[i + 1] = new Card(rank, Suit.CLUBS);
+            cards[i + 2] = new Card(rank, Suit.DIAMONDS);
+            cards[i + 3] = new Card(rank, Suit.CLUBS);
         }
     }
 
@@ -41,6 +41,13 @@ public class Card implements Comparable<Card> {
         }
         else
             return Optional.empty();
+    }
+
+    /**
+     * Gets an array of all 52 cards, in order
+     */
+    public static Card[] getAllCards() {
+        return cards.clone();
     }
 
     @Override
