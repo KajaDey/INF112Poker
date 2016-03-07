@@ -17,6 +17,12 @@ import javafx.stage.Stage;
  */
 public class LayoutGenerators {
 
+    /**
+     * A method for making a playerLayout
+     *
+     * @return A VBox with the player layout
+     */
+
     public static VBox makePlayerLayout(){
 
         //Setting standards i want to use
@@ -38,19 +44,9 @@ public class LayoutGenerators {
         /***********************************/
 
         //////Make all the elements i want to add to the playerLayout//////////
-        Label amountOfChipsText = new Label("Amount of chips: 900");
-        amountOfChipsText.setFont(standardFont);
-        amountOfChipsText.setPadding(standardPadding);
-
-        //Positions
-        Label positionsText = new Label("Position: BB");
-        positionsText.setFont(standardFont);
-        positionsText.setPadding(standardPadding);
-
-        //LastMove
-        Label lastMove = new Label("Fold");
-        lastMove.setFont(standardFont);
-        positionsText.setPadding(standardPadding);
+        Label amountOfChipsText = makeStandardLabel("Amount of chips:","900");
+        Label positionsText = makeStandardLabel("Positions:","BB");
+        Label lastMove = makeStandardLabel("Fold","");
 
         //Cards
         Image image1 = new Image("file:CardSprites/Diamonds 12.png");
@@ -77,43 +73,12 @@ public class LayoutGenerators {
 
         //Buttons in the VBox
 
-        //Bet
-        Button bet = new Button("Place bet");
-        bet.setFont(standardFont);
-        bet.setPadding(standardPadding);
-        bet.setMinWidth(standardButton);
-
-        //Check
-        Button check = new Button("Check/Call");
-        check.setFont(standardFont);
-        check.setPadding(standardPadding);
-        check.setMinWidth(standardButton);
-
-        //Fold
-        Button fold = new Button("Fold");
-        fold.setFont(standardFont);
-        fold.setPadding(standardPadding);
-        fold.setMinWidth(standardButton);
-
-        //Pot
-        Button pot = new Button("Pot");
-        pot.setFont(standardFont);
-        pot.setPadding(standardPadding);
-        pot.setMinWidth(standardButton);
-
-        //Double
-        Button doubleB = new Button("Double");
-        doubleB.setFont(standardFont);
-        doubleB.setPadding(standardPadding);
-        doubleB.setMinWidth(standardButton);
-
-        //Max
-        Button max = new Button("Max");
-        max.setFont(standardFont);
-        max.setPadding(standardPadding);
-        max.setMinWidth(standardButton);
-
-        /////////////////////////////////////////
+        Button bet = makeStandardButton("Bet");
+        Button check = makeStandardButton("Check");
+        Button fold = makeStandardButton("Fold");
+        Button pot = makeStandardButton("Pot");
+        Button doubleB = makeStandardButton("Double");
+        Button max = makeStandardButton("Max");
 
         //Actions
         bet.setOnAction(e -> ButtonListeners.betButtonListener());
@@ -123,10 +88,7 @@ public class LayoutGenerators {
         max.setOnAction(e -> ButtonListeners.maxButtonListener());
         pot.setOnAction(e -> ButtonListeners.potButtonListener());
 
-
-
-
-        /**************/
+        //Add objects to the boxes
 
         stats.getChildren().addAll(amountOfChipsText, positionsText);
         stats.setAlignment(Pos.CENTER);
@@ -141,10 +103,6 @@ public class LayoutGenerators {
         fullBox.setAlignment(Pos.BOTTOM_CENTER);
         fullBoxWithLastMove.getChildren().addAll(lastMove, fullBox);
         fullBoxWithLastMove.setAlignment(Pos.BOTTOM_CENTER);
-
-        /*************/
-
-
 
         return fullBoxWithLastMove;
     }
@@ -170,10 +128,10 @@ public class LayoutGenerators {
         imageViewOpponentRight.setPreserveRatio(true);
         imageViewOpponentRight.setFitHeight(100);
 
-        Label name = new Label("Name: Kake");
-        Label chips = new Label("Chips: 1000");
-        Label position = new Label("Position: SB");
-        Label status = new Label("Bet 10000");
+        Label name = makeStandardLabel("Name:","Kake");
+        Label chips = makeStandardLabel("Chips:","1000");
+        Label position = makeStandardLabel("Position:","SB");
+        Label status = makeStandardLabel("Bet","100");
 
         HBox horizontalLayout = new HBox();
         VBox verticalLayout = new VBox();
@@ -235,5 +193,30 @@ public class LayoutGenerators {
 
         return scene;
     }*/
+
+    public static Button makeStandardButton(String name){
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(5,5,5,5);
+        int standardMinWidth = 75;
+
+        Button button = new Button(name);
+        button.setFont(standardFont);
+        button.setPadding(standardPadding);
+        button.setMinWidth(standardMinWidth);
+
+
+        return button;
+    }
+
+    public static Label makeStandardLabel(String name, String value){
+        Label label = new Label(name + " " + value);
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(5,5,5,5);
+
+        label.setFont(standardFont);
+        label.setPadding(standardPadding);
+
+        return label;
+    }
 
 }
