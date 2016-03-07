@@ -137,10 +137,6 @@ public class LayoutGenerators {
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
         completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1, card2));
-        /*Image image = new Image("CardSprites/_Info.png");
-        BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
-        Background background = new Background(backgroundImage);
-        completeLayout.setBackground(background);*/
 
         Scene scene = new Scene(completeLayout,1000,1000);
 
