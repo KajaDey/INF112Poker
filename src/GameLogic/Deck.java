@@ -1,9 +1,6 @@
 package GameLogic;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 /**
  * A shuffled deck that starts with all 52 cards
@@ -22,9 +19,11 @@ public class Deck {
 
     /**
      * Draws the top card from the deck and returns it
-     * @throws IndexOutOfBoundsException if the deck is empty
+     * Returns Empty if the deck is empty
      */
-    public Card draw() {
-        return cards.remove(cards.size() - 1);
+    public Optional<Card> draw() {
+        if (cards.size() == 0) return Optional.empty();
+
+        return Optional.of(cards.remove(cards.size() - 1));
     }
 }
