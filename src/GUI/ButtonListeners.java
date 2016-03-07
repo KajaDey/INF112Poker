@@ -81,15 +81,12 @@ public class ButtonListeners {
     }
 
     /**
-     *
+     * Listener for the button on the enter button on the main screen
      */
     public static void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox){
-        System.out.println(name);
-        System.out.println(numOfPlayers);
-        System.out.println(choiceBox.getValue());
-
-        GameLobby.createScreenForGameLobby();
-
+        if (!name.isEmpty() && !numOfPlayers.isEmpty() && choiceBox.getValue().equals("Single Player"))
+            GameLobby.createScreenForGameLobby();
+        else MainScreen.createSceneForMainScreen("kai-pus");
     }
 
 }
