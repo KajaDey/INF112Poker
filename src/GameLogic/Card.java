@@ -3,7 +3,8 @@ package GameLogic;
 import java.util.Optional;
 
 /**
- * Created by morten on 07.03.16.
+ * Class to represent poker cards. The class does not have a public constructor, rather,
+ * you use of(rank, suit) to get the cards. This way, creating a card doesn't involve an allocation
  */
 public class Card implements Comparable<Card> {
 
@@ -19,16 +20,21 @@ public class Card implements Comparable<Card> {
             cards[i + 1] = new Card(rank, Suit.CLUBS);
         }
     }
+
     public final int rank;
     public final Suit suit;
 
-    // Private constructor that should only
+    // Private constructor that should only be called during the class' initialization
     private Card(int rank, Suit suit) {
         assert rank >= 2 && rank <= 14;
         this.rank = rank;
         this.suit = suit;
     }
 
+    /*
+     *  Gets a card object from a rank and a suit.
+     *  Two calls with the same arguments will always return the same object
+    */
     public static Optional<Card> of(int rank, Suit suit) {
         if (rank >= 2 && rank <= 14) {
             return Optional.of(cards[(rank - 2) * 4 + suit.ordinal()]);
