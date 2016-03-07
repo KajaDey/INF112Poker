@@ -3,6 +3,7 @@ package GUI;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.ChoiceBox;
 
 /**
  * Created by ady on 07/03/16.
@@ -77,4 +78,14 @@ public class ButtonListeners {
     public static void leaveLobbyButtonListener() {
         MainScreen.createSceneForMainScreen("kai-pus");
     }
+    /**
+     *
+     */
+    public static void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox){
+        System.out.println(name);
+        System.out.println(numOfPlayers);
+        System.out.println(choiceBox.getValue());
+
+    }
+
 }
