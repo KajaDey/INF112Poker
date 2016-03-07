@@ -78,6 +78,7 @@ public class ButtonListeners {
     public static void leaveLobbyButtonListener() {
         MainScreen.createSceneForMainScreen("kai-pus");
     }
+
     /**
      *
      */
@@ -85,6 +86,8 @@ public class ButtonListeners {
         System.out.println(name);
         System.out.println(numOfPlayers);
         System.out.println(choiceBox.getValue());
+
+        GameLobby.createScreenForGameLobby();
 
     }
 
