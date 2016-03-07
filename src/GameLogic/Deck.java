@@ -3,7 +3,7 @@ package GameLogic;
 import java.util.*;
 
 /**
- * A shuffled deck that starts with all 52 cards
+ * A deck that starts shuffled, with all 52 cards
  */
 public class Deck {
 

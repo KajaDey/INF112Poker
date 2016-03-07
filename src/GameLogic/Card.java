@@ -3,8 +3,9 @@ package GameLogic;
 import java.util.Optional;
 
 /**
- * Class to represent poker cards. The class does not have a public constructor, rather,
- * you use of(rank, suit) to get the cards. This way, creating a card doesn't involve an allocation
+ * Class to represent a single poker card. The class does not have a public constructor, rather,
+ * you use Card.of(rank, suit) to get the cards. This way, creating a card doesn't involve
+ * an allocation, and performs better
  */
 public class Card implements Comparable<Card> {
 
@@ -53,11 +54,12 @@ public class Card implements Comparable<Card> {
     @Override
     /**
      * Compares two cards solely based on their rank, with Ace as 14,
-     * i.e., ace of spades compared to ace of hearts returns 0
+     * Two cards of the same rank are equal, i.e., ace of spades compared to ace of hearts returns 0
      */
     public int compareTo(Card other) {
         return Integer.compare(this.rank, other.rank);
     }
+
 
     public static enum Suit {
         SPADES, HEARTS, DIAMONDS, CLUBS
