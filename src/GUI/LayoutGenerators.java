@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -30,8 +29,7 @@ public class LayoutGenerators {
         Insets standardPadding = new Insets(5,5,5,5);
         int standardButton = 75;
 
-        /*************************************/
-
+        //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
         VBox stats = new VBox();
@@ -41,28 +39,14 @@ public class LayoutGenerators {
         VBox twoButtonsLeft = new VBox();
         VBox twoButtonsRight = new VBox();
 
-        /***********************************/
 
         //////Make all the elements i want to add to the playerLayout//////////
         Label amountOfChipsText = makeStandardLabel("Amount of chips:","900");
         Label positionsText = makeStandardLabel("Positions:","BB");
         Label lastMove = makeStandardLabel("Fold","");
 
-        //Cards
-        Image image1 = new Image("file:CardSprites/Diamonds 12.png");
-
-        ImageView imageView1 = new ImageView();
-        imageView1.setImage(image1);
-        imageView1.setPreserveRatio(true);
-        imageView1.setFitHeight(130);
-
-        //Image image2 = new Image(card2);
-
-        ImageView imageView2 = new ImageView();
-        imageView2.setImage(image1);
-        imageView2.setPreserveRatio(true);
-        imageView2.setFitHeight(130);
-
+        ImageView imageView1 = ImageViewer.setCardImage("player","Diamonds 12");
+        ImageView imageView2 = ImageViewer.setCardImage("player","Clubs 5");
 
         //Amount to bet
         TextField betAmount = new TextField();
@@ -114,19 +98,8 @@ public class LayoutGenerators {
 
     public static VBox makeOpponentLayout(String card1, String card2){
 
-        //Branch test
-
-        Image image1 = new Image(card1);
-        ImageView imageViewOpponentLeft = new ImageView();
-        imageViewOpponentLeft.setImage(image1);
-        imageViewOpponentLeft.setPreserveRatio(true);
-        imageViewOpponentLeft.setFitHeight(100);
-
-        Image image2 = new Image(card2);
-        ImageView imageViewOpponentRight = new ImageView();
-        imageViewOpponentRight.setImage(image2);
-        imageViewOpponentRight.setPreserveRatio(true);
-        imageViewOpponentRight.setFitHeight(100);
+        ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", card1);
+        ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", card2);
 
         Label name = makeStandardLabel("Name:","Kake");
         Label chips = makeStandardLabel("Chips:","1000");
@@ -194,6 +167,12 @@ public class LayoutGenerators {
         return scene;
     }*/
 
+    /**
+     * A template for a button
+     *
+     * @param name
+     * @return a new button
+     */
     public static Button makeStandardButton(String name){
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
@@ -204,10 +183,16 @@ public class LayoutGenerators {
         button.setPadding(standardPadding);
         button.setMinWidth(standardMinWidth);
 
-
         return button;
     }
 
+    /**
+     * A template for a label
+     *
+     * @param name
+     * @param value
+     * @return a new label
+     */
     public static Label makeStandardLabel(String name, String value){
         Label label = new Label(name + " " + value);
         Font standardFont = new Font("Areal",15);
@@ -218,5 +203,4 @@ public class LayoutGenerators {
 
         return label;
     }
-
 }

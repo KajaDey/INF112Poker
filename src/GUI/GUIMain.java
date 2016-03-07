@@ -3,13 +3,7 @@ package GUI;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 /**
@@ -31,7 +25,7 @@ public class GUIMain extends Application{
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
 
-        completeLayout.setTop(LayoutGenerators.makeOpponentLayout("file:CardSprites/_Back.png", "file:CardSprites/_Back.png"));
+        completeLayout.setTop(LayoutGenerators.makeOpponentLayout("_Back", "_Back"));
 
         /*Image image = new Image("file:CardSprites/_Info.png");
         BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
