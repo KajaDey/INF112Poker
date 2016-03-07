@@ -23,7 +23,7 @@ public class MainScreen {
 
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
-        mainScreenLayout.setCenter(makeLayout());
+        mainScreenLayout.setCenter(makeLayout(window));
 
         Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout), 980, 551);
 
@@ -34,7 +34,7 @@ public class MainScreen {
         return scene;
     }
 
-    public static HBox makeLayout(){
+    public static HBox makeLayout(Stage window){
 
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
@@ -63,7 +63,10 @@ public class MainScreen {
         choiceBox.getItems().addAll("Single Player", "Multi Player");
         choiceBox.setValue("Single Player");
 
-        enter.setOnAction(e -> ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox));
+        enter.setOnAction(e ->{
+            window.close();
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox);
+        });
 
         horisontalRadio.getChildren().addAll(choiceBox);
         horisontalRadio.setAlignment(Pos.CENTER);
