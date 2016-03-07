@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -31,6 +32,11 @@ public class GUIMain extends Application{
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
 
         completeLayout.setTop(LayoutGenerators.makeOpponentLayout("file:CardSprites/_Back.png", "file:CardSprites/_Back.png"));
+
+        /*Image image = new Image("file:CardSprites/_Info.png");
+        BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
+        Background background = new Background(backgroundImage);
+        completeLayout.setBackground(background);*/
         Scene scene = new Scene(completeLayout,800,800);
 
         window.setScene(scene);

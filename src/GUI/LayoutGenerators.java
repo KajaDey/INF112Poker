@@ -8,10 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -207,10 +204,16 @@ public class LayoutGenerators {
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
         completeLayout.setTop(LayoutGenerators.makeOpponentLayout(card1, card2));
+        /*Image image = new Image("CardSprites/_Info.png");
+        BackgroundImage backgroundImage = new BackgroundImage(image, null, null, null, null);
+        Background background = new Background(backgroundImage);
+        completeLayout.setBackground(background);*/
+
         Scene scene = new Scene(completeLayout,1000,1000);
 
         window.setScene(scene);
         window.show();
+
 
         return scene;
     }
