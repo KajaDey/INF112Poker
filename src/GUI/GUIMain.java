@@ -20,12 +20,14 @@ public class GUIMain extends Application{
         window.setTitle("Texas Hold'em");
 
         BorderPane completeLayout = new BorderPane();
-        completeLayout.setPadding(new Insets(10,10,10,10));
+        completeLayout.setPadding(new Insets(10, 10, 10, 10));
 
         //Construct a new scene
         completeLayout.setBottom(LayoutGenerators.makePlayerLayout());
 
         completeLayout.setTop(LayoutGenerators.makeOpponentLayout("_Back", "_Back"));
+
+        completeLayout.setCenter(LayoutGenerators.makeBoardLayout());
 
 
         //Scene scene = new Scene(completeLayout,800,800);

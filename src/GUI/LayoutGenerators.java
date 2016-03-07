@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -91,9 +92,27 @@ public class LayoutGenerators {
         return fullBoxWithLastMove;
     }
 
-    public static GridPane makeBoardLayout(){
-        //TODO: Design and implement board-layout.
-        return null;
+    /**
+     * Generates a boardLayout
+     * @return a boardLayout
+     */
+    public static HBox makeBoardLayout(){
+
+        ImageView card1 = ImageViewer.setCardImage("player","Diamonds 10");
+        ImageView card2 = ImageViewer.setCardImage("player","Diamonds 11");
+        ImageView card3 = ImageViewer.setCardImage("player","Diamonds 12");
+        ImageView card4 = ImageViewer.setCardImage("player","Diamonds 13");
+        ImageView card5 = ImageViewer.setCardImage("player","Diamonds 1");
+
+        HBox horizontalLayout = new HBox();
+        VBox verticalLayout = new VBox();
+
+        verticalLayout.setSpacing(10);
+        horizontalLayout.getChildren().addAll(card1, card2, card3, card4, card5, verticalLayout);
+        horizontalLayout.setSpacing(10);
+        horizontalLayout.setAlignment(Pos.CENTER);
+
+        return horizontalLayout;
     }
 
     public static VBox makeOpponentLayout(String card1, String card2){
