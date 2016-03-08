@@ -7,7 +7,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -44,6 +47,10 @@ public class LayoutGenerators {
         Label amountOfChipsText = makeStandardLabel("Amount of chips:","900");
         Label positionsText = makeStandardLabel("Positions:","BB");
         Label lastMove = makeStandardLabel("Fold","");
+
+        amountOfChipsText.setTextFill(Color.web("#ffffff"));
+        positionsText.setTextFill(Color.web("#ffffff"));
+        lastMove.setTextFill(Color.web("#ffffff"));
 
         ImageView imageView1 = ImageViewer.setCardImage("player","Spades 12");
         ImageView imageView2 = ImageViewer.setCardImage("player","Clubs 5");
@@ -123,6 +130,11 @@ public class LayoutGenerators {
         Label chips = makeStandardLabel("Chips:","1000");
         Label position = makeStandardLabel("Position:","SB");
         Label status = makeStandardLabel("Bet","100");
+
+        name.setTextFill(Color.web("#ffffff"));
+        chips.setTextFill(Color.web("#ffffff"));
+        position.setTextFill(Color.web("#ffffff"));
+        status.setTextFill(Color.web("#ffffff"));
 
         HBox horizontalLayout = new HBox();
         VBox verticalLayout = new VBox();
