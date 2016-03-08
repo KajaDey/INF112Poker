@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
-A game client 
+An interface which represents any poker game client, 
+ which receives information throughout the game, and returns its decisions
  */
 public interface GameClient {
 
@@ -35,7 +36,7 @@ public interface GameClient {
 
     /*
     After a showdown, the client receives the hole cards of all the players still in the hand,
-    as a map index by the players' IDs
+    as a map indexed by the players' IDs
      */
     public void showdown(Map<Integer, List<Card>> holeCards);
 }
