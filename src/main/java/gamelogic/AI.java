@@ -16,7 +16,6 @@ public class AI implements GameClient {
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
 
-
     private int bigBlindAmount;
     private int smallBlindAmount;
     private int position; // 0 is dealer
@@ -50,16 +49,17 @@ public class AI implements GameClient {
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
-        if (randomModifier * (handQuality / 14.0) > 1) {
+        if (randomModifier * (handQuality / 14.0) > 1) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
                     return new Decision(Decision.Move.RAISE, minimumRaise);
                 }
-            }
-            else {
-                if (stackSize >= minimumBetThisBettingRound) {
+                else {
                     return new Decision(Decision.Move.CALL);
                 }
+            }
+            else {
+                return new Decision(Decision.Move.CALL);
             }
         }
         else {
@@ -72,7 +72,7 @@ public class AI implements GameClient {
         }
 
 
-        return new Decision(Decision.Move.CALL);
+        // return new Decision(Decision.Move.CALL);
     }
 
     @Override
@@ -131,10 +131,10 @@ public class AI implements GameClient {
         }
         else {
             if (position == 1) {
-                minimumBetThisBettingRound = 0; // Is big blind
+                minimumBetThisBettingRound = bigBlindAmount - smallBlindAmount; // Is small blind
             }
             else if (position == 2) {
-                minimumBetThisBettingRound = bigBlindAmount - smallBlindAmount; // Is small blind
+                minimumBetThisBettingRound = 0; // Is big blind
             }
             else {
                 minimumBetThisBettingRound = bigBlindAmount;
