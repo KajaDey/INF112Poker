@@ -39,11 +39,10 @@ public class ObjectStandards {
     }
 
     /**
-     * A template for a label
-     *
-     * @param name
-     * @param value
-     * @return a new label
+     * Makes a standard label where the text color is white
+     * @param name The name of the label
+     * @param value The value of the label (i.e: $)
+     * @return The created label
      */
     public static Label makeStandardLabelWhite(String name, String value){
         Label label = new Label(name + " " + value);
@@ -57,6 +56,13 @@ public class ObjectStandards {
         return label;
     }
 
+
+    /**
+     * Makes a standard text label where the text color is black
+     * @param name The name of the label
+     * @param value The value of the label text (i.e: $)
+     * @return The created label
+     */
     public static Label makeStandardLabelBlack(String name, String value){
         Label label = new Label(name + " " + value);
         Font standardFont = new Font("Areal",15);
@@ -69,6 +75,10 @@ public class ObjectStandards {
     }
 
 
+    /**
+     * Creates a standard text field for input
+     * @return The text field
+     */
     public static TextField makeStandardTextField(){
         TextField textField = new TextField();
 

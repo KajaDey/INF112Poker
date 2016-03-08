@@ -22,7 +22,6 @@ public class GameLobby {
         Stage window = new Stage();
 
         //Boxes
-        BorderPane playerImage = new BorderPane();
         VBox gameRules = new VBox();
         HBox startLeave = new HBox();
         HBox layoutNoStartButton = new HBox();

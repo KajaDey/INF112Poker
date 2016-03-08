@@ -1,0 +1,33 @@
+Møte 3 - 08.03.16, kl 10.15
+Sekretær: Simon I. Halvorsen
+
+Oppmøte: 
+* Morten
+* Simon
+* André
+* Kristian
+* Kaja
+* Vegar
+* Jostein
+* Ragnhild
+Fraværende: Henrik, Mariah
+
+Hva er gjort siden sist: 
+* GUI-teamet har kommet godt i gang med layout til GUI
+* Tre operasjonskontrakter er opprettet
+* Ferdig med følgende diagrammer:
+	* Use case diagram
+	* Use case text
+	* SSD
+
+Diskusjon:
+* Gruppen ble enig om å lage et client interface. Dette skal implementeres av både GUI og AI, men også etter hvert av nettverksklienter
+* GUI oppdateres på kommando fra GameController gjennom metoder definert i Client interface
+* GUI skal oppdateres bit for bit, ettersom eventer skjer
+* Ble enige om å prøve å holde en ryddig mappestruktur
+
+Plan til neste møte: 
+* Starte med implementasjon av HandCalculator
+
+Tid for neste møte: Onsdag 09.03.16, 15.15-17.00
+
