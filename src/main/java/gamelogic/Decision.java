@@ -29,4 +29,18 @@ public class Decision {
         this.move = move;
         this.size = -1;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Decision)) {
+            return false;
+        }
+        Decision otherDecision = (Decision)other;
+        if (move == Move.RAISE || move == Move.BET) {
+            return this.move == otherDecision.move && this.size == otherDecision.size;
+        }
+        else {
+            return this.move == otherDecision.move;
+        }
+    }
 }
