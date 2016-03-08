@@ -6,8 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -37,12 +35,12 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = ObjectStandards.makeStandardLabel("Chips: ", "1000" + "$");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabel("Number of players: ", "5");
-        Label bigBlind = ObjectStandards.makeStandardLabel("Big blind: ", "50" + "$");
-        Label smallBlind = ObjectStandards.makeStandardLabel("Small blind: ", "25" + "$");
-        Label levelDuration = ObjectStandards.makeStandardLabel("Level duration: ", "10" + "min");
-        Label joinedPlayers = ObjectStandards.makeStandardLabel("Players:\n - Jostein\n - André", "");
+        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", "1000" + "$");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", "5");
+        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", "50" + "$");
+        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", "25" + "$");
+        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", "10" + "min");
+        Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n - Jostein\n - André", "");
 
 
         //ActionListeners
@@ -67,6 +65,7 @@ public class GameLobby {
         startLeave.setAlignment(Pos.CENTER);
 
         fullLayout.getChildren().addAll(layoutNoStartButton,startLeave);
+        fullLayout.setAlignment(Pos.CENTER);
 
         //set scene
 
@@ -75,7 +74,7 @@ public class GameLobby {
         gameScreenLayout.setCenter(fullLayout);
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
-        SceneBuilder.showCurrentScene(scene);
+        SceneBuilder.showCurrentScene(scene, "GameLobby");
     }
 
     public static HBox createScreenForSettings(Stage window){
@@ -84,11 +83,11 @@ public class GameLobby {
         VBox labelBox = new VBox();
         VBox textFieldBox = new VBox();
 
-        Label amountOfChips = ObjectStandards.makeStandardLabel("Chips:", "");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabel("Number of players:", "");
-        Label bigBlind = ObjectStandards.makeStandardLabel("Big blind:", "");
-        Label smallBlind = ObjectStandards.makeStandardLabel("Small blind:", "");
-        Label levelDuration = ObjectStandards.makeStandardLabel("Level duration:", "");
+        Label amountOfChips = ObjectStandards.makeStandardLabelBlack("Chips:", "");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabelBlack("Number of players:", "");
+        Label bigBlind = ObjectStandards.makeStandardLabelBlack("Big blind:", "");
+        Label smallBlind = ObjectStandards.makeStandardLabelBlack("Small blind:", "");
+        Label levelDuration = ObjectStandards.makeStandardLabelBlack("Level duration:", "");
 
         TextField amountOfChipsTF = ObjectStandards.makeStandardTextField();
         TextField numberOfPlayersTF = ObjectStandards.makeStandardTextField();

@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 /**
  * Created by ady on 07/03/16.
@@ -29,7 +28,7 @@ public class GameScreen {
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
 
-        SceneBuilder.showCurrentScene(scene);
+        SceneBuilder.showCurrentScene(scene, "GameScreen");
 
         return scene;
     }
@@ -58,13 +57,9 @@ public class GameScreen {
             VBox twoButtonsRight = new VBox();
 
             //////Make all the elements i want to add to the playerLayout//////////
-            Label amountOfChipsText = ObjectStandards.makeStandardLabel("Amount of chips:", "900");
-            Label positionsText = ObjectStandards.makeStandardLabel("Positions:", "BB");
-            Label lastMove = ObjectStandards.makeStandardLabel("Fold", "");
-
-            amountOfChipsText.setTextFill(Color.web("#ffffff"));
-            positionsText.setTextFill(Color.web("#ffffff"));
-            lastMove.setTextFill(Color.web("#ffffff"));
+            Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", "900");
+            Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", "BB");
+            Label lastMove = ObjectStandards.makeStandardLabelWhite("Fold", "");
 
             ImageView imageView1 = ImageViewer.setCardImage("player","Spades 12");
             ImageView imageView2 = ImageViewer.setCardImage("player","Clubs 5");
@@ -126,17 +121,11 @@ public class GameScreen {
             HBox horizontalLayout = new HBox();
             VBox verticalLayout = new VBox();
 
-            Label currentBB = ObjectStandards.makeStandardLabel("Current BB:","50" + "$");
-            Label currentSB = ObjectStandards.makeStandardLabel("Current SM:","25" + "$");
-            Label nextBB = ObjectStandards.makeStandardLabel("Next BB: ","100" + "$");
-            Label nextSB = ObjectStandards.makeStandardLabel("Next SB: ","50" + "$");
-            Label pot = ObjectStandards.makeStandardLabel("Pot: ", "10000000" + "$");
-
-            currentBB.setTextFill(Color.web("#ffffff"));
-            currentSB.setTextFill(Color.web("#ffffff"));
-            nextBB.setTextFill(Color.web("#ffffff"));
-            nextSB.setTextFill(Color.web("#ffffff"));
-            pot.setTextFill(Color.web("#ffffff"));
+            Label currentBB = ObjectStandards.makeStandardLabelWhite("Current BB:","50" + "$");
+            Label currentSB = ObjectStandards.makeStandardLabelWhite("Current SM:","25" + "$");
+            Label nextBB = ObjectStandards.makeStandardLabelWhite("Next BB: ","100" + "$");
+            Label nextSB = ObjectStandards.makeStandardLabelWhite("Next SB: ","50" + "$");
+            Label pot = ObjectStandards.makeStandardLabelWhite("Pot: ", "10000000" + "$");
 
             verticalLayout.getChildren().addAll(currentBB, currentSB, nextBB, nextSB, pot);
             verticalLayout.setSpacing(10);
@@ -153,10 +142,10 @@ public class GameScreen {
             ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", card1);
             ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", card2);
 
-            Label name = ObjectStandards.makeStandardLabel("Name:", "Kake");
-            Label chips = ObjectStandards.makeStandardLabel("Chips:", "1000");
-            Label position = ObjectStandards.makeStandardLabel("Position:", "SB");
-            Label status = ObjectStandards.makeStandardLabel("Bet","100");
+            Label name = ObjectStandards.makeStandardLabelWhite("Name:", "Kake");
+            Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", "1000");
+            Label position = ObjectStandards.makeStandardLabelWhite("Position:", "SB");
+            Label status = ObjectStandards.makeStandardLabelWhite("Bet","100");
 
             name.setTextFill(Color.web("#ffffff"));
             chips.setTextFill(Color.web("#ffffff"));

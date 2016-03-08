@@ -12,10 +12,11 @@ public class SceneBuilder {
 
     static Stage window = new Stage();
 
-    public static void showCurrentScene(Scene scene){
+    public static void showCurrentScene(Scene scene, String titleIn){
 
         window.close();
         window = new Stage();
+        window.setTitle(titleIn);
         window.setScene(scene);
         window.show();
 
