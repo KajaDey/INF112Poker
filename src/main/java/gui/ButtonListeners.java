@@ -76,7 +76,7 @@ public class ButtonListeners {
     }
 
     public static void leaveLobbyButtonListener() {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"));
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"), "Main Screen");
     }
 
     /**
