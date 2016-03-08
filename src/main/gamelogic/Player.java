@@ -1,4 +1,4 @@
-package GameLogic;
+package main.gamelogic;
 
 import java.util.Optional;
 

@@ -1,5 +1,7 @@
-package GameLogic;
+package tests.gamelogic;
 
+import main.gamelogic.Card;
+import main.gamelogic.Deck;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

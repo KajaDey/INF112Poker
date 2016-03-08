@@ -1,4 +1,4 @@
-package GUI.MariahGui;
+package main.gui.mariahgui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

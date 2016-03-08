@@ -1,6 +1,6 @@
-package GameLogic;
+package main.gamelogic;
 
-import GUI.GUIMain;
+import main.gui.GUIMain;
 
 /**
  * Created by kristianrosland on 07.03.2016.

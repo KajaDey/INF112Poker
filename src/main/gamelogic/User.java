@@ -1,4 +1,4 @@
-package GameLogic;
+package main.gamelogic;
 
 /**
  * Created by kristianrosland on 07.03.2016.

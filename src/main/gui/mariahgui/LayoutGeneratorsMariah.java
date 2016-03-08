@@ -1,4 +1,4 @@
-package GUI.MariahGui;
+package main.gui.mariahgui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

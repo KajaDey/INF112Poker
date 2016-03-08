@@ -1,4 +1,4 @@
-package GameLogic;
+package main.gamelogic;
 
 /**
  * A decision made by the player, along with the size of a bet/raise

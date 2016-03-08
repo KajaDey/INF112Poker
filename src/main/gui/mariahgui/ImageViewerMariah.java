@@ -1,4 +1,4 @@
-package GUI.MariahGui;
+package main.gui.mariahgui;
 
 /**
  * Created by ady on 05/03/16.
