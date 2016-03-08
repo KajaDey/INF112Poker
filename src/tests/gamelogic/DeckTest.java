@@ -4,6 +4,8 @@ import main.gamelogic.Card;
 import main.gamelogic.Deck;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class DeckTest {
@@ -15,6 +17,20 @@ public class DeckTest {
             assertTrue(deck.draw().isPresent());
         }
         assertTrue(!deck.draw().isPresent());
+    }
+
+    @Test
+    public void allCardsAreUnique() {
+        Deck deck = new Deck();
+        ArrayList<Card> allCards = new ArrayList<>();
+        for (int i = 0; i < 52; i++) {
+            allCards.add(deck.draw().get());
+        }
+        for (int i = 0; i < 52; i++) {
+            for (int j = i + 1; j < 52; j++) {
+                assertNotEquals(allCards.get(i), allCards.get(j));
+            }
+        }
     }
 
     @Test
