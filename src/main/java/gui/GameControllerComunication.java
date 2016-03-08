@@ -32,12 +32,42 @@ public class GameControllerComunication implements GameClient {
     }
 
     @Override
-    public void playerMadeDecision(Map<Integer, Decision> decisions) {
+    public void playerMadeDecision(Integer playerId, Decision decision) {
 
     }
 
     @Override
     public void showdown(Map<Integer, List<Card>> holeCards) {
+
+    }
+
+    @Override
+    public void setBigBlind(int bigBlind) {
+
+    }
+
+    @Override
+    public void setSmallBlind(int smallBlind) {
+
+    }
+
+    @Override
+    public void setPositions(Map<Integer, String> setPositions) {
+
+    }
+
+    @Override
+    public void setStartChips(long startChips) {
+
+    }
+
+    @Override
+    public void setAmountOfPlayers(int amountOfPlayers) {
+
+    }
+
+    @Override
+    public void setLevelDuration(int levelDuration) {
 
     }
 }

@@ -9,34 +9,76 @@ An interface which represents any poker game client,
  */
 public interface GameClient {
 
-    /*
-    Tells the client to make a decision, and blocks until the decision is made and the client returns
+    /**
+     * Tells the client to make a decision, and blocks until the decision is made and the client returns
      */
-    public Decision getDecision();
+    Decision getDecision();
 
-    /*
-    Sends the names of all players, as a map indexed by the players' IDs
+    /**
+     * Sends the names of all players, as a map indexed by the players' IDs
      */
-    public void setPlayerNames(Map<Integer, String> names);
+    void setPlayerNames(Map<Integer, String> names);
 
-    /*
-    Sends the player's hole cards
+    /**
+     * Sends the player's hole cards
      */
-    public void setHoleCards(Card card1, Card card2);
+    void setHoleCards(Card card1, Card card2);
 
-    /*
-    Sends the stack sizes of all players, as a map indexed by the players' IDs
+    /**
+     * Sends the stack sizes of all players, as a map indexed by the players' IDs
      */
-    public void setStackSizes(Map<Integer, Long> stackSizes);
+    void setStackSizes(Map<Integer, Long> stackSizes);
 
-    /*
-    Sends the decision of another player
+    /**
+     * Sends the decision of another player
      */
-    public void playerMadeDecision(Integer playerId, Decision decision);
+    void playerMadeDecision(Integer playerId, Decision decision);
 
-    /*
-    After a showdown, the client receives the hole cards of all the players still in the hand,
-    as a map indexed by the players' IDs
+    /**
+     * After a showdown, the client receives the hole cards of all the players still in the hand,
+     * as a map indexed by the players' IDs
      */
-    public void showdown(Map<Integer, List<Card>> holeCards);
+    void showdown(Map<Integer, List<Card>> holeCards);
+
+    /**
+     * Sends the value of big blind
+     */
+
+    void setBigBlind(int bigBlind);
+
+    /**
+     * Sends the value of small blind
+     */
+
+    void setSmallBlind(int smallBlind);
+
+    /**
+     * Sends every players positions
+     */
+
+    void setPositions(Map<Integer, String> setPositions);
+
+    /**
+     * Sends amount of start-chips
+     */
+
+    void setStartChips(long startChips);
+
+    /**
+     * Sends amount of players in game
+     */
+
+    void setAmountOfPlayers(int amountOfPlayers);
+
+    /**
+     * Sends level duration
+     */
+
+    void setLevelDuration(int levelDuration);
+
+    /**
+     * Sends last move
+     */
+
+    void setLastMove(String lastMove);
 }
