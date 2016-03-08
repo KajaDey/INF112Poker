@@ -10,6 +10,7 @@ import java.util.Map;
 /**
  * Created by ady on 08/03/16.
  */
+
 public class GameControllerComunication implements GameClient {
     @Override
     public Decision getDecision() {

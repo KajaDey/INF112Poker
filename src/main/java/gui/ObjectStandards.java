@@ -45,7 +45,19 @@ public class ObjectStandards {
      * @param value
      * @return a new label
      */
-    public static Label makeStandardLabel(String name, String value){
+    public static Label makeStandardLabelWhite(String name, String value){
+        Label label = new Label(name + " " + value);
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(5,5,5,5);
+
+        label.setFont(standardFont);
+        label.setPadding(standardPadding);
+        label.setTextFill(Color.web("#ffffff"));
+
+        return label;
+    }
+
+    public static Label makeStandardLabelBlack(String name, String value){
         Label label = new Label(name + " " + value);
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
@@ -55,6 +67,7 @@ public class ObjectStandards {
 
         return label;
     }
+
 
     public static TextField makeStandardTextField(){
         TextField textField = new TextField();

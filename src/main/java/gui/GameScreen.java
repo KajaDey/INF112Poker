@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 /**
  * Created by ady on 07/03/16.
@@ -29,7 +28,7 @@ public class GameScreen {
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
 
-        SceneBuilder.showCurrentScene(scene);
+        SceneBuilder.showCurrentScene(scene, "GameScreen");
 
         return scene;
     }
@@ -58,13 +57,9 @@ public class GameScreen {
             VBox twoButtonsRight = new VBox();
 
             //////Make all the elements i want to add to the playerLayout//////////
-            Label amountOfChipsText = ObjectStandards.makeStandardLabel("Amount of chips:", "900");
-            Label positionsText = ObjectStandards.makeStandardLabel("Positions:", "BB");
-            Label lastMove = ObjectStandards.makeStandardLabel("Fold", "");
-
-            amountOfChipsText.setTextFill(Color.web("#ffffff"));
-            positionsText.setTextFill(Color.web("#ffffff"));
-            lastMove.setTextFill(Color.web("#ffffff"));
+            Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", "900");
+            Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", "BB");
+            Label lastMove = ObjectStandards.makeStandardLabelWhite("Fold", "");
 
             ImageView imageView1 = ImageViewer.setCardImage("player","Spades 12");
             ImageView imageView2 = ImageViewer.setCardImage("player","Clubs 5");
@@ -120,13 +115,21 @@ public class GameScreen {
             ImageView card1 = ImageViewer.setCardImage("player","Diamonds 10");
             ImageView card2 = ImageViewer.setCardImage("player","Diamonds 11");
             ImageView card3 = ImageViewer.setCardImage("player","Diamonds 12");
-            ImageView card4 = ImageViewer.setCardImage("player","Diamonds 13");
-            ImageView card5 = ImageViewer.setCardImage("player","Diamonds 1");
+            ImageView card4 = ImageViewer.setCardImage("player", "Diamonds 13");
+            ImageView card5 = ImageViewer.setCardImage("player", "Diamonds 1");
 
             HBox horizontalLayout = new HBox();
             VBox verticalLayout = new VBox();
 
+            Label currentBB = ObjectStandards.makeStandardLabelWhite("Current BB:","50" + "$");
+            Label currentSB = ObjectStandards.makeStandardLabelWhite("Current SM:","25" + "$");
+            Label nextBB = ObjectStandards.makeStandardLabelWhite("Next BB: ","100" + "$");
+            Label nextSB = ObjectStandards.makeStandardLabelWhite("Next SB: ","50" + "$");
+            Label pot = ObjectStandards.makeStandardLabelWhite("Pot: ", "10000000" + "$");
+
+            verticalLayout.getChildren().addAll(currentBB, currentSB, nextBB, nextSB, pot);
             verticalLayout.setSpacing(10);
+            verticalLayout.setAlignment(Pos.CENTER);
             horizontalLayout.getChildren().addAll(card1, card2, card3, card4, card5, verticalLayout);
             horizontalLayout.setSpacing(10);
             horizontalLayout.setAlignment(Pos.CENTER);
@@ -139,10 +142,10 @@ public class GameScreen {
             ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", card1);
             ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", card2);
 
-            Label name = ObjectStandards.makeStandardLabel("Name:", "Kake");
-            Label chips = ObjectStandards.makeStandardLabel("Chips:", "1000");
-            Label position = ObjectStandards.makeStandardLabel("Position:", "SB");
-            Label status = ObjectStandards.makeStandardLabel("Bet","100");
+            Label name = ObjectStandards.makeStandardLabelWhite("Name:", "Kake");
+            Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", "1000");
+            Label position = ObjectStandards.makeStandardLabelWhite("Position:", "SB");
+            Label status = ObjectStandards.makeStandardLabelWhite("Bet","100");
 
             name.setTextFill(Color.web("#ffffff"));
             chips.setTextFill(Color.web("#ffffff"));
@@ -154,7 +157,7 @@ public class GameScreen {
             VBox fullBox = new VBox();
 
             verticalLayout.getChildren().addAll(name, chips, position);
-            verticalLayout.setSpacing(10);
+            verticalLayout.setSpacing(5);
             verticalLayout.setAlignment(Pos.CENTER);
             horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
             horizontalLayout.setSpacing(10);
@@ -168,7 +171,7 @@ public class GameScreen {
 
         public static Scene makeSceneForOpponentCards(String card1, String card2){
             BorderPane completeLayout = new BorderPane();
-            completeLayout.setPadding(new Insets(10,10,10,10));
+            completeLayout.setPadding(new Insets(10, 10, 10, 10));
 
             //Construct a new scene
             completeLayout.setBottom(makePlayerLayout());

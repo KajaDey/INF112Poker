@@ -67,7 +67,6 @@ public class ButtonListeners {
     }
 
     public static void cancelSettingsButtonListener(Stage window) {
-        //TODO: Implement method
         window.close();
     }
 
@@ -77,8 +76,7 @@ public class ButtonListeners {
     }
 
     public static void leaveLobbyButtonListener() {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"));
-        //SceneBuilder.createSceneForInitialScreen("PokerTable");
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"), "Main Screen");
     }
 
     /**
