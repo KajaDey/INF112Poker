@@ -20,9 +20,7 @@ import javafx.stage.Stage;
 public class GameScreen {
 
 
-    public static void createSceneForGameScreen(VBox opponent, VBox player, HBox board) {
-
-        Stage window = new Stage();
+    public static Scene createSceneForGameScreen(VBox opponent, VBox player, HBox board) {
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(opponent);
@@ -31,9 +29,9 @@ public class GameScreen {
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
 
-        window.setScene(scene);
-        window.show();
+        SceneBuilder.showCurrentScene(scene);
 
+        return scene;
     }
 
         /**
@@ -169,7 +167,6 @@ public class GameScreen {
         }
 
         public static Scene makeSceneForOpponentCards(String card1, String card2){
-            Stage window = new Stage();
             BorderPane completeLayout = new BorderPane();
             completeLayout.setPadding(new Insets(10,10,10,10));
 
@@ -179,8 +176,6 @@ public class GameScreen {
 
             Scene scene = new Scene(completeLayout,1000,1000);
 
-            window.setScene(scene);
-            window.show();
 
             return scene;
         }
