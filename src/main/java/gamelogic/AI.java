@@ -70,9 +70,6 @@ public class AI implements GameClient {
                 return new Decision(Decision.Move.FOLD);
             }
         }
-
-
-        // return new Decision(Decision.Move.CALL);
     }
 
     @Override
@@ -144,7 +141,7 @@ public class AI implements GameClient {
 
     @Override
     public void setStartChips(long startChips) {
-
+        stackSize = startChips;
     }
 
     @Override
