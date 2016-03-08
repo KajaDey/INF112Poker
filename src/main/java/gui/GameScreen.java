@@ -21,7 +21,7 @@ public class GameScreen {
         borderPane.setCenter(board);
         borderPane.setBottom(player);
 
-        Scene scene = new Scene(ImageViewer.setBackground("cagey", borderPane), 800, 800);
+        Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
 
         window.setScene(scene);
         window.show();

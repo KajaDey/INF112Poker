@@ -24,7 +24,7 @@ public class MainScreen {
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(makeLayout(window));
 
-        Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout), 980, 551);
+        Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout, 1920, 1080), 1280, 720);
 
         window.setScene(scene);
         window.show();
@@ -79,7 +79,7 @@ public class MainScreen {
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox);
         });
 
-        String infoText = "SnakeOil";
+        String infoText = "Heads Up Poker!";
         Label label = LayoutGenerators.makeStandardLabel(infoText, "");
         label.setTextFill(Color.web("#ffffff"));
 

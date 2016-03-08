@@ -2,7 +2,6 @@ package tests.java.gui.gamelogic;
 
 import main.java.gamelogic.Card;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 
 public class CardTest {
