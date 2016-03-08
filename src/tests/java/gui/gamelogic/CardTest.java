@@ -1,6 +1,6 @@
-package tests.gamelogic;
+package tests.java.gui.gamelogic;
 
-import main.gamelogic.Card;
+import main.java.gamelogic.Card;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

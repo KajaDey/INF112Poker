@@ -1,4 +1,4 @@
-package main.gui;
+package main.java.gui;
 
 import javafx.scene.Scene;
 import javafx.stage.Modality;

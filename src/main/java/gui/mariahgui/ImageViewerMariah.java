@@ -1,4 +1,4 @@
-package main.gui.mariahgui;
+package main.java.gui.mariahgui;
 
 /**
  * Created by ady on 05/03/16.

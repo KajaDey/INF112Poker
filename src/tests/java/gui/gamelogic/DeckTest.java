@@ -1,7 +1,7 @@
-package tests.gamelogic;
+package tests.java.gui.gamelogic;
 
-import main.gamelogic.Card;
-import main.gamelogic.Deck;
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Deck;
 import org.junit.Test;
 
 import java.util.ArrayList;
