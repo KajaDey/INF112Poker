@@ -23,4 +23,11 @@ public class Hand {
     public List<Card> getCommunityCards() {
         return communityCards;
     }
+
+    public List<List<Card>> getHand() {
+        List<List<Card>> hand = new ArrayList<List<Card>>(7);
+        hand.add(holeCards);
+        hand.add((communityCards));
+        return hand;
+    }
 }
