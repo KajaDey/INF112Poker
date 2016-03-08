@@ -8,12 +8,12 @@ public class Decision {
     public static enum Move {FOLD, CHECK, BET, RAISE, CALL};
 
     public final Move move;
-    public final int size;
+    public final long size;
 
     /*
     Constructs a decision to raise or bet a certain amount
      */
-    public Decision(Move move, int size) {
+    public Decision(Move move, long size) {
         assert move == Move.RAISE || move == Move.BET;
 
         this.move = move;
