@@ -6,14 +6,20 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created by morten on 08.03.16.
+ An AI player that works through the GameClient interface.
+ It decides its move based solely on the information it gets through GameCLient
+ Currently a WIP, may not work correctly
  */
 public class AI implements GameClient {
 
     private final int playerId;
+    private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
+
+
     private int bigBlindAmount;
     private int smallBlindAmount;
+    private int position; // 0 is dealer
 
     private Optional<Decision> lastDecision = Optional.empty();
     private long stackSize;
@@ -28,11 +34,23 @@ public class AI implements GameClient {
     @Override
     public Decision getDecision() {
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
+
         if (holeCards.get(0).suit == holeCards.get(1).suit) {
-            handQuality *= 1.5;
+            handQuality *= 1.2;
         }
 
-        if (Math.random() * (handQuality / 14.0) > 1) {
+        int rankDistance = Math.abs(holeCards.get(0).rank - holeCards.get(1).rank);
+        switch (rankDistance) {
+            case 0: handQuality *= 1.5; break;
+            case 1: handQuality *= 1.4; break;
+            case 2: handQuality *= 1.2; break;
+            case 3: handQuality *= 1.1; break;
+            default: ;
+        }
+
+        // Random modifier between 0.5 and 1.5
+        double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
+        if (randomModifier * (handQuality / 14.0) > 1) {
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
                     return new Decision(Decision.Move.RAISE, minimumRaise);
@@ -71,6 +89,7 @@ public class AI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
+        assert stackSizes.size() > 2 && amountOfPlayers >= 2;
         this.stackSize = stackSizes.get(this.playerId);
     }
 
@@ -99,8 +118,28 @@ public class AI implements GameClient {
     }
 
     @Override
-    public void setPositions(Map<Integer, Integer> setPositions) {
-
+    public void setPositions(Map<Integer, Integer> positions) {
+        assert positions.size() > 2 && amountOfPlayers >= 2;
+        position = positions.get(playerId);
+        if (positions.size() == 2) {
+            if (position == 1) {
+                minimumBetThisBettingRound = 0; // Is big blind
+            }
+            else {
+                minimumBetThisBettingRound = smallBlindAmount; // Is small blind
+            }
+        }
+        else {
+            if (position == 1) {
+                minimumBetThisBettingRound = 0; // Is big blind
+            }
+            else if (position == 2) {
+                minimumBetThisBettingRound = bigBlindAmount - smallBlindAmount; // Is small blind
+            }
+            else {
+                minimumBetThisBettingRound = bigBlindAmount;
+            }
+        }
     }
 
     @Override
@@ -110,7 +149,7 @@ public class AI implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-
+        this.amountOfPlayers = amountOfPlayers;
     }
 
     @Override
