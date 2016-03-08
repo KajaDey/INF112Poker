@@ -38,13 +38,10 @@ public class SceneBuilder {
 
         Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout, 1920, 1080), 1280, 720);
 
-        window.setScene(scene);
-        window.show();
-
+        //window.setScene(scene);
+        //window.show();
 
         return scene;
     }
-
-
 
 }
