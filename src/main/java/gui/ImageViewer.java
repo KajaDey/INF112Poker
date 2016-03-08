@@ -41,7 +41,7 @@ public class ImageViewer {
         String card1Out = returnURLPathForCardSprites(card1);
         String card2Out = returnURLPathForCardSprites(card2);
 
-        return LayoutGenerators.makeSceneForOpponentCards(card1Out, card2Out);
+        return GameScreen.makeSceneForOpponentCards(card1Out, card2Out);
     }
 
     /**

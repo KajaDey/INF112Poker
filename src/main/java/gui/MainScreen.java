@@ -54,7 +54,7 @@ public class MainScreen {
         playersIn.setPadding(standardPadding);
         playersIn.setMaxWidth(2*standardButton);
 
-        Button enter = LayoutGenerators.makeStandardButton("Enter");
+        Button enter = ObjectStandards.makeStandardButton("Enter");
         enter.setMinWidth(2*standardButton);
 
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
@@ -80,7 +80,7 @@ public class MainScreen {
         });
 
         String infoText = "Heads Up Poker!";
-        Label label = LayoutGenerators.makeStandardLabel(infoText, "");
+        Label label = ObjectStandards.makeStandardLabel(infoText, "");
         label.setTextFill(Color.web("#ffffff"));
 
         verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, playersIn, enter);
