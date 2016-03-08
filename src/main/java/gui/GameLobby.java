@@ -1,5 +1,6 @@
 package main.java.gui;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -41,13 +42,8 @@ public class GameLobby {
         Label bigBlind = ObjectStandards.makeStandardLabel("Big blind: ", "50" + "$");
         Label smallBlind = ObjectStandards.makeStandardLabel("Small blind: ", "25" + "$");
         Label levelDuration = ObjectStandards.makeStandardLabel("Level duration: ", "10" + "min");
+        Label joinedPlayers = ObjectStandards.makeStandardLabel("Players:\n - Jostein\n - André", "");
 
-        //Add image
-        Image table = new Image(ImageViewer.returnURLPathForImages("PokerTable"));
-        ImageView imageView = new ImageView();
-        imageView.setImage(table);
-        imageView.setPreserveRatio(true);
-        imageView.setFitHeight(250);
 
         //ActionListeners
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener());
@@ -62,21 +58,24 @@ public class GameLobby {
                 });
 
         //Put objects in boxes
-        playerImage.setCenter(imageView);
         gameRules.getChildren().addAll(settings, amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
-        gameRules.setAlignment(Pos.TOP_LEFT);
-        layoutNoStartButton.getChildren().addAll(playerImage, gameRules);
-        layoutNoStartButton.setAlignment(Pos.TOP_CENTER);
+        gameRules.setAlignment(Pos.CENTER_LEFT);
+        layoutNoStartButton.getChildren().addAll(joinedPlayers, gameRules);
+        layoutNoStartButton.setAlignment(Pos.CENTER);
 
         startLeave.getChildren().addAll(startGame, leaveLobby);
-        startLeave.setAlignment(Pos.TOP_CENTER);
+        startLeave.setAlignment(Pos.CENTER);
 
         fullLayout.getChildren().addAll(layoutNoStartButton,startLeave);
 
         //set scene
-            Scene scene = new Scene(fullLayout,900,400);
 
-            SceneBuilder.showCurrentScene(scene);
+        BorderPane gameScreenLayout = new BorderPane();
+        gameScreenLayout.setPadding(new Insets(10,10,10,10));
+        gameScreenLayout.setCenter(fullLayout);
+
+        Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
+        SceneBuilder.showCurrentScene(scene);
     }
 
     public static HBox createScreenForSettings(Stage window){
