@@ -10,15 +10,14 @@ import javafx.stage.Stage;
  */
 public class SceneBuilder {
 
+    static Stage window = new Stage();
+
     public static void showCurrentScene(Scene scene){
 
-        Stage window = new Stage();
-
-        //Scene scene1 = createSceneForInitialScreen("PokerTable");
-
+        window.close();
+        window = new Stage();
         window.setScene(scene);
         window.show();
-
 
     }
 
