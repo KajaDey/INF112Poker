@@ -48,7 +48,7 @@ public class ObjectStandards {
     public static Label makeStandardLabel(String name, String value){
         Label label = new Label(name + " " + value);
         Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(5,5,5,5);
+        Insets standardPadding = new Insets(2,2,2,2);
 
         label.setFont(standardFont);
         label.setPadding(standardPadding);

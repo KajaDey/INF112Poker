@@ -120,13 +120,27 @@ public class GameScreen {
             ImageView card1 = ImageViewer.setCardImage("player","Diamonds 10");
             ImageView card2 = ImageViewer.setCardImage("player","Diamonds 11");
             ImageView card3 = ImageViewer.setCardImage("player","Diamonds 12");
-            ImageView card4 = ImageViewer.setCardImage("player","Diamonds 13");
-            ImageView card5 = ImageViewer.setCardImage("player","Diamonds 1");
+            ImageView card4 = ImageViewer.setCardImage("player", "Diamonds 13");
+            ImageView card5 = ImageViewer.setCardImage("player", "Diamonds 1");
 
             HBox horizontalLayout = new HBox();
             VBox verticalLayout = new VBox();
 
+            Label currentBB = ObjectStandards.makeStandardLabel("Current BB:","50" + "$");
+            Label currentSB = ObjectStandards.makeStandardLabel("Current SM:","25" + "$");
+            Label nextBB = ObjectStandards.makeStandardLabel("Next BB: ","100" + "$");
+            Label nextSB = ObjectStandards.makeStandardLabel("Next SB: ","50" + "$");
+            Label pot = ObjectStandards.makeStandardLabel("Pot: ", "10000000" + "$");
+
+            currentBB.setTextFill(Color.web("#ffffff"));
+            currentSB.setTextFill(Color.web("#ffffff"));
+            nextBB.setTextFill(Color.web("#ffffff"));
+            nextSB.setTextFill(Color.web("#ffffff"));
+            pot.setTextFill(Color.web("#ffffff"));
+
+            verticalLayout.getChildren().addAll(currentBB, currentSB, nextBB, nextSB, pot);
             verticalLayout.setSpacing(10);
+            verticalLayout.setAlignment(Pos.CENTER);
             horizontalLayout.getChildren().addAll(card1, card2, card3, card4, card5, verticalLayout);
             horizontalLayout.setSpacing(10);
             horizontalLayout.setAlignment(Pos.CENTER);
@@ -154,7 +168,7 @@ public class GameScreen {
             VBox fullBox = new VBox();
 
             verticalLayout.getChildren().addAll(name, chips, position);
-            verticalLayout.setSpacing(10);
+            verticalLayout.setSpacing(5);
             verticalLayout.setAlignment(Pos.CENTER);
             horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
             horizontalLayout.setSpacing(10);
@@ -168,7 +182,7 @@ public class GameScreen {
 
         public static Scene makeSceneForOpponentCards(String card1, String card2){
             BorderPane completeLayout = new BorderPane();
-            completeLayout.setPadding(new Insets(10,10,10,10));
+            completeLayout.setPadding(new Insets(10, 10, 10, 10));
 
             //Construct a new scene
             completeLayout.setBottom(makePlayerLayout());
