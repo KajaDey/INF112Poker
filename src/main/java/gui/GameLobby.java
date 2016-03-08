@@ -74,10 +74,9 @@ public class GameLobby {
         fullLayout.getChildren().addAll(layoutNoStartButton,startLeave);
 
         //set scene
-        Scene scene = new Scene(fullLayout,900,400);
-        window.setScene(scene);
-        window.show();
+            Scene scene = new Scene(fullLayout,900,400);
 
+            SceneBuilder.showCurrentScene(scene);
     }
 
     public static HBox createScreenForSettings(Stage window){
