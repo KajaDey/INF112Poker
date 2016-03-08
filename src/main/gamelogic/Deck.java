@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Deck {
 
-    private final List<Card> cards;
+    private final ArrayList<Card> cards;
 
     /**
      * Creates a new, shuffled deck
@@ -25,5 +25,18 @@ public class Deck {
         if (cards.size() == 0) return Optional.empty();
 
         return Optional.of(cards.remove(cards.size() - 1));
+    }
+
+    @Override
+    public String toString() {
+        ArrayList<Card> sortedCards = (ArrayList<Card>)cards.clone();
+        sortedCards.sort(Card::compareTo);
+
+        StringJoiner joiner = new StringJoiner("[", ", ", " ]");
+        // StringBuffer buffer = new StringBuffer();
+        for (Card card : sortedCards) {
+            joiner.add(card.toString());
+        }
+        return joiner.toString();
     }
 }

@@ -52,6 +52,11 @@ public class Card implements Comparable<Card> {
     }
 
     @Override
+    public String toString() {
+        return suit.toString() + rank;
+    }
+
+    @Override
     /**
      * Compares two cards solely based on their rank, with Ace as 14,
      * Two cards of the same rank are equal, i.e., ace of spades compared to ace of hearts returns 0
@@ -62,7 +67,18 @@ public class Card implements Comparable<Card> {
 
 
     public static enum Suit {
-        SPADES, HEARTS, DIAMONDS, CLUBS
+        SPADES, HEARTS, DIAMONDS, CLUBS;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case SPADES: return "\u2660";
+                case HEARTS: return "\u2665";
+                case DIAMONDS: return "\u2666";
+                case CLUBS: return "\u2663";
+                default: throw new IllegalStateException();
+            }
+        }
     }
 }
 
