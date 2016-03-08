@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
-An interface which represents any poker game client, 
+An interface which represents any poker game client,
  which receives information throughout the game, and returns its decisions
  */
 public interface GameClient {
