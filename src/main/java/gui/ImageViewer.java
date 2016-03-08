@@ -47,8 +47,10 @@ public class ImageViewer {
     /**
      * Show community cards
      */
-    public void showCommunityCard(){
+    public void showCommunityCard(int cardPlacement, String cardName){
         //TODO: Make it possible for the community cards to be shown
+        ImageView card = ImageViewer.setCardImage("player", cardName);
+
     }
 
 
