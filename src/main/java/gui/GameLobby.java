@@ -30,17 +30,17 @@ public class GameLobby {
         VBox fullLayout = new VBox();
 
         //Objects
-        Button settings = LayoutGenerators.makeStandardButton("Settings");
-        Button startGame = LayoutGenerators.makeStandardButton("Start game");
+        Button settings = ObjectStandards.makeStandardButton("Settings");
+        Button startGame = ObjectStandards.makeStandardButton("Start game");
         startGame.setFont(new Font("Areal", 30));
-        Button leaveLobby = LayoutGenerators.makeStandardButton("Leave lobby");
+        Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = LayoutGenerators.makeStandardLabel("Chips: ", "1000" + "$");
-        Label numberOfPlayers = LayoutGenerators.makeStandardLabel("Number of players: ","5");
-        Label bigBlind = LayoutGenerators.makeStandardLabel("Big blind: ","50" + "$");
-        Label smallBlind = LayoutGenerators.makeStandardLabel("Small blind: ","25" + "$");
-        Label levelDuration = LayoutGenerators.makeStandardLabel("Level duration: ","10" + "min");
+        Label amountOfChips = ObjectStandards.makeStandardLabel("Chips: ", "1000" + "$");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabel("Number of players: ", "5");
+        Label bigBlind = ObjectStandards.makeStandardLabel("Big blind: ", "50" + "$");
+        Label smallBlind = ObjectStandards.makeStandardLabel("Small blind: ", "25" + "$");
+        Label levelDuration = ObjectStandards.makeStandardLabel("Level duration: ", "10" + "min");
 
         //Add image
         Image table = new Image(ImageViewer.returnURLPathForImages("PokerTable"));
@@ -86,20 +86,20 @@ public class GameLobby {
         VBox labelBox = new VBox();
         VBox textFieldBox = new VBox();
 
-        Label amountOfChips = LayoutGenerators.makeStandardLabel("Chips:", "");
-        Label numberOfPlayers = LayoutGenerators.makeStandardLabel("Number of players:","");
-        Label bigBlind = LayoutGenerators.makeStandardLabel("Big blind:","");
-        Label smallBlind = LayoutGenerators.makeStandardLabel("Small blind:","");
-        Label levelDuration = LayoutGenerators.makeStandardLabel("Level duration:","");
+        Label amountOfChips = ObjectStandards.makeStandardLabel("Chips:", "");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabel("Number of players:", "");
+        Label bigBlind = ObjectStandards.makeStandardLabel("Big blind:", "");
+        Label smallBlind = ObjectStandards.makeStandardLabel("Small blind:", "");
+        Label levelDuration = ObjectStandards.makeStandardLabel("Level duration:", "");
 
-        TextField amountOfChipsTF = LayoutGenerators.makeStandardTextField();
-        TextField numberOfPlayersTF = LayoutGenerators.makeStandardTextField();
-        TextField bigBlindTF = LayoutGenerators.makeStandardTextField();
-        TextField smallBlindTF = LayoutGenerators.makeStandardTextField();
-        TextField levelDurationTF = LayoutGenerators.makeStandardTextField();
+        TextField amountOfChipsTF = ObjectStandards.makeStandardTextField();
+        TextField numberOfPlayersTF = ObjectStandards.makeStandardTextField();
+        TextField bigBlindTF = ObjectStandards.makeStandardTextField();
+        TextField smallBlindTF = ObjectStandards.makeStandardTextField();
+        TextField levelDurationTF = ObjectStandards.makeStandardTextField();
 
-        Button accept = LayoutGenerators.makeStandardButton("Accept");
-        Button cancel = LayoutGenerators.makeStandardButton("Cancel");
+        Button accept = ObjectStandards.makeStandardButton("Accept");
+        Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener());
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
