@@ -58,9 +58,12 @@ public class ImageViewer {
      * @param borderPane The new pane. Contains the background
      * @return The new BorderPane
      */
-    public static BorderPane setBackground(String imageIn, BorderPane borderPane){
+    public static BorderPane setBackground(String imageIn, BorderPane borderPane, int sizeX, int sizeY){
         Image image = new Image(returnURLPathForImages(imageIn));
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, null, null);
+
+        BackgroundSize backgroundSize = new BackgroundSize(sizeX,sizeY, false, false, true, true);
+
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         Background background = new Background(backgroundImage);
         borderPane.setBackground(background);
 
