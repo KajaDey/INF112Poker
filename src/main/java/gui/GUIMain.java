@@ -17,7 +17,6 @@ public class GUIMain extends Application{
     }
 
     public void start(Stage window) throws Exception{
-        MainScreen.createSceneForMainScreen("PokerTable");
-
+        SceneBuilder.createSceneForInitialScreen("PokerTable");
     }
 }

@@ -16,23 +16,6 @@ import javafx.stage.Stage;
  */
 public class MainScreen {
 
-    public static Scene createSceneForMainScreen(String imageName){
-        Stage window = new Stage();
-        window.setTitle("Welcome to The Game!");
-
-        BorderPane mainScreenLayout = new BorderPane();
-        mainScreenLayout.setPadding(new Insets(10,10,10,10));
-        mainScreenLayout.setCenter(makeLayout(window));
-
-        Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout, 1920, 1080), 1280, 720);
-
-        window.setScene(scene);
-        window.show();
-
-
-        return scene;
-    }
-
     public static HBox makeLayout(Stage window){
 
         Font standardFont = new Font("Areal",15);
