@@ -22,12 +22,23 @@ public class Hand {
     }
 
     public List<Card> getHoleCards() {
-        return holeCards;
+        List<Card> holeC = new ArrayList<Card>();
+        holeC.addAll(holeCards);
+
+        return holeC;
     }
 
     public List<Card> getCommunityCards() {
-        return communityCards;
+        List<Card> communityC = new ArrayList<Card>();
+        communityC.addAll(communityCards);
+
+        return communityC;
     }
 
-    public List<Card> getAllCards() { return allCards; }
+    public List<Card> getAllCards() {
+        List<Card> allC = new ArrayList<Card>();
+        allC.addAll(allCards);
+
+        return allC;
+    }
 }
