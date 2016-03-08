@@ -112,11 +112,11 @@ public class GameScreen {
          */
         public static HBox makeBoardLayout(){
 
-            ImageView card1 = ImageViewer.setCardImage("player","Diamonds 10");
-            ImageView card2 = ImageViewer.setCardImage("player","Diamonds 11");
-            ImageView card3 = ImageViewer.setCardImage("player","Diamonds 12");
-            ImageView card4 = ImageViewer.setCardImage("player", "Diamonds 13");
-            ImageView card5 = ImageViewer.setCardImage("player", "Diamonds 1");
+            ImageView card1 = ImageViewer.setCardImage("player","_Back");
+            ImageView card2 = ImageViewer.setCardImage("player","_Back");
+            ImageView card3 = ImageViewer.setCardImage("player","_Back");
+            ImageView card4 = ImageViewer.setCardImage("player","_Back");
+            ImageView card5 = ImageViewer.setCardImage("player","_Back");
 
             HBox horizontalLayout = new HBox();
             VBox verticalLayout = new VBox();
@@ -146,11 +146,6 @@ public class GameScreen {
             Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", "1000");
             Label position = ObjectStandards.makeStandardLabelWhite("Position:", "SB");
             Label status = ObjectStandards.makeStandardLabelWhite("Bet","100");
-
-            name.setTextFill(Color.web("#ffffff"));
-            chips.setTextFill(Color.web("#ffffff"));
-            position.setTextFill(Color.web("#ffffff"));
-            status.setTextFill(Color.web("#ffffff"));
 
             HBox horizontalLayout = new HBox();
             VBox verticalLayout = new VBox();

@@ -71,7 +71,7 @@ public class ButtonListeners {
     }
 
     public static void startGameButtonListener() {
-        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout("Clubs 1", "Clubs 2"), GameScreen.makePlayerLayout(), GameScreen.makeBoardLayout());
+        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout("_Back", "_Back"), GameScreen.makePlayerLayout(), GameScreen.makeBoardLayout());
 
     }
 
