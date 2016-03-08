@@ -86,7 +86,7 @@ public class ButtonListeners {
     public static void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox){
         if (!name.isEmpty() && !numOfPlayers.isEmpty() && choiceBox.getValue().equals("Single Player"))
             GameLobby.createScreenForGameLobby();
-        else MainScreen.createSceneForMainScreen("kai-pus");
+        else MainScreen.createSceneForMainScreen("PokerTable");
     }
 
 }
