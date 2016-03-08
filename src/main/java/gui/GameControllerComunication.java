@@ -52,7 +52,7 @@ public class GameControllerComunication implements GameClient {
     }
 
     @Override
-    public void setPositions(Map<Integer, String> setPositions) {
+    public void setPositions(Map<Integer, Integer> setPositions) {
 
     }
 

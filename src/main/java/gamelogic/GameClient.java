@@ -53,10 +53,11 @@ public interface GameClient {
     void setSmallBlind(int smallBlind);
 
     /**
-     * Sends every players positions
+     * Sends every player's position, as a map indexed by the players' IDs.
+     * A value of 0 corresponds to the dealer, 1 is big blind, etc
      */
 
-    void setPositions(Map<Integer, String> setPositions);
+    void setPositions(Map<Integer, Integer> setPositions);
 
     /**
      * Sends amount of start-chips
