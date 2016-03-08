@@ -70,4 +70,9 @@ public class GameControllerComunication implements GameClient {
     public void setLevelDuration(int levelDuration) {
 
     }
+
+    @Override
+    public void setLastMove(String lastMove) {
+
+    }
 }
