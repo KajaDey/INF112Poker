@@ -155,7 +155,7 @@ public class AI implements GameClient {
     }
 
     @Override
-    public void setLastMove(String lastMove) {
+    public void setLastMove(Map<Integer,Decision> lastMove) {
 
     }
 }
