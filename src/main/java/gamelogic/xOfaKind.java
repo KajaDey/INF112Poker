@@ -10,34 +10,44 @@ import java.util.List;
  * NOT FINISHED!
  */
 public class xOfaKind implements IRule {
-    private boolean FourOfaKind;
-    private boolean ThreeOfaKind;
-    private boolean TwoOfaKind;
+    private boolean fourOfaKind;
+    private boolean threeOfaKind;
+    private boolean twoOfaKind;
     private List<Card> hand = new ArrayList<Card>();
 
-    //check 4,3,2
 
     @Override
     public boolean match(Hand hand) {
         List<Card> allCards = hand.getAllCards();
-        //TODO: Sorting should place cards in descending order.
         allCards.sort(Card::compareTo);
 
         int nrOfEqualCards =0;
-        for (int i = 0; i < allCards.size() - 1; i++) {
+        for (int i = allCards.size(); i >0; i--) {
             if(allCards.get(i).rank == allCards.get(i+1).rank){
                 nrOfEqualCards++;
             }
         }
         if(nrOfEqualCards==4){
-            FourOfaKind=true;
+            fourOfaKind =true;
         }
         else if(nrOfEqualCards==3){
-            ThreeOfaKind=true;
+            threeOfaKind=true;
         }
-
+        else if(nrOfEqualCards==2){
+            twoOfaKind=true;
+        }
         // TODO: putt hånda inn i hand
-        return false;
+        return (fourOfaKind || threeOfaKind ||  twoOfaKind);
+    }
+    public int howManyOfaKind(){
+        if(fourOfaKind)
+            return 4;
+        else if(threeOfaKind)
+            return 3;
+        else if(twoOfaKind)
+            return 2;
+        else
+            return -1;
     }
 
     @Override
