@@ -1,5 +1,6 @@
 package main.java.gamelogic;
 
+import main.java.gamelogic.ai.AI;
 import main.java.gui.*;
 
 import java.util.HashMap;
