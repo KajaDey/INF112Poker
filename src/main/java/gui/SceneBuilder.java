@@ -24,7 +24,10 @@ public class SceneBuilder {
 
     public static void updateGameScreen(GUIClient client){
 
-
+        BorderPane borderPane = new BorderPane();
+        borderPane.setCenter(GameScreen.makeBoardLayout(client));
+        borderPane.setBottom(GameScreen.makePlayerLayout(client));
+        borderPane.setTop(GameScreen.makeOpponentLayout(client));
 
     }
 

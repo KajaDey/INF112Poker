@@ -34,11 +34,11 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", "1000" + "$");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", "5");
-        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", "50" + "$");
-        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", "25" + "$");
-        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", "10" + "min");
+        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", client.getStartChips() + "$");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", client.getAmountOfPlayers()+"");
+        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", client.getBigBlind() + "$");
+        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", client.getSmallBlind() + "$");
+        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", client.getLevelDuration() + "min");
         Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n - Jostein\n - André", "");
 
 

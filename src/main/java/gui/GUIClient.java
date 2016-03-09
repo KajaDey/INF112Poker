@@ -1,7 +1,4 @@
 package main.java.gui;
-
-import com.apple.laf.ScreenMenuBar;
-import javafx.stage.Screen;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
@@ -32,14 +29,12 @@ public class GUIClient extends ButtonListeners implements GameClient {
     private Map<Integer, Decision> lastMove;
     private int pot;
 
-
     public GUIClient(int id) {
         this.id = id;
     }
 
     public void setName(Map<Integer, String> name) {
         this.name = name;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
@@ -56,13 +51,11 @@ public class GUIClient extends ButtonListeners implements GameClient {
     public void setHoleCards(Card card1, Card card2) {
         this.card1 = card1;
         this.card2 = card2;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
@@ -78,48 +71,40 @@ public class GUIClient extends ButtonListeners implements GameClient {
     @Override
     public void setBigBlind(int bigBlind) {
         this.bigBlind = bigBlind;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setSmallBlind(int smallBlind) {
         this.smallBlind = smallBlind;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
         this.position = positions;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setStartChips(long startChips) {
         this.startChips = smallBlind;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
         this.amountOfPlayers = amountOfPlayers;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setLevelDuration(int levelDuration) {
         this.levelDuration = levelDuration;
-        SceneBuilder.updateGameScreen(this);
     }
 
     @Override
     public void setLastMove(Map<Integer,Decision> lastMove) {
         this.lastMove = lastMove;
-        SceneBuilder.updateGameScreen(this);
     }
 
     public void setPot(int pot){
         this.pot = pot;
-        SceneBuilder.updateGameScreen(this);
     }
 
     public Map<Integer, String> getName() {

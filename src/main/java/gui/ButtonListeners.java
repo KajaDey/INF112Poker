@@ -71,7 +71,7 @@ public class ButtonListeners {
     }
 
     public void startGameButtonListener(GUIClient client) {
-        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout("_Back", "_Back",client), GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client),client);
+        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client), GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client),client);
 
     }
 

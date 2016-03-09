@@ -59,6 +59,7 @@ public class GameScreen {
             Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", client.getStackSizes().get(client.getId())+"");
             Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", client.getPosition().get(client.getId())+"");
             Label lastMove = ObjectStandards.makeStandardLabelWhite("Fold", "");
+            Label name = ObjectStandards.makeStandardLabelWhite("Name: ",client.getName().get(client.getId()));
 
             ImageView imageView1 = ImageViewer.setCardImage("player",client.getCard1().getCardNameForGui());
             ImageView imageView2 = ImageViewer.setCardImage("player",client.getCard2().getCardNameForGui());
@@ -88,7 +89,7 @@ public class GameScreen {
 
             //Add objects to the boxes
 
-            stats.getChildren().addAll(amountOfChipsText, positionsText);
+            stats.getChildren().addAll(name,amountOfChipsText, positionsText);
             stats.setAlignment(Pos.CENTER);
             twoButtonsUnderInput.getChildren().addAll(check, fold);
             inputAndButtons.getChildren().addAll(betAmount, twoButtonsUnderInput);
@@ -136,10 +137,10 @@ public class GameScreen {
             return horizontalLayout;
         }
 
-        public static VBox makeOpponentLayout(String card1, String card2, GUIClient client){
+        public static VBox makeOpponentLayout(GUIClient client){
 
-            ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", card1);
-            ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", card2);
+            ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", client.getCard1().getCardNameForGui());
+            ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", client.getCard2().getCardNameForGui());
 
             Label name = ObjectStandards.makeStandardLabelWhite("Name:", client.getName().get(1));
             Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", client.getStackSizes().get(1)+"");
@@ -163,18 +164,18 @@ public class GameScreen {
 
         }
 
-        public static Scene makeSceneForOpponentCards(String card1, String card2,GUIClient client){
+        /*public static Scene makeSceneForOpponentCards(GUIClient client){
             BorderPane completeLayout = new BorderPane();
             completeLayout.setPadding(new Insets(10, 10, 10, 10));
 
             //Construct a new scene
             completeLayout.setBottom(makePlayerLayout(client));
-            completeLayout.setTop(makeOpponentLayout(card1, card2,client));
+            completeLayout.setTop(makeOpponentLayout(client));
 
             Scene scene = new Scene(completeLayout,1000,1000);
 
 
             return scene;
-        }
+        }*/
 
 }
