@@ -47,6 +47,9 @@ public class GUIMain extends Application{
         kake.setHoleCards(card1, card2);
         kake.setPositions(map2);
         kake.setName(map3);
+        kake.setAmountOfPlayers(2);
+        kake.setLevelDuration(10);
+        kake.setStartChips(10000);
 
 
     }
