@@ -1,4 +1,4 @@
-package tests.java.gui.gamelogic;
+package tests.java.gamelogic;
 
 import main.java.gamelogic.Card;
 import org.junit.Test;
