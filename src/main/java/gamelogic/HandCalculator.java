@@ -7,7 +7,7 @@ import java.util.List;
  * Created by kaja on 08.03.2016.
  *
  *
- * add classes for highcard, xofakind (par, tress, firs), 2par, straight, flush, hus
+ * check hand for highcard, xofakind (par, tress, firs), 2par, straight, flush, house
  *
  */
 public class HandCalculator {
