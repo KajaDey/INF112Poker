@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public class ButtonListeners {
 
+    GameSettings gameSettings;
+
     /**
      * What happens when the betButton is pushed
      */
@@ -71,11 +73,17 @@ public class ButtonListeners {
     public void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
                                              String smallBlindText, String levelDurationText, GUIClient client, Stage window) {
         try {
-            client.setStartChips(Long.valueOf(amountOfChips));
+            /*client.setStartChips(Long.valueOf(amountOfChips));
             client.setAmountOfPlayers(Integer.valueOf(numberOfPlayersText));
             client.setBigBlind(Integer.valueOf(bigBlindText));
             client.setSmallBlind(Integer.valueOf(smallBlindText));
-            client.setLevelDuration(Integer.valueOf(levelDurationText));
+            client.setLevelDuration(Integer.valueOf(levelDurationText));*/
+
+            gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(numberOfPlayersText),
+                    Integer.valueOf(bigBlindText),(Integer.valueOf(smallBlindText)),Integer.valueOf(levelDurationText));
+
+
+
             SceneBuilder.updateLobbyScreen(client);
             window.close();
 
@@ -91,7 +99,7 @@ public class ButtonListeners {
 
     public void startGameButtonListener(GUIClient client) {
 
-        Map<Integer, Long> map = new HashMap<>();
+        /*Map<Integer, Long> map = new HashMap<>();
 
         for (int i = 0; i < client.getAmountOfPlayers(); i++)
             map.put(i, client.getStartChips());
@@ -99,9 +107,11 @@ public class ButtonListeners {
         client.setStackSizes(map);
 
         GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client),
-                GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client),client);
+                GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client), client);*/
 
         //GameController.StartTournamentButtonClicked(client);
+
+        GameController.StartTournamentButtonClicked(gameSettings);
     }
 
     public void leaveLobbyButtonListener(GUIClient client) {
