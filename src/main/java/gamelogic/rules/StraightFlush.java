@@ -1,4 +1,4 @@
-package main.java.gamelogic.Rules;
+package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 

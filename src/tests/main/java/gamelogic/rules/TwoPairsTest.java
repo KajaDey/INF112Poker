@@ -1,4 +1,4 @@
-package tests.java.hands;
+package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Deck;
