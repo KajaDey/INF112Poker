@@ -13,79 +13,79 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(){
+    public void betButtonListener(){
         //TODO: Implement method
     }
 
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(){
+    public void checkButtonListener(){
         //TODO: Implement method
     }
 
     /**
      * What happens when the doubleButton is pushed
      */
-    public static void doubleButtonListener(){
+    public void doubleButtonListener(){
         //TODO: Implement method
     }
 
     /**
      * What happens when the foldButton is pushed
      */
-    public static void foldButtonListener(){
+    public void foldButtonListener(){
         //TODO: Implement method
     }
 
     /**
      * What happens when the maxButton is pushed
      */
-    public static void maxButtonListener(){
+    public void maxButtonListener(){
         //TODO: Implement method
     }
 
     /**
      * What happens when the potButton is pushed
      */
-    public static void potButtonListener(){
+    public void potButtonListener(){
         //TODO: Implement method
     }
 
-    public static void settingsButtonListener() {
+    public void settingsButtonListener(GUIClient client) {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,client),260,200);
         settings.setScene(scene);
         settings.show();
     }
 
-    public static void acceptSettingsButtonListener() {
+    public void acceptSettingsButtonListener() {
         //TODO: Implement method
 
     }
 
-    public static void cancelSettingsButtonListener(Stage window) {
+    public void cancelSettingsButtonListener(Stage window) {
         window.close();
     }
 
-    public static void startGameButtonListener() {
-        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout("_Back", "_Back"), GameScreen.makePlayerLayout(), GameScreen.makeBoardLayout());
+    public void startGameButtonListener(GUIClient client) {
+        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout("_Back", "_Back",client), GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client),client);
 
     }
 
-    public static void leaveLobbyButtonListener() {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"), "Main Screen");
+    public void leaveLobbyButtonListener(GUIClient client) {
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",client), "Main Screen");
     }
 
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox){
+    public void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox, GUIClient client){
         if (!name.isEmpty() && !numOfPlayers.isEmpty() && choiceBox.getValue().equals("Single Player"))
-            GameLobby.createScreenForGameLobby();
-        else SceneBuilder.createSceneForInitialScreen("PokerTable");
+            GameLobby.createScreenForGameLobby(client);
+        else SceneBuilder.createSceneForInitialScreen("PokerTable",client);
     }
 
 }

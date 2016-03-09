@@ -22,20 +22,20 @@ public class SceneBuilder {
 
     }
 
-    public static void makeNewScene(){
+    public static void updateGameScreen(GUIClient client){
 
 
 
     }
 
 
-    public static Scene createSceneForInitialScreen(String imageName){
+    public static Scene createSceneForInitialScreen(String imageName,GUIClient client){
         Stage window = new Stage();
         window.setTitle("Welcome to The Game!");
 
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
-        mainScreenLayout.setCenter(MainScreen.makeLayout(window));
+        mainScreenLayout.setCenter(MainScreen.makeLayout(window,client));
 
         Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout, 1920, 1080), 1280, 720);
 

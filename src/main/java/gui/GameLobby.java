@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(){
+    public static void createScreenForGameLobby(GUIClient client){
 
         Stage window = new Stage();
 
@@ -43,15 +43,15 @@ public class GameLobby {
 
 
         //ActionListeners
-        settings.setOnAction(e -> ButtonListeners.settingsButtonListener());
+        settings.setOnAction(e -> client.settingsButtonListener(client));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener();
+            client.startGameButtonListener(client);
         });
 
         leaveLobby.setOnAction(e -> {
             window.close();
-            ButtonListeners.leaveLobbyButtonListener();
+            client.leaveLobbyButtonListener(client);
                 });
 
         //Put objects in boxes
@@ -76,7 +76,7 @@ public class GameLobby {
         SceneBuilder.showCurrentScene(scene, "GameLobby");
     }
 
-    public static HBox createScreenForSettings(Stage window){
+    public static HBox createScreenForSettings(Stage window,GUIClient client){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -97,8 +97,8 @@ public class GameLobby {
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
-        accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener());
-        cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
+        accept.setOnAction(e -> client.acceptSettingsButtonListener());
+        cancel.setOnAction(e -> client.cancelSettingsButtonListener(window));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);

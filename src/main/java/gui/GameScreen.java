@@ -18,8 +18,7 @@ import javafx.scene.text.Font;
  */
 public class GameScreen {
 
-
-    public static Scene createSceneForGameScreen(VBox opponent, VBox player, HBox board) {
+    public static Scene createSceneForGameScreen(VBox opponent, VBox player, HBox board,GUIClient client) {
 
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(opponent);
@@ -39,7 +38,7 @@ public class GameScreen {
          * @return A VBox with the player layout
          */
 
-        public static VBox makePlayerLayout(){
+        public static VBox makePlayerLayout(GUIClient client){
 
             //Setting standards i want to use
             Font standardFont = new Font("Areal",15);
@@ -57,12 +56,12 @@ public class GameScreen {
             VBox twoButtonsRight = new VBox();
 
             //////Make all the elements i want to add to the playerLayout//////////
-            Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", "900");
-            Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", "BB");
+            Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", client.getStackSizes().get(client.getId())+"");
+            Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", client.getPosition().get(client.getId())+"");
             Label lastMove = ObjectStandards.makeStandardLabelWhite("Fold", "");
 
-            ImageView imageView1 = ImageViewer.setCardImage("player","Spades 12");
-            ImageView imageView2 = ImageViewer.setCardImage("player","Clubs 5");
+            ImageView imageView1 = ImageViewer.setCardImage("player",client.getCard1().getCardNameForGui());
+            ImageView imageView2 = ImageViewer.setCardImage("player",client.getCard2().getCardNameForGui());
 
             //Amount to bet
             TextField betAmount = new TextField();
@@ -80,12 +79,12 @@ public class GameScreen {
             Button max = ObjectStandards.makeStandardButton("Max");
 
             //Actions
-            bet.setOnAction(e -> ButtonListeners.betButtonListener());
-            check.setOnAction(e -> ButtonListeners.checkButtonListener());
-            doubleB.setOnAction(e -> ButtonListeners.doubleButtonListener());
-            fold.setOnAction(e -> ButtonListeners.foldButtonListener());
-            max.setOnAction(e -> ButtonListeners.maxButtonListener());
-            pot.setOnAction(e -> ButtonListeners.potButtonListener());
+            bet.setOnAction(e -> client.betButtonListener());
+            check.setOnAction(e -> client.checkButtonListener());
+            doubleB.setOnAction(e -> client.doubleButtonListener());
+            fold.setOnAction(e -> client.foldButtonListener());
+            max.setOnAction(e -> client.maxButtonListener());
+            pot.setOnAction(e -> client.potButtonListener());
 
             //Add objects to the boxes
 
@@ -110,7 +109,7 @@ public class GameScreen {
          * Generates a boardLayout
          * @return a boardLayout
          */
-        public static HBox makeBoardLayout(){
+        public static HBox makeBoardLayout(GUIClient client){
 
             ImageView card1 = ImageViewer.setCardImage("player","_Back");
             ImageView card2 = ImageViewer.setCardImage("player","_Back");
@@ -121,11 +120,11 @@ public class GameScreen {
             HBox horizontalLayout = new HBox();
             VBox verticalLayout = new VBox();
 
-            Label currentBB = ObjectStandards.makeStandardLabelWhite("Current BB:","50" + "$");
-            Label currentSB = ObjectStandards.makeStandardLabelWhite("Current SM:","25" + "$");
-            Label nextBB = ObjectStandards.makeStandardLabelWhite("Next BB: ","100" + "$");
-            Label nextSB = ObjectStandards.makeStandardLabelWhite("Next SB: ","50" + "$");
-            Label pot = ObjectStandards.makeStandardLabelWhite("Pot: ", "10000000" + "$");
+            Label currentBB = ObjectStandards.makeStandardLabelWhite("Current BB:",client.getBigBlind() + "$");
+            Label currentSB = ObjectStandards.makeStandardLabelWhite("Current SM:",client.getSmallBlind() + "$");
+            Label nextBB = ObjectStandards.makeStandardLabelWhite("Next BB: ",client.getBigBlind()*1.5 + "$");
+            Label nextSB = ObjectStandards.makeStandardLabelWhite("Next SB: ",client.getSmallBlind()*1.5 + "$");
+            Label pot = ObjectStandards.makeStandardLabelWhite("Pot: ", client.getPot() + "$");
 
             verticalLayout.getChildren().addAll(currentBB, currentSB, nextBB, nextSB, pot);
             verticalLayout.setSpacing(10);
@@ -137,14 +136,14 @@ public class GameScreen {
             return horizontalLayout;
         }
 
-        public static VBox makeOpponentLayout(String card1, String card2){
+        public static VBox makeOpponentLayout(String card1, String card2, GUIClient client){
 
             ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", card1);
             ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", card2);
 
-            Label name = ObjectStandards.makeStandardLabelWhite("Name:", "Kake");
-            Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", "1000");
-            Label position = ObjectStandards.makeStandardLabelWhite("Position:", "SB");
+            Label name = ObjectStandards.makeStandardLabelWhite("Name:", client.getName().get(1));
+            Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", client.getStackSizes().get(1)+"");
+            Label position = ObjectStandards.makeStandardLabelWhite("Position:", client.getPosition().get(1) + "");
             Label status = ObjectStandards.makeStandardLabelWhite("Bet","100");
 
             HBox horizontalLayout = new HBox();
@@ -164,13 +163,13 @@ public class GameScreen {
 
         }
 
-        public static Scene makeSceneForOpponentCards(String card1, String card2){
+        public static Scene makeSceneForOpponentCards(String card1, String card2,GUIClient client){
             BorderPane completeLayout = new BorderPane();
             completeLayout.setPadding(new Insets(10, 10, 10, 10));
 
             //Construct a new scene
-            completeLayout.setBottom(makePlayerLayout());
-            completeLayout.setTop(makeOpponentLayout(card1, card2));
+            completeLayout.setBottom(makePlayerLayout(client));
+            completeLayout.setTop(makeOpponentLayout(card1, card2,client));
 
             Scene scene = new Scene(completeLayout,1000,1000);
 
