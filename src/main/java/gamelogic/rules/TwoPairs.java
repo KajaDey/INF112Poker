@@ -22,7 +22,6 @@ public class TwoPairs implements IRule {
         List<Card> cards = hand.getAllCards();
         cards.sort(Card::compareTo);
 
-        // TODO: relies on sorting in ascending order
         for (int i = cards.size() - 1; i > 0; i--) {
 
             if (cards.get(i).rank == cards.get(i - 1).rank) {

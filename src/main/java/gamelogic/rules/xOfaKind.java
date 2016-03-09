@@ -23,7 +23,6 @@ public class xOfaKind implements IRule {
 
 
 
-
     @Override
     public boolean match(Hand hand) {
         allCards = hand.getAllCards();
