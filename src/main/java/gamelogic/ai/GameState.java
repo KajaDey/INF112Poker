@@ -2,6 +2,7 @@ package main.java.gamelogic.ai;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
+import main.java.gamelogic.Deck;
 
 import java.lang.reflect.Array;
 import java.security.cert.PKIXRevocationChecker;
@@ -12,9 +13,11 @@ import java.util.Optional;
  * Created by morten on 09.03.16.
  */
 public class GameState {
-    private Player currentPlayer;
     private final int amountOfPlayers;
     private ArrayList<Player> players;
+
+    private Player currentPlayer;
+    private Deck deck;
 
     private int bigBlindAmount;
     private int smallBlindAmount;
@@ -31,7 +34,8 @@ public class GameState {
         for (int i = 0; i < amountOfPlayers; i++) {
             players.add(new Player(i, positions.get(i), stackSizes.get(i)));
         }
-        currentPlayer = players.get(0); 
+        currentPlayer = players.get(0);
+        deck = new Deck();
     }
 
     /**
@@ -43,6 +47,31 @@ public class GameState {
         decisions.add(new Decision(Decision.Move.FOLD));
 
         return decisions;
+    }
+
+    private void giveRandomHoleCard() {
+        Deck shuffledDeck = new Deck(deck);
+        shuffledDeck.shuffle();
+        Card card = shuffledDeck.draw().get();
+
+        assert !currentPlayer.holeCards.get(1).isPresent();
+        if (currentPlayer.holeCards.get(0).isPresent()) {
+            currentPlayer.holeCards.set(1, Optional.of(card));
+        }
+        else {
+            currentPlayer.holeCards.set(0, Optional.of(card));
+        }
+    }
+
+    private void ungiveHoleCard() {
+        assert currentPlayer.holeCards.get(0).isPresent();
+        if (currentPlayer.holeCards.get(1).isPresent()) {
+            currentPlayer.holeCards.set(1, Optional.empty());
+        }
+        else {
+            currentPlayer.holeCards.set(0, Optional.empty());
+        }
+
     }
 
     static private class GameStateChange {
