@@ -16,7 +16,7 @@ public class Player {
     public long minimumBetThisBettingRound; // The amount the player needs to put on the table to remain in the hand
 
     public Player(int id, int initialPosition, long initialStackSize) {
-        holeCards = new ArrayList<>();
+        holeCards = new ArrayList<>(2);
         holeCards.add(Optional.empty());
         holeCards.add(Optional.empty());
 
