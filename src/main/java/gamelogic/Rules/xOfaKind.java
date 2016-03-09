@@ -3,7 +3,6 @@ package main.java.gamelogic.Rules;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
 import main.java.gamelogic.Rules.IRule;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,54 +10,73 @@ import java.util.Optional;
 /**
  * Created by kaja on 08.03.2016.
  *
- *
- * NOT FINISHED!
  */
 public class xOfaKind implements IRule {
     private boolean fourOfaKind;
     private boolean threeOfaKind;
     private boolean twoOfaKind;
-    private List<Card> hand = new ArrayList<Card>();
+    private int nrOfEquals=-1;
+    private List<Card> allCards = new ArrayList<Card>(7);
+    private List<Card> returnHand = new ArrayList<>(5);
+    private List<Card> tempHand = new ArrayList<>(4);
+
 
 
     @Override
     public boolean match(Hand hand) {
-        List<Card> allCards = hand.getAllCards();
+        allCards = hand.getAllCards();
         allCards.sort(Card::compareTo);
+        for (int i = allCards.size()-1; i >0; i--) { //desc
+            int mainRank = allCards.get(i).rank;
+            tempHand.add(allCards.get(i));
 
-        int nrOfEqualCards =0;
-        for (int i = allCards.size(); i >0; i--) {
-            if(allCards.get(i).rank == allCards.get(i+1).rank){
-                nrOfEqualCards++;
+            for(int j=allCards.size()-1; i>-1; i--) {
+
+                if (mainRank == allCards.get(i - 1).rank) {
+                    tempHand.add(allCards.get(j));
+                    allCards.remove(j);
+                }
             }
+            if(tempHand.size()==4){
+                fourOfaKind =true;
+                returnHand.addAll(tempHand);
+
+            }
+            else if(tempHand.size()==3){
+                returnHand.addAll(tempHand);
+                threeOfaKind=true;
+            }
+            else if(tempHand.size()==2){
+                returnHand.addAll(tempHand);
+                twoOfaKind=true;
+            }
+            tempHand.clear();
         }
-        if(nrOfEqualCards==4){
-            fourOfaKind =true;
-        }
-        else if(nrOfEqualCards==3){
-            threeOfaKind=true;
-        }
-        else if(nrOfEqualCards==2){
-            twoOfaKind=true;
-        }
-        // TODO: putt hånda inn i hand
         return (fourOfaKind || threeOfaKind ||  twoOfaKind);
     }
+
+
     public int howManyOfaKind(){
         if(fourOfaKind)
-            return 4;
+            nrOfEquals=4;
         else if(threeOfaKind)
-            return 3;
+            nrOfEquals=3;
         else if(twoOfaKind)
-            return 2;
-        else
-            return -1;
+            nrOfEquals=2;
+        return nrOfEquals;
     }
+
 
     @Override
     public Optional<List<Card>> getHand() {
-        return Optional.of(hand);
+        if (returnHand.size() > 0) {
+            return Optional.of(returnHand);
+        }
+        return Optional.empty();
     }
+
 }
+
+
 
 
