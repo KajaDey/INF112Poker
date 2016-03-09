@@ -2,7 +2,7 @@ package tests.java.hands;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
-import main.java.gamelogic.Rules.Straight;
+import main.java.gamelogic.rules.Straight;
 import org.junit.Before;
 import org.junit.Test;
 
