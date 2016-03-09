@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(){
+    public static Stage createScreenForGameLobby(GUIClient client){
 
         Stage window = new Stage();
 
@@ -34,24 +34,24 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", "1000" + "$");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", "5");
-        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", "50" + "$");
-        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", "25" + "$");
-        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", "10" + "min");
+        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", client.getStartChips() + "$");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", client.getAmountOfPlayers()+"");
+        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", client.getBigBlind() + "$");
+        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", client.getSmallBlind() + "$");
+        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", client.getLevelDuration() + "min");
         Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n - Jostein\n - André", "");
 
 
         //ActionListeners
-        settings.setOnAction(e -> ButtonListeners.settingsButtonListener());
+        settings.setOnAction(e -> client.settingsButtonListener(client));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener();
+            client.startGameButtonListener(client);
         });
 
         leaveLobby.setOnAction(e -> {
             window.close();
-            ButtonListeners.leaveLobbyButtonListener();
+            client.leaveLobbyButtonListener(client);
                 });
 
         //Put objects in boxes
@@ -74,9 +74,11 @@ public class GameLobby {
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
         SceneBuilder.showCurrentScene(scene, "GameLobby");
+
+        return window;
     }
 
-    public static HBox createScreenForSettings(Stage window){
+    public static HBox createScreenForSettings(Stage window,GUIClient client){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -94,11 +96,17 @@ public class GameLobby {
         TextField smallBlindTF = ObjectStandards.makeStandardTextField();
         TextField levelDurationTF = ObjectStandards.makeStandardTextField();
 
+
+
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
-        accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener());
-        cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
+        accept.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), client, window));
+        cancel.setOnAction(e -> client.cancelSettingsButtonListener(window));
+
+        levelDurationTF.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), client, window));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);
@@ -110,4 +118,5 @@ public class GameLobby {
 
         return fullBox;
     }
+
 }

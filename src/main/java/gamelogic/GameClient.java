@@ -81,5 +81,5 @@ public interface GameClient {
      * Sends last move
      */
 
-    void setLastMove(String lastMove);
+    void setLastMove(Map<Integer,Decision> lastMove);
 }

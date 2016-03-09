@@ -1,5 +1,4 @@
 package main.java.gui;
-
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
@@ -12,23 +11,30 @@ import java.util.Map;
  */
 
 
-public class GUIClient implements GameClient {
+public class GUIClient extends ButtonListeners implements GameClient {
 
     private Map<Integer,String> name;
+
     private Card card1;
     private Card card2;
     private Map<Integer,Long> stackSizes;
 
+    private int id;
     private int bigBlind;
     private int smallBlind;
-    private String position;
-    private int startChips;
+    private Map<Integer,Integer> position;
+    private long startChips;
     private int amountOfPlayers;
     private int levelDuration;
-    private String lastMove;
+    private Map<Integer, Decision> lastMove;
+    private int pot;
 
-    public GUIClient() {
+    public GUIClient(int id) {
+        this.id = id;
+    }
 
+    public void setName(Map<Integer, String> name) {
+        this.name = name;
     }
 
     @Override
@@ -43,12 +49,13 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setHoleCards(Card card1, Card card2) {
-
+        this.card1 = card1;
+        this.card2 = card2;
     }
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-
+        this.stackSizes = stackSizes;
     }
 
     @Override
@@ -63,37 +70,41 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setBigBlind(int bigBlind) {
-
+        this.bigBlind = bigBlind;
     }
 
     @Override
     public void setSmallBlind(int smallBlind) {
-
+        this.smallBlind = smallBlind;
     }
 
     @Override
-    public void setPositions(Map<Integer, Integer> setPositions) {
-
+    public void setPositions(Map<Integer, Integer> positions) {
+        this.position = positions;
     }
 
     @Override
     public void setStartChips(long startChips) {
-
+        this.startChips = startChips;
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-
+        this.amountOfPlayers = amountOfPlayers;
     }
 
     @Override
     public void setLevelDuration(int levelDuration) {
-
+        this.levelDuration = levelDuration;
     }
 
     @Override
-    public void setLastMove(String lastMove) {
+    public void setLastMove(Map<Integer,Decision> lastMove) {
+        this.lastMove = lastMove;
+    }
 
+    public void setPot(int pot){
+        this.pot = pot;
     }
 
     public Map<Integer, String> getName() {
@@ -108,8 +119,7 @@ public class GUIClient implements GameClient {
         return card2;
     }
 
-    public String getLastMove() {
-
+    public Map<Integer,Decision> getLastMove() {
         return lastMove;
     }
 
@@ -117,7 +127,7 @@ public class GUIClient implements GameClient {
         return levelDuration;
     }
 
-    public int getStartChips() {
+    public long getStartChips() {
         return startChips;
     }
 
@@ -133,8 +143,19 @@ public class GUIClient implements GameClient {
         return smallBlind;
     }
 
-    public String getPosition() {
+    public Map<Integer,Integer> getPosition() {
         return position;
     }
 
+    public int getPot() {
+        return pot;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Map<Integer, Long> getStackSizes() {
+        return stackSizes;
+    }
 }

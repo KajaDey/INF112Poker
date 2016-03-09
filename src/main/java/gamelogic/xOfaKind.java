@@ -1,5 +1,6 @@
 package main.java.gamelogic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,10 +9,11 @@ import java.util.List;
  *
  * NOT FINISHED!
  */
-public class XofaKind implements IRule {
+public class xOfaKind implements IRule {
     private boolean FourOfaKind;
     private boolean ThreeOfaKind;
     private boolean TwoOfaKind;
+    private List<Card> hand = new ArrayList<Card>();
 
     //check 4,3,2
 
@@ -34,7 +36,13 @@ public class XofaKind implements IRule {
             ThreeOfaKind=true;
         }
 
+        // TODO: putt hånda inn i hand
         return false;
+    }
+
+    @Override
+    public List<Card> getHand() {
+        return hand;
     }
 }
 
