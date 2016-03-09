@@ -13,7 +13,7 @@ import java.util.Optional;
  * Created by kaja on 09.03.2016.
  */
 public class Flush implements IRule {
-    private List<Card> returnHand = new ArrayList<Card>();
+    private List<Card> returnHand = new ArrayList<Card>(5);
 
     @Override
     public boolean match(Hand hand) {
@@ -72,4 +72,5 @@ public class Flush implements IRule {
     public Optional<List<Card>> getHand() {
         return Optional.of(returnHand);
     }
+
 }
