@@ -1,11 +1,13 @@
 package main.java.gamelogic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by kaja on 09.03.2016.
  */
 public class Flush implements IRule {
+    private List<Card> returnHand = new ArrayList<Card>();
 
     @Override
     public boolean match(Hand hand) {
@@ -28,11 +30,40 @@ public class Flush implements IRule {
             else if (allCards.get(i).suit == Card.Suit.DIAMONDS)
                 nrOfDiamonds++;
         }
+
+        if(nrOfClubs == 5){
+            for(int i= allCards.size()-1; i <=0; i--){
+                if(allCards.get(i).suit == Card.Suit.CLUBS && returnHand.size()<5)
+                    returnHand.add(allCards.get(i));
+            }
+        }
+
+        if(nrOfDiamonds == 5){
+            for(int i = allCards.size()-1; i<=0; i--){
+                if(allCards.get(i).suit == Card.Suit.DIAMONDS && returnHand.size()<5)
+                    returnHand.add(allCards.get(i));
+            }
+        }
+        if(nrOfHearts == 5){
+            for(int i = allCards.size()-1; i <= 0; i--){
+                if(allCards.get(i).suit == Card.Suit.HEARTS && returnHand.size()<5)
+                    returnHand.add(allCards.get(i));
+            }
+
+        }
+        if(nrOfSpades == 5){
+            for(int i = allCards.size()-1; i <= 0; i--){
+                if(allCards.get(i).suit == Card.Suit.SPADES && returnHand.size()<5)
+                    returnHand.add(allCards.get(i)) ;
+            }
+
+        }
+
         return (nrOfClubs == 5 || nrOfSpades == 5 || nrOfHearts == 5 || nrOfDiamonds == 5);
     }
 
     @Override
     public List<Card> getHand() {
-        return null;
+        return returnHand;
     }
 }
