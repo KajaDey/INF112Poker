@@ -31,6 +31,7 @@ public class GameLobby {
         Button settings = ObjectStandards.makeStandardButton("Settings");
         Button startGame = ObjectStandards.makeStandardButton("Start game");
         startGame.setFont(new Font("Areal", 30));
+        startLeave.setSpacing(30);
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
