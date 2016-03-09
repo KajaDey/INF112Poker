@@ -1,9 +1,15 @@
 package main.java.gui;
 
+import javafx.beans.binding.IntegerBinding;
+import javafx.beans.binding.LongBinding;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ChoiceBox;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ady on 07/03/16.
@@ -61,8 +67,20 @@ public class ButtonListeners {
         settings.show();
     }
 
-    public void acceptSettingsButtonListener() {
-        //TODO: Implement method
+    public void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
+                                             String smallBlindText, String levelDurationText, GUIClient client, Stage window) {
+        try {
+            client.setStartChips(Long.valueOf(amountOfChips));
+            client.setAmountOfPlayers(Integer.valueOf(numberOfPlayersText));
+            client.setBigBlind(Integer.valueOf(bigBlindText));
+            client.setSmallBlind(Integer.valueOf(smallBlindText));
+            client.setLevelDuration(Integer.valueOf(levelDurationText));
+            SceneBuilder.updateLobbyScreen(client);
+            window.close();
+
+        }catch (NumberFormatException e){
+
+        }
 
     }
 
@@ -71,8 +89,15 @@ public class ButtonListeners {
     }
 
     public void startGameButtonListener(GUIClient client) {
-        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client), GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client),client);
+        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client),
+                GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client),client);
 
+        Map<Integer, Long> map = new HashMap<>();
+
+        for (int i = 0; i < client.getAmountOfPlayers(); i++)
+            map.put(i, client.getStartChips());
+
+        client.setStackSizes(map);
     }
 
     public void leaveLobbyButtonListener(GUIClient client) {
@@ -83,9 +108,13 @@ public class ButtonListeners {
      * Listener for the button on the enter button on the main screen
      */
     public void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox, GUIClient client){
-        if (!name.isEmpty() && !numOfPlayers.isEmpty() && choiceBox.getValue().equals("Single Player"))
-            GameLobby.createScreenForGameLobby(client);
-        else SceneBuilder.createSceneForInitialScreen("PokerTable",client);
+        try {
+            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.getValue().equals("Single Player"))
+                GameLobby.createScreenForGameLobby(client);
+            else SceneBuilder.createSceneForInitialScreen("PokerTable", client);
+        }catch (NumberFormatException e){
+
+        }
     }
 
 }

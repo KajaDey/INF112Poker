@@ -23,7 +23,7 @@ public class GUIClient extends ButtonListeners implements GameClient {
     private int bigBlind;
     private int smallBlind;
     private Map<Integer,Integer> position;
-    private int startChips;
+    private long startChips;
     private int amountOfPlayers;
     private int levelDuration;
     private Map<Integer, Decision> lastMove;
@@ -85,7 +85,7 @@ public class GUIClient extends ButtonListeners implements GameClient {
 
     @Override
     public void setStartChips(long startChips) {
-        this.startChips = smallBlind;
+        this.startChips = startChips;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class GUIClient extends ButtonListeners implements GameClient {
         return levelDuration;
     }
 
-    public int getStartChips() {
+    public long getStartChips() {
         return startChips;
     }
 

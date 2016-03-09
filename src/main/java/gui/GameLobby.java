@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(GUIClient client){
+    public static Stage createScreenForGameLobby(GUIClient client){
 
         Stage window = new Stage();
 
@@ -74,6 +74,8 @@ public class GameLobby {
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
         SceneBuilder.showCurrentScene(scene, "GameLobby");
+
+        return window;
     }
 
     public static HBox createScreenForSettings(Stage window,GUIClient client){
@@ -94,11 +96,17 @@ public class GameLobby {
         TextField smallBlindTF = ObjectStandards.makeStandardTextField();
         TextField levelDurationTF = ObjectStandards.makeStandardTextField();
 
+
+
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
-        accept.setOnAction(e -> client.acceptSettingsButtonListener());
+        accept.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), client, window));
         cancel.setOnAction(e -> client.cancelSettingsButtonListener(window));
+
+        levelDurationTF.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), client, window));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);
@@ -110,4 +118,5 @@ public class GameLobby {
 
         return fullBox;
     }
+
 }

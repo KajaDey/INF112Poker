@@ -32,6 +32,13 @@ public class SceneBuilder {
     }
 
 
+    public static void updateLobbyScreen(GUIClient client){
+        Stage window = GameLobby.createScreenForGameLobby(client);
+
+        //window.show();
+    }
+
+
     public static Scene createSceneForInitialScreen(String imageName,GUIClient client){
         Stage window = new Stage();
         window.setTitle("Welcome to The Game!");

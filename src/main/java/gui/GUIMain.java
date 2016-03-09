@@ -31,8 +31,8 @@ public class GUIMain extends Application{
         Card card1 = Card.of(5, Card.Suit.DIAMONDS).get();
         Card card2 = Card.of(10, Card.Suit.CLUBS).get();
 
-        map.put(0,500L);
-        map.put(1,1000L);
+        map.put(0, 0L);
+        map.put(1, 0L);
 
         map2.put(0,0);
         map2.put(1,2);
@@ -42,15 +42,14 @@ public class GUIMain extends Application{
 
         kake.setBigBlind(50);
         kake.setSmallBlind(25);
-        kake.setPot(100000);
+        //kake.setPot(0);
         kake.setStackSizes(map);
         kake.setHoleCards(card1, card2);
         kake.setPositions(map2);
         kake.setName(map3);
         kake.setAmountOfPlayers(2);
         kake.setLevelDuration(10);
-        kake.setStartChips(10000);
-
+        //kake.setStartChips(10000);
 
     }
 }
