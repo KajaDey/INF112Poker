@@ -30,4 +30,9 @@ public class Flush implements IRule {
         }
         return (nrOfClubs == 5 || nrOfSpades == 5 || nrOfHearts == 5 || nrOfDiamonds == 5);
     }
+
+    @Override
+    public List<Card> getHand() {
+        return null;
+    }
 }
