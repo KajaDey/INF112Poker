@@ -39,6 +39,14 @@ public class GUIClient extends ButtonListeners implements GameClient {
 
     @Override
     public Decision getDecision() {
+        //Make buttons visible
+
+        //while (decision == null) {} <-- Horrible hack, plz dont do this..
+        //TODO: Make Gamecontroller call this method in a seperate thread. Sleep thread and wake it when decision is made
+
+        //Make buttons invisible
+
+        //Return decision
         return null;
     }
 

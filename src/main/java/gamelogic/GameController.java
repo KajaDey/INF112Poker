@@ -1,60 +1,69 @@
 package main.java.gamelogic;
 
+import main.java.gui.GUIClient;
 import main.java.gui.GUIMain;
 import main.java.gui.GameSettings;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by kristianrosland on 07.03.2016.
  */
 public class GameController {
 
-    public static Game game;
-    public static GameClient [] clients;
-    public static GUIMain mainGUI;
+    public Game game;
+    public Map<Integer, GameClient> clients;
+    public GUIMain mainGUI;
 
-    public static void main (String [] args) {
-        //TODO: Display the first screen (login screen)
-        GUIMain.run(args);
+    public GameController(GUIMain gui) {
+        this.mainGUI = gui;
     }
 
-    public static void EnterButtonClicked(String name, int numPlayers, String gameType) {
+    public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
+
 
         //TODO: Tell GUI to set screen to Lobby screen
         System.out.println("Touchdown");
 
     }
 
-    public static void StartTournamentButtonClicked(GameSettings gamesettings) {
-        //TODO: Validate the data, if invalid, report back to GUI
+    public void startTournamentButtonClicked(GameSettings gamesettings) {
+        //Make a new Game object and validate
+        game = new Game(gamesettings);
+        if (!game.isValid()) {
+            //TODO: Tell GUI to display error-message that settings are not valid
+            return;
+        }
 
+        //Empty map of clients
+        clients = new HashMap<Integer, GameClient>();
 
-        //TODO: Make a new Game object
-        //game = new Game(maxPlayers, startstack, startSB, startBB, levelDuration);
-
-        //TODO: Make clients array
-        //clients = new GameClient[maxPlayers];
-
-        //Create a GUIGameClient
-        //GameClient guiClient = new GUIClient(0); //0 --> playerID
-
-        //TODO: Tell GUIGameClient to got to table scene
-        // guiClient.
-
-        //TODO: Tell GUIGameClientObject what to display in the table screen, using the init-method from GameClient-interface
+        //GUIGameClient
+        GameClient guiClient = new GUIClient(0); //0 --> playerID
+        clients.put(0, guiClient);
+        game.addPlayer("Kristian", 0);
 
         //AIGameClient
-        //TODO: Make an AIGameClient-object
-        AI ai = new AI(1);
+        AI aiClient = new AI(1);
+        clients.put(1, aiClient);
+        game.addPlayer("AI-player", 1);
 
+        //TODO: Tell GUIGameClient to got to table scene
 
+        //Start the pokergame
+        game.start();
 
+        //TODO: Tell GUIGameClientObject what to display in the table screen, using the init-method from GameClient-interface
         //TODO: Tell the AIGameClient-object whats up with the table using the init-method from GC-interface
+    }
 
-
-
-
+    public Decision getDecisionFromClient(int ID) {
+        GameClient client = clients.get(ID);
+        if (client == null) { return null; }
+        return client.getDecision();
     }
 }

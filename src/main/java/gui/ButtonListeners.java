@@ -1,15 +1,11 @@
 package main.java.gui;
 
-import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.LongBinding;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ChoiceBox;
 import main.java.gamelogic.GameController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -109,9 +105,10 @@ public class ButtonListeners {
         GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client),
                 GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client), client);*/
 
-        //GameController.StartTournamentButtonClicked(client);
+        //GameController.startTournamentButtonClicked(client);
 
-        GameController.StartTournamentButtonClicked(gameSettings);
+        //TODO: Have gamecontroller object passed into this method
+        //GameController.startTournamentButtonClicked(gameSettings);
     }
 
     public void leaveLobbyButtonListener(GUIClient client) {

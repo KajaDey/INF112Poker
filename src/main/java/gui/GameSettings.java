@@ -5,18 +5,17 @@ package main.java.gui;
  */
 public class GameSettings {
 
-    long startChips;
-    int bigBlind;
-    int smallBlind;
-    int amountOfPlayers;
-    int levelDuration;
+    public long startStack;
+    public int bigBlind;
+    public int smallBlind;
+    public int maxNumberOfPlayers;
+    public int levelDuration;
 
-    public GameSettings(long startChips, int bigBlind, int smallBlind, int amountOfPlayers, int levelDuration) {
-        this.startChips = startChips;
+    public GameSettings(long startStack, int bigBlind, int smallBlind, int maxNumberOfPlayers, int levelDuration) {
+        this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;
-        this.amountOfPlayers = amountOfPlayers;
+        this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
     }
-
 }

@@ -5,22 +5,24 @@ import java.util.Optional;
 /**
  * Created by kristianrosland on 07.03.2016.
  */
-public abstract class Player extends User{
+public class Player extends User{
 
-    private int stackSize;
-    private Table table;
+    private long stackSize;
+    private int ID;
     private Hand hand;
+    private Table table;
     private Optional<Decision> lastDecision = Optional.empty();
 
-    public Player(String name, int stackSize, Table table) {
+    public Player(String name, long stackSize, Table table, int ID) {
         super(name);
         this.stackSize = stackSize;
         this.table = table;
+        this.ID = ID;
     }
 
     public Optional<Decision> getLastDecision() { return lastDecision; }
 
-    public int getStackSize() {
+    public long getStackSize() {
         return stackSize;
     }
 
@@ -29,10 +31,7 @@ public abstract class Player extends User{
     }
 
     public void setHand(Card card1, Card card2) {
-
         this.hand = new Hand(card1, card2, table.getCommunityCards());
     }
-
-    public abstract Decision getDecision();
 }
 
