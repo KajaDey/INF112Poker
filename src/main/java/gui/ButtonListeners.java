@@ -82,8 +82,6 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(numberOfPlayersText),
                     Integer.valueOf(bigBlindText),(Integer.valueOf(smallBlindText)),Integer.valueOf(levelDurationText));
 
-
-
             SceneBuilder.updateLobbyScreen(client);
             window.close();
 
@@ -98,18 +96,6 @@ public class ButtonListeners {
     }
 
     public void startGameButtonListener(GUIClient client) {
-
-        /*Map<Integer, Long> map = new HashMap<>();
-
-        for (int i = 0; i < client.getAmountOfPlayers(); i++)
-            map.put(i, client.getStartChips());
-
-        client.setStackSizes(map);
-
-        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client),
-                GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client), client);*/
-
-        //GameController.StartTournamentButtonClicked(client);
 
         GameController.StartTournamentButtonClicked(gameSettings);
     }
