@@ -29,7 +29,7 @@ public class xOfaKind implements IRule {
         for (int i = allCards.size()-1; i >0; i--) { //desc
             int mainRank = allCards.get(i).rank;
             tempHand.add(allCards.get(i));
-
+            allCards.remove(i);
             for(int j=allCards.size()-1; i>-1; i--) {
 
                 if (mainRank == allCards.get(i - 1).rank) {
@@ -40,6 +40,7 @@ public class xOfaKind implements IRule {
             if(tempHand.size()==4){
                 fourOfaKind =true;
                 returnHand.addAll(tempHand);
+                returnHand.add(allCards.get(allCards.size()));
 
             }
             else if(tempHand.size()==3){
@@ -56,7 +57,8 @@ public class xOfaKind implements IRule {
     }
 
 
-    public int howManyOfaKind(){
+    public int howManyOfaKind(Hand hand){
+        match(hand);
         if(fourOfaKind)
             nrOfEquals=4;
         else if(threeOfaKind)
