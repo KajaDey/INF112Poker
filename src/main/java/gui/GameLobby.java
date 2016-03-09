@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class GameLobby {
 
-    public static Stage createScreenForGameLobby(GUIClient client){
+    public static void createScreenForGameLobby(GUIClient client){
 
         Stage window = new Stage();
 
@@ -75,7 +75,6 @@ public class GameLobby {
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
         SceneBuilder.showCurrentScene(scene, "GameLobby");
 
-        return window;
     }
 
     public static HBox createScreenForSettings(Stage window,GUIClient client){

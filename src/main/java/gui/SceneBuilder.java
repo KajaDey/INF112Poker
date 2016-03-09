@@ -33,9 +33,7 @@ public class SceneBuilder {
 
 
     public static void updateLobbyScreen(GUIClient client){
-        Stage window = GameLobby.createScreenForGameLobby(client);
-
-        //window.show();
+       GameLobby.createScreenForGameLobby(client);
     }
 
 
