@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  */
 public class MainScreen {
 
-    public static HBox makeLayout(Stage window){
+    public static HBox makeLayout(Stage window, GUIClient client){
 
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
@@ -44,7 +44,7 @@ public class MainScreen {
 
         enter.setOnAction(e ->{
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox);
+            client.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox,client);
         });
 
 
@@ -56,7 +56,7 @@ public class MainScreen {
          */
         playersIn.setOnAction(e -> {
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox);
+            client.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox,client);
         });
 
         String infoText = "Heads Up Poker!";

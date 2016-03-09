@@ -37,12 +37,12 @@ public class ImageViewer {
      * @param card2 The second card
      * @return The new layout which contains the shown cards.
      */
-    public static Scene showOpponentCards(String card1, String card2){
+    /*public static Scene showOpponentCards(String card1, String card2){
         String card1Out = returnURLPathForCardSprites(card1);
         String card2Out = returnURLPathForCardSprites(card2);
 
         return GameScreen.makeSceneForOpponentCards(card1Out, card2Out);
-    }
+    }*/
 
     /**
      * Show community cards
