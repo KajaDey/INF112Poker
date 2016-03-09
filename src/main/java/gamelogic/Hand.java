@@ -9,7 +9,7 @@ import java.util.List;
 public class Hand {
     private List<Card> holeCards = new ArrayList<Card>(2);
     private List<Card> communityCards;
-    private List<Card> allCards;
+    private List<Card> allCards = new ArrayList<>();
 
     public Hand(Card card1, Card card2, List<Card> communityCards) {
         holeCards.add(card1);
@@ -40,5 +40,12 @@ public class Hand {
         allC.addAll(allCards);
 
         return allC;
+    }
+
+    @Override
+    public String toString() {
+        return "Hand{" +
+                "allCards=" + allCards +
+                '}';
     }
 }
