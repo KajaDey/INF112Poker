@@ -8,7 +8,7 @@ import java.util.List;
  *
  * NOT FINISHED!
  */
-public class XofaKind implements IRule {
+public class xOfaKind implements IRule {
     private boolean FourOfaKind;
     private boolean ThreeOfaKind;
     private boolean TwoOfaKind;
