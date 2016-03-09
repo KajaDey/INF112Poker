@@ -65,6 +65,31 @@ public class Card implements Comparable<Card> {
         return Integer.compare(this.rank, other.rank);
     }
 
+    /**
+     *
+     * @return a name that the GUI can use to display cards.
+     */
+    public String getCardNameForGui(){
+
+        String rank,suit;
+
+        if(this.suit == Suit.SPADES)
+            suit = "Spades ";
+        else if (this.suit == Suit.HEARTS)
+            suit = "Hearts ";
+        else if (this.suit == Suit.DIAMONDS)
+            suit = "Diamonds ";
+        else
+            suit = "Clubs ";
+
+        if(this.rank == 14 || this.rank == 1)
+            rank = "1";
+        else
+        rank = this.rank+"";
+
+        return suit + rank;
+
+    }
 
     public static enum Suit {
         SPADES, HEARTS, DIAMONDS, CLUBS;
