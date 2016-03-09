@@ -1,12 +1,10 @@
 package tests.java.hands;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
-import main.java.gamelogic.Rules.xOfaKind;
+import main.java.gamelogic.rules.xOfaKind;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
 
 import java.util.ArrayList;
 

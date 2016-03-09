@@ -1,8 +1,7 @@
 package main.java.gamelogic;
 
-import main.java.gamelogic.Rules.*;
+import main.java.gamelogic.rules.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
