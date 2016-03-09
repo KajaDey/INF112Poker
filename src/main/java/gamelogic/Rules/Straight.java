@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class Straight implements IRule {
     private int drawCount = 0;
-    private Optional<List<Card>> hand = Optional.of(new ArrayList<Card>());
+    private List<Card> hand = new ArrayList<Card>();
 
     @Override
     public boolean match(Hand hand) {
@@ -37,6 +37,7 @@ public class Straight implements IRule {
 
     @Override
     public Optional<List<Card>> getHand() {
-        return hand;
+        return Optional.of(hand);
+        // TODO: if
     }
 }

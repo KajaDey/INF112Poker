@@ -7,6 +7,7 @@ import main.java.gamelogic.Rules.IRule;
 import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by kaja on 09.03.2016.
@@ -68,7 +69,7 @@ public class Flush implements IRule {
     }
 
     @Override
-    public List<Card> getHand() {
-        return returnHand;
+    public Optional<List<Card>> getHand() {
+        return Optional.of(returnHand);
     }
 }

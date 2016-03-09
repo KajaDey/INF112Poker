@@ -6,6 +6,7 @@ import main.java.gamelogic.Rules.IRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by kaja on 08.03.2016.
@@ -55,8 +56,8 @@ public class xOfaKind implements IRule {
     }
 
     @Override
-    public List<Card> getHand() {
-        return hand;
+    public Optional<List<Card>> getHand() {
+        return Optional.of(hand);
     }
 }
 
