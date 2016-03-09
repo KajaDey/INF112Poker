@@ -1,7 +1,13 @@
-package main.java.gamelogic;
+package main.java.gamelogic.Rules;
 
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Hand;
+import main.java.gamelogic.Rules.IRule;
+
+import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by pokki on 08/03/16.
@@ -16,8 +22,9 @@ public class TwoPairs implements IRule {
     @Override
     public boolean match(Hand hand) {
         List<Card> cards = hand.getAllCards();
-        cards.sort(Card::compareTo); // sorts in ascending order
+        cards.sort(Card::compareTo);
 
+        // TODO: relies on sorting in ascending order
         for (int i = cards.size() - 1; i > 0; i--) {
 
             if (cards.get(i).rank == cards.get(i - 1).rank) {
@@ -43,8 +50,11 @@ public class TwoPairs implements IRule {
     }
 
     @Override
-    public List<Card> getHand() {
-        return returnHand;
+    public Optional<List<Card>> getHand() {
+        if (returnHand.size() > 0) {
+            return Optional.of(returnHand);
+        }
+        return Optional.empty();
     }
 }
 

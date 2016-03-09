@@ -1,14 +1,19 @@
-package main.java.gamelogic;
+package main.java.gamelogic.Rules;
+
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Hand;
+import main.java.gamelogic.Rules.IRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by pokki on 08/03/16.
  */
 public class Straight implements IRule {
     private int drawCount = 0;
-    private List<Card> hand = new ArrayList<Card>();
+    private Optional<List<Card>> hand = Optional.of(new ArrayList<Card>());
 
     @Override
     public boolean match(Hand hand) {
@@ -31,7 +36,7 @@ public class Straight implements IRule {
     }
 
     @Override
-    public List<Card> getHand() {
+    public Optional<List<Card>> getHand() {
         return hand;
     }
 }
