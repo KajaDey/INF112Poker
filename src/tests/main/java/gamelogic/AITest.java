@@ -1,6 +1,6 @@
 package main.java.gamelogic;
 
-import main.java.gamelogic.AI;
+import main.java.gamelogic.ai.AI;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import org.junit.Test;
