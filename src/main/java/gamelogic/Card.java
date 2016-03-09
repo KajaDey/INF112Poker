@@ -11,7 +11,7 @@ public class Card implements Comparable<Card> {
 
     private static final Card[] cards = new Card[52];
 
-    // Initialize cards
+    // Initialize cards when class is loaded
     static {
         for (int i = 0; i < 52; i+= 4) {
             int rank = i / 4 + 2;
@@ -25,7 +25,10 @@ public class Card implements Comparable<Card> {
     public final int rank;
     public final Suit suit;
 
-    // Private constructor that should only be called during the class' initialization
+    /*
+    Private constructor that should only be called during the class' initialization
+    Use Card.of() to get references to new cards
+     */
     private Card(int rank, Suit suit) {
         assert rank >= 2 && rank <= 14;
         this.rank = rank;
