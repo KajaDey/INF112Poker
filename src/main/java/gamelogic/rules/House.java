@@ -1,6 +1,7 @@
-package main.java.gamelogic;
+package main.java.gamelogic.rules;
 
-import main.java.gamelogic.Rules.IRule;
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Hand;
 
 import java.util.*;
 
