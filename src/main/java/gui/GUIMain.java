@@ -15,6 +15,7 @@ import java.util.Map;
 public class GUIMain extends Application{
 
     private GameController gamecontroller;
+    private GameScreen gameScreen;
 
     public GUIMain() {
         this.gamecontroller = new GameController(this);
@@ -39,8 +40,6 @@ public class GUIMain extends Application{
     }
 
     public void start(Stage window) throws Exception {
-        //TODO: Stop using fucking kake and katt.........
-        GUIClient kake = new GUIClient(0);
 
         //TODO: Get this to take gamecontroller as a parameter instead of GUIClient
         SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gamecontroller), "Main Screen");
@@ -48,6 +47,8 @@ public class GUIMain extends Application{
     }
 
     public void displayGameScreen(GameSettings settings, GUIClient client) {
-        SceneBuilder.showCurrentScene(GameScreen.createSceneForGameScreen(client),"GameScreen");
+        this.gameScreen = new GameScreen();
+        SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(client),"GameScreen");
+
     }
 }

@@ -12,26 +12,35 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Deck;
+
+import java.util.HashMap;
 
 /**
  * Created by ady on 07/03/16.
  */
 public class GameScreen {
 
-    public static Scene createSceneForGameScreen(GUIClient client) {
+    BorderPane borderPane;
+    Scene scene;
+    Label amountOfChipsText;
 
-        BorderPane borderPane = new BorderPane();
+    public GameScreen() {
+        borderPane = new BorderPane();
+        scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
+    }
 
-        borderPane.setTop(makeOpponentLayout(client));
-        borderPane.setCenter(makeBoardLayout(client));
-        borderPane.setBottom(makePlayerLayout(client));
+    public Scene createSceneForGameScreen(GUIClient client) {
 
-        Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
-
-        SceneBuilder.showCurrentScene(scene, "GameScreen");
+        //Move this somewehere else
+       // borderPane.setTop(makeOpponentLayout(client));
+       // borderPane.setCenter(makeBoardLayout(client));
+       // borderPane.setBottom(makePlayerLayout(testClient));
 
         return scene;
     }
+
 
         /**
          * A method for making a playerLayout
@@ -39,7 +48,7 @@ public class GameScreen {
          * @return A VBox with the player layout
          */
 
-        public static VBox makePlayerLayout(GUIClient client){
+        public VBox makePlayerLayout(GUIClient client){
 
             //Setting standards i want to use
             Font standardFont = new Font("Areal",15);
@@ -57,7 +66,7 @@ public class GameScreen {
             VBox twoButtonsRight = new VBox();
 
             //////Make all the elements i want to add to the playerLayout//////////
-            Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", client.getStackSizes().get(client.getId())+"");
+            amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", client.getStackSizes().get(client.getId())+"");
             Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", client.getPosition().get(client.getId())+"");
             Label lastMove = ObjectStandards.makeStandardLabelWhite("Fold", "");
             Label name = ObjectStandards.makeStandardLabelWhite("Name: ",client.getName().get(client.getId()));
@@ -111,7 +120,7 @@ public class GameScreen {
          * Generates a boardLayout
          * @return a boardLayout
          */
-        public static HBox makeBoardLayout(GUIClient client){
+        public HBox makeBoardLayout(GUIClient client){
 
             ImageView card1 = ImageViewer.setCardImage("player","_Back");
             ImageView card2 = ImageViewer.setCardImage("player","_Back");
@@ -138,7 +147,7 @@ public class GameScreen {
             return horizontalLayout;
         }
 
-        public static VBox makeOpponentLayout(GUIClient client){
+        public VBox makeOpponentLayout(GUIClient client){
 
             ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", client.getCard1().getCardNameForGui());
             ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", client.getCard2().getCardNameForGui());
@@ -165,7 +174,7 @@ public class GameScreen {
 
         }
 
-        /*public static Scene makeSceneForOpponentCards(GUIClient client){
+        /*public Scene makeSceneForOpponentCards(GUIClient client){
             BorderPane completeLayout = new BorderPane();
             completeLayout.setPadding(new Insets(10, 10, 10, 10));
 
