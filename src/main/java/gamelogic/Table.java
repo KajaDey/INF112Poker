@@ -31,4 +31,14 @@ public class Table {
         players[numberOfPlayers++] = p;
         return true;
     }
+
+    /**
+     * Removes a player from the table, because he is out of chips or left
+     * @param p
+     * @return
+     */
+    public boolean removePlayer(Player p) {
+        // TODO implement
+        return true;
+    }
 }
