@@ -58,7 +58,7 @@ public class GameController {
         //TODO: Tell GUIGameClient to got to table scene
 
         //Start the pokergame
-        game.playGame();
+       // game.playGame();
 
         //TODO: Tell GUIGameClientObject what to display in the table screen, using the init-method from GameClient-interface
         //TODO: Tell the AIGameClient-object whats up with the table using the init-method from GC-interface
