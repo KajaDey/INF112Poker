@@ -51,6 +51,7 @@ public class House implements IRule {
 
         List<Card> bestCards = new ArrayList<Card>();
 
+        //search cards for a triplet
         for(int i = allCards.size();i>1;i--)
         {
             if(allCards.get(i).rank == allCards.get(i-1).rank && allCards.get(i-1).rank == allCards.get(i-2).rank)
@@ -69,6 +70,8 @@ public class House implements IRule {
             }
         }
 
+        //search cards for the remaining double(may be a remaining triple but we only choose the two first)
+        //
         for(int i = allCards.size();i>0;i++)
         {
             if(allCards.get(i).rank == allCards.get(i-1).rank) {
