@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(){
+    public static void createScreenForGameLobby(GameSettings gameSettings){
 
         Stage window = new Stage();
 
@@ -35,11 +35,11 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", client.getStartChips() + "$");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", client.getAmountOfPlayers()+"");
-        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", client.getBigBlind() + "$");
-        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", client.getSmallBlind() + "$");
-        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", client.getLevelDuration() + "min");
+        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
+        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
+        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
+        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
+        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
         Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n - Jostein\n - André", "");
 
 
@@ -78,7 +78,7 @@ public class GameLobby {
 
     }
 
-    public static HBox createScreenForSettings(Stage window,GUIClient client){
+    public static HBox createScreenForSettings(Stage window){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -105,7 +105,7 @@ public class GameLobby {
                 bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
-        levelDurationTF.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+        levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
                 bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);

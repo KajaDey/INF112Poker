@@ -34,7 +34,7 @@ public class GUIMain extends Application{
         GUIClient kake = new GUIClient(0);
 
         //TODO: Get this to take gamecontroller as a parameter instead of GUIClient
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable", kake), "Main Screen");
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"), "Main Screen");
 
 
         Map<Integer,Long> map = new HashMap<>();

@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  */
 public class MainScreen {
 
-    public static HBox makeLayout(Stage window, GUIClient client){
+    public static HBox makeLayout(Stage window){
 
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
