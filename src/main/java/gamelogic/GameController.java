@@ -1,8 +1,6 @@
 package main.java.gamelogic;
 
-import main.java.gui.GUIClient;
-import main.java.gui.GUIMain;
-import main.java.gui.GameSettings;
+import main.java.gui.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +26,7 @@ public class GameController {
 
         //TODO: Tell GUI to set screen to Lobby screen
         System.out.println("Touchdown");
+        //SceneBuilder.showCurrentScene(GameLobby.createScreenForGameLobby(););
 
     }
 
