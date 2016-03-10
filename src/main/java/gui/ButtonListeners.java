@@ -76,10 +76,11 @@ public class ButtonListeners {
             client.setSmallBlind(Integer.valueOf(smallBlindText));
             client.setLevelDuration(Integer.valueOf(levelDurationText));*/
 
-            gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(numberOfPlayersText),
-                    Integer.valueOf(bigBlindText),(Integer.valueOf(smallBlindText)),Integer.valueOf(levelDurationText));
+            gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
+                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText));
 
             SceneBuilder.updateLobbyScreen(gameSettings,gameController);
+            gameController.setGameSettings(gameSettings);
             window.close();
 
         }catch (NumberFormatException e){
@@ -92,11 +93,8 @@ public class ButtonListeners {
         window.close();
     }
 
-    public static void startGameButtonListener() {
-
-
-        //TODO: Have gamecontroller object passed into this method
-        //GameController.startTournamentButtonClicked(gameSettings);
+    public static void startGameButtonListener(GameController gameController) {
+        gameController.startTournamentButtonClicked(gameSettings);
     }
 
     public static void leaveLobbyButtonListener(GameController gameController) {
@@ -110,6 +108,7 @@ public class ButtonListeners {
         try {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
+                gameSettings = gameController.gameSettings;
 
             }
             else SceneBuilder.createSceneForInitialScreen("PokerTable",gameController);
