@@ -27,7 +27,6 @@ public class xOfaKind implements IRule {
 
     public xOfaKind(int nrToCheck){
         this.nrToCheck=nrToCheck;
-
     }
 
     /**
@@ -62,8 +61,9 @@ public class xOfaKind implements IRule {
                         int nrOfCardsToAdd = 1;
                         addHighCards(nrOfCardsToAdd);
                         fourOfaKind = true;
-                        break;
+                        return true;
                     }
+                    break;
                 case 3:
 
                     if (tempHand.size() == 3) {
@@ -71,23 +71,25 @@ public class xOfaKind implements IRule {
                         int nrOfCardsToAdd = 2;
                         addHighCards(nrOfCardsToAdd);
                         threeOfaKind = true;
-                        break;
+                        return true;
                     }
+                    break;
                 case 2:
                      if (tempHand.size() == 2) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 3;
                         addHighCards(nrOfCardsToAdd);
                         twoOfaKind = true;
-                        break;
+                         return true;
                      }
+                     break;
             }
             tempHand.clear();
             markedCards.clear();
             if(fourOfaKind || threeOfaKind ||  twoOfaKind)
                 break;
         }
-        return (fourOfaKind || threeOfaKind ||  twoOfaKind);
+        return (false);
     }
 
 
