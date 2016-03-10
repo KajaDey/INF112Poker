@@ -58,17 +58,17 @@ public class ButtonListeners {
         //TODO: Implement method
     }
 
-    public static void settingsButtonListener() {
+    public static void settingsButtonListener(GameController gameController) {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),260,200);
         settings.setScene(scene);
         settings.show();
     }
 
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
-                                             String smallBlindText, String levelDurationText, Stage window) {
+                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController) {
         try {
             /*client.setStartChips(Long.valueOf(amountOfChips));
             client.setAmountOfPlayers(Integer.valueOf(numberOfPlayersText));
@@ -79,7 +79,7 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(numberOfPlayersText),
                     Integer.valueOf(bigBlindText),(Integer.valueOf(smallBlindText)),Integer.valueOf(levelDurationText));
 
-            SceneBuilder.updateLobbyScreen(gameSettings);
+            SceneBuilder.updateLobbyScreen(gameSettings,gameController);
             window.close();
 
         }catch (NumberFormatException e){
@@ -99,20 +99,20 @@ public class ButtonListeners {
         //GameController.startTournamentButtonClicked(gameSettings);
     }
 
-    public static void leaveLobbyButtonListener() {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"), "Main Screen");
+    public static void leaveLobbyButtonListener(GameController gameController) {
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gameController), "Main Screen");
     }
 
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox){
+    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox,GameController gameController){
         try {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
-                //GameController.enterButtonClicked(name,Integer.parseInt(numOfPlayers),choiceBox);
+                gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
 
             }
-            else SceneBuilder.createSceneForInitialScreen("PokerTable");
+            else SceneBuilder.createSceneForInitialScreen("PokerTable",gameController);
         }catch (NumberFormatException e){
 
         }
