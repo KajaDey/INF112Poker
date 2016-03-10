@@ -14,4 +14,6 @@ public class StraightFlush {
     // legg alle i samme suit i en liste
 
     // send listen inn i Straight.match() og se om det er straight der
+
+    //Denne går ikke vekk ffs
 }
