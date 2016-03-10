@@ -44,7 +44,7 @@ public class MainScreen {
 
         enter.setOnAction(e ->{
             window.close();
-            client.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox,client);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue());
         });
 
 
@@ -56,7 +56,7 @@ public class MainScreen {
          */
         playersIn.setOnAction(e -> {
             window.close();
-            client.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox,client);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue());
         });
 
         String infoText = "Heads Up Poker!";

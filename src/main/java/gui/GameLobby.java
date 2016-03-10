@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(GUIClient client){
+    public static void createScreenForGameLobby(){
 
         Stage window = new Stage();
 
@@ -44,15 +44,15 @@ public class GameLobby {
 
 
         //ActionListeners
-        settings.setOnAction(e -> client.settingsButtonListener(client));
+        settings.setOnAction(e -> ButtonListeners.settingsButtonListener());
         startGame.setOnAction(e -> {
             window.close();
-            client.startGameButtonListener(client);
+            ButtonListeners.startGameButtonListener();
         });
 
         leaveLobby.setOnAction(e -> {
             window.close();
-            client.leaveLobbyButtonListener(client);
+            ButtonListeners.leaveLobbyButtonListener();
                 });
 
         //Put objects in boxes
@@ -101,12 +101,12 @@ public class GameLobby {
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
-        accept.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), client, window));
-        cancel.setOnAction(e -> client.cancelSettingsButtonListener(window));
+        accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window));
+        cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
         levelDurationTF.setOnAction(e -> client.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), client, window));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);
