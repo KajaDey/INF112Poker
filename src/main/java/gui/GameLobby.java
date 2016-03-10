@@ -48,7 +48,7 @@ public class GameLobby {
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener();
+            ButtonListeners.startGameButtonListener(gameController);
         });
 
         leaveLobby.setOnAction(e -> {
@@ -97,6 +97,11 @@ public class GameLobby {
         TextField smallBlindTF = ObjectStandards.makeStandardTextField();
         TextField levelDurationTF = ObjectStandards.makeStandardTextField();
 
+        amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
+        numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
+        bigBlindTF.setText(String.valueOf(gameController.gameSettings.getBigBlind()));
+        smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
+        levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
 
 
         Button accept = ObjectStandards.makeStandardButton("Accept");

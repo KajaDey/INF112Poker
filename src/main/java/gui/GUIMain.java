@@ -3,6 +3,7 @@ package main.java.gui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import main.java.gamelogic.Card;
+import main.java.gamelogic.Game;
 import main.java.gamelogic.GameController;
 
 import java.util.HashMap;
@@ -44,5 +45,9 @@ public class GUIMain extends Application{
         //TODO: Get this to take gamecontroller as a parameter instead of GUIClient
         SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gamecontroller), "Main Screen");
 
+    }
+
+    public void displayGameScreen(GameSettings settings, GUIClient client) {
+        SceneBuilder.showCurrentScene(GameScreen.createSceneForGameScreen(client),"GameScreen");
     }
 }
