@@ -21,6 +21,7 @@ public class Game {
     private int bigBlindIndex = 0;
     private int roundNumber = 0;
     private int smallBlindIndex = 0;
+    private long minimumBetThisRound = 0;
 
     public Game(GameSettings gamesettings) {
 //        this.maxNumberOfPlayers = gamesettings.maxNumberOfPlayers;
@@ -56,6 +57,41 @@ public class Game {
             }
 
             // TODO play hand:
+            long pot = 0;
+            long sidePot = 0;
+            Decision previousDecision = null;
+            boolean stillBetting = true;
+
+            while (stillBetting) {
+                for (Player p : playersStillPlaying) {
+                    Decision decision = p.getLastDecision().get();
+
+                    switch (decision.move) {
+                        case CHECK:
+                            if (previousDecision != null && previousDecision.move != Decision.Move.CHECK) {
+                                throw new RuntimeException("Illegal move");
+                            } else if (previousDecision == null) {
+                                continue;
+                            }
+                            break;
+                        case FOLD:
+                            playersStillPlaying.remove(p);
+                            break;
+                        case CALL:
+                            if (decision.size != minimumBetThisRound) {
+                                throw new RuntimeException("Illegal move");
+                            }
+                            pot += decision.size;
+                            break;
+                        case BET: break;
+                        case RAISE: break;
+                        // TODO: had to go to quiz....
+                    }
+
+                    previousDecision = decision; // when his turn ends
+                }
+
+            }
             /*
                 ask for decision from all participants, starting from player left for bb
                 while not everyone agrees on bet
@@ -73,6 +109,7 @@ public class Game {
     }
 
     private void initializeNewRound(List<Player> playersStillPlaying) {
+        minimumBetThisRound = 0;
         dealerIndex = roundNumber%numberOfPlayers;
         if (numberOfPlayers == 2) {
             smallBlindIndex = roundNumber;
