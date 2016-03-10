@@ -23,17 +23,23 @@ public class HandCalculator {
         //TODO: Not finished, logic in classes, and missing hands in list need to be filled out
 
         Optional<List<Card>> bestHand = Optional.empty();
-        Flush flush = null;
-        Straight straight = null;
-        TwoPairs twoPairs = null;
-        xOfaKind xOfaKind = null;
-        HighCard highCard = null;
+        StraightFlush straightFlush = new StraightFlush();
+        xOfaKind quad = new xOfaKind(4);
+        Flush flush = new Flush();
+        Straight straight = new Straight();
+        xOfaKind tress = new xOfaKind(3);
+        TwoPairs twoPairs = new TwoPairs();
+        xOfaKind pair = new xOfaKind(2);
+        HighCard highCard = new HighCard();
 
         List<IRule> hands = new ArrayList<>();
+        hands.add(straightFlush);
+        hands.add(quad);
         hands.add(flush);
         hands.add(straight);
+        hands.add(tress);
         hands.add(twoPairs);
-        hands.add(xOfaKind);
+        hands.add(pair);
         hands.add(highCard);
 
         for(IRule ir : hands){
