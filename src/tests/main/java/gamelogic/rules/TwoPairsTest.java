@@ -1,14 +1,10 @@
 package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
-import main.java.gamelogic.Deck;
 import main.java.gamelogic.Hand;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.util.ArrayList;
-import java.util.Optional;
-
 import static org.junit.Assert.*;
 
 /**
@@ -64,7 +60,5 @@ public class TwoPairsTest {
         assertTrue(hand.getAllCards().contains(communityCards.get(0)));
         assertTrue(hand.getAllCards().contains(communityCards.get(1)));
         assertTrue(hand.getAllCards().contains(communityCards.get(2)));
-
-        System.out.println(twoPairs.getHand());
     }
 }
