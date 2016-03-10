@@ -15,10 +15,12 @@ public class GameController {
     public Game game;
     public Map<Integer, GameClient> clients;
     public GUIMain mainGUI;
+    public GameSettings gameSettings = new GameSettings(1000,50,25,2,10);
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
     }
+
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
@@ -26,7 +28,9 @@ public class GameController {
 
         //TODO: Tell GUI to set screen to Lobby screen
         System.out.println("Touchdown");
-        //SceneBuilder.showCurrentScene(GameLobby.createScreenForGameLobby(););
+        //SceneBuilder.showCurrentScene(GameLobby.createScreenForGameLobby());
+
+        mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
 
     }
 

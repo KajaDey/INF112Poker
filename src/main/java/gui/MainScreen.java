@@ -7,13 +7,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import main.java.gamelogic.GameController;
 
 /**
  * Created by Jostein on 07.03.2016.
  */
 public class MainScreen {
 
-    public static HBox makeLayout(Stage window){
+    public static HBox makeLayout(Stage window,GameController gameController){
 
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(5,5,5,5);
@@ -44,7 +45,7 @@ public class MainScreen {
 
         enter.setOnAction(e ->{
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue());
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue(),gameController);
         });
 
 
@@ -56,7 +57,7 @@ public class MainScreen {
          */
         playersIn.setOnAction(e -> {
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue());
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue(),gameController);
         });
 
         String infoText = "Heads Up Poker!";
