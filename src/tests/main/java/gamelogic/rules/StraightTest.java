@@ -28,9 +28,10 @@ public class StraightTest {
         card2 = Card.of(3, Card.Suit.CLUBS).get();
         card3 = Card.of(4, Card.Suit.CLUBS).get();
         card4 = Card.of(5, Card.Suit.CLUBS).get();
-        card5 = Card.of(6, Card.Suit.CLUBS).get();
-        card6 = Card.of(7, Card.Suit.CLUBS).get();
-        card7 = Card.of(8, Card.Suit.CLUBS).get();
+        card5 = Card.of(11, Card.Suit.CLUBS).get(); // 6 to 11
+        card6 = Card.of(12, Card.Suit.CLUBS).get(); // 7 to 12
+        card7 = Card.of(13, Card.Suit.CLUBS).get(); // 8 to 13
+        card8 = Card.of(14, Card.Suit.CLUBS).get();
     }
 
     @Test
@@ -53,6 +54,7 @@ public class StraightTest {
     public void testAddedLastCardWhenEqualRanks() throws Exception {
         hand = new Hand(card1, card2, Arrays.asList(card2, card2, card5, card3, card4));
         straigt = new Straight();
+        straigt.match(hand);
 
         assertTrue(straigt.getHand().get().contains(card5));
     }
@@ -65,4 +67,11 @@ public class StraightTest {
         assertFalse(straigt.match(hand));
     }
 
+    @Test
+    public void testStraightAceToFive() {
+        hand = new Hand(card1, card2, Arrays.asList(card3, card4, card8, card7, card7));
+        straigt = new Straight();
+
+        assertTrue(straigt.match(hand));
+    }
 }
