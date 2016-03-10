@@ -5,6 +5,7 @@ import main.java.gamelogic.rules.Straight;
 import main.java.gamelogic.rules.TwoPairs;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +19,20 @@ import java.util.Optional;
 public class HandCalculator {
 
     public Optional<List<Card>> getUsersBestHand(Hand hand){
+
         Optional<List<Card>> bestHand = Optional.empty();
         Flush flush = null;
         Straight straight = null;
         TwoPairs twoPairs = null;
         xOfaKind xOfaKind = null;
         HighCard highCard = null;
+
+        List<IRule> hands = new ArrayList<>();
+        hands.add(flush);
+        hands.add(straight);
+        hands.add(twoPairs);
+        hands.add(xOfaKind);
+        hands.add(highCard);
 
         //TODO check if hand is straight flush
         if(straight.match(hand)){
