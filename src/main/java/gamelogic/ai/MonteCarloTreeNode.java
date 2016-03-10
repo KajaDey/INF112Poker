@@ -16,11 +16,11 @@ public class MonteCarloTreeNode<Pos, Move> {
     private double value;
     private int searches;
 
-    private final Pos position;
+    public final Pos position;
 
     private final BiFunction<Pos, Move, Pos> doMove;
     private final Function<Pos, Optional<Double>> terminalEvaluation;
-    private final Function<Pos, ArrayList<Move>> allLegalMoves;
+    public final Function<Pos, ArrayList<Move>> allLegalMoves;
 
     public MonteCarloTreeNode(Pos position, BiFunction<Pos, Move, Pos> doMove, Function<Pos, ArrayList<Move>> allLegalMoves,
                               Function<Pos, Optional<Double>> getTerminalEvaluation) {
@@ -28,6 +28,8 @@ public class MonteCarloTreeNode<Pos, Move> {
         this.doMove = doMove;
         this.allLegalMoves = allLegalMoves;
         this.terminalEvaluation = getTerminalEvaluation;
+
+        assert position != null && doMove != null && allLegalMoves != null && getTerminalEvaluation != null;
 
         value = 0.0;
         searches = 0;
@@ -38,20 +40,32 @@ public class MonteCarloTreeNode<Pos, Move> {
         }
     }
 
+    public String toString() {
+        return "Avg: " + value / searches + ", val: " + value + ", n: " + searches;
+    }
+
     public double select() {
         Optional<MonteCarloTreeNode> node = children.get((int)(Math.random()*children.size()));
 
         if (node.isPresent()) {
             Optional<Double> eval = terminalEvaluation.apply((Pos)node.get().position);
             if (!eval.isPresent()) {
-                return node.get().select();
+                double trueEval = node.get().select();
+                this.value += trueEval;
+                this.searches += 1;
+                return trueEval;
             }
             else {
+                this.value += eval.get();
+                this.searches += 1;
                 return eval.get();
             }
         }
         else {
-            return this.expand();
+            double eval = expand();
+            //this.value += eval; Not necessary to increment because expand() already does this
+            //this.searches += 1;
+            return eval;
         }
 
     }
@@ -59,14 +73,17 @@ public class MonteCarloTreeNode<Pos, Move> {
     public double expand() {
         assert !terminalEvaluation.apply(position).isPresent();
         List<Move> allMoves = allLegalMoves.apply(position);
-        while (1 > 0) {
+        while (true) {
             int randomChildIndex = (int)(Math.random() * children.size());
             if (children.get(randomChildIndex).isPresent()) {
                 continue;
             }
             children.set(randomChildIndex, Optional.of(new MonteCarloTreeNode<Pos, Move>(doMove.apply(position, allMoves.get(randomChildIndex)), doMove, allLegalMoves, terminalEvaluation)));
-            return children.get(randomChildIndex).get().simulate();
 
+            double eval = children.get(randomChildIndex).get().simulate();
+            this.value += eval;
+            this.searches += 1;
+            return eval;
         }
     }
 
