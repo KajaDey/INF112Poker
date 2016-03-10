@@ -11,13 +11,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import main.java.gamelogic.GameController;
 
 /**
  * Created by ady on 07/03/16.
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(GameSettings gameSettings){
+    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController){
 
         Stage window = new Stage();
 
@@ -44,15 +45,15 @@ public class GameLobby {
 
 
         //ActionListeners
-        settings.setOnAction(e -> ButtonListeners.settingsButtonListener());
+        settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener();
+            ButtonListeners.startGameButtonListener(gameController);
         });
 
         leaveLobby.setOnAction(e -> {
             window.close();
-            ButtonListeners.leaveLobbyButtonListener();
+            ButtonListeners.leaveLobbyButtonListener(gameController);
                 });
 
         //Put objects in boxes
@@ -78,7 +79,7 @@ public class GameLobby {
 
     }
 
-    public static HBox createScreenForSettings(Stage window){
+    public static HBox createScreenForSettings(Stage window,GameController gameController){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -96,17 +97,22 @@ public class GameLobby {
         TextField smallBlindTF = ObjectStandards.makeStandardTextField();
         TextField levelDurationTF = ObjectStandards.makeStandardTextField();
 
+        amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
+        numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
+        bigBlindTF.setText(String.valueOf(gameController.gameSettings.getBigBlind()));
+        smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
+        levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
 
 
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
         levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window,gameController));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);

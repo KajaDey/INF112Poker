@@ -18,12 +18,13 @@ import javafx.scene.text.Font;
  */
 public class GameScreen {
 
-    public static Scene createSceneForGameScreen(VBox opponent, VBox player, HBox board,GUIClient client) {
+    public static Scene createSceneForGameScreen(GUIClient client) {
 
         BorderPane borderPane = new BorderPane();
-        borderPane.setTop(opponent);
-        borderPane.setCenter(board);
-        borderPane.setBottom(player);
+
+        borderPane.setTop(makeOpponentLayout(client));
+        borderPane.setCenter(makeBoardLayout(client));
+        borderPane.setBottom(makePlayerLayout(client));
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
 
@@ -80,12 +81,12 @@ public class GameScreen {
             Button max = ObjectStandards.makeStandardButton("Max");
 
             //Actions
-            bet.setOnAction(e -> client.betButtonListener());
-            check.setOnAction(e -> client.checkButtonListener());
-            doubleB.setOnAction(e -> client.doubleButtonListener());
-            fold.setOnAction(e -> client.foldButtonListener());
-            max.setOnAction(e -> client.maxButtonListener());
-            pot.setOnAction(e -> client.potButtonListener());
+            bet.setOnAction(e -> ButtonListeners.betButtonListener(client,betAmount.getText()));
+            check.setOnAction(e -> ButtonListeners.checkButtonListener(client));
+            doubleB.setOnAction(e -> ButtonListeners.doubleButtonListener(client,betAmount.getText()));
+            fold.setOnAction(e -> ButtonListeners.foldButtonListener(client));
+            max.setOnAction(e -> ButtonListeners.maxButtonListener(client));
+            pot.setOnAction(e -> ButtonListeners.potButtonListener(client));
 
             //Add objects to the boxes
 

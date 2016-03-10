@@ -16,7 +16,8 @@ public class Game {
     private Player [] players;
 
     public Game(GameSettings gamesettings) {
-        this.maxNumberOfPlayers = gamesettings.maxNumberOfPlayers;
+        //this.maxNumberOfPlayers = gamesettings.maxNumberOfPlayers;
+        this.maxNumberOfPlayers = 2;
         this.table = new Table(maxNumberOfPlayers);
         this.players = new Player[maxNumberOfPlayers];
 

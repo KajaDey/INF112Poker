@@ -15,10 +15,14 @@ public class GameController {
     public Game game;
     public Map<Integer, GameClient> clients;
     public GUIMain mainGUI;
+    public GameSettings gameSettings;
+    GUIClient guiClient = new GUIClient(0);
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
+        gameSettings = new GameSettings(1000,50,25,2,10);
     }
+
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
@@ -26,7 +30,9 @@ public class GameController {
 
         //TODO: Tell GUI to set screen to Lobby screen
         System.out.println("Touchdown");
-        //SceneBuilder.showCurrentScene(GameLobby.createScreenForGameLobby(););
+        //SceneBuilder.showCurrentScene(GameLobby.createScreenForGameLobby());
+
+        mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
 
     }
 
@@ -58,11 +64,17 @@ public class GameController {
 
         //TODO: Tell GUIGameClientObject what to display in the table screen, using the init-method from GameClient-interface
         //TODO: Tell the AIGameClient-object whats up with the table using the init-method from GC-interface
+
+        mainGUI.displayGameScreen(gameSettings,this.guiClient);
     }
 
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
         if (client == null) { return null; }
         return client.getDecision();
+    }
+
+    public void setGameSettings(GameSettings gameSettings){
+        this.gameSettings = gameSettings;
     }
 }

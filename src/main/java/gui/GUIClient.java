@@ -11,7 +11,7 @@ import java.util.Map;
  */
 
 
-public class GUIClient extends ButtonListeners implements GameClient {
+public class GUIClient implements GameClient {
 
     private Map<Integer,String> name;
 
@@ -48,6 +48,10 @@ public class GUIClient extends ButtonListeners implements GameClient {
 
         //Return decision
         return null;
+    }
+
+    public void setDecision(Decision decision){
+        this.playerMadeDecision(id,decision);
     }
 
     @Override
