@@ -36,18 +36,17 @@ public class HighCardTest {
         card2 = card.of(14, Card.Suit.CLUBS).get();
 
         hand = new Hand(card1,card2,communityCards);
+        hc.match(hand);
 
     }
 
     @Test
     public void testHighCard() throws Exception {
-        hc.match(hand);
         assertEquals(card2, hc.getHand().get().get(0));
     }
 
     @Test
     public void testEntireHand() throws Exception {
-        hc.match(hand);
         assertEquals(card2, hc.getHand().get().get(0));
         assertEquals(card1, hc.getHand().get().get(1));
         assertEquals(card3, hc.getHand().get().get(2));
