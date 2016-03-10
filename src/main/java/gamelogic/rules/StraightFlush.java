@@ -15,5 +15,4 @@ public class StraightFlush {
 
     // send listen inn i Straight.match() og se om det er straight der
 
-    //Denne går ikke vekk ffs
 }
