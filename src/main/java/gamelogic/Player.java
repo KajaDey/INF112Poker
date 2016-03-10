@@ -26,7 +26,7 @@ public class Player extends User{
         return stackSize;
     }
 
-    public void setStackSize(int stackSize) {
+    public void setStackSize(long stackSize) {
         this.stackSize = stackSize;
     }
 

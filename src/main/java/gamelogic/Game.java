@@ -14,9 +14,13 @@ public class Game {
     private int maxNumberOfPlayers;
     private int numberOfPlayers = 0;
     private int blindLevelDuration;
-    private int startSB, startBB;
+    private long startSB, startBB; // TODO: changed to long
     private long startStack;
     private Player [] players;
+    private int dealerIndex = 0;
+    private int bigBlindIndex = 0;
+    private int roundNumber = 0;
+    private int smallBlindIndex = 0;
 
     public Game(GameSettings gamesettings) {
 //        this.maxNumberOfPlayers = gamesettings.maxNumberOfPlayers;
@@ -25,30 +29,34 @@ public class Game {
         this.players = new Player[maxNumberOfPlayers];
 
         this.startStack = gamesettings.startStack;
-        this.startSB = gamesettings.smallBlind;
-        this.startBB = gamesettings.bigBlind;
+        this.startSB = (long) gamesettings.smallBlind;
+        this.startBB = (long) gamesettings.bigBlind;
         this.blindLevelDuration = gamesettings.levelDuration;
     }
 
     public void playGame() {
-        numberOfPlayers = players.length;
         assert numberOfPlayers == maxNumberOfPlayers : "Incorrect number of players";
+        // TODO set clock
 
-        int dealerIndex = 0;
-        int smallBlindIndex = 0;
-        int bigBlindIndex = 0;
         List<Player> playersStillPlaying = new ArrayList<>();
+        long SB = startSB;
+        long BB = startBB;
 
-        /*
-        set who has dealer button
-        set who is bb and sb
+        while (numberOfPlayers > 1) {
+            initializeNewRound(playersStillPlaying);
 
-        while no one has won
-            assert bb and sb is paid
-            deal cards to all players
-            all players added to array of participants
+            // Make sb and bb pay
+            players[smallBlindIndex].setStackSize(players[smallBlindIndex].getStackSize() - SB);
+            players[bigBlindIndex].setStackSize(players[bigBlindIndex].getStackSize() - BB);
 
-            while cardsDisplayed < 5 -> play hand
+            // Deal cards to all players, starting from player next to dealer
+            Deck deck = new Deck();
+            for (Player p : playersStillPlaying) {
+                p.setHand(deck.draw().get(), deck.draw().get());
+            }
+
+            // TODO play hand:
+            /*
                 ask for decision from all participants, starting from player left for bb
                 while not everyone agrees on bet
                     get decisions from everyone
@@ -57,19 +65,29 @@ public class Game {
                             update stack size
                 if (not already 5 cards displayed)
                     display new card
-        */
+            */
 
+            // TODO: check for blindraise
+        }
 
     }
 
-    private void initializeNewRound(int dealerIndex, int smallBlindIndex, int bigBlindIndex, List<Player> playersStillPlaying) {
-        for (int i = 0; i < numberOfPlayers; i++) {
-            playersStillPlaying.add(players[i]);
+    private void initializeNewRound(List<Player> playersStillPlaying) {
+        dealerIndex = roundNumber%numberOfPlayers;
+        if (numberOfPlayers == 2) {
+            smallBlindIndex = roundNumber;
+            bigBlindIndex = roundNumber + 1;
+        }
+        else {
+            smallBlindIndex = (roundNumber + 1)%numberOfPlayers;
+            bigBlindIndex = (roundNumber + 2)%numberOfPlayers;
         }
 
-        if (numberOfPlayers == 2) {
-            dealerIndex = 0;
-
+        for (int i = (dealerIndex + 1)%numberOfPlayers; i < numberOfPlayers; i++) {
+            playersStillPlaying.add(players[i]);
+        }
+        for (int j = 0; j <= dealerIndex; j++) {
+            playersStillPlaying.add(players[j]);
         }
     }
 
@@ -82,6 +100,7 @@ public class Game {
         for (int i = 0; i < maxNumberOfPlayers; i++) {
             if (players[i] == null) {
                 players[i] = p;
+                numberOfPlayers++;
                 break;
             }
         }
@@ -90,7 +109,8 @@ public class Game {
     }
 
     private boolean removePlayer(Player p) {
-        // TODO implement
+        // TODO: anything else?
+        numberOfPlayers--;
         return table.removePlayer(p);
     }
 
