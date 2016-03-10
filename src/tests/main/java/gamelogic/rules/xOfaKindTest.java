@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  * Created by Vegar on 09/03/16.
 */
 public class xOfaKindTest {
-    Hand handOf4, handOf3, handOf2 = null;
+    Hand hand1,hand2, hand3 = null;
     Card card, holeCard1, holeCard2, holeCard3,holeCard4 = null;
     ArrayList<Card> communityCards= new ArrayList<>();
 
@@ -46,22 +46,28 @@ public class xOfaKindTest {
 
     @Test
     public void testFourLikeCards() throws Exception {
-        handOf4 = new Hand(holeCard1,holeCard2,communityCards);
-        assertEquals(true,xOf4.match(handOf4));
-        assertEquals(false,xOf3.match(handOf4));
-        assertEquals(false,xOf2.match(handOf4));
+        hand1 = new Hand(holeCard1,holeCard2,communityCards);
+        hand2=new Hand(holeCard3,holeCard4,communityCards);
+
+        assertEquals(true,xOf4.match(hand1));
+        assertEquals(false,xOf3.match(hand1));
+        assertEquals(false,xOf2.match(hand1));
+        assertEquals(false,xOf4.match(hand2));
     }
 
     @Test
     public void testThreeLikeCards() throws Exception {
-        handOf3 = new Hand(holeCard1,holeCard4,communityCards);
-        assertEquals(true,xOf3.match(handOf3));
-        assertEquals(false,xOf2.match(handOf3));
+        hand1 = new Hand(holeCard1,holeCard4,communityCards);
+        hand2=new Hand(holeCard3,holeCard4,communityCards);
+        assertEquals(true,xOf3.match(hand1));
+        assertEquals(false,xOf2.match(hand1));
+        assertEquals(false,xOf3.match(hand2));
     }
 
     @Test
     public void testTwoLikeCards() throws Exception {
-        handOf2 = new Hand(holeCard3,holeCard4,communityCards);
-        assertEquals(true,xOf2.match(handOf2));
+        hand1 = new Hand(holeCard3,holeCard4,communityCards);
+        assertEquals(true,xOf2.match(hand1));
+
     }
 }
