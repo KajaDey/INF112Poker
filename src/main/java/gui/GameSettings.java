@@ -18,4 +18,24 @@ public class GameSettings {
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
     }
+
+    public long getStartStack() {
+        return startStack;
+    }
+
+    public int getBigBlind() {
+        return bigBlind;
+    }
+
+    public int getSmallBlind() {
+        return smallBlind;
+    }
+
+    public int getMaxNumberOfPlayers() {
+        return maxNumberOfPlayers;
+    }
+
+    public int getLevelDuration() {
+        return levelDuration;
+    }
 }

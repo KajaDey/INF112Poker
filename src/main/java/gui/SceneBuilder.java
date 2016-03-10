@@ -32,18 +32,18 @@ public class SceneBuilder {
     }
 
 
-    public static void updateLobbyScreen(GUIClient client){
-       GameLobby.createScreenForGameLobby(client);
+    public static void updateLobbyScreen(GameSettings gameSettings){
+       GameLobby.createScreenForGameLobby(gameSettings);
     }
 
 
-    public static Scene createSceneForInitialScreen(String imageName,GUIClient client){
+    public static Scene createSceneForInitialScreen(String imageName){
         Stage window = new Stage();
         window.setTitle("Welcome to The Game!");
 
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
-        mainScreenLayout.setCenter(MainScreen.makeLayout(window,client));
+        mainScreenLayout.setCenter(MainScreen.makeLayout(window));
 
         Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout, 1920, 1080), 1280, 720);
 

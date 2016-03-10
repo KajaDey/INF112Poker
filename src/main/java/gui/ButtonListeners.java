@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ChoiceBox;
+import main.java.gamelogic.GameClient;
 import main.java.gamelogic.GameController;
 
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
  */
 public class ButtonListeners {
 
-    GameSettings gameSettings;
+   static GameSettings gameSettings;
 
     /**
      * What happens when the betButton is pushed
@@ -57,17 +58,17 @@ public class ButtonListeners {
         //TODO: Implement method
     }
 
-    public void settingsButtonListener(GUIClient client) {
+    public static void settingsButtonListener() {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,client),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings),260,200);
         settings.setScene(scene);
         settings.show();
     }
 
-    public void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
-                                             String smallBlindText, String levelDurationText, GUIClient client, Stage window) {
+    public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
+                                             String smallBlindText, String levelDurationText, Stage window) {
         try {
             /*client.setStartChips(Long.valueOf(amountOfChips));
             client.setAmountOfPlayers(Integer.valueOf(numberOfPlayersText));
@@ -78,9 +79,7 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(numberOfPlayersText),
                     Integer.valueOf(bigBlindText),(Integer.valueOf(smallBlindText)),Integer.valueOf(levelDurationText));
 
-
-
-            SceneBuilder.updateLobbyScreen(client);
+            SceneBuilder.updateLobbyScreen(gameSettings);
             window.close();
 
         }catch (NumberFormatException e){
@@ -89,44 +88,31 @@ public class ButtonListeners {
 
     }
 
-    public void cancelSettingsButtonListener(Stage window) {
+    public static void cancelSettingsButtonListener(Stage window) {
         window.close();
     }
 
-    public void startGameButtonListener(GUIClient client) {
+    public static void startGameButtonListener() {
 
-        /*Map<Integer, Long> map = new HashMap<>();
-
-        for (int i = 0; i < client.getAmountOfPlayers(); i++)
-            map.put(i, client.getStartChips());
-
-        client.setStackSizes(map);
-
-        GameScreen.createSceneForGameScreen(GameScreen.makeOpponentLayout(client),
-                GameScreen.makePlayerLayout(client), GameScreen.makeBoardLayout(client), client);*/
-
-        //GameController.startTournamentButtonClicked(client);
 
         //TODO: Have gamecontroller object passed into this method
         //GameController.startTournamentButtonClicked(gameSettings);
     }
 
-    public void leaveLobbyButtonListener(GUIClient client) {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",client), "Main Screen");
+    public static void leaveLobbyButtonListener() {
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable"), "Main Screen");
     }
 
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public void mainScreenEnterListener(String name, String numOfPlayers, ChoiceBox<String> choiceBox, GUIClient client){
+    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox){
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.getValue().equals("Single Player")) {
-                Map<Integer, String> map = client.getName();
-                map.put(client.getId(), name);
-                client.setName(map);
-                GameLobby.createScreenForGameLobby(client);
+            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
+                //GameController.enterButtonClicked(name,Integer.parseInt(numOfPlayers),choiceBox);
+
             }
-            else SceneBuilder.createSceneForInitialScreen("PokerTable", client);
+            else SceneBuilder.createSceneForInitialScreen("PokerTable");
         }catch (NumberFormatException e){
 
         }

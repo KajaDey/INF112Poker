@@ -41,7 +41,7 @@ public class Straight implements IRule {
                 return true;
             }
             // Found cards 2-5, plus Ace
-            if (drawCount == 4 && thisRank == 2 && cards.get(lastCardIndex).rank == 14) {
+            if (drawCount == 4 && nextRank == 2 && cards.get(lastCardIndex).rank == 14) {
                 fillReturnHand(i-1, true);
                 return true;
             }
