@@ -1,5 +1,6 @@
 package main.java.gamelogic.ai;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,21 +27,36 @@ public class MCTS<Pos, Move> {
         private int searches;
 
         public final Pos position;
+        public final boolean maximizing;
 
         public List<Optional<TreeNode>> children;
 
-        public TreeNode(Pos position) {
+        public final boolean isTerminal;
+        public boolean allChildrenAreExplored = false;
+
+        public TreeNode(Pos position, boolean maximizing) {
 
             this.position = position;
+            this.maximizing = maximizing;
+
             assert position != null;
 
             value = 0.0;
             searches = 0;
 
             children = new ArrayList<>();
-            for (Move m : allLegalMoves.apply(position)) {
-                children.add(Optional.empty());
+
+            ArrayList<Move> allMoves = allLegalMoves.apply(position);
+            if (allMoves.size() == 0) {
+                isTerminal = true;
             }
+            else {
+                isTerminal = false;
+                for (Move m : allMoves) {
+                    children.add(Optional.empty());
+                }
+            }
+
         }
 
         public void addValue(double value) {
@@ -49,54 +65,81 @@ public class MCTS<Pos, Move> {
             totalSearches += 1;
         }
 
-        public double select() {
-            Optional<TreeNode> node = children.get((int)(Math.random()*children.size()));
+        public double explorationValue() {
+            double tempValue = !maximizing ? value : (value - 1) * -1;
+            if (searches > 0) {
+                return tempValue / searches + Math.sqrt(2) * Math.sqrt(Math.log(totalSearches) / searches);
+            }
+            else {
+                return !maximizing ? Double.POSITIVE_INFINITY : Double.POSITIVE_INFINITY;
+            }
+        }
 
-            if (node.isPresent()) {
-                Optional<Double> eval = terminalEvaluation.apply((Pos)node.get().position);
-                if (!eval.isPresent()) {
-                    double trueEval = node.get().select();
-                    addValue(trueEval);
-                    return trueEval;
+        public double select() {
+
+            if (allChildrenAreExplored) {
+                TreeNode bestNode;
+                if (maximizing) {
+                    bestNode = children.stream().max((child1, child2) -> Double.compare(child1.get().explorationValue(), child2.get().explorationValue())).get().get();
                 }
                 else {
-                    addValue(eval.get());
-                    return eval.get();
+                    bestNode = children.stream().max((child1, child2) -> Double.compare(child1.get().explorationValue(), child2.get().explorationValue())).get().get();
+                }
+                if (bestNode.isTerminal) {
+                    Double eval = terminalEvaluation.apply((Pos) bestNode.position).get();
+                    addValue(eval);
+                    return eval;
+                }
+                else {
+                    double eval = bestNode.select();
+                    addValue(eval);
+                    return eval;
                 }
             }
             else {
-                // Not necessary to add value because expand() already does this
-                return expand();
-            }
+                Optional<TreeNode> node = children.get((int)(Math.random()*children.size()));
+                // Choose a new node
+                while (node.isPresent()) {
+                    node = children.get((int)(Math.random()*children.size()));
+                }
 
+                double eval = expand();
+                addValue(eval);
+                return eval;
+
+            }
         }
 
+        /**
+         * Expands this node by creating a new node from a random
+         */
         public double expand() {
-            assert !terminalEvaluation.apply(position).isPresent();
-            List<Move> allMoves = allLegalMoves.apply(position);
-            while (true) {
-                int randomChildIndex = (int)(Math.random() * children.size());
-                if (children.get(randomChildIndex).isPresent()) {
-                    continue;
-                }
-                children.set(randomChildIndex, Optional.of(new TreeNode(doMove.apply(position, allMoves.get(randomChildIndex)))));
+            assert !isTerminal;
 
-                double eval = children.get(randomChildIndex).get().simulate();
-                this.value += eval;
-                this.searches += 1;
-                totalSearches += 1;
-                return eval;
+            int childIndex = (int)(Math.random()*children.size());
+            while (children.get(childIndex).isPresent()) {
+                childIndex = (int)(Math.random()*children.size());
             }
+
+            List<Move> allMoves = allLegalMoves.apply(position);
+
+            children.set(childIndex, Optional.of(new TreeNode(doMove.apply(position, allMoves.get(childIndex)), !this.maximizing)));
+
+            if (children.stream().allMatch(Optional::isPresent)) {
+                this.allChildrenAreExplored = true;
+            }
+
+            return children.get(childIndex).get().simulate();
+            // Not necessary to add value because expand() already does this
         }
 
         public double simulate() {
-            Optional<Double> evaluation = terminalEvaluation.apply(position);
-            if (evaluation.isPresent()) {
-                return evaluation.get();
+            if (isTerminal) {
+                return terminalEvaluation.apply(position).get();
             }
             List<Move> allMoves = allLegalMoves.apply(position);
             int randomChildIndex = (int)(Math.random() * children.size());
-            TreeNode child = (new TreeNode(doMove.apply(position, allMoves.get(randomChildIndex))));
+            TreeNode child = (new TreeNode(doMove.apply(position, allMoves.get(randomChildIndex)), !this.maximizing));
 
             return child.simulate();
         }
@@ -118,7 +161,7 @@ public class MCTS<Pos, Move> {
 
         assert startPosition != null && doMove != null && allLegalMoves != null && getTerminalEvaluation != null;
 
-        rootNode = new TreeNode(startPosition);
+        rootNode = new TreeNode(startPosition, true);
     }
 
 

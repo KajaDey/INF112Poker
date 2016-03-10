@@ -1,5 +1,7 @@
 package main.java.gamelogic.ai;
 
+import org.junit.Test;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +90,7 @@ public class MonteCarloTreeNodeTest {
                     return Optional.of(1.0);
                 }
                 else if (board[i] == 2) {
-                    return Optional.of(-1.0);
+                    return Optional.of(0.0);
                 }
             }
             return Optional.empty();
@@ -111,23 +113,25 @@ public class MonteCarloTreeNodeTest {
             return "From: " + fromPosition + ", to: " + toPosition;
         }
     }
-    // @Test
+
+    @Test
     public void simpleGameTest() {
         MCTS<GamePosition, Move> mcts = new MCTS<>(new GamePosition(), GamePosition::do_move, GamePosition::allLegalMoves, GamePosition::getTerminalEvaluation);
         MCTS.TreeNode rootNode = mcts.rootNode;
-        for (int i = 0; i < 5000_000; i++) {
+        for (int i = 0; i < 50_000_000; i++) {
             rootNode.select();
             if (i % 100_000 == 0) {
                 for (int j = 0; j < rootNode.children.size(); j++) {
                 Optional<MCTS.TreeNode> child = (Optional<MCTS.TreeNode>)rootNode.children.get(j);
                     if (child.isPresent()) {
-                        System.out.println(child.get() + ", move: " + mcts.allLegalMoves.apply((GamePosition)rootNode.position).get(j));
+                        System.out.println(child.get() + ", move: " + mcts.allLegalMoves.apply((GamePosition)rootNode.position).get(j) + ", expl: " + child.get().explorationValue());
 
                         for (int k = 0; k < child.get().children.size(); k++) {
-                            Optional<MCTS> grandChild = (Optional<MCTS>)child.get().children.get(k);
+                            Optional<MCTS.TreeNode> grandChild = (Optional<MCTS.TreeNode>) child.get().children.get(k);
                             if (grandChild.isPresent()) {
                                 System.out.println("\t" + grandChild.get()
-                                        + ", move: " + ((ArrayList<Move>)(mcts.allLegalMoves.apply((GamePosition)child.get().position))).get(k));
+                                        + ", move: " + ((ArrayList<Move>)(mcts.allLegalMoves.apply((GamePosition)child.get().position))).get(k) + ", expl: " + grandChild.get().explorationValue());
+
                                 //+ ((Optional<MCTS>) child.get().children.get(k)).get().position);
                             }
                             else {
