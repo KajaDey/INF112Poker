@@ -13,6 +13,9 @@ public class House implements IRule {
     private boolean isFullHouse = false;
 
 
+
+
+    public Map<Integer,Integer> cardCount = new HashMap<Integer,Integer>();
     @Override
     public boolean match(Hand hand) {
 
@@ -20,21 +23,23 @@ public class House implements IRule {
         cards.sort(Card::compareTo);
         allCards = cards;
 
-        Map<Integer,Integer> cardCount = new HashMap<Integer,Integer>();
+
 
 
     //count how many of each card we gt
     for(Card card:cards)
-        if(!cardCount.containsKey(card.rank))
-            cardCount.put(card.rank,0);
-        else
-            cardCount.put(card.rank,cardCount.get(card)+1);
+        if(!cardCount.containsKey(card.rank)) {
+            cardCount.put(card.rank, 1);
+        }
+        else {
+            cardCount.put(card.rank, cardCount.get(card.rank) + 1);
+        }
 
 
         for(Card card:cards) {
-            if (cardCount.get(card.rank) >= 2) {
+            if (cardCount.get(card.rank) > 1) {
                 for (Card otherCard : cards) {
-                    if (otherCard.rank != card.rank && cardCount.get(otherCard.rank) > 2) {
+                    if (!(otherCard.rank == card.rank) && cardCount.get(otherCard.rank) > 2) {
                         isFullHouse = true;
                     }
                 }
@@ -53,7 +58,7 @@ public class House implements IRule {
         //search cards for a triplet
         for(int i = allCards.size();i>1;i--)
         {
-            if(allCards.get(i).rank == allCards.get(i-1).rank && allCards.get(i-1).rank == allCards.get(i-2).rank)
+            if(allCards.get(i).rank == allCards.get(i-1).rank && allCards.get(i).rank == allCards.get(i-2).rank)
             {
                 //add the best triplet
                 bestCards.add(allCards.get(i));
@@ -61,9 +66,9 @@ public class House implements IRule {
                 bestCards.add(allCards.get(i-2));
 
                 //remove it for further use of best cards, remove top three
-                allCards.remove(allCards.get(i));
-                allCards.remove(allCards.get(i-1));
-                allCards.remove(allCards.get(i-2));
+                allCards.remove(i);
+                allCards.remove(i-1);
+                allCards.remove(i-2);
                 break;
 
             }
@@ -71,12 +76,12 @@ public class House implements IRule {
 
         //search cards for the remaining double(may be a remaining triple but we only choose the two first)
         //
-        for(int i = allCards.size();i>0;i++)
+        for(int i = allCards.size();i>0;i--)
         {
             if(allCards.get(i).rank == allCards.get(i-1).rank) {
                 bestCards.add(allCards.get(i));
                 bestCards.add(allCards.get(i - 1));
-                break;
+                //break;
             }
         }
 
@@ -86,4 +91,6 @@ public class House implements IRule {
 
 
     }
+
+
 }
