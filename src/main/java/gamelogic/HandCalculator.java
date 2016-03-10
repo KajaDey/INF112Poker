@@ -20,6 +20,8 @@ public class HandCalculator {
 
     public Optional<List<Card>> getUsersBestHand(Hand hand){
 
+        //TODO: Not finished, logic in classes, and missing hands in list need to be filled out
+
         Optional<List<Card>> bestHand = Optional.empty();
         Flush flush = null;
         Straight straight = null;
@@ -38,8 +40,6 @@ public class HandCalculator {
             if(ir.match(hand))
                 return ir.getHand();
         }
-
-        //xOfaKind returns an int saying how many equal cards were found (-1 if no equal cards are found)
 
         return bestHand;
     }
