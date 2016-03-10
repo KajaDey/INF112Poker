@@ -2,7 +2,7 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
-import main.java.gamelogic.rules.xOfaKind;
+import main.java.gamelogic.Rules.xOfaKind;
 import org.junit.Before;
 import org.junit.Test;
 
