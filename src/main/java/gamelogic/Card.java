@@ -56,7 +56,20 @@ public class Card implements Comparable<Card> {
 
     @Override
     public String toString() {
-        return suit.toString() + rank;
+        String royal = "";
+        if (rank == 14) {
+            royal = "A";
+        }
+        else if (rank == 13) {
+            royal = "K";
+        }
+        else if (rank == 12) {
+            royal = "Q";
+        }
+        else if (rank == 11) {
+            royal = "J";
+        }
+        return suit.toString() + (royal.equals("") ? rank : royal);
     }
 
     @Override
