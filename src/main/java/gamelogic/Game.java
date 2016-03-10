@@ -27,7 +27,7 @@ public class Game {
         this.blindLevelDuration = gamesettings.levelDuration;
     }
 
-    public void start() {
+    public void playGame() {
 
 
     }

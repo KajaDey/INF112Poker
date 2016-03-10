@@ -74,4 +74,14 @@ public class StraightTest {
 
         assertTrue(straigt.match(hand));
     }
+
+    @Test
+    public void testGetsBestHandWhenLongStraight() {
+        hand = new Hand(card1, card2, Arrays.asList(card3, card4, card8, card7, card5));
+        straigt = new Straight();
+        straigt.match(hand);
+
+        assertTrue(straigt.getHand().get().contains(card5)); // highest in straight
+        assertFalse(straigt.getHand().get().contains(card8)); // no ace
+    }
 }

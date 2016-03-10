@@ -13,46 +13,21 @@ import java.util.Optional;
 public class StraightFlush implements IRule {
 
     private List<Card> returnHand = new ArrayList<>();
-    private List<Card> mainSuitCards = new ArrayList<>();
     private List<Card> cards;
 
     @Override
     public boolean match(Hand hand) {
         cards = hand.getAllCards();
-
-        Card.Suit mainSuit = findMainSuit();
-        Card lastCardAdded = null;
-
-        for (Card c : cards) {
-            if (c.suit == mainSuit) {
-                mainSuitCards.add(c);
-                lastCardAdded = c;
-            }
-        }
+        Card.Suit mainSuit = findMainSuit(cards);
+        List<Card> mainSuitCards = getMainSuitCards(mainSuit);
 
         if (mainSuitCards.size() < 5) {
             return false;
         }
 
-        while (mainSuitCards.size() < 7) {
-            mainSuitCards.add(lastCardAdded);
-        }
-
-        // handWithMinSuit inneholder alle i mainSuit
-//         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card5, card7, card6));
-
-        // Send returnHand inn i straight
-        Straight straight = new Straight();
-//        straight.match(returnHand);
-
-        // sjekk om true
-
-
-
-
-        return false;
+        Straight straight = new Straight(mainSuitCards);
+        return straight.match(hand);
     }
-
 
     @Override
     public Optional<List<Card>> getHand() {
@@ -62,8 +37,59 @@ public class StraightFlush implements IRule {
         return Optional.empty();
     }
 
-    private Card.Suit findMainSuit() {
-        // TODO
-        return Card.Suit.CLUBS;
+    /**
+     *  Fills and returns an array of all cards of the most common suit.
+     * @param mainSuit the most common Suit
+     * @return cards of the main suit
+     */
+    private List<Card> getMainSuitCards(Card.Suit mainSuit) {
+        List<Card> mainSuitCards = new ArrayList<>();
+        for (Card c : cards) {
+            if (c.suit == mainSuit) {
+                mainSuitCards.add(c);
+            }
+        }
+        return mainSuitCards;
+    }
+
+    /**
+     * Finds the most common suit (main suit) in the array of cards.
+     *
+     * @param cards hole cards and community cards
+     * @return main suit
+     */
+    private Card.Suit findMainSuit(List<Card> cards) {
+        int numClubs = 0;
+        int numSpades = 0;
+        int numDiamonds = 0;
+        int numHearts = 0;
+
+        for (Card c : cards) {
+            Card.Suit suit = c.suit;
+            switch (suit) {
+                case CLUBS: numClubs++; break;
+                case SPADES: numSpades++; break;
+                case DIAMONDS: numDiamonds++; break;
+                case HEARTS: numHearts++; break;
+            }
+        }
+
+        int mainSuitCount = numClubs;
+        Card.Suit mainSuit = Card.Suit.CLUBS;
+
+        if (Math.max(numSpades, mainSuitCount) == numSpades) {
+            mainSuitCount = numSpades;
+            mainSuit = Card.Suit.SPADES;
+        }
+        if (Math.max(numDiamonds, mainSuitCount) == numDiamonds) {
+            mainSuitCount = numDiamonds;
+            mainSuit = Card.Suit.DIAMONDS;
+        }
+        if (Math.max(numHearts, mainSuitCount) == numHearts) {
+            mainSuitCount = numHearts;
+            mainSuit = Card.Suit.HEARTS;
+        }
+
+        return mainSuit;
     }
 }

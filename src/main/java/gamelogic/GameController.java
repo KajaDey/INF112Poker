@@ -2,9 +2,7 @@ package main.java.gamelogic;
 
 import main.java.gui.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,7 +58,7 @@ public class GameController {
         //TODO: Tell GUIGameClient to got to table scene
 
         //Start the pokergame
-        game.start();
+        game.playGame();
 
         //TODO: Tell GUIGameClientObject what to display in the table screen, using the init-method from GameClient-interface
         //TODO: Tell the AIGameClient-object whats up with the table using the init-method from GC-interface

@@ -60,7 +60,7 @@ public interface GameClient {
     void setPositions(Map<Integer, Integer> setPositions);
 
     /**
-     * Sends amount of start-chips
+     * Sends amount of playGame-chips
      */
 
     void setStartChips(long startChips);

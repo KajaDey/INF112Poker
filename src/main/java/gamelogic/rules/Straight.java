@@ -13,12 +13,33 @@ import java.util.Optional;
 public class Straight implements IRule {
     private int drawCount = 1;
     private int lastCardIndex;
-    private List<Card> returnHand = new ArrayList<>();
     private List<Card> cards;
+    private List<Card> returnCards = new ArrayList<>();
+    private boolean lookingForStraightFlush = false;
+
+    /**
+     * Regular constructor, used in most cases
+     */
+    public Straight() {
+        cards = new ArrayList<>();
+    }
+
+    /**
+     * Alternate constructor, used when looking for straight flush
+     * @param flushCards list of cards to check for straight
+     */
+    public Straight(List<Card> flushCards){
+        this.cards = flushCards;
+        this.lookingForStraightFlush = true;
+    }
 
     @Override
     public boolean match(Hand hand) {
-        cards = hand.getAllCards();
+
+        if (!lookingForStraightFlush) {
+            cards = hand.getAllCards();
+        }
+
         lastCardIndex = cards.size() - 1;
 
         cards.sort(Card::compareTo);
@@ -51,24 +72,30 @@ public class Straight implements IRule {
 
     @Override
     public Optional<List<Card>> getHand() {
-        if (returnHand.size() > 0) {
-            return Optional.of(returnHand);
+        if (returnCards.size() > 0) {
+            return Optional.of(returnCards);
         }
         return Optional.empty();
     }
 
+    /**
+     * Puts the cards that make up the straight in a list
+     *
+     * @param indexToAdd index of first card in the straight
+     * @param addAceLow true if the lowest card in the straight is an ace
+     */
     private void fillReturnHand(int indexToAdd, boolean addAceLow) {
         int numberOfCardsAdded = 0;
         int maxCardsToAdd = 5;
 
         if (addAceLow) {
-            returnHand.add(cards.get(lastCardIndex));
+            returnCards.add(cards.get(lastCardIndex));
             maxCardsToAdd = 4;
         }
 
         while (numberOfCardsAdded < maxCardsToAdd) {
             if (indexToAdd == cards.size() -1) {
-                returnHand.add(cards.get(indexToAdd));
+                returnCards.add(cards.get(indexToAdd));
                 return;
             }
             int thisRank = cards.get(indexToAdd).rank;
@@ -78,7 +105,7 @@ public class Straight implements IRule {
                 indexToAdd++;
                 continue;
             }
-            returnHand.add(cards.get(indexToAdd));
+            returnCards.add(cards.get(indexToAdd));
             numberOfCardsAdded++;
             indexToAdd++;
         }
