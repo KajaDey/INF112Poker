@@ -81,12 +81,12 @@ public class GameScreen {
             Button max = ObjectStandards.makeStandardButton("Max");
 
             //Actions
-            bet.setOnAction(e -> client.betButtonListener());
-            check.setOnAction(e -> client.checkButtonListener());
-            doubleB.setOnAction(e -> client.doubleButtonListener());
-            fold.setOnAction(e -> client.foldButtonListener());
-            max.setOnAction(e -> client.maxButtonListener());
-            pot.setOnAction(e -> client.potButtonListener());
+            bet.setOnAction(e -> ButtonListeners.betButtonListener(client,betAmount.getText()));
+            check.setOnAction(e -> ButtonListeners.checkButtonListener(client));
+            doubleB.setOnAction(e -> ButtonListeners.doubleButtonListener(client,betAmount.getText()));
+            fold.setOnAction(e -> ButtonListeners.foldButtonListener(client));
+            max.setOnAction(e -> ButtonListeners.maxButtonListener(client));
+            pot.setOnAction(e -> ButtonListeners.potButtonListener(client));
 
             //Add objects to the boxes
 

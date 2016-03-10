@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ChoiceBox;
+import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
 import main.java.gamelogic.GameController;
 
@@ -19,43 +20,49 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public void betButtonListener(){
+    public static void betButtonListener(GUIClient client, String betAmount){
         //TODO: Implement method
+        client.setDecision(new Decision(Decision.Move.BET,Long.valueOf(betAmount)));
     }
 
     /**
      * What happens when the checkButton is pushed
      */
-    public void checkButtonListener(){
+    public static void checkButtonListener(GUIClient client){
         //TODO: Implement method
+        client.setDecision(new Decision(Decision.Move.CHECK));
     }
 
     /**
      * What happens when the doubleButton is pushed
      */
-    public void doubleButtonListener(){
+    public static void doubleButtonListener(GUIClient client,String betAmount){
         //TODO: Implement method
+        client.setDecision(new Decision(Decision.Move.BET,Long.valueOf(betAmount)*2));
     }
 
     /**
      * What happens when the foldButton is pushed
      */
-    public void foldButtonListener(){
+    public static void foldButtonListener(GUIClient client){
         //TODO: Implement method
+        client.setDecision(new Decision(Decision.Move.FOLD));
     }
 
     /**
      * What happens when the maxButton is pushed
      */
-    public void maxButtonListener(){
+    public static void maxButtonListener(GUIClient client){
         //TODO: Implement method
+        client.setDecision(new Decision(Decision.Move.BET,client.getStackSizes().get(client.getId())));
     }
 
     /**
      * What happens when the potButton is pushed
      */
-    public void potButtonListener(){
+    public static void potButtonListener(GUIClient client){
         //TODO: Implement method
+        client.setDecision(new Decision(Decision.Move.BET,client.getPot()));
     }
 
     public static void settingsButtonListener(GameController gameController) {
