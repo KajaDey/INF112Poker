@@ -25,17 +25,17 @@ public class HouseTest {
 
         ArrayList<Card> communityCards = new ArrayList<>();
 
-        communityCards.add(card.of(10, Card.Suit.SPADES).get());
-        communityCards.add(card.of(10, Card.Suit.SPADES).get());
-        communityCards.add(card.of(10, Card.Suit.SPADES).get());
-        communityCards.add(card.of(2, Card.Suit.HEARTS).get());
-        communityCards.add(card.of(7, Card.Suit.CLUBS).get());
+        communityCards.add(card.of(2, Card.Suit.SPADES).get());
+        communityCards.add(card.of(2, Card.Suit.SPADES).get());
+        communityCards.add(card.of(2, Card.Suit.SPADES).get());
+        communityCards.add(card.of(3, Card.Suit.HEARTS).get());
+        communityCards.add(card.of(3, Card.Suit.CLUBS).get());
 
-        Card twoOfSpades = card.of(2, Card.Suit.SPADES).get();
-        Card twoOfHearts = card.of(2, Card.Suit.HEARTS).get();
+        Card firstPocket = card.of(3, Card.Suit.SPADES).get();
+        Card secondPocket = card.of(2, Card.Suit.HEARTS).get();
 
         //this will hopefully be registered as a full house
-        hand = new Hand(twoOfSpades,twoOfHearts,communityCards);
+        hand = new Hand(firstPocket,secondPocket,communityCards);
 
 
     }
@@ -44,7 +44,9 @@ public class HouseTest {
     public void testIfFullHouseIsRegisteredAsFullHouse(){
 
         boolean full = house.match(hand);
-        System.out.print(house.cardCount); //prints all cards for reference
+
+        System.out.println("count of each card");
+        System.out.println(house.cardCount); //prints all cards for reference
         assert(full);
     }
 
@@ -55,7 +57,10 @@ public class HouseTest {
 
         Optional<List<Card>> houseHand = house.getHand();
 
-        System.out.println(houseHand);
+        System.out.println("best hand possible on table and pocket");
+        System.out.println(houseHand); //prints hand for dank visual reference ‎( ͡° ͜ʖ ͡°)
+
+        
 
     }
 
