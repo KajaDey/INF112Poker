@@ -11,14 +11,10 @@ import java.util.Optional;
  * Created by pokki on 08/03/16.
  */
 public class Straight implements IRule {
-    public int drawCount = 0; // TODO private
+    private int drawCount = 1;
     private int lastCardIndex;
-    public List<Card> returnHand = new ArrayList<Card>(); // TODO private
-    public List<Card> cards; // TODO private
-
-    public Straight(Hand hand) {
-        this.cards = hand.getAllCards();
-    }
+    private List<Card> returnHand = new ArrayList<>();
+    private List<Card> cards;
 
     @Override
     public boolean match(Hand hand) {
@@ -31,23 +27,23 @@ public class Straight implements IRule {
             int thisRank = cards.get(i).rank;
             int nextRank = cards.get(i - 1).rank;
 
-//            if (drawCount == 5) {
-//                fillReturnHand(i, false);
-//                return true;
-//            }
-
-//            // Found cards 2-5, plus Ace
-//            if (drawCount == 4 && thisRank == 2 && cards.get(lastCardIndex).rank == 14) {
-//                fillReturnHand(i, true);
-//                return true;
-//            }
-
             if (thisRank == nextRank + 1) {
                 drawCount++;
+
             } else if (thisRank == nextRank) {
                 continue;
             } else {
-                drawCount = 0;
+                drawCount = 1;
+            }
+
+            if (drawCount == 5) {
+                fillReturnHand(i-1, false);
+                return true;
+            }
+            // Found cards 2-5, plus Ace
+            if (drawCount == 4 && thisRank == 2 && cards.get(lastCardIndex).rank == 14) {
+                fillReturnHand(i-1, true);
+                return true;
             }
         }
         return false;
@@ -62,23 +58,28 @@ public class Straight implements IRule {
     }
 
     private void fillReturnHand(int indexToAdd, boolean addAceLow) {
-        int numberOfCardsToAdd = 5;
+        int numberOfCardsAdded = 0;
+        int maxCardsToAdd = 5;
 
         if (addAceLow) {
             returnHand.add(cards.get(lastCardIndex));
-            numberOfCardsToAdd = 4;
+            maxCardsToAdd = 4;
         }
 
-        for (int i = 0; i <= numberOfCardsToAdd; i++) {
+        while (numberOfCardsAdded < maxCardsToAdd) {
+            if (indexToAdd == cards.size() -1) {
+                returnHand.add(cards.get(indexToAdd));
+                return;
+            }
             int thisRank = cards.get(indexToAdd).rank;
             int nextRank = cards.get(indexToAdd + 1).rank;
 
-            while (thisRank == nextRank) {
+            if (thisRank == nextRank) {
                 indexToAdd++;
-                thisRank = nextRank;
-                nextRank = cards.get(indexToAdd + 1).rank;
+                continue;
             }
             returnHand.add(cards.get(indexToAdd));
+            numberOfCardsAdded++;
             indexToAdd++;
         }
     }
