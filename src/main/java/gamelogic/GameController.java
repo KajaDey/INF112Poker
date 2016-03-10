@@ -1,6 +1,6 @@
 package main.java.gamelogic;
 
-import main.java.gamelogic.ai.AI;
+import main.java.gamelogic.ai.SimpleAI;
 import main.java.gui.*;
 
 import java.util.HashMap;
@@ -50,9 +50,9 @@ public class GameController {
         game.addPlayer("Kristian", 0);
 
         //AIGameClient
-        AI aiClient = new AI(1);
+        SimpleAI aiClient = new SimpleAI(1);
         clients.put(1, aiClient);
-        game.addPlayer("AI-player", 1);
+        game.addPlayer("SimpleAI-player", 1);
 
         //TODO: add all players to GUI
         mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");

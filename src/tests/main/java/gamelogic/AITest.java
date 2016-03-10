@@ -1,8 +1,6 @@
 package main.java.gamelogic;
 
-import main.java.gamelogic.ai.AI;
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
+import main.java.gamelogic.ai.SimpleAI;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -19,7 +17,7 @@ public class AITest {
     @Test
     public void checksWithShittyHandAsBigBlind() {
         for (int i = 0; i < N; i++) {
-            AI ai = new AI(0);
+            SimpleAI ai = new SimpleAI(0);
             ai.setBigBlind(20);
             ai.setSmallBlind(10);
             ai.setAmountOfPlayers(3);
@@ -44,7 +42,7 @@ public class AITest {
     @Test
     public void foldsWithShittyHandIfNotBlind() {
         for (int i = 0; i < N; i++) {
-            AI ai = new AI(0);
+            SimpleAI ai = new SimpleAI(0);
             ai.setBigBlind(20);
             ai.setSmallBlind(10);
             ai.setAmountOfPlayers(3);
@@ -69,7 +67,7 @@ public class AITest {
     @Test
     public void doesNotFoldWithGreatHand() {
         for (int i = 0; i < N; i++) {
-            AI ai = new AI(0);
+            SimpleAI ai = new SimpleAI(0);
             ai.setBigBlind(20);
             ai.setSmallBlind(10);
             ai.setAmountOfPlayers(3);
