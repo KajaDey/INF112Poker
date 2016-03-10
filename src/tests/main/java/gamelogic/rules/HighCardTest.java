@@ -1,19 +1,13 @@
-package tests.java.hands;
+package main.java.gamelogic.rules;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * Created by Vegar on 09/03/16.
+ * Created by kristianrosland on 09.03.2016.
  */
-public class FlushTest {
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
+public class HighCardTest {
 
     @Test
     public void testMatch() throws Exception {

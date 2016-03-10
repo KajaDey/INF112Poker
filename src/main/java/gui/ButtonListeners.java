@@ -1,16 +1,12 @@
 package main.java.gui;
 
-import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.LongBinding;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ChoiceBox;
 import main.java.gamelogic.GameClient;
 import main.java.gamelogic.GameController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -83,7 +79,7 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(numberOfPlayersText),
                     Integer.valueOf(bigBlindText),(Integer.valueOf(smallBlindText)),Integer.valueOf(levelDurationText));
 
-            SceneBuilder.updateLobbyScreen();
+            SceneBuilder.updateLobbyScreen(gameSettings);
             window.close();
 
         }catch (NumberFormatException e){
@@ -98,7 +94,9 @@ public class ButtonListeners {
 
     public static void startGameButtonListener() {
 
-        GameController.StartTournamentButtonClicked(gameSettings);
+
+        //TODO: Have gamecontroller object passed into this method
+        //GameController.startTournamentButtonClicked(gameSettings);
     }
 
     public static void leaveLobbyButtonListener() {
@@ -108,10 +106,10 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox,){
+    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox){
         try {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
-                GameController.EnterButtonClicked(name,Integer.parseInt(numOfPlayers),choiceBox);
+                //GameController.enterButtonClicked(name,Integer.parseInt(numOfPlayers),choiceBox);
 
             }
             else SceneBuilder.createSceneForInitialScreen("PokerTable");

@@ -1,13 +1,17 @@
-package main.java.gamelogic;
+package main.java.gamelogic.rules;
+
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Hand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by kaja on 09.03.2016.
  */
 public class Flush implements IRule {
-    private List<Card> returnHand = new ArrayList<Card>();
+    private List<Card> returnHand = new ArrayList<Card>(5);
 
     @Override
     public boolean match(Hand hand) {
@@ -31,27 +35,27 @@ public class Flush implements IRule {
                 nrOfDiamonds++;
         }
 
-        if(nrOfClubs == 5){
+        if(nrOfClubs > 4){
             for(int i= allCards.size()-1; i <=0; i--){
                 if(allCards.get(i).suit == Card.Suit.CLUBS && returnHand.size()<5)
                     returnHand.add(allCards.get(i));
             }
         }
 
-        if(nrOfDiamonds == 5){
+        if(nrOfDiamonds > 4){
             for(int i = allCards.size()-1; i<=0; i--){
                 if(allCards.get(i).suit == Card.Suit.DIAMONDS && returnHand.size()<5)
                     returnHand.add(allCards.get(i));
             }
         }
-        if(nrOfHearts == 5){
+        if(nrOfHearts > 4){
             for(int i = allCards.size()-1; i <= 0; i--){
                 if(allCards.get(i).suit == Card.Suit.HEARTS && returnHand.size()<5)
                     returnHand.add(allCards.get(i));
             }
 
         }
-        if(nrOfSpades == 5){
+        if(nrOfSpades > 4){
             for(int i = allCards.size()-1; i <= 0; i--){
                 if(allCards.get(i).suit == Card.Suit.SPADES && returnHand.size()<5)
                     returnHand.add(allCards.get(i)) ;
@@ -59,11 +63,12 @@ public class Flush implements IRule {
 
         }
 
-        return (nrOfClubs == 5 || nrOfSpades == 5 || nrOfHearts == 5 || nrOfDiamonds == 5);
+        return (nrOfClubs > 4 || nrOfSpades > 4 || nrOfHearts > 4 || nrOfDiamonds > 4);
     }
 
     @Override
-    public List<Card> getHand() {
-        return returnHand;
+    public Optional<List<Card>> getHand() {
+        return Optional.of(returnHand);
     }
+
 }

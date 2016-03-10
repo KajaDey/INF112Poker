@@ -3,6 +3,7 @@ package main.java.gui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import main.java.gamelogic.Card;
+import main.java.gamelogic.GameController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,17 +13,29 @@ import java.util.Map;
  */
 public class GUIMain extends Application{
 
+    private GameController gamecontroller;
+
+    public GUIMain() {
+        this.gamecontroller = new GameController(this);
+    }
+
     public static void main(String[] args) {
+        GUIMain gui = new GUIMain();
         launch(args);
     }
 
+    //TODO: DEPRECATED
     public static void run(String[] args){
         launch(args);
     }
 
-    public void start(Stage window) throws Exception{
+    public void start(Stage window) throws Exception {
+        //TODO: Stop using fucking kake and katt.........
         GUIClient kake = new GUIClient(0);
+
+        //TODO: Get this to take gamecontroller as a parameter instead of GUIClient
         SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable", kake), "Main Screen");
+
 
         Map<Integer,Long> map = new HashMap<>();
         Map<Integer,Integer> map2 = new HashMap<>();
