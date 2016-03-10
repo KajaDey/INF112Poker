@@ -1,14 +1,11 @@
-package tests.java.hands;
+package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
-import main.java.gamelogic.Rules.Flush;
 import main.java.gamelogic.Hand;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

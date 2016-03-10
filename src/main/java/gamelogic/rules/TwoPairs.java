@@ -1,10 +1,8 @@
-package main.java.gamelogic.Rules;
+package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
-import main.java.gamelogic.Rules.IRule;
 
-import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +22,6 @@ public class TwoPairs implements IRule {
         List<Card> cards = hand.getAllCards();
         cards.sort(Card::compareTo);
 
-        // TODO: relies on sorting in ascending order
         for (int i = cards.size() - 1; i > 0; i--) {
 
             if (cards.get(i).rank == cards.get(i - 1).rank) {
