@@ -13,22 +13,21 @@ import static org.junit.Assert.*;
  * Created by Vegar on 09/03/16.
 */
 public class xOfaKindTest {
-    Hand handOf4 = null;
-    Hand handOf3 = null;
-    Hand handOf2 = null;
-    Card card = null;
+    Hand handOf4, handOf3, handOf2 = null;
+    Card card, holeCard1, holeCard2, holeCard3,holeCard4 = null;
+    ArrayList<Card> communityCards= new ArrayList<>();
 
     xOfaKind xOf4 = new xOfaKind(4);
     xOfaKind xOf3 = new xOfaKind(3);
     xOfaKind xOf2 = new xOfaKind(2);
 
-    //get inn 7 cards, choose best 5 with either 4,3,2 of the same rank)
+
+    //get inn 7 cards, choose best 5 with either 4,3,2 of the same rank
 
 
     @Before
     public void setUp() throws Exception {
 
-        ArrayList<Card> communityCards = new ArrayList<>();
 
         communityCards.add(card.of(9, Card.Suit.SPADES).get());
         communityCards.add(card.of(9, Card.Suit.HEARTS).get());
@@ -37,48 +36,32 @@ public class xOfaKindTest {
         communityCards.add(card.of(7, Card.Suit.DIAMONDS).get());
 
 
-        Card holeCard1 = card.of(9, Card.Suit.CLUBS).get();
-        Card holeCard2 = card.of(9, Card.Suit.DIAMONDS).get();
-        Card holeCard3 = card.of(11, Card.Suit.SPADES).get();
-        Card holeCard4 = card.of(10, Card.Suit.SPADES).get();
-
-
-
-        handOf4 = new Hand(holeCard1,holeCard2,communityCards);
-        handOf3 = new Hand(holeCard1,holeCard4,communityCards);
-        handOf2 = new Hand(holeCard3,holeCard4,communityCards);
-
-
+        holeCard1 = card.of(9, Card.Suit.CLUBS).get();
+        holeCard2 = card.of(9, Card.Suit.DIAMONDS).get();
+        holeCard3 = card.of(11, Card.Suit.SPADES).get();
+        holeCard4 = card.of(10, Card.Suit.SPADES).get();
 
 
     }
-/**
+
     @Test
     public void testFourLikeCards() throws Exception {
+        handOf4 = new Hand(holeCard1,holeCard2,communityCards);
         assertEquals(true,xOf4.match(handOf4));
-        System.out.println("4: "+xOf4.getHand());
+        assertEquals(false,xOf3.match(handOf4));
+        assertEquals(false,xOf2.match(handOf4));
     }
 
     @Test
     public void testThreeLikeCards() throws Exception {
-
-        assertEquals(3,xOf.howManyOfaKind(handOf3));
-        System.out.println("3 talbe: "+handOf3.toString());
-        System.out.println("3: "+xOf.getHand());
-
-    } */
+        handOf3 = new Hand(holeCard1,holeCard4,communityCards);
+        assertEquals(true,xOf3.match(handOf3));
+        assertEquals(false,xOf2.match(handOf3));
+    }
 
     @Test
     public void testTwoLikeCards() throws Exception {
-       // assertEquals(2,xOf.howManyOfaKind(handOf2));
-        //System.out.println("2 table: "+handOf2.toString());
-        //System.out.println("2 "+xOf.getHand());
-
+        handOf2 = new Hand(holeCard3,holeCard4,communityCards);
+        assertEquals(true,xOf2.match(handOf2));
     }
-
-
-
-
 }
-
-

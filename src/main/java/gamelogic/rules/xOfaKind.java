@@ -18,16 +18,15 @@ public class xOfaKind implements IRule {
     private boolean fourOfaKind;
     private boolean threeOfaKind;
     private boolean twoOfaKind;
-    private int nrOfEquals=0;
-    private List<Card> allCards = new ArrayList<Card>(7);
+    private List<Card> allCards = new ArrayList<>(7);
     private List<Card> returnHand = new ArrayList<>(5);
-    private List<Card> tempHand = new ArrayList<>(4);
+    private List<Card> tempHand = new ArrayList<>(5);
     private List<Card> markedCards = new ArrayList<>(5);
 
     private int nrToCheck=0;
 
     public xOfaKind(int nrToCheck){
-        this.nrOfEquals=nrToCheck;
+        this.nrToCheck=nrToCheck;
 
     }
 
@@ -56,36 +55,37 @@ public class xOfaKind implements IRule {
                 }
             }
 
-
             switch(nrToCheck) {
                 case 4:
                     if(tempHand.size() == 4) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 1;
-                        addHighCards(nrOfCardsToAdd, i);
+                        addHighCards(nrOfCardsToAdd);
                         fourOfaKind = true;
                         break;
                     }
                 case 3:
+
                     if (tempHand.size() == 3) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 2;
-                        addHighCards(nrOfCardsToAdd, i);
+                        addHighCards(nrOfCardsToAdd);
                         threeOfaKind = true;
                         break;
-                }
+                    }
                 case 2:
                      if (tempHand.size() == 2) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 3;
-                        addHighCards(nrOfCardsToAdd, i);
+                        addHighCards(nrOfCardsToAdd);
                         twoOfaKind = true;
                         break;
-                }
-                default: break;
+                     }
             }
             tempHand.clear();
             markedCards.clear();
+            if(fourOfaKind || threeOfaKind ||  twoOfaKind)
+                break;
         }
         return (fourOfaKind || threeOfaKind ||  twoOfaKind);
     }
@@ -99,7 +99,7 @@ public class xOfaKind implements IRule {
         return Optional.empty();
     }
 
-    private void addHighCards(int nrOfCardsToAdd, int cardNr){
+    private void addHighCards(int nrOfCardsToAdd){
         int counter=0;
         for (int i = allCards.size()-1; i >-1; i--) { //desc
             if (!markedCards.contains(allCards.get(i))) {
