@@ -103,7 +103,7 @@ public class GameScreen {
 
 
         //////Make all the elements i want to add to the playerLayout//////////
-        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize + "");
+        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize +"");
         playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Positions:", pos);
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
