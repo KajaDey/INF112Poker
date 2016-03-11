@@ -34,7 +34,7 @@ public class GameController {
 
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
-        game = new Game(gamesettings);
+        game = new Game(gamesettings, this);
         if (!game.isValid()) {
             //TODO: Tell GUI to display error-message that settings are not valid
             return;
@@ -98,6 +98,13 @@ public class GameController {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
             c.setHandForClient(userID, card1, card2);
+        }
+    }
+
+    public void setDecisionForClient(int userID, Decision decision) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            c.playerMadeDecision(userID, decision);
         }
     }
 
