@@ -25,7 +25,8 @@ public class ButtonListeners {
         Decision decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
         client.setDecision(decision);
 
-        //TODO: Awake thread in client.getDecision.. How the fuk do you do that??
+        //Notify client-thread
+        client.decisionMade();
     }
 
     /**
@@ -33,6 +34,9 @@ public class ButtonListeners {
      */
     public static void checkButtonListener(){
         client.setDecision(new Decision(Decision.Move.CHECK));
+
+        //Notify client-thread
+        client.decisionMade();
     }
 
     /**
@@ -47,13 +51,15 @@ public class ButtonListeners {
      */
     public static void foldButtonListener(){
         client.setDecision(new Decision(Decision.Move.FOLD));
+
+        //Notify client-thread
+        client.decisionMade();
     }
 
     /**
      * What happens when the maxButton is pushed
      */
-    public static void maxButtonListener(String betAmount){
-        betButtonListener(betAmount);
+    public static void maxButtonListener(String betAmount){ betButtonListener(betAmount);
     }
 
     /**

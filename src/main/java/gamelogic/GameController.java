@@ -62,31 +62,30 @@ public class GameController {
 
         tests();
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                Decision d = guiClient.getDecision();
-            }
-        };
-
-        thread.start();
-
-
-        // System.out.println("TOUCHDOWN!!!!!");
-
-
         //Start the pokergame
         // game.playGame();
 
-        //TODO: Tell GUIGameClientObject what to display in the table screen, using the init-method from GameClient-interface
-        //TODO: Tell the AIGameClient-object whats up with the table using the init-method from GC-interface
 
     }
 
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
         if (client == null) { return null; }
-        return client.getDecision();
+
+        Thread thread = new Thread() {
+            public Decision d;
+
+            @Override
+            public void run() {
+                d = client.getDecision();
+
+            }
+        };
+
+        thread.start();
+
+
+        return null;
     }
 
     public void setGameSettings(GameSettings gameSettings){

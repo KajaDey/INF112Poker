@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class GUIClient implements GameClient {
 
+    public Thread t;
+
     //Needed variables
     private GameScreen gameScreen;
     private Decision decision;
@@ -43,23 +45,25 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public Decision getDecision(){
+    public synchronized Decision getDecision(){
         //Make buttons visible
         gameScreen.setActionsVisible(true);
 
-        //TODO: Make Gamecontroller call this method in a seperate thread. Sleep thread and wake it when decision is made
         try {
-            Thread.currentThread().wait();
+            wait();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-        System.out.println("I am GOD");
         //Make buttons invisible
+        gameScreen.setActionsVisible(false);
 
         //Return decision
         return decision;
+    }
+
+    public synchronized void decisionMade() {
+        notify();
     }
 
     public void setDecision(Decision decision){
