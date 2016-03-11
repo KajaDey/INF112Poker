@@ -20,9 +20,6 @@ public class GUIClient implements GameClient {
     private Decision decision;
 
     private Map<Integer,String> name;
-
-    private Card card1;
-    private Card card2;
     private Map<Integer,Long> stackSizes;
 
     private int id;
@@ -113,12 +110,12 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setBigBlind(int bigBlind) {
-        this.bigBlind = bigBlind;
+
     }
 
     @Override
     public void setSmallBlind(int smallBlind) {
-        this.smallBlind = smallBlind;
+
     }
 
     @Override
@@ -154,51 +151,8 @@ public class GUIClient implements GameClient {
         return name;
     }
 
-    public Card getCard1() {
-        return card1;
-    }
-
-    public Card getCard2() {
-        return card2;
-    }
-
-    public Map<Integer,Decision> getLastMove() {
-        return lastMove;
-    }
-
-    public int getLevelDuration() {
-        return levelDuration;
-    }
-
-    public long getStartChips() {
-        return startChips;
-    }
-
-    public int getAmountOfPlayers() {
-        return amountOfPlayers;
-    }
-
-    public int getBigBlind() {
-        return bigBlind;
-    }
-
-    public int getSmallBlind() {
-        return smallBlind;
-    }
-
-    public Map<Integer,Integer> getPosition() {
-        return position;
-    }
-
-    public int getPot() {
-        return pot;
-    }
-
     public int getID() {
         return id;
     }
 
-    public Map<Integer, Long> getStackSizes() {
-        return stackSizes;
-    }
 }

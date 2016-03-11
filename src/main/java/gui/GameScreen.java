@@ -27,7 +27,7 @@ public class GameScreen {
 
     //Labels
     private Label playerStackLabel, playerPositionLabel, playerLastMoveLabel, playerNameLabel;
-    private Label opponentNameLabel, opponentStacksizeLabel, opponentPositionLabel, opponentLastMoveLabel;
+    private Label opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel, opponentLastMoveLabel;
     private Label currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel;
 
     //ImageViews
@@ -60,7 +60,6 @@ public class GameScreen {
             //insert opponent
             borderPane.setTop(makeOpponentLayout(userID, name, stackSize, pos));
         }
-
         return true;
     }
 
@@ -106,7 +105,7 @@ public class GameScreen {
         //////Make all the elements i want to add to the playerLayout//////////
         playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize + "");
         playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Positions:", pos);
-        playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("Fold", "");
+        playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
 
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
@@ -128,7 +127,9 @@ public class GameScreen {
         maxButton = ObjectStandards.makeStandardButton("Max");
 
         //Actions
-        betButton.setOnAction(e -> ButtonListeners.betButtonListener(amountTextfield.getText()));
+        betButton.setOnAction(e -> {
+            ButtonListeners.betButtonListener(amountTextfield.getText());
+        });
         checkButton.setOnAction(e -> ButtonListeners.checkButtonListener());
         //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
@@ -171,9 +172,9 @@ public class GameScreen {
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
-        nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 1.5 + "$");
-        nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 1.5 + "$");
-        potLabel = ObjectStandards.makeStandardLabelWhite("Pot: ", "0$");
+        nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
+        nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
+        potLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         verticalLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
         verticalLayout.setSpacing(10);
@@ -196,15 +197,15 @@ public class GameScreen {
 
 
         opponentNameLabel = ObjectStandards.makeStandardLabelWhite("Name:", name);
-        opponentStacksizeLabel = ObjectStandards.makeStandardLabelWhite("Chips:", stackSize + "");
+        opponentStackSizeLabel = ObjectStandards.makeStandardLabelWhite("Chips:", stackSize + "");
         opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
-        opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("Bet", "100");
+        opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         HBox horizontalLayout = new HBox();
         VBox verticalLayout = new VBox();
         VBox fullBox = new VBox();
 
-        verticalLayout.getChildren().addAll(opponentNameLabel, opponentStacksizeLabel, opponentPositionLabel);
+        verticalLayout.getChildren().addAll(opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel);
         verticalLayout.setSpacing(5);
         verticalLayout.setAlignment(Pos.CENTER);
         horizontalLayout.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, verticalLayout);
@@ -218,6 +219,7 @@ public class GameScreen {
     }
 
     public void displayFlop(Card card1, Card card2, Card card3) {
+
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
