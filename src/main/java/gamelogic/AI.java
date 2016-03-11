@@ -72,6 +72,15 @@ public class AI implements GameClient {
         }
     }
 
+    /**
+     * Called whenever there is a new round, after the AI has gotten its new hole cards
+     */
+    public void newRound() {
+        minimumRaise = bigBlindAmount;
+        // Probably not need to set minimumBetTHisBettingRound, because it gets set once positions are set
+        // TODO ensure that this is the case
+    }
+
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
 
@@ -82,6 +91,7 @@ public class AI implements GameClient {
         assert holeCards.size() == 0;
         holeCards.add(card1);
         holeCards.add(card2);
+        this.newRound();
     }
 
     @Override
@@ -107,6 +117,7 @@ public class AI implements GameClient {
     @Override
     public void setBigBlind(int bigBlind) {
         this.bigBlindAmount = bigBlind;
+        this.minimumRaise = bigBlind;
     }
 
     @Override
