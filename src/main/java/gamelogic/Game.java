@@ -11,20 +11,25 @@ import java.util.List;
 public class Game {
 
     private Table table;
+    private Player [] players;
+
+    //Settings
     private int maxNumberOfPlayers;
     private int numberOfPlayers = 0;
     private int blindLevelDuration;
-    private long startSB, startBB; // TODO: changed to long
+    private long startSB, startBB;
     private long startStack;
-    private Player [] players;
+
+    //Indexes
     private int dealerIndex = 0;
     private int bigBlindIndex = 0;
-    private int roundNumber = 0;
     private int smallBlindIndex = 0;
+
+    //Rounds
+    private int roundNumber = 0;
     private long minimumBetThisRound = 0;
 
     public Game(GameSettings gamesettings) {
-//        this.maxNumberOfPlayers = gamesettings.maxNumberOfPlayers;
         this.maxNumberOfPlayers = 2;
         this.table = new Table(maxNumberOfPlayers);
         this.players = new Player[maxNumberOfPlayers];
@@ -40,8 +45,7 @@ public class Game {
         // TODO set clock
 
         List<Player> playersStillPlaying = new ArrayList<>();
-        long SB = startSB;
-        long BB = startBB;
+        long SB = startSB, BB = startBB;
 
         while (numberOfPlayers > 1) {
             initializeNewRound(playersStillPlaying);
@@ -122,12 +126,10 @@ public class Game {
             bigBlindIndex = (roundNumber + 2)%numberOfPlayers;
         }
 
-        for (int i = (dealerIndex + 1)%numberOfPlayers; i < numberOfPlayers; i++) {
-            playersStillPlaying.add(players[i]);
+        for (int i = 0; i < numberOfPlayers; i++) {
+            playersStillPlaying.add(players[(smallBlindIndex+i) % numberOfPlayers]);
         }
-        for (int j = 0; j <= dealerIndex; j++) {
-            playersStillPlaying.add(players[j]);
-        }
+
     }
 
     public boolean addPlayer(String name, int ID) {

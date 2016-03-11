@@ -25,7 +25,7 @@ public class GameController {
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
-
+        assert numPlayers == 2 : "Number of players MUST be 2";
 
         //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
@@ -50,11 +50,11 @@ public class GameController {
 
         //AIGameClient
         AI aiClient = new AI(1);
-        aiClient.setBigBlind(gamesettings.getBigBlind());
-        aiClient.setSmallBlind(gamesettings.getSmallBlind());
-        aiClient.setStartChips(gamesettings.getStartStack());
         clients.put(1, aiClient);
         game.addPlayer("AI-player", 1);
+
+        //Should maybe be called by game
+        initClients(gamesettings);
 
         //TODO: add all players to GUI
         mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");
@@ -63,14 +63,20 @@ public class GameController {
         Thread thread = new Thread("GameThread") {
             @Override
             public void run() {
-                tests();
-
-                //Should be game.start()
-
+                game.playGame();
             }
         };
 
         thread.start();
+    }
+
+    public void initClients(GameSettings gamesettings) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient client = clients.get(clientID);
+            client.setBigBlind(gamesettings.getBigBlind());
+            client.setSmallBlind(gamesettings.getSmallBlind());
+            client.setStartChips(gamesettings.getStartStack());
+        }
     }
 
     public Decision getDecisionFromClient(int ID) {
