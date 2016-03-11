@@ -55,7 +55,9 @@ public class AI implements GameClient {
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
-        if (randomModifier * (handQuality / 14.0) > 1) { // If the hand is considered "good"
+        double raiseFactor = 1.0; // Makes it raise/call more often. 1 is default behaviour.
+
+        if (randomModifier * (handQuality / 14.0) > 1 / raiseFactor) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
                     return new Decision(Decision.Move.BET, minimumRaise);
