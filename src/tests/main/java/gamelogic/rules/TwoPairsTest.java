@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  * Created by pokki on 09/03/16.
  */
 public class TwoPairsTest {
-    Card card, holeCard, holeCard1, holeCard2;
+    Card card, holeCard, holeCard1, holeCard2, holeCard3;
     Hand hand;
     ArrayList communityCards = new ArrayList<>();
     TwoPairs twoPairs;
@@ -28,6 +28,7 @@ public class TwoPairsTest {
          holeCard = card.of(5, Card.Suit.HEARTS).get();
          holeCard1 = card.of(8, Card.Suit.CLUBS).get();
          holeCard2 = card.of(10, Card.Suit.CLUBS).get();
+
     }
 
     @Test
