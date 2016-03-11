@@ -65,6 +65,8 @@ public class Game {
             while (stillBetting) {
                 for (Player p : playersStillPlaying) {
                     Decision decision = p.getLastDecision().get();
+                    //gameController.getDecisionFromClient(p.ID())
+                    //p.setDecision(thatDecisionFromTheLineAboveHereYouKnow..YouProbablyHaveToSaveItInAVariableAndStuff)
 
                     switch (decision.move) {
                         case CHECK:

@@ -77,7 +77,19 @@ public class AI implements GameClient {
 
     }
 
+    public int getID() {
+        return playerId;
+    }
+
     @Override
+    public void setHandForClient(int userID, Card card1, Card card2) {
+        if (this.getID() == userID) {
+            assert holeCards.size() == 0;
+            holeCards.add(card1);
+            holeCards.add(card2);
+        }
+    }
+
     public void setHoleCards(Card card1, Card card2) {
         assert holeCards.size() == 0;
         holeCards.add(card1);
@@ -156,6 +168,21 @@ public class AI implements GameClient {
 
     @Override
     public void setLastMove(Map<Integer,Decision> lastMove) {
+
+    }
+
+    @Override
+    public void setFlop(Card card1, Card card2, Card card3) {
+
+    }
+
+    @Override
+    public void setTurn(Card turn) {
+
+    }
+
+    @Override
+    public void setRiver(Card river) {
 
     }
 }

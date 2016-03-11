@@ -14,6 +14,8 @@ public interface GameClient {
      */
     Decision getDecision();
 
+    int getID();
+
     /**
      * Sends the names of all players, as a map indexed by the players' IDs
      */
@@ -22,7 +24,7 @@ public interface GameClient {
     /**
      * Sends the player's hole cards
      */
-    void setHoleCards(Card card1, Card card2);
+    void setHandForClient(int userID, Card card1, Card card2);
 
     /**
      * Sends the stack sizes of all players, as a map indexed by the players' IDs
@@ -82,4 +84,8 @@ public interface GameClient {
      */
 
     void setLastMove(Map<Integer,Decision> lastMove);
+
+    void setFlop(Card card1, Card card2, Card card3);
+    void setTurn(Card turn);
+    void setRiver(Card river);
 }

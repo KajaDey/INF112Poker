@@ -54,7 +54,7 @@ public class ButtonListeners {
      */
     public static void maxButtonListener(GUIClient client){
         //TODO: Implement method
-        client.setDecision(new Decision(Decision.Move.BET,client.getStackSizes().get(client.getId())));
+        client.setDecision(new Decision(Decision.Move.BET,client.getStackSizes().get(client.getID())));
     }
 
     /**

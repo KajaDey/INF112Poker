@@ -93,4 +93,18 @@ public class ImageViewer {
 
         return imageView;
     }
+
+    public static ImageView getEmptyImageView(String player){
+        int imageSize = 0;
+        if (player.equals("player"))
+            imageSize = 130;
+        else if (player.equals("opponent"))
+            imageSize = 100;
+
+        ImageView imageView = new ImageView();
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(imageSize);
+
+        return imageView;
+    }
 }
