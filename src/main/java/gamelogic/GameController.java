@@ -50,6 +50,9 @@ public class GameController {
 
         //AIGameClient
         AI aiClient = new AI(1);
+        aiClient.setBigBlind(gamesettings.getBigBlind());
+        aiClient.setSmallBlind(gamesettings.getSmallBlind());
+        aiClient.setStartChips(gamesettings.getStartStack());
         clients.put(1, aiClient);
         game.addPlayer("AI-player", 1);
 
