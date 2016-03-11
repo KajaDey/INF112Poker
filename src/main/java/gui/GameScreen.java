@@ -1,182 +1,261 @@
 package main.java.gui;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Decision;
 
 /**
  * Created by ady on 07/03/16.
  */
 public class GameScreen {
 
-    public static Scene createSceneForGameScreen(GUIClient client) {
+    BorderPane borderPane;
+    Scene scene;
+    private int playerID;
 
-        BorderPane borderPane = new BorderPane();
+    //Labels
+    private Label playerStackLabel, playerPositionLabel, playerLastMoveLabel, playerNameLabel;
+    private Label opponentNameLabel, opponentStacksizeLabel, opponentPositionLabel, opponentLastMoveLabel;
+    private Label currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel;
 
-        borderPane.setTop(makeOpponentLayout(client));
-        borderPane.setCenter(makeBoardLayout(client));
-        borderPane.setBottom(makePlayerLayout(client));
+    //ImageViews
+    private ImageView playerLeftCardImage, playerRightCardImage;
+    private ImageView opponentLeftCardImage, opponentRightCardImage;
+    private ImageView [] communityCards = new ImageView[5];
 
-        Scene scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
+    //Buttons
+    private Button betButton, checkButt'on, doubleButton, foldButton, maxButton, potButton;
 
-        SceneBuilder.showCurrentScene(scene, "GameScreen");
+    //Textfields
+    private TextField amountTextfield;
 
+    public GameScreen(int ID) {
+        this.playerID = ID;
+        borderPane = new BorderPane();
+        scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
+    }
+
+    public Scene createSceneForGameScreen(GameSettings settings) {
+        borderPane.setCenter(makeBoardLayout(settings.getSmallBlind(), settings.getBigBlind()));
         return scene;
     }
 
-        /**
-         * A method for making a playerLayout
-         *
-         * @return A VBox with the player layout
-         */
-
-        public static VBox makePlayerLayout(GUIClient client){
-
-            //Setting standards i want to use
-            Font standardFont = new Font("Areal",15);
-            Insets standardPadding = new Insets(5,5,5,5);
-            int standardButton = 75;
-
-            //Make ALL the boxes
-            HBox fullBox = new HBox();
-            VBox fullBoxWithLastMove = new VBox();
-            VBox stats = new VBox();
-            VBox inputAndButtons = new VBox();
-            HBox twoButtonsUnderInput = new HBox();
-            twoButtonsUnderInput.setMaxWidth(50);
-            VBox twoButtonsLeft = new VBox();
-            VBox twoButtonsRight = new VBox();
-
-            //////Make all the elements i want to add to the playerLayout//////////
-            Label amountOfChipsText = ObjectStandards.makeStandardLabelWhite("Amount of chips:", client.getStackSizes().get(client.getId())+"");
-            Label positionsText = ObjectStandards.makeStandardLabelWhite("Positions:", client.getPosition().get(client.getId())+"");
-            Label lastMove = ObjectStandards.makeStandardLabelWhite("Fold", "");
-            Label name = ObjectStandards.makeStandardLabelWhite("Name: ",client.getName().get(client.getId()));
-
-            ImageView imageView1 = ImageViewer.setCardImage("player",client.getCard1().getCardNameForGui());
-            ImageView imageView2 = ImageViewer.setCardImage("player",client.getCard2().getCardNameForGui());
-
-            //Amount to bet
-            TextField betAmount = new TextField();
-            betAmount.setPromptText("Amount to bet");
-            betAmount.setFont(standardFont);
-            betAmount.setPadding(standardPadding);
-            betAmount.setMaxWidth(standardButton * 2);
-
-            //Buttons in the VBox
-            Button bet = ObjectStandards.makeStandardButton("Bet");
-            Button check = ObjectStandards.makeStandardButton("Check");
-            Button fold = ObjectStandards.makeStandardButton("Fold");
-            Button pot = ObjectStandards.makeStandardButton("Pot");
-            Button doubleB = ObjectStandards.makeStandardButton("Double");
-            Button max = ObjectStandards.makeStandardButton("Max");
-
-            //Actions
-            bet.setOnAction(e -> ButtonListeners.betButtonListener(client,betAmount.getText()));
-            check.setOnAction(e -> ButtonListeners.checkButtonListener(client));
-            doubleB.setOnAction(e -> ButtonListeners.doubleButtonListener(client,betAmount.getText()));
-            fold.setOnAction(e -> ButtonListeners.foldButtonListener(client));
-            max.setOnAction(e -> ButtonListeners.maxButtonListener(client));
-            pot.setOnAction(e -> ButtonListeners.potButtonListener(client));
-
-            //Add objects to the boxes
-
-            stats.getChildren().addAll(name,amountOfChipsText, positionsText);
-            stats.setAlignment(Pos.CENTER);
-            twoButtonsUnderInput.getChildren().addAll(check, fold);
-            inputAndButtons.getChildren().addAll(betAmount, twoButtonsUnderInput);
-            inputAndButtons.setAlignment(Pos.CENTER);
-            twoButtonsLeft.getChildren().addAll(bet, max);
-            twoButtonsLeft.setAlignment(Pos.CENTER);
-            twoButtonsRight.getChildren().addAll(doubleB, pot);
-            twoButtonsRight.setAlignment(Pos.CENTER);
-            fullBox.getChildren().addAll(stats, imageView1, imageView2, inputAndButtons, twoButtonsLeft, twoButtonsRight);
-            fullBox.setAlignment(Pos.BOTTOM_CENTER);
-            fullBoxWithLastMove.getChildren().addAll(lastMove, fullBox);
-            fullBoxWithLastMove.setAlignment(Pos.BOTTOM_CENTER);
-
-            return fullBoxWithLastMove;
+    public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
+        if (userID == playerID) {
+            //Insert player
+            borderPane.setBottom(makePlayerLayout(userID, name, stackSize, pos));
+        } else {
+            //insert opponent
+            borderPane.setTop(makeOpponentLayout(userID, name, stackSize, pos));
         }
 
-        /**
-         * Generates a boardLayout
-         * @return a boardLayout
-         */
-        public static HBox makeBoardLayout(GUIClient client){
+        return true;
+    }
 
-            ImageView card1 = ImageViewer.setCardImage("player","_Back");
-            ImageView card2 = ImageViewer.setCardImage("player","_Back");
-            ImageView card3 = ImageViewer.setCardImage("player","_Back");
-            ImageView card4 = ImageViewer.setCardImage("player","_Back");
-            ImageView card5 = ImageViewer.setCardImage("player","_Back");
+    public void setHandForUser(int userID, Card leftCard, Card rightCard) {
+        if (userID == this.playerID) {
+            //Set player hand
+            Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
+            Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
+            playerLeftCardImage.setImage(leftImage);
+            playerRightCardImage.setImage(rightImage);
+        } else {
+            //Set opponent hand
+            Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
+            opponentLeftCardImage.setImage(backImage);
+            opponentRightCardImage.setImage(backImage);
+        }
+    }
 
-            HBox horizontalLayout = new HBox();
-            VBox verticalLayout = new VBox();
+    /**
+     * A method for making a playerLayout
+     *
+     * @return A VBox with the player layout
+     */
 
-            Label currentBB = ObjectStandards.makeStandardLabelWhite("Current BB:",client.getBigBlind() + "$");
-            Label currentSB = ObjectStandards.makeStandardLabelWhite("Current SM:",client.getSmallBlind() + "$");
-            Label nextBB = ObjectStandards.makeStandardLabelWhite("Next BB: ",client.getBigBlind()*1.5 + "$");
-            Label nextSB = ObjectStandards.makeStandardLabelWhite("Next SB: ",client.getSmallBlind()*1.5 + "$");
-            Label pot = ObjectStandards.makeStandardLabelWhite("Pot: ", client.getPot() + "$");
+    public VBox makePlayerLayout(int userID, String name, long stackSize, String pos) {
 
-            verticalLayout.getChildren().addAll(currentBB, currentSB, nextBB, nextSB, pot);
-            verticalLayout.setSpacing(10);
-            verticalLayout.setAlignment(Pos.CENTER);
-            horizontalLayout.getChildren().addAll(card1, card2, card3, card4, card5, verticalLayout);
-            horizontalLayout.setSpacing(10);
-            horizontalLayout.setAlignment(Pos.CENTER);
+        //Setting standards i want to use
+        Font standardFont = new Font("Areal", 15);
+        Insets standardPadding = new Insets(5, 5, 5, 5);
+        int standardButton = 75;
 
-            return horizontalLayout;
+        //Make ALL the boxes
+        HBox fullBox = new HBox();
+        VBox fullBoxWithLastMove = new VBox();
+        VBox stats = new VBox();
+        VBox inputAndButtons = new VBox();
+        HBox twoButtonsUnderInput = new HBox();
+        twoButtonsUnderInput.setMaxWidth(50);
+        VBox twoButtonsLeft = new VBox();
+        VBox twoButtonsRight = new VBox();
+
+
+        //////Make all the elements i want to add to the playerLayout//////////
+        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize + "");
+        playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Positions:", pos);
+        playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("Fold", "");
+        playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
+
+        playerLeftCardImage = ImageViewer.getEmptyImageView("player");
+        playerRightCardImage = ImageViewer.getEmptyImageView("player");
+
+        //Amount to betButton
+        amountTextfield = new TextField();
+        amountTextfield.setPromptText("Amount to betButton");
+        amountTextfield.setFont(standardFont);
+        amountTextfield.setPadding(standardPadding);
+        amountTextfield.setMaxWidth(standardButton * 2);
+
+        //Buttons in the VBox
+        betButton = ObjectStandards.makeStandardButton("Bet");
+        checkButton = ObjectStandards.makeStandardButton("Check");
+        foldButton = ObjectStandards.makeStandardButton("Fold");
+        potButton = ObjectStandards.makeStandardButton("Pot");
+        doubleButton = ObjectStandards.makeStandardButton("Double");
+        maxButton = ObjectStandards.makeStandardButton("Max");
+
+        //Actions
+        betButton.setOnAction(e -> ButtonListeners.betButtonListener(amountTextfield.getText()));
+        checkButton.setOnAction(e -> ButtonListeners.checkButtonListener());
+        //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
+        foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
+        maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
+        potButton.setOnAction(e -> ButtonListeners.potButtonListener(amountTextfield.getText()));
+
+        //Add objects to the boxes
+
+        stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
+        stats.setAlignment(Pos.CENTER);
+        twoButtonsUnderInput.getChildren().addAll(checkButton, foldButton);
+        inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
+        inputAndButtons.setAlignment(Pos.CENTER);
+        twoButtonsLeft.getChildren().addAll(betButton, maxButton);
+        twoButtonsLeft.setAlignment(Pos.CENTER);
+        twoButtonsRight.getChildren().addAll(doubleButton, potButton);
+        twoButtonsRight.setAlignment(Pos.CENTER);
+        fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsLeft, twoButtonsRight);
+        fullBox.setAlignment(Pos.BOTTOM_CENTER);
+        fullBoxWithLastMove.getChildren().addAll(playerLastMoveLabel, fullBox);
+        fullBoxWithLastMove.setAlignment(Pos.BOTTOM_CENTER);
+
+        this.setActionsVisible(false);
+        return fullBoxWithLastMove;
+    }
+
+    /**
+     * Generates a boardLayout
+     *
+     * @return a boardLayout
+     */
+    public HBox makeBoardLayout(int smallBlind, int bigBlind) {
+
+        for (int i = 0; i < communityCards.length; i++) {
+            communityCards[i] = ImageViewer.getEmptyImageView("player");
         }
 
-        public static VBox makeOpponentLayout(GUIClient client){
+        HBox horizontalLayout = new HBox();
+        VBox verticalLayout = new VBox();
 
-            ImageView imageViewOpponentLeft = ImageViewer.setCardImage("opponent", client.getCard1().getCardNameForGui());
-            ImageView imageViewOpponentRight = ImageViewer.setCardImage("opponent", client.getCard2().getCardNameForGui());
+        currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
+        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
+        nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 1.5 + "$");
+        nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 1.5 + "$");
+        potLabel = ObjectStandards.makeStandardLabelWhite("Pot: ", "0$");
 
-            Label name = ObjectStandards.makeStandardLabelWhite("Name:", client.getName().get(1));
-            Label chips = ObjectStandards.makeStandardLabelWhite("Chips:", client.getStackSizes().get(1)+"");
-            Label position = ObjectStandards.makeStandardLabelWhite("Position:", client.getPosition().get(1) + "");
-            Label status = ObjectStandards.makeStandardLabelWhite("Bet","100");
+        verticalLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
+        verticalLayout.setSpacing(10);
+        verticalLayout.setAlignment(Pos.CENTER);
 
-            HBox horizontalLayout = new HBox();
-            VBox verticalLayout = new VBox();
-            VBox fullBox = new VBox();
-
-            verticalLayout.getChildren().addAll(name, chips, position);
-            verticalLayout.setSpacing(5);
-            verticalLayout.setAlignment(Pos.CENTER);
-            horizontalLayout.getChildren().addAll(imageViewOpponentLeft, imageViewOpponentRight, verticalLayout);
-            horizontalLayout.setSpacing(10);
-            horizontalLayout.setAlignment(Pos.TOP_CENTER);
-            fullBox.getChildren().addAll(horizontalLayout,status);
-            fullBox.setAlignment(Pos.BOTTOM_CENTER);
-
-            return fullBox;
-
+        for (ImageView card : communityCards) {
+            horizontalLayout.getChildren().add(card);
         }
+        horizontalLayout.getChildren().add(verticalLayout);
+        horizontalLayout.setSpacing(10);
+        horizontalLayout.setAlignment(Pos.CENTER);
 
-        /*public static Scene makeSceneForOpponentCards(GUIClient client){
-            BorderPane completeLayout = new BorderPane();
-            completeLayout.setPadding(new Insets(10, 10, 10, 10));
+        return horizontalLayout;
+    }
 
-            //Construct a new scene
-            completeLayout.setBottom(makePlayerLayout(client));
-            completeLayout.setTop(makeOpponentLayout(client));
+    public VBox makeOpponentLayout(int userID, String name, long stackSize, String pos) {
 
-            Scene scene = new Scene(completeLayout,1000,1000);
+        opponentLeftCardImage = ImageViewer.getEmptyImageView("opponent");
+        opponentRightCardImage = ImageViewer.getEmptyImageView("opponent");
 
 
-            return scene;
-        }*/
+        opponentNameLabel = ObjectStandards.makeStandardLabelWhite("Name:", name);
+        opponentStacksizeLabel = ObjectStandards.makeStandardLabelWhite("Chips:", stackSize + "");
+        opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
+        opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("Bet", "100");
+
+        HBox horizontalLayout = new HBox();
+        VBox verticalLayout = new VBox();
+        VBox fullBox = new VBox();
+
+        verticalLayout.getChildren().addAll(opponentNameLabel, opponentStacksizeLabel, opponentPositionLabel);
+        verticalLayout.setSpacing(5);
+        verticalLayout.setAlignment(Pos.CENTER);
+        horizontalLayout.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, verticalLayout);
+        horizontalLayout.setSpacing(10);
+        horizontalLayout.setAlignment(Pos.TOP_CENTER);
+        fullBox.getChildren().addAll(horizontalLayout, opponentLastMoveLabel);
+        fullBox.setAlignment(Pos.BOTTOM_CENTER);
+
+        return fullBox;
+
+    }
+
+    public void displayFlop(Card card1, Card card2, Card card3) {
+        Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
+        Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
+        Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
+
+        communityCards[0].setImage(card1Image);
+        communityCards[1].setImage(card2Image);
+        communityCards[2].setImage(card3Image);
+    }
+
+    public void displayTurn(Card turn) {
+        Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turn.getCardNameForGui()));
+        communityCards[3].setImage(turnImage);
+    }
+
+    public void displayRiver(Card river) {
+        Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(river.getCardNameForGui()));
+        communityCards[4].setImage(riverImage);
+    }
+
+    public void setActionsVisible(boolean visible) {
+        betButton.setVisible(visible);
+        checkButton.setVisible(visible);
+        doubleButton.setVisible(visible);
+        foldButton.setVisible(visible);
+        maxButton.setVisible(visible);
+        potButton.setVisible(visible);
+
+        amountTextfield.setVisible(visible);
+    }
+
+    public void playerMadeDecision(int ID, Decision decision) {
+        Runnable task;
+        if (ID == this.playerID) {
+            task = () -> playerLastMoveLabel.setText(decision.toString());
+        } else {
+            task = () -> opponentLastMoveLabel.setText(decision.toString());
+        }
+        Platform.runLater(task);
+    }
 
 }

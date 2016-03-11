@@ -20,6 +20,10 @@ public class Player extends User{
         this.ID = ID;
     }
 
+    public int getID() {
+        return ID;
+    }
+
     public Optional<Decision> getLastDecision() { return lastDecision; }
 
     public long getStackSize() {

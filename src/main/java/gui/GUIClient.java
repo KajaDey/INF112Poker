@@ -13,6 +13,12 @@ import java.util.Map;
 
 public class GUIClient implements GameClient {
 
+    public Thread t;
+
+    //Needed variables
+    private GameScreen gameScreen;
+    private Decision decision;
+
     private Map<Integer,String> name;
 
     private Card card1;
@@ -29,8 +35,9 @@ public class GUIClient implements GameClient {
     private Map<Integer, Decision> lastMove;
     private int pot;
 
-    public GUIClient(int id) {
+    public GUIClient(int id, GameScreen gameScreen) {
         this.id = id;
+        this.gameScreen = gameScreen;
     }
 
     public void setName(Map<Integer, String> name) {
@@ -38,20 +45,29 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
+    public synchronized Decision getDecision(){
         //Make buttons visible
+        gameScreen.setActionsVisible(true);
 
-        //while (decision == null) {} <-- Horrible hack, plz dont do this..
-        //TODO: Make Gamecontroller call this method in a seperate thread. Sleep thread and wake it when decision is made
+        try {
+            wait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //Make buttons invisible
+        gameScreen.setActionsVisible(false);
 
         //Return decision
-        return null;
+        return decision;
+    }
+
+    public synchronized void decisionMade() {
+        notifyAll();
     }
 
     public void setDecision(Decision decision){
-        this.playerMadeDecision(id,decision);
+        this.decision = decision;
     }
 
     @Override
@@ -60,10 +76,25 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void setHoleCards(Card card1, Card card2) {
-        this.card1 = card1;
-        this.card2 = card2;
+    public void setHandForClient(int userID, Card card1, Card card2) {
+        gameScreen.setHandForUser(userID, card1, card2);
     }
+
+    @Override
+    public void setFlop(Card card1, Card card2, Card card3) {
+        gameScreen.displayFlop(card1, card2, card3);
+    }
+
+    @Override
+    public void setTurn(Card turn) {
+        gameScreen.displayTurn(turn);
+    }
+
+    @Override
+    public void setRiver(Card river) {
+        gameScreen.displayRiver(river);
+    }
+
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
@@ -72,7 +103,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-
+        gameScreen.playerMadeDecision(playerId, decision);
     }
 
     @Override
@@ -163,7 +194,7 @@ public class GUIClient implements GameClient {
         return pot;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 

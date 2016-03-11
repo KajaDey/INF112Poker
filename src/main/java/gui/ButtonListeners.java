@@ -15,54 +15,58 @@ import java.util.Map;
  */
 public class ButtonListeners {
 
-   static GameSettings gameSettings;
+    private static GameSettings gameSettings;
+    private static GUIClient client;
 
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(GUIClient client, String betAmount){
-        //TODO: Implement method
-        client.setDecision(new Decision(Decision.Move.BET,Long.valueOf(betAmount)));
+    public static void betButtonListener(String betAmount){
+        Decision decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
+        client.setDecision(decision);
+
+        //Notify client-thread
+        client.decisionMade();
     }
 
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(GUIClient client){
-        //TODO: Implement method
+    public static void checkButtonListener(){
         client.setDecision(new Decision(Decision.Move.CHECK));
+
+        //Notify client-thread
+        client.decisionMade();
     }
 
     /**
      * What happens when the doubleButton is pushed
      */
-    public static void doubleButtonListener(GUIClient client,String betAmount){
-        //TODO: Implement method
-        client.setDecision(new Decision(Decision.Move.BET,Long.valueOf(betAmount)*2));
+    public static void doubleButtonListener(String betAmount){
+        //Not yet implemented
     }
 
     /**
      * What happens when the foldButton is pushed
      */
-    public static void foldButtonListener(GUIClient client){
-        //TODO: Implement method
+    public static void foldButtonListener(){
         client.setDecision(new Decision(Decision.Move.FOLD));
+
+        //Notify client-thread
+        client.decisionMade();
     }
 
     /**
      * What happens when the maxButton is pushed
      */
-    public static void maxButtonListener(GUIClient client){
-        //TODO: Implement method
-        client.setDecision(new Decision(Decision.Move.BET,client.getStackSizes().get(client.getId())));
+    public static void maxButtonListener(String betAmount){ betButtonListener(betAmount);
     }
 
     /**
      * What happens when the potButton is pushed
      */
-    public static void potButtonListener(GUIClient client){
-        //TODO: Implement method
-        client.setDecision(new Decision(Decision.Move.BET,client.getPot()));
+    public static void potButtonListener(String betAmount){
+        betButtonListener(betAmount);
     }
 
     public static void settingsButtonListener(GameController gameController) {
@@ -77,12 +81,6 @@ public class ButtonListeners {
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
                                              String smallBlindText, String levelDurationText, Stage window, GameController gameController) {
         try {
-            /*client.setStartChips(Long.valueOf(amountOfChips));
-            client.setAmountOfPlayers(Integer.valueOf(numberOfPlayersText));
-            client.setBigBlind(Integer.valueOf(bigBlindText));
-            client.setSmallBlind(Integer.valueOf(smallBlindText));
-            client.setLevelDuration(Integer.valueOf(levelDurationText));*/
-
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText));
 
@@ -122,6 +120,10 @@ public class ButtonListeners {
         }catch (NumberFormatException e){
 
         }
+    }
+
+    public static void setClient(GUIClient c) {
+        client = c;
     }
 
 }
