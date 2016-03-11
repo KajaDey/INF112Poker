@@ -47,8 +47,8 @@ public class Decision {
     @Override
     public String toString() {
         if (move == Move.RAISE || move == Move.BET) {
-            return move + " " + size;
+            return "Decision{ " + move + " " + size + " }";
         }
-        return move+"";
+        return "Decision{ " + move + " }";
     }
 }
