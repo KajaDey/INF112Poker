@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.java.gamelogic.Card;
+import main.java.gamelogic.Decision;
 
 /**
  * Created by ady on 07/03/16.
@@ -153,7 +154,6 @@ public class GameScreen {
         return fullBoxWithLastMove;
     }
 
-
     /**
      * Generates a boardLayout
      *
@@ -245,5 +245,14 @@ public class GameScreen {
         potButton.setVisible(visible);
 
         amountTextfield.setVisible(visible);
+    }
+
+    //TODO: Should probably be done another way
+    public void playerMadeDecision(int ID, Decision decision) {
+        if (ID == this.playerID) {
+            playerLastMoveLabel.setText(decision.toString());
+        } else {
+            opponentLastMoveLabel.setText(decision.toString());
+        }
     }
 }

@@ -63,7 +63,7 @@ public class GUIClient implements GameClient {
     }
 
     public synchronized void decisionMade() {
-        notify();
+        notifyAll();
     }
 
     public void setDecision(Decision decision){
@@ -103,7 +103,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-
+        gameScreen.playerMadeDecision(playerId, decision);
     }
 
     @Override

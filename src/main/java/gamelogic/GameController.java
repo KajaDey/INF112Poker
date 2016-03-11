@@ -4,6 +4,7 @@ import main.java.gui.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -18,7 +19,7 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(1000,50,25,2,10);
+        gameSettings = new GameSettings(1000, 50, 25, 2, 10);
     }
 
 
@@ -26,10 +27,7 @@ public class GameController {
         //TODO: Validate input
 
 
-        //TODO: Tell GUI to set screen to Lobby screen
-        System.out.println("Touchdown");
-        //SceneBuilder.showCurrentScene(GameLobby.createScreenForGameLobby());
-
+        //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
 
     }
@@ -59,36 +57,31 @@ public class GameController {
         mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");
         mainGUI.insertPlayer(1, "AI-player", gamesettings.getStartStack(), "Big blind");
 
-
-        tests();
-
-        //Start the pokergame
-        // game.playGame();
-
-
-    }
-
-    public Decision getDecisionFromClient(int ID) {
-        GameClient client = clients.get(ID);
-        if (client == null) { return null; }
-
-        Thread thread = new Thread() {
-            public Decision d;
-
+        Thread thread = new Thread("GameThread") {
             @Override
             public void run() {
-                d = client.getDecision();
+                tests();
+
+                //Should be game.start()
 
             }
         };
 
         thread.start();
-
-
-        return null;
     }
 
-    public void setGameSettings(GameSettings gameSettings){
+    public Decision getDecisionFromClient(int ID) {
+
+        GameClient client = clients.get(ID);
+        if (client == null) {
+            return null;
+        }
+
+        return client.getDecision();
+
+    }
+
+    public void setGameSettings(GameSettings gameSettings) {
         this.gameSettings = gameSettings;
     }
 
@@ -126,10 +119,17 @@ public class GameController {
         this.setHandForClient(0, deck.draw().get(), deck.draw().get());
         this.setHandForClient(1, deck.draw().get(), deck.draw().get());
 
+
+        Decision d = getDecisionFromClient(0);
+        //clients.get(0).playerMadeDecision(0, d);
         this.setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
+
+        d = getDecisionFromClient(0);
+        //clients.get(0).playerMadeDecision(0,d);
         this.setTurn(deck.draw().get());
+
+        d = getDecisionFromClient(0);
+        //clients.get(0).playerMadeDecision(0,d);
         this.setRiver(deck.draw().get());
-
-
     }
 }
