@@ -30,6 +30,7 @@ public class Game {
     //Rounds
     private int roundNumber = 0;
     private long minimumBetThisRound = 0;
+    private long currentBet = 0;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -51,9 +52,9 @@ public class Game {
         List<Player> playersStillPlaying = new ArrayList<>();
         long SB = startSB, BB = startBB;
 
+        Handloop:
         while (numberOfPlayers > 1) {
             initializeNewRound(playersStillPlaying);
-
 
             // Deal cards to all players, starting from player next to dealer
             Deck deck = new Deck();
@@ -64,16 +65,36 @@ public class Game {
             }
 
             // TODO play hand:
-            long pot = 0;
-            long sidePot = 0;
-            Decision previousDecision = null;
-            boolean stillBetting = true;
+            currentBet = BB;
+            boolean bigBlindHasActed = false;
 
             // PREFLOP ROUND
             postBlinds(playersStillPlaying, SB, BB);
 
             int actingPlayerIndex = 2;
 
+            while (true) {
+                actingPlayerIndex %= numberOfPlayers;
+                Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
+                Decision decision = getValidDecisionFromPlayer(playerToAct);
+                playerToAct.act(decision);
+
+              //  if (actingPlayerIndex == bigBlindIndex)
+              //      bigBlindHasActed = true;
+
+                System.out.println(playerToAct.getName() + ": " + decision);
+                gameController.setDecisionForClient(playerToAct.getID(), decision);
+
+                int nextPlayerToActIndex = (actingPlayerIndex + 1) % numberOfPlayers;
+                Player nextPlayerToAct = playersStillPlaying.get(nextPlayerToActIndex);
+                if (nextPlayerToAct.getLastDecision().isPresent()) {
+                    if (nextPlayerToAct.getLastDecision().get().size == decision.size && bigBlindHasActed) {
+                        System.out.println("We agree, bettinground over");
+                    }
+                }
+
+                actingPlayerIndex++;
+            }
 
 
 
@@ -118,16 +139,25 @@ public class Game {
 
     }
 
+    private Decision getValidDecisionFromPlayer(Player playerToAct) {
+        while (true) {
+            Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
+
+            switch (decision.move) {
+                case FOLD: return decision;
+                case CHECK: if (currentBet == 0) return decision; break;
+                case CALL: if (currentBet == decision.size) return decision; break;
+                case RAISE: if (currentBet *2 <= decision.size) return decision; break;
+            }
+        }
+    }
+
     private void initializeNewRound(List<Player> playersStillPlaying) {
-        minimumBetThisRound = 0;
         dealerIndex = roundNumber%numberOfPlayers;
         if (numberOfPlayers == 2) {
-            smallBlindIndex = roundNumber;
-            bigBlindIndex = roundNumber + 1;
-        }
-        else {
-            smallBlindIndex = (roundNumber + 1)%numberOfPlayers;
-            bigBlindIndex = (roundNumber + 2)%numberOfPlayers;
+            smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
+        } else {
+            smallBlindIndex = roundNumber %numberOfPlayers;
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -136,6 +166,7 @@ public class Game {
                 playersStillPlaying.add(p);
         }
 
+        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
     }
 
     public boolean addPlayer(String name, int ID) {
