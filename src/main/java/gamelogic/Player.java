@@ -26,12 +26,16 @@ public class Player extends User {
         return ID;
     }
 
-    public void act(Decision decision) {
+    public void act(Decision decision, Long currentBet) {
         switch (decision.move) {
             case BET:
-            case RAISE:
-            case CALL:
                 this.stackSize -= decision.size;
+                break;
+            case RAISE:
+                this.stackSize -= (decision.size + currentBet);
+                break;
+            case CALL:
+                this.stackSize -= currentBet;
                 break;
         }
 

@@ -77,7 +77,7 @@ public class Game {
                 actingPlayerIndex %= numberOfPlayers;
                 Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
                 Decision decision = getValidDecisionFromPlayer(playerToAct);
-                playerToAct.act(decision);
+                playerToAct.act(decision, currentBet);
 
                 if (actingPlayerIndex == bigBlindIndex)
                     bigBlindHasActed = true;
@@ -145,10 +145,12 @@ public class Game {
 
             switch (decision.move) {
                 case FOLD: return decision;
+                case CALL: return decision;
                 case CHECK: if (currentBet == 0) return decision; break;
-                case CALL: if (currentBet == decision.size) return decision; break;
                 case RAISE: if (currentBet *2 <= decision.size) return decision; break;
             }
+
+            System.out.println(playerToAct.getName() + " " + decision);
         }
     }
 
@@ -194,11 +196,11 @@ public class Game {
 
     private void postBlinds(List<Player> playersStillPlaying, Long SB, Long BB) {
         Decision postSB = new Decision(Decision.Move.BET, SB);
-        Decision postBB = new Decision(Decision.Move.RAISE, BB);
+        Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
         Player SBPlayer = playersStillPlaying.get(0);
         Player BBPlayer = playersStillPlaying.get(1);
-        SBPlayer.act(postSB);
-        BBPlayer.act(postBB);
+        SBPlayer.act(postSB, currentBet);
+        BBPlayer.act(postBB, currentBet);
         gameController.setDecisionForClient(SBPlayer.getID(), postSB);
         gameController.setDecisionForClient(BBPlayer.getID(), postBB);
     }
