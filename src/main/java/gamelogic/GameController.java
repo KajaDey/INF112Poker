@@ -5,7 +5,6 @@ import main.java.gui.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by kristianrosland on 07.03.2016.

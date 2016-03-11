@@ -1,4 +1,6 @@
-package main.java.gamelogic;
+package main.java.gamelogic.ai;
+
+import main.java.gamelogic.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.Optional;
  It decides its move based solely on the information it gets through GameCLient
  Currently a WIP, may not work correctly
  */
-public class AI implements GameClient {
+public class SimpleAI implements GameClient {
 
     private final int playerId;
     private int amountOfPlayers;
@@ -26,7 +28,7 @@ public class AI implements GameClient {
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
     private long minimumBetThisBettingRound; // The amount the AI needs to put on the table to remain in the hand
 
-    public AI(int playerId) {
+    public SimpleAI(int playerId) {
         this.playerId = playerId;
     }
 

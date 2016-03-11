@@ -114,7 +114,7 @@ public class MonteCarloTreeNodeTest {
         }
     }
 
-    @Test
+    // @Test
     public void simpleGameTest() {
         MCTS<GamePosition, Move> mcts = new MCTS<>(new GamePosition(), GamePosition::do_move, GamePosition::allLegalMoves, GamePosition::getTerminalEvaluation);
         MCTS.TreeNode rootNode = mcts.rootNode;
