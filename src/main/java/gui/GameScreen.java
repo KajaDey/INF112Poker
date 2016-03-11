@@ -1,5 +1,6 @@
 package main.java.gui;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,7 +36,7 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-    private Button betButton, checkButton, doubleButton, foldButton, maxButton, potButton;
+    private Button betButton, checkButt'on, doubleButton, foldButton, maxButton, potButton;
 
     //Textfields
     private TextField amountTextfield;
@@ -247,12 +248,14 @@ public class GameScreen {
         amountTextfield.setVisible(visible);
     }
 
-    //TODO: Should probably be done another way
     public void playerMadeDecision(int ID, Decision decision) {
+        Runnable task;
         if (ID == this.playerID) {
-            playerLastMoveLabel.setText(decision.toString());
+            task = () -> playerLastMoveLabel.setText(decision.toString());
         } else {
-            opponentLastMoveLabel.setText(decision.toString());
+            task = () -> opponentLastMoveLabel.setText(decision.toString());
         }
+        Platform.runLater(task);
     }
+
 }

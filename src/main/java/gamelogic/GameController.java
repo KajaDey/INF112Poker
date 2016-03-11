@@ -121,15 +121,21 @@ public class GameController {
 
 
         Decision d = getDecisionFromClient(0);
-        //clients.get(0).playerMadeDecision(0, d);
+        clients.get(0).playerMadeDecision(0, d);
+        Decision opponentD = clients.get(1).getDecision();
+        clients.get(0).playerMadeDecision(1, opponentD);
         this.setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
 
         d = getDecisionFromClient(0);
-        //clients.get(0).playerMadeDecision(0,d);
+        clients.get(0).playerMadeDecision(0,d);
+        opponentD = clients.get(1).getDecision();
+        clients.get(0).playerMadeDecision(1, opponentD);
         this.setTurn(deck.draw().get());
 
         d = getDecisionFromClient(0);
-        //clients.get(0).playerMadeDecision(0,d);
+        clients.get(0).playerMadeDecision(0,d);
+        opponentD = clients.get(1).getDecision();
+        clients.get(0).playerMadeDecision(1, opponentD);
         this.setRiver(deck.draw().get());
     }
 }
