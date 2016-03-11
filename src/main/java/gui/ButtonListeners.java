@@ -22,11 +22,15 @@ public class ButtonListeners {
      * What happens when the betButton is pushed
      */
     public static void betButtonListener(String betAmount){
-        Decision decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
-        client.setDecision(decision);
+        try {
+            Decision decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
+            client.setDecision(decision);
+            //Notify client-thread
+            client.decisionMade();
+        } catch (Exception e){
 
-        //Notify client-thread
-        client.decisionMade();
+        }
+
     }
 
     /**
@@ -69,6 +73,10 @@ public class ButtonListeners {
         betButtonListener(betAmount);
     }
 
+
+    /**
+     * What happens when the settingsButton is pushed
+     */
     public static void settingsButtonListener(GameController gameController) {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
@@ -78,6 +86,9 @@ public class ButtonListeners {
         settings.show();
     }
 
+    /**
+     * What happens when the acceptSettingsButton is pushed
+     */
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
                                              String smallBlindText, String levelDurationText, Stage window, GameController gameController) {
         try {
@@ -93,17 +104,27 @@ public class ButtonListeners {
         }
 
     }
-
+    /**
+     * What happens when the cancelSettingsButton is pushed
+     */
     public static void cancelSettingsButtonListener(Stage window) {
         window.close();
     }
 
+
+    /**
+     * What happens when the startGameButton is pushed
+     */
     public static void startGameButtonListener(GameController gameController) {
         gameController.startTournamentButtonClicked(gameSettings);
     }
 
+    /**
+     * What happens when the leaveLobbyButton is pushed
+     */
+
     public static void leaveLobbyButtonListener(GameController gameController) {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gameController), "Main Screen");
+        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable", gameController), "Main Screen");
     }
 
     /**
@@ -121,7 +142,9 @@ public class ButtonListeners {
 
         }
     }
-
+    /**
+     *
+     */
     public static void setClient(GUIClient c) {
         client = c;
     }
