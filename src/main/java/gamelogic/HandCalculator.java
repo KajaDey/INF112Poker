@@ -13,7 +13,8 @@ import java.util.Optional;
  * Created by kaja on 08.03.2016.
  *
  *
- * check hand for highcard, xofakind (par, tress, firs), 2par, straight, flush, house
+ * check for the best possible hand:
+ * straight, flush, house, xofakind (four/three/two cards of the same rank), 2par, highcard
  *
  */
 public class HandCalculator {
@@ -25,6 +26,7 @@ public class HandCalculator {
         Optional<List<Card>> bestHand = Optional.empty();
         StraightFlush straightFlush = new StraightFlush();
         xOfaKind quad = new xOfaKind(4);
+        //TODO: add house
         Flush flush = new Flush();
         Straight straight = new Straight();
         xOfaKind tress = new xOfaKind(3);
