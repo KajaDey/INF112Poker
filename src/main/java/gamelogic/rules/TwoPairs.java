@@ -33,12 +33,15 @@ public class TwoPairs implements IRule {
                     cards.remove(i - 1);
                     i--;
                 } else {
+
+
                     returnHand.add(cards.get(i));
                     returnHand.add(cards.get(i - 1));
                     cards.remove(i);
                     cards.remove(i - 1);
 
                     returnHand.add(cards.get(cards.size() - 1));
+
                     return true;
                 }
             }
