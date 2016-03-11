@@ -10,21 +10,31 @@ import java.util.List;
  */
 public class Game {
 
+    //Controls
     private Table table;
+    private Player [] players;
+    private GameController gameController;
+
+    //Settings
     private int maxNumberOfPlayers;
     private int numberOfPlayers = 0;
     private int blindLevelDuration;
-    private long startSB, startBB; // TODO: changed to long
+    private long startSB, startBB;
     private long startStack;
-    private Player [] players;
+
+    //Indexes
     private int dealerIndex = 0;
     private int bigBlindIndex = 0;
-    private int roundNumber = 0;
     private int smallBlindIndex = 0;
-    private long minimumBetThisRound = 0;
 
-    public Game(GameSettings gamesettings) {
-//        this.maxNumberOfPlayers = gamesettings.maxNumberOfPlayers;
+    //Rounds
+    private int roundNumber = 0;
+    private long minimumBetThisRound = 0;
+    private long currentBet = 0;
+
+    public Game(GameSettings gamesettings, GameController gameController) {
+        this.gameController = gameController;
+
         this.maxNumberOfPlayers = 2;
         this.table = new Table(maxNumberOfPlayers);
         this.players = new Player[maxNumberOfPlayers];
@@ -40,33 +50,60 @@ public class Game {
         // TODO set clock
 
         List<Player> playersStillPlaying = new ArrayList<>();
-        long SB = startSB;
-        long BB = startBB;
+        long SB = startSB, BB = startBB;
 
+        Handloop:
         while (numberOfPlayers > 1) {
             initializeNewRound(playersStillPlaying);
-
-            // Make sb and bb pay
-            players[smallBlindIndex].setStackSize(players[smallBlindIndex].getStackSize() - SB);
-            players[bigBlindIndex].setStackSize(players[bigBlindIndex].getStackSize() - BB);
 
             // Deal cards to all players, starting from player next to dealer
             Deck deck = new Deck();
             for (Player p : playersStillPlaying) {
-                p.setHand(deck.draw().get(), deck.draw().get());
+                Card card1 = deck.draw().get(), card2 = deck.draw().get();
+                p.setHand(card1, card2);
+                gameController.setHandForClient(p.getID(), card1, card2);
             }
 
             // TODO play hand:
-            long pot = 0;
-            long sidePot = 0;
-            Decision previousDecision = null;
-            boolean stillBetting = true;
+            currentBet = BB;
+            boolean bigBlindHasActed = false;
 
-            while (stillBetting) {
+            // PREFLOP ROUND
+            postBlinds(playersStillPlaying, SB, BB);
+
+            int actingPlayerIndex = 2;
+
+            while (true) {
+                actingPlayerIndex %= numberOfPlayers;
+                Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
+                Decision decision = getValidDecisionFromPlayer(playerToAct);
+                playerToAct.act(decision);
+
+              //  if (actingPlayerIndex == bigBlindIndex)
+              //      bigBlindHasActed = true;
+
+                System.out.println(playerToAct.getName() + ": " + decision);
+                gameController.setDecisionForClient(playerToAct.getID(), decision);
+
+                int nextPlayerToActIndex = (actingPlayerIndex + 1) % numberOfPlayers;
+                Player nextPlayerToAct = playersStillPlaying.get(nextPlayerToActIndex);
+                if (nextPlayerToAct.getLastDecision().isPresent()) {
+                    if (nextPlayerToAct.getLastDecision().get().size == decision.size && bigBlindHasActed) {
+                        System.out.println("We agree, bettinground over");
+                    }
+                }
+
+                actingPlayerIndex++;
+            }
+
+
+
+
+            /*
+            while (true) {
                 for (Player p : playersStillPlaying) {
                     Decision decision = p.getLastDecision().get();
                     //gameController.getDecisionFromClient(p.ID())
-                    //p.setDecision(thatDecisionFromTheLineAboveHereYouKnow..YouProbablyHaveToSaveItInAVariableAndStuff)
 
                     switch (decision.move) {
                         case CHECK:
@@ -94,40 +131,42 @@ public class Game {
                 }
 
             }
-            /*
-                ask for decision from all participants, starting from player left for bb
-                while not everyone agrees on bet
-                    get decisions from everyone
-                        if fold
-                            removed from participants
-                            update stack size
-                if (not already 5 cards displayed)
-                    display new card
+            // TODO: check for blindraise
             */
 
-            // TODO: check for blindraise
         }
+
 
     }
 
+    private Decision getValidDecisionFromPlayer(Player playerToAct) {
+        while (true) {
+            Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
+
+            switch (decision.move) {
+                case FOLD: return decision;
+                case CHECK: if (currentBet == 0) return decision; break;
+                case CALL: if (currentBet == decision.size) return decision; break;
+                case RAISE: if (currentBet *2 <= decision.size) return decision; break;
+            }
+        }
+    }
+
     private void initializeNewRound(List<Player> playersStillPlaying) {
-        minimumBetThisRound = 0;
         dealerIndex = roundNumber%numberOfPlayers;
         if (numberOfPlayers == 2) {
-            smallBlindIndex = roundNumber;
-            bigBlindIndex = roundNumber + 1;
-        }
-        else {
-            smallBlindIndex = (roundNumber + 1)%numberOfPlayers;
-            bigBlindIndex = (roundNumber + 2)%numberOfPlayers;
+            smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
+        } else {
+            smallBlindIndex = roundNumber %numberOfPlayers;
         }
 
-        for (int i = (dealerIndex + 1)%numberOfPlayers; i < numberOfPlayers; i++) {
-            playersStillPlaying.add(players[i]);
+        for (int i = 0; i < numberOfPlayers; i++) {
+            Player p = players[(smallBlindIndex+i) % numberOfPlayers];
+            if (p.stillPlaying())
+                playersStillPlaying.add(p);
         }
-        for (int j = 0; j <= dealerIndex; j++) {
-            playersStillPlaying.add(players[j]);
-        }
+
+        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
     }
 
     public boolean addPlayer(String name, int ID) {
@@ -151,6 +190,17 @@ public class Game {
         // TODO: anything else?
         numberOfPlayers--;
         return table.removePlayer(p);
+    }
+
+    private void postBlinds(List<Player> playersStillPlaying, Long SB, Long BB) {
+        Decision postSB = new Decision(Decision.Move.BET, SB);
+        Decision postBB = new Decision(Decision.Move.RAISE, BB);
+        Player SBPlayer = playersStillPlaying.get(0);
+        Player BBPlayer = playersStillPlaying.get(1);
+        SBPlayer.act(postSB);
+        BBPlayer.act(postBB);
+        gameController.setDecisionForClient(SBPlayer.getID(), postSB);
+        gameController.setDecisionForClient(BBPlayer.getID(), postBB);
     }
 
     public boolean isValid() {

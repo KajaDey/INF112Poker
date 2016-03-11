@@ -25,7 +25,7 @@ public class GameController {
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
-
+        assert numPlayers == 2 : "Number of players MUST be 2";
 
         //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
@@ -34,7 +34,7 @@ public class GameController {
 
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
-        game = new Game(gamesettings);
+        game = new Game(gamesettings, this);
         if (!game.isValid()) {
             //TODO: Tell GUI to display error-message that settings are not valid
             return;
@@ -53,21 +53,30 @@ public class GameController {
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
+        //Should maybe be called by game
+        initClients(gamesettings);
+
         //TODO: add all players to GUI
         mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");
-        mainGUI.insertPlayer(1, "AI-player", gamesettings.getStartStack(), "Big blind");
+        mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack(), "Big blind");
 
         Thread thread = new Thread("GameThread") {
             @Override
             public void run() {
-                tests();
-
-                //Should be game.start()
-
+                game.playGame();
             }
         };
 
         thread.start();
+    }
+
+    public void initClients(GameSettings gamesettings) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient client = clients.get(clientID);
+            client.setBigBlind(gamesettings.getBigBlind());
+            client.setSmallBlind(gamesettings.getSmallBlind());
+            client.setStartChips(gamesettings.getStartStack());
+        }
     }
 
     public Decision getDecisionFromClient(int ID) {
@@ -89,6 +98,13 @@ public class GameController {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
             c.setHandForClient(userID, card1, card2);
+        }
+    }
+
+    public void setDecisionForClient(int userID, Decision decision) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            c.playerMadeDecision(userID, decision);
         }
     }
 
