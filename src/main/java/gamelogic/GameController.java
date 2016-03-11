@@ -1,10 +1,10 @@
 package main.java.gamelogic;
 
+import main.java.gamelogic.ai.SimpleAI;
 import main.java.gui.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -49,16 +49,16 @@ public class GameController {
         game.addPlayer("Kristian", 0);
 
         //AIGameClient
-        AI aiClient = new AI(1);
+        GameClient aiClient = new SimpleAI(1, 2.0);
         clients.put(1, aiClient);
-        game.addPlayer("AI-player", 1);
+        game.addPlayer("SimpleAI-player", 1);
 
         //Should maybe be called by game
         initClients(gamesettings);
 
         //TODO: add all players to GUI
         mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");
-        mainGUI.insertPlayer(1, "AI-player", gamesettings.getStartStack(), "Big blind");
+        mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack(), "Big blind");
 
         Thread thread = new Thread("GameThread") {
             @Override

@@ -1,4 +1,8 @@
-package main.java.gamelogic;
+package main.java.gamelogic.ai;
+
+import main.java.gamelogic.Card;
+import main.java.gamelogic.Decision;
+import main.java.gamelogic.GameClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +10,13 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- An AI player that works through the GameClient interface.
+ An SimpleAI player that works through the GameClient interface.
  It decides its move based solely on the information it gets through GameCLient
  Currently a WIP, may not work correctly
  */
-public class AI implements GameClient {
+public class SimpleAI implements GameClient {
+
+    private final double contemptFactor;
 
     private final int playerId;
     private int amountOfPlayers;
@@ -24,17 +30,26 @@ public class AI implements GameClient {
     private long stackSize;
 
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
-    private long minimumBetThisBettingRound; // The amount the AI needs to put on the table to remain in the hand
+    private long minimumBetThisBettingRound; // The amount the SimpleAI needs to put on the table to remain in the hand
 
-    public AI(int playerId) {
+    public SimpleAI(int playerId) {
+        this(playerId, 1.0);
+    }
+    /**
+     * Construct a new SimpleAI with a contempt factor.
+     * Default value is 1.0, higher values make it player more aggressively, i.e. raise/call more often.
+     * Values higher than 2 will make it raise/call almost always
+     */
+    public SimpleAI(int playerId, double contemptFactor) {
         this.playerId = playerId;
+        this.contemptFactor = contemptFactor;
     }
 
     @Override
     public Decision getDecision() {
-        assert bigBlindAmount > 0 && smallBlindAmount > 0: "AI was asked to make a decision without receiving big and small blind";
-        assert holeCards.size() == 2: "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
-        assert stackSize > 0: "AI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
+        assert bigBlindAmount > 0 && smallBlindAmount > 0: "SimpleAI was asked to make a decision without receiving big and small blind";
+        assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
+        assert stackSize > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
 
         assert minimumRaise > 0;
 
@@ -55,12 +70,12 @@ public class AI implements GameClient {
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
-        double raiseFactor = 2.0; // Makes it raise/call more often. 1 is default behaviour.
+        double raiseFactor = 1.0;
 
-        if (randomModifier * (handQuality / 14.0) > 1 / raiseFactor) { // If the hand is considered "good"
+        if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
-                    return new Decision(Decision.Move.BET, minimumRaise);
+                    return new Decision(Decision.Move.RAISE, minimumRaise);
                 }
                 else {
                     return new Decision(Decision.Move.CALL);
@@ -81,7 +96,7 @@ public class AI implements GameClient {
     }
 
     /**
-     * Called whenever there is a new round, after the AI has gotten its new hole cards
+     * Called whenever there is a new round, after the SimpleAI has gotten its new hole cards
      */
     public void newRound() {
         minimumRaise = bigBlindAmount;
