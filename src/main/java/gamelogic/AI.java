@@ -32,6 +32,12 @@ public class AI implements GameClient {
 
     @Override
     public Decision getDecision() {
+        assert bigBlindAmount > 0 && smallBlindAmount > 0: "AI was asked to make a decision without receiving big and small blind";
+        assert holeCards.size() == 2: "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
+        assert stackSize > 0: "AI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
+
+        assert minimumRaise > 0;
+
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
         if (holeCards.get(0).suit == holeCards.get(1).suit) {
@@ -52,7 +58,7 @@ public class AI implements GameClient {
         if (randomModifier * (handQuality / 14.0) > 1) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
-                    return new Decision(Decision.Move.RAISE, minimumRaise);
+                    return new Decision(Decision.Move.BET, minimumRaise);
                 }
                 else {
                     return new Decision(Decision.Move.CALL);
