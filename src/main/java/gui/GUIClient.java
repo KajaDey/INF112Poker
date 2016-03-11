@@ -15,6 +15,7 @@ public class GUIClient implements GameClient {
 
     //Needed variables
     private GameScreen gameScreen;
+    private Decision decision;
 
     private Map<Integer,String> name;
 
@@ -42,21 +43,27 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
+    public Decision getDecision(){
         //Make buttons visible
         gameScreen.setActionsVisible(true);
 
-        //while (decision == null) {} <-- Horrible hack, plz dont do this..
         //TODO: Make Gamecontroller call this method in a seperate thread. Sleep thread and wake it when decision is made
+        try {
+            Thread.currentThread().wait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+
+        System.out.println("I am GOD");
         //Make buttons invisible
 
         //Return decision
-        return null;
+        return decision;
     }
 
     public void setDecision(Decision decision){
-        this.playerMadeDecision(id,decision);
+        this.decision = decision;
     }
 
     @Override

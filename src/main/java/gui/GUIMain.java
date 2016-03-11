@@ -17,11 +17,7 @@ public class GUIMain extends Application{
     private GUIClient client;
 
     public GUIMain() {
-        this.gamecontroller = new GameController(this);
-    }
-
-    public GameController getGamecontroller(){
-        return gamecontroller;
+            this.gamecontroller= new  GameController(this);
     }
 
     public void displayLobbyScreen(String name, int numberOfPlayers, String gameType,GameSettings gameSettings){
@@ -40,6 +36,7 @@ public class GUIMain extends Application{
     public GUIClient displayGameScreen(GameSettings settings, int userID) {
         this.gameScreen = new GameScreen(userID);
         this.client = new GUIClient(userID, gameScreen);
+        ButtonListeners.setClient(client);
 
         //Create initial screen, empty
         SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings),"GameScreen");

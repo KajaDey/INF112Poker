@@ -126,12 +126,12 @@ public class GameScreen {
         maxButton = ObjectStandards.makeStandardButton("Max");
 
         //Actions
-        betButton.setOnAction(e -> ButtonListeners.betButtonListener(client, amountTextfield.getText()));
-      //  checkButton.setOnAction(e -> ButtonListeners.checkButtonListener(client));
-      //  doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(client, amountTextfield.getText()));
-      //  foldButton.setOnAction(e -> ButtonListeners.foldButtonListener(client));
-      //  maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(client));
-      //  potButton.setOnAction(e -> ButtonListeners.potButtonListener(client));
+        betButton.setOnAction(e -> ButtonListeners.betButtonListener(amountTextfield.getText()));
+        checkButton.setOnAction(e -> ButtonListeners.checkButtonListener());
+        //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
+        foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
+        maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
+        potButton.setOnAction(e -> ButtonListeners.potButtonListener(amountTextfield.getText()));
 
         //Add objects to the boxes
 
@@ -227,13 +227,11 @@ public class GameScreen {
     }
 
     public void displayTurn(Card turn) {
-        System.out.println("Displaying turn");
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turn.getCardNameForGui()));
         communityCards[3].setImage(turnImage);
     }
 
     public void displayRiver(Card river) {
-        System.out.println("Displaying river");
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(river.getCardNameForGui()));
         communityCards[4].setImage(riverImage);
     }

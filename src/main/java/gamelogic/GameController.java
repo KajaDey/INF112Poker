@@ -62,7 +62,17 @@ public class GameController {
 
         tests();
 
-        guiClient.getDecision();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Decision d = guiClient.getDecision();
+            }
+        };
+
+        thread.start();
+
+
+        // System.out.println("TOUCHDOWN!!!!!");
 
 
         //Start the pokergame
