@@ -79,8 +79,8 @@ public class Game {
                 Decision decision = getValidDecisionFromPlayer(playerToAct);
                 playerToAct.act(decision);
 
-              //  if (actingPlayerIndex == bigBlindIndex)
-              //      bigBlindHasActed = true;
+                if (actingPlayerIndex == bigBlindIndex)
+                    bigBlindHasActed = true;
 
                 System.out.println(playerToAct.getName() + ": " + decision);
                 gameController.setDecisionForClient(playerToAct.getID(), decision);
