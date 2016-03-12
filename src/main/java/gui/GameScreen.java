@@ -140,7 +140,7 @@ public class GameScreen {
         betButton.setOnAction(e -> {
             ButtonListeners.betButtonListener(amountTextfield.getText());
         });
-        checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener());
+        checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
         //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
         maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));

@@ -36,9 +36,15 @@ public class ButtonListeners {
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(){
-        client.setDecision(new Decision(Decision.Move.CHECK));
+    public static void checkButtonListener(String buttonText){
+        Decision decision = null;
+        if (buttonText.equals("Call")) {
+            decision = new Decision(Decision.Move.CALL);
+        } else if (buttonText.equals("Check")) {
+            decision = new Decision(Decision.Move.CHECK);
+        }
 
+        client.setDecision(decision);
         //Notify client-thread
         client.decisionMade();
     }
@@ -73,7 +79,6 @@ public class ButtonListeners {
         betButtonListener(betAmount);
     }
 
-
     /**
      * What happens when the settingsButton is pushed
      */
@@ -85,7 +90,6 @@ public class ButtonListeners {
         settings.setScene(scene);
         settings.show();
     }
-
     /**
      * What happens when the acceptSettingsButton is pushed
      */
@@ -110,23 +114,18 @@ public class ButtonListeners {
     public static void cancelSettingsButtonListener(Stage window) {
         window.close();
     }
-
-
     /**
      * What happens when the startGameButton is pushed
      */
     public static void startGameButtonListener(GameController gameController) {
         gameController.startTournamentButtonClicked(gameSettings);
     }
-
     /**
      * What happens when the leaveLobbyButton is pushed
      */
-
     public static void leaveLobbyButtonListener(GameController gameController) {
         SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable", gameController), "Main Screen");
     }
-
     /**
      * Listener for the button on the enter button on the main screen
      */
@@ -135,7 +134,6 @@ public class ButtonListeners {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
                 gameSettings = gameController.gameSettings;
-
             }
             else SceneBuilder.createSceneForInitialScreen("PokerTable",gameController);
         }catch (NumberFormatException e){

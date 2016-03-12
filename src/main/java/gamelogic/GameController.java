@@ -16,7 +16,6 @@ public class GameController {
     private GUIMain mainGUI;
     public GameSettings gameSettings;
 
-
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
         gameSettings = new GameSettings(1000, 50, 25, 2, 10);
@@ -79,14 +78,11 @@ public class GameController {
     }
 
     public Decision getDecisionFromClient(int ID) {
-
         GameClient client = clients.get(ID);
         if (client == null) {
             return null;
         }
-
         return client.getDecision();
-
     }
 
     public void setGameSettings(GameSettings gameSettings) {
