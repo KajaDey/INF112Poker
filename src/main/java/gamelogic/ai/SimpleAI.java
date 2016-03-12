@@ -111,6 +111,11 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
+    public void setPot(long potsize) {
+
+    }
+
+    @Override
     public void setPlayerNames(Map<Integer, String> names) {
 
     }

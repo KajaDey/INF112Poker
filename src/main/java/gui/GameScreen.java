@@ -308,9 +308,18 @@ public class GameScreen {
 
     }
 
+    public void setPot(long pot) {
+        String potString = Long.toString(pot);
+
+        Runnable task = () -> potLabel.setText(potString);
+        Platform.runLater(task);
+    }
+
     public void startNewHand() {
         for (ImageView imageview : communityCards) {
             imageview.setImage(null);
         }
+
+        setPot(0L);
     }
 }

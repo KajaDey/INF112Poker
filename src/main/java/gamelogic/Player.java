@@ -7,11 +7,14 @@ import java.util.Optional;
  */
 public class Player extends User {
 
-    private long stackSize;
-    private int ID;
     private Hand hand;
     private Table table;
     private Optional<Decision> lastDecision = Optional.empty();
+
+
+    private int ID;
+    private long stackSize;
+    private long putOnTableThisRound = 0;
 
     public Player(String name, long stackSize, Table table, int ID) {
         super(name);
@@ -27,12 +30,15 @@ public class Player extends User {
     public void act(Decision decision, Long currentBet) {
         switch (decision.move) {
             case BET:
+                this.putOnTableThisRound = decision.size;
                 this.stackSize -= decision.size;
                 break;
             case RAISE:
-                this.stackSize -= (decision.size + currentBet);
+                this.putOnTableThisRound += decision.size;
+                this.stackSize -= (decision.size);
                 break;
             case CALL:
+                this.putOnTableThisRound += currentBet;
                 this.stackSize -= currentBet;
                 break;
         }
@@ -40,16 +46,12 @@ public class Player extends User {
         this.lastDecision = Optional.of(decision);
     }
 
-    public Optional<Decision> getLastDecision() {
-        return lastDecision;
+    public long getAmountPutOnTableThisBettingRound() {
+        return putOnTableThisRound;
     }
 
     public long getStackSize() {
         return stackSize;
-    }
-
-    public void setStackSize(long stackSize) {
-        this.stackSize = stackSize;
     }
 
     public void setHand(Card card1, Card card2) {
@@ -58,6 +60,10 @@ public class Player extends User {
 
     public boolean stillPlaying() {
         return stackSize > 0;
+    }
+
+    public void setAmountPutOnTableThisBettingRound(long amount) {
+        this.putOnTableThisRound = amount;
     }
 }
 

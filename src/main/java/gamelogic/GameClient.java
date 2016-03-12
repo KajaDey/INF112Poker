@@ -91,4 +91,5 @@ public interface GameClient {
 
     void newBettingRound();
     void startNewHand();
+    void setPot(long potsize);
 }

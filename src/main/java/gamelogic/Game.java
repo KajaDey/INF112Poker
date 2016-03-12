@@ -72,6 +72,7 @@ public class Game {
         while (true) {
             delay(1000L);
             gameController.startNewHand();
+
             List<Player> playersStillPlaying = new ArrayList<>();
             initializeNewHand(playersStillPlaying);
 
@@ -86,7 +87,6 @@ public class Game {
             postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
 
             remainingPlayers = bettingRound(playersStillPlaying, 2);
-
             if (!remainingPlayers) { continue; }
 
             setFlop();
@@ -94,7 +94,6 @@ public class Game {
 
             currentBet = 0;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
-
             if (!remainingPlayers) { continue; }
 
             setTurn();
@@ -111,6 +110,7 @@ public class Game {
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
 
+            gameController.setPot(pot);
 
             //SHOWDOWN
             System.out.println("SHOWDOWN");
@@ -119,16 +119,19 @@ public class Game {
     }
 
     private void setFlop() {
+        gameController.setPot(pot);
         gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
         delay(delayTime);
     }
 
     private void setTurn() {
+        gameController.setPot(pot);
         gameController.setTurn(communityCards[3]);
         delay(delayTime);
     }
 
     private void setRiver() {
+        gameController.setPot(pot);
         gameController.setRiver(communityCards[4]);
         delay(delayTime);
     }
@@ -176,10 +179,18 @@ public class Game {
             if (numberOfActedPlayers == playersStillPlaying.size()) {
                 System.out.println("Bettinground finished, hand continues");
                 updateStackSizes();
+                updatePot();
                 return true;
             }
 
             actingPlayerIndex++;
+        }
+    }
+
+    private void updatePot() {
+        for (Player p : players) {
+            pot += p.getAmountPutOnTableThisBettingRound();
+            p.setAmountPutOnTableThisBettingRound(0L);
         }
     }
 
@@ -201,6 +212,8 @@ public class Game {
     }
 
     private void initializeNewHand(List<Player> playersStillPlaying) {
+        this.pot = 0;
+
         dealerIndex = roundNumber%numberOfPlayers;
         if (numberOfPlayers == 2) {
             smallBlindIndex = roundNumber %numberOfPlayers;

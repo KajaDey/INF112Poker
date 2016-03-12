@@ -28,7 +28,7 @@ public class GUIClient implements GameClient {
     private int amountOfPlayers;
     private int levelDuration;
     private Map<Integer, Decision> lastMove;
-    private int pot;
+    private long pot;
 
     public GUIClient(int id, GameScreen gameScreen) {
         this.id = id;
@@ -151,8 +151,11 @@ public class GUIClient implements GameClient {
         this.lastMove = lastMove;
     }
 
-    public void setPot(int pot){
+    @Override
+    public void setPot(long pot){
         this.pot = pot;
+
+        gameScreen.setPot(pot);
     }
 
     public Map<Integer, String> getName() {

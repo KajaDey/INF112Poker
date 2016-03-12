@@ -150,4 +150,11 @@ public class GameController {
             client.startNewHand();
         }
     }
+
+    public void setPot(Long pot) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            c.setPot(pot);
+        }
+    }
 }
