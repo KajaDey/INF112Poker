@@ -26,7 +26,13 @@ public class StraightFlush implements IRule {
         }
 
         Straight straight = new Straight(mainSuitCards);
-        return straight.match(hand);
+        boolean straightFlushMatch = straight.match(hand);
+
+        if (straightFlushMatch) {
+            returnHand.addAll(straight.getHand().get());
+        }
+
+        return straightFlushMatch;
     }
 
     @Override
