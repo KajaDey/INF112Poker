@@ -26,7 +26,7 @@ public class HandCalculator {
         Optional<List<Card>> bestHand = Optional.empty();
         StraightFlush straightFlush = new StraightFlush();
         xOfaKind quad = new xOfaKind(4);
-        //TODO: add house
+        House house  = new House();
         Flush flush = new Flush();
         Straight straight = new Straight();
         xOfaKind tress = new xOfaKind(3);
@@ -37,6 +37,7 @@ public class HandCalculator {
         List<IRule> hands = new ArrayList<>();
         hands.add(straightFlush);
         hands.add(quad);
+        hands.add(house);
         hands.add(flush);
         hands.add(straight);
         hands.add(tress);
