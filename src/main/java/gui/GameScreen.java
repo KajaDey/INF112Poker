@@ -328,6 +328,15 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    public void setName(int ID, String name) {
+        Runnable task;
+        if (ID == playerID)
+            task = () -> playerNameLabel.setText("Name: " + name);
+        else
+            task = () -> opponentNameLabel.setText("Name: " + name);
+        Platform.runLater(task);
+    }
+
     public void startNewHand() {
         Runnable task = () -> {
             for (ImageView imageview : communityCards)

@@ -17,27 +17,14 @@ public class GUIClient implements GameClient {
     private GameScreen gameScreen;
     private Decision decision;
 
-    private Map<Integer,String> name;
-    private Map<Integer,Long> stackSizes;
-
     private int id;
-    private int bigBlind;
-    private int smallBlind;
-    private Map<Integer,Integer> position;
-    private long startChips;
-    private int amountOfPlayers;
-    private int levelDuration;
-    private Map<Integer, Decision> lastMove;
-    private long pot;
 
     public GUIClient(int id, GameScreen gameScreen) {
         this.id = id;
         this.gameScreen = gameScreen;
     }
 
-    public void setName(Map<Integer, String> name) {
-        this.name = name;
-    }
+
 
     @Override
     public synchronized Decision getDecision(){
@@ -67,7 +54,9 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
-
+        for (Integer id : names.keySet()) {
+            gameScreen.setName(id, names.get(id));
+        }
     }
 
     @Override
@@ -102,7 +91,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        this.stackSizes = stackSizes;
         gameScreen.updateStackSizes(stackSizes);
     }
 
@@ -128,38 +116,31 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
-        this.position = positions;
+
     }
 
     @Override
     public void setStartChips(long startChips) {
-        this.startChips = startChips;
+
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-        this.amountOfPlayers = amountOfPlayers;
+
     }
 
     @Override
     public void setLevelDuration(int levelDuration) {
-        this.levelDuration = levelDuration;
+
     }
 
     @Override
     public void setLastMove(Map<Integer,Decision> lastMove) {
-        this.lastMove = lastMove;
     }
 
     @Override
     public void setPot(long pot){
-        this.pot = pot;
-
         gameScreen.setPot(pot);
-    }
-
-    public Map<Integer, String> getName() {
-        return name;
     }
 
     public int getID() {
