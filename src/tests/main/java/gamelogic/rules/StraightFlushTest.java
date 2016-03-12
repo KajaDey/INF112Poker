@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -35,6 +36,17 @@ public class StraightFlushTest {
         straightFlush = new StraightFlush();
 
         assertTrue(straightFlush.match(hand));
+    }
+
+    @Test
+    public void testGetHandWhenMatch() {
+        hand = new Hand(card1, card2, Arrays.asList(card3, card4, card6, card5, card6));
+        straightFlush = new StraightFlush();
+        straightFlush.match(hand);
+
+        assertTrue(straightFlush.getHand().isPresent());
+        assertTrue(straightFlush.getHand().get().size() == 5);
+
     }
 
     @Test
@@ -68,4 +80,5 @@ public class StraightFlushTest {
 
         assertFalse(straightFlush.match(hand));
     }
+
 }
