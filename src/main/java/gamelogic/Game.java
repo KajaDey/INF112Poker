@@ -118,32 +118,6 @@ public class Game {
         }
     }
 
-    private void setFlop() {
-        gameController.setPot(pot);
-        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
-        delay(delayTime);
-    }
-
-    private void setTurn() {
-        gameController.setPot(pot);
-        gameController.setTurn(communityCards[3]);
-        delay(delayTime);
-    }
-
-    private void setRiver() {
-        gameController.setPot(pot);
-        gameController.setRiver(communityCards[4]);
-        delay(delayTime);
-    }
-
-    private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
-        for (Player p : playersStillPlaying) {
-            Card card1 = deck.draw().get(), card2 = deck.draw().get();
-            p.setHand(card1, card2);
-            gameController.setHandForClient(p.getID(), card1, card2);
-        }
-    }
-
     private Card[] generateCommunityCards(Deck deck) {
         Card [] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
@@ -187,27 +161,22 @@ public class Game {
         }
     }
 
-    private void updatePot() {
-        for (Player p : players) {
-            pot += p.getAmountPutOnTableThisBettingRound();
-            p.setAmountPutOnTableThisBettingRound(0L);
-        }
-    }
-
     private Decision getValidDecisionFromPlayer(Player playerToAct) {
         while (true) {
+            System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
 
             switch (decision.move) {
                 //TODO: Check that player has enough chips for this decision
                 case FOLD: return decision;
-                case CALL: return decision;
+                case CALL: if (currentBet >= currentBB) return decision; break;
                 case BET: if (decision.size >= currentBB) return decision; break;
                 case CHECK: if (currentBet == 0) return decision; break;
                 case RAISE: if (currentBet *2 <= decision.size) return decision; break;
             }
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
+            System.exit(1);
         }
     }
 
@@ -249,18 +218,12 @@ public class Game {
         return table.addPlayer(p);
     }
 
-    public void updateStackSizes() {
+    private void updateStackSizes() {
         for (Player p : players) {
             stackSizes.put(p.getID(), p.getStackSize());
         }
 
         gameController.setStackSizes(stackSizes);
-    }
-
-    private boolean removePlayer(Player p) {
-        // TODO: anything else?
-        numberOfPlayers--;
-        return table.removePlayer(p);
     }
 
     private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
@@ -274,10 +237,6 @@ public class Game {
         gameController.setDecisionForClient(bbID, postBB);
     }
 
-    public boolean isValid() {
-        return startStack > 0 && startBB < startStack && startSB < startBB && maxNumberOfPlayers > 1 && maxNumberOfPlayers < 8;
-    }
-
     private void delay(Long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -285,4 +244,43 @@ public class Game {
             System.out.println("Error when sleeping thread " + Thread.currentThread());
         }
     }
+
+    private void setFlop() {
+        gameController.setPot(pot);
+        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
+        delay(delayTime);
+    }
+
+    private void setTurn() {
+        gameController.setPot(pot);
+        gameController.setTurn(communityCards[3]);
+        delay(delayTime);
+    }
+
+    private void setRiver() {
+        gameController.setPot(pot);
+        gameController.setRiver(communityCards[4]);
+        delay(delayTime);
+    }
+
+    private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
+        for (Player p : playersStillPlaying) {
+            Card card1 = deck.draw().get(), card2 = deck.draw().get();
+            p.setHand(card1, card2);
+            gameController.setHandForClient(p.getID(), card1, card2);
+        }
+    }
+
+    public boolean isValid() {
+        return startStack > 0 && startBB < startStack && startSB < startBB && maxNumberOfPlayers > 1 && maxNumberOfPlayers < 8;
+    }
+
+    private void updatePot() {
+        for (Player p : players) {
+            pot += p.getAmountPutOnTableThisBettingRound();
+            p.setAmountPutOnTableThisBettingRound(0L);
+        }
+    }
+
+
 }

@@ -48,9 +48,7 @@ public class GUIClient implements GameClient {
         notifyAll();
     }
 
-    public void setDecision(Decision decision){
-        this.decision = decision;
-    }
+    public void setDecision(Decision decision) { this.decision = decision; }
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {

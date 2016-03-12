@@ -313,6 +313,7 @@ public class GameScreen {
 
     public void newBettingRound() {
         Runnable task = () -> {
+            this.currentBet = 0;
             this.playerLastMoveLabel.setText("");
             this.opponentLastMoveLabel.setText("");
             checkCallButton.setText("Check");
