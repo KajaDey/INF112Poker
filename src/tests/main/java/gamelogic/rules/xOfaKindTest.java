@@ -55,6 +55,8 @@ public class xOfaKindTest {
         assertEquals(false,xOf4.match(hand2));
     }
 
+
+
     @Test
     public void testThreeLikeCards() throws Exception {
         hand1 = new Hand(holeCard1,holeCard4,communityCards);
@@ -69,5 +71,12 @@ public class xOfaKindTest {
         hand1 = new Hand(holeCard3,holeCard4,communityCards);
         assertEquals(true,xOf2.match(hand1));
 
+    }
+
+    @Test
+    public void testGetHand() throws Exception {
+        hand1 = new Hand(holeCard1,holeCard2,communityCards);
+        xOf4.match(hand1);
+        assert(xOf4.getHand().isPresent());
     }
 }
