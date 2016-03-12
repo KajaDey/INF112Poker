@@ -12,9 +12,6 @@ public class House implements IRule {
     private List<Card> allCards = new ArrayList<Card>();
     private boolean isFullHouse = false;
 
-
-
-
     public Map<Integer,Integer> cardCount = new HashMap<Integer,Integer>();
     @Override
     public boolean match(Hand hand) {
@@ -22,9 +19,6 @@ public class House implements IRule {
         List<Card> cards = hand.getAllCards();
         cards.sort(Card::compareTo);
         allCards = cards;
-
-
-
 
     //count how many of each card we gt
     for(Card card:cards)
@@ -84,12 +78,10 @@ public class House implements IRule {
                 break;
             }
         }
-
-
-        return Optional.of(bestCards);
-
-
-
+        if (bestCards.size() > 0) {
+            return Optional.of(bestCards);
+        }
+        return Optional.empty();
     }
 
 
