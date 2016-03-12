@@ -16,6 +16,8 @@ import javafx.scene.text.Font;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 
+import java.util.Map;
+
 /**
  * Created by ady on 07/03/16.
  */
@@ -36,10 +38,13 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-    private Button betButton, checkButton, doubleButton, foldButton, maxButton, potButton;
+    private Button betButton, checkCallButton, doubleButton, foldButton, maxButton, potButton;
 
     //Textfields
     private TextField amountTextfield;
+
+    //Storagevariables
+    private long currentBet = 0;
 
     public GameScreen(int ID) {
         this.playerID = ID;
@@ -83,7 +88,6 @@ public class GameScreen {
      *
      * @return A VBox with the player layout
      */
-
     public VBox makePlayerLayout(int userID, String name, long stackSize, String pos) {
 
         //Setting standards i want to use
@@ -120,7 +124,7 @@ public class GameScreen {
 
         //Buttons in the VBox
         betButton = ObjectStandards.makeStandardButton("Bet");
-        checkButton = ObjectStandards.makeStandardButton("Check");
+        checkCallButton = ObjectStandards.makeStandardButton("Check");
         foldButton = ObjectStandards.makeStandardButton("Fold");
         potButton = ObjectStandards.makeStandardButton("Pot");
         doubleButton = ObjectStandards.makeStandardButton("Double");
@@ -130,7 +134,7 @@ public class GameScreen {
         betButton.setOnAction(e -> {
             ButtonListeners.betButtonListener(amountTextfield.getText());
         });
-        checkButton.setOnAction(e -> ButtonListeners.checkButtonListener());
+        checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener());
         //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
         maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
@@ -140,7 +144,7 @@ public class GameScreen {
 
         stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
         stats.setAlignment(Pos.CENTER);
-        twoButtonsUnderInput.getChildren().addAll(checkButton, foldButton);
+        twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
         inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
         twoButtonsLeft.getChildren().addAll(betButton, maxButton);
@@ -174,7 +178,7 @@ public class GameScreen {
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
         nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
         nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
-        potLabel = ObjectStandards.makeStandardLabelWhite("", "");
+        potLabel = ObjectStandards.makeStandardLabelWhite("Pot", "");
 
         verticalLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
         verticalLayout.setSpacing(10);
@@ -241,7 +245,7 @@ public class GameScreen {
 
     public void setActionsVisible(boolean visible) {
         betButton.setVisible(visible);
-        checkButton.setVisible(visible);
+        checkCallButton.setVisible(visible);
         doubleButton.setVisible(visible);
         foldButton.setVisible(visible);
         maxButton.setVisible(visible);
@@ -251,13 +255,62 @@ public class GameScreen {
     }
 
     public void playerMadeDecision(int ID, Decision decision) {
+        String decisionText = decision.move.toString() + " ";
+
+        switch(decision.move) {
+            case BET:
+                decisionText += (currentBet = decision.size);
+                break;
+            case CALL: decisionText += currentBet; break;
+            case RAISE:
+                decisionText += (currentBet += decision.size);
+                break;
+        }
+        // bet eller raise: endre buttontext til call
+        if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
+            Runnable task = () -> checkCallButton.setText("Call");
+            Platform.runLater(task);
+        }
+
+
+        final String finalDecision = decisionText;
+
         Runnable task;
         if (ID == this.playerID) {
-            task = () -> playerLastMoveLabel.setText(decision.toString());
+            task = () -> playerLastMoveLabel.setText(finalDecision);
         } else {
-            task = () -> opponentLastMoveLabel.setText(decision.toString());
+            task = () -> opponentLastMoveLabel.setText(finalDecision);
         }
         Platform.runLater(task);
     }
 
+    public void updateStackSizes(Map<Integer, Long> stackSizes) {
+        for (Integer clientID : stackSizes.keySet()) {
+            String stackSizeText = ""+stackSizes.get(clientID);
+
+            Runnable task;
+            if (clientID == playerID) {
+                task = () -> this.playerStackLabel.setText(stackSizeText);
+            } else {
+                task = () -> this.opponentStackSizeLabel.setText(stackSizeText);
+            }
+            Platform.runLater(task);
+        }
+    }
+
+    public void newBettingRound() {
+        Runnable task = () -> {
+            this.playerLastMoveLabel.setText("");
+            this.opponentLastMoveLabel.setText("");
+            checkCallButton.setText("Check");
+        };
+        Platform.runLater(task);
+
+    }
+
+    public void startNewHand() {
+        for (ImageView imageview : communityCards) {
+            imageview.setImage(null);
+        }
+    }
 }

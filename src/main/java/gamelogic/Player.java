@@ -12,14 +12,12 @@ public class Player extends User {
     private Hand hand;
     private Table table;
     private Optional<Decision> lastDecision = Optional.empty();
-    public boolean inHand;
 
     public Player(String name, long stackSize, Table table, int ID) {
         super(name);
         this.stackSize = stackSize;
         this.table = table;
         this.ID = ID;
-        this.inHand = false;
     }
 
     public int getID() {

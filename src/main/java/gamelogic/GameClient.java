@@ -88,4 +88,7 @@ public interface GameClient {
     void setFlop(Card card1, Card card2, Card card3);
     void setTurn(Card turn);
     void setRiver(Card river);
+
+    void newBettingRound();
+    void startNewHand();
 }

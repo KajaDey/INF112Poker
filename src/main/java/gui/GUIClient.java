@@ -13,8 +13,6 @@ import java.util.Map;
 
 public class GUIClient implements GameClient {
 
-    public Thread t;
-
     //Needed variables
     private GameScreen gameScreen;
     private Decision decision;
@@ -92,10 +90,20 @@ public class GUIClient implements GameClient {
         gameScreen.displayRiver(river);
     }
 
+    @Override
+    public void newBettingRound() {
+        gameScreen.newBettingRound();
+    }
+
+    @Override
+    public void startNewHand() {
+        gameScreen.startNewHand();
+    }
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
+        gameScreen.updateStackSizes(stackSizes);
     }
 
     @Override

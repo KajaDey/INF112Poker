@@ -11,9 +11,9 @@ import java.util.Map;
  */
 public class GameController {
 
-    public Game game;
-    public Map<Integer, GameClient> clients;
-    public GUIMain mainGUI;
+    private Game game;
+    private Map<Integer, GameClient> clients;
+    private GUIMain mainGUI;
     public GameSettings gameSettings;
 
 
@@ -21,7 +21,6 @@ public class GameController {
         this.mainGUI = gui;
         gameSettings = new GameSettings(1000, 50, 25, 2, 10);
     }
-
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
@@ -129,29 +128,26 @@ public class GameController {
         }
     }
 
-    public void tests() {
-        Deck deck = new Deck();
+    public void setStackSizes(Map<Integer, Long> stackSizes) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            assert stackSizes.size() == 2;
+            c.setAmountOfPlayers(stackSizes.size());
+            c.setStackSizes(stackSizes);
+        }
+    }
 
-        this.setHandForClient(0, deck.draw().get(), deck.draw().get());
-        this.setHandForClient(1, deck.draw().get(), deck.draw().get());
+    public void newBettingRound() {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            c.newBettingRound();
+        }
+    }
 
-
-        Decision d = getDecisionFromClient(0);
-        clients.get(0).playerMadeDecision(0, d);
-        Decision opponentD = clients.get(1).getDecision();
-        clients.get(0).playerMadeDecision(1, opponentD);
-        this.setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
-
-        d = getDecisionFromClient(0);
-        clients.get(0).playerMadeDecision(0,d);
-        opponentD = clients.get(1).getDecision();
-        clients.get(0).playerMadeDecision(1, opponentD);
-        this.setTurn(deck.draw().get());
-
-        d = getDecisionFromClient(0);
-        clients.get(0).playerMadeDecision(0,d);
-        opponentD = clients.get(1).getDecision();
-        clients.get(0).playerMadeDecision(1, opponentD);
-        this.setRiver(deck.draw().get());
+    public void startNewHand() {
+        for (Integer clientID : clients.keySet()) {
+            GameClient client = clients.get(clientID);
+            client.startNewHand();
+        }
     }
 }

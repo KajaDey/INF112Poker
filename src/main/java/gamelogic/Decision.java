@@ -5,7 +5,11 @@ package main.java.gamelogic;
  */
 
 public class Decision {
-    public static enum Move {FOLD, CHECK, BET, RAISE, CALL};
+    public static enum Move {FOLD, CHECK, BET, RAISE, CALL;
+        public String toString() {
+            return this == FOLD ? "Fold" : this == CHECK ? "Check" : this == BET ? "Bet" : this == RAISE ? "Raise" : "Call";
+        }
+    } ;
 
     public final Move move;
     public final long size;
