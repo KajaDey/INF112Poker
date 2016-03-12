@@ -33,7 +33,7 @@ public class xOfaKindTest {
         communityCards.add(card.of(9, Card.Suit.HEARTS).get());
         communityCards.add(card.of(12, Card.Suit.SPADES).get());
         communityCards.add(card.of(11, Card.Suit.CLUBS).get());
-        communityCards.add(card.of(7, Card.Suit.DIAMONDS).get());
+        communityCards.add(card.of(10, Card.Suit.DIAMONDS).get());
 
 
         holeCard1 = card.of(9, Card.Suit.CLUBS).get();
@@ -48,10 +48,7 @@ public class xOfaKindTest {
     public void testFourLikeCards() throws Exception {
         hand1 = new Hand(holeCard1,holeCard2,communityCards);
         hand2=new Hand(holeCard3,holeCard4,communityCards);
-
         assertEquals(true,xOf4.match(hand1));
-        assertEquals(false,xOf3.match(hand1));
-        assertEquals(false,xOf2.match(hand1));
         assertEquals(false,xOf4.match(hand2));
     }
 
@@ -62,7 +59,6 @@ public class xOfaKindTest {
         hand1 = new Hand(holeCard1,holeCard4,communityCards);
         hand2=new Hand(holeCard3,holeCard4,communityCards);
         assertEquals(true,xOf3.match(hand1));
-        assertEquals(false,xOf2.match(hand1));
         assertEquals(false,xOf3.match(hand2));
     }
 
