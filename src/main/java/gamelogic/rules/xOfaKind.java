@@ -65,7 +65,6 @@ public class xOfaKind implements IRule {
                     }
                     break;
                 case 3:
-
                     if (tempHand.size() == 3) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 2;
