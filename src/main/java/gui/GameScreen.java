@@ -73,13 +73,19 @@ public class GameScreen {
             //Set player hand
             Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
             Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
-            playerLeftCardImage.setImage(leftImage);
-            playerRightCardImage.setImage(rightImage);
+            Runnable task = () -> {
+                playerLeftCardImage.setImage(leftImage);
+                playerRightCardImage.setImage(rightImage);
+            };
+            Platform.runLater(task);
         } else {
             //Set opponent hand
             Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
-            opponentLeftCardImage.setImage(backImage);
-            opponentRightCardImage.setImage(backImage);
+            Runnable task = () -> {
+                opponentLeftCardImage.setImage(backImage);
+                opponentRightCardImage.setImage(backImage);
+            };
+            Platform.runLater(task);
         }
     }
 
@@ -223,35 +229,42 @@ public class GameScreen {
     }
 
     public void displayFlop(Card card1, Card card2, Card card3) {
-
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
 
-        communityCards[0].setImage(card1Image);
-        communityCards[1].setImage(card2Image);
-        communityCards[2].setImage(card3Image);
+        Runnable task = () -> {
+            communityCards[0].setImage(card1Image);
+            communityCards[1].setImage(card2Image);
+            communityCards[2].setImage(card3Image);
+        };
+        Platform.runLater(task);
     }
 
     public void displayTurn(Card turn) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turn.getCardNameForGui()));
-        communityCards[3].setImage(turnImage);
+        Runnable task = () -> communityCards[3].setImage(turnImage);
+        Platform.runLater(task);
     }
 
     public void displayRiver(Card river) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(river.getCardNameForGui()));
-        communityCards[4].setImage(riverImage);
+        Runnable task = () -> communityCards[4].setImage(riverImage);
+        Platform.runLater(task);
     }
 
     public void setActionsVisible(boolean visible) {
-        betButton.setVisible(visible);
-        checkCallButton.setVisible(visible);
-        doubleButton.setVisible(visible);
-        foldButton.setVisible(visible);
-        maxButton.setVisible(visible);
-        potButton.setVisible(visible);
+        Runnable task = () -> {
+            betButton.setVisible(visible);
+            checkCallButton.setVisible(visible);
+            doubleButton.setVisible(visible);
+            foldButton.setVisible(visible);
+            maxButton.setVisible(visible);
+            potButton.setVisible(visible);
 
-        amountTextfield.setVisible(visible);
+            amountTextfield.setVisible(visible);
+        };
+        Platform.runLater(task);
     }
 
     public void playerMadeDecision(int ID, Decision decision) {
@@ -266,7 +279,7 @@ public class GameScreen {
                 decisionText += (currentBet += decision.size);
                 break;
         }
-        // bet eller raise: endre buttontext til call
+
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             Runnable task = () -> checkCallButton.setText("Call");
             Platform.runLater(task);
@@ -316,10 +329,11 @@ public class GameScreen {
     }
 
     public void startNewHand() {
-        for (ImageView imageview : communityCards) {
-            imageview.setImage(null);
-        }
-
+        Runnable task = () -> {
+            for (ImageView imageview : communityCards)
+                imageview.setImage(null);
+        };
+        Platform.runLater(task);
         setPot(0L);
     }
 }
