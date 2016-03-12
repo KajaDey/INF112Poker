@@ -13,13 +13,12 @@ import static org.junit.Assert.*;
  * Created by Vegar on 09/03/16.
  */
 public class FlushTest {
-    Hand hand = null;
-    Hand hand2 = null;
+    Hand hand1,hand2 = null;
     Flush flush = new Flush();
+
     @Before
     public void setUp() throws Exception {
         Card card = null;
-
         ArrayList<Card> communityCards = new ArrayList<>();
 
         communityCards.add(card.of(10, Card.Suit.SPADES).get());
@@ -32,13 +31,13 @@ public class FlushTest {
         Card kingOfSpades = card.of(13, Card.Suit.SPADES).get();
         Card kingOfHearts = card.of(14, Card.Suit.HEARTS).get();
 
-        hand = new Hand(aceOfSpades,kingOfSpades,communityCards);
+        hand1 = new Hand(aceOfSpades,kingOfSpades,communityCards);
         hand2 = new Hand(aceOfSpades,kingOfHearts,communityCards);
     }
 
     @Test
     public void testFlushTrue() throws Exception {
-        assertTrue(flush.match(hand));
+        assertTrue(flush.match(hand1));
     }
 
     @Test

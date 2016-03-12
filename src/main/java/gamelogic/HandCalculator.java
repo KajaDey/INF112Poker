@@ -12,7 +12,6 @@ import java.util.Optional;
 /**
  * Created by kaja on 08.03.2016.
  *
- *
  * check for the best possible hand:
  * straight, flush, house, xofakind (four/three/two cards of the same rank), 2par, highcard
  *
@@ -20,8 +19,6 @@ import java.util.Optional;
 public class HandCalculator {
 
     public Optional<List<Card>> getUsersBestHand(Hand hand){
-
-        //TODO: Not finished, logic in classes, and missing hands in list need to be filled out
 
         Optional<List<Card>> bestHand = Optional.empty();
         StraightFlush straightFlush = new StraightFlush();
@@ -49,7 +46,6 @@ public class HandCalculator {
             if(ir.match(hand))
                 return ir.getHand();
         }
-
         return bestHand;
     }
 }

@@ -56,8 +56,7 @@ public class HandCalculatorTest {
         holeCard1=card.of(4, Card.Suit.SPADES).get();
         holeCard2=card.of(2, Card.Suit.SPADES).get();
         hand = new Hand(holeCard1, holeCard2,communityCards);
-       // System.out.println("Flush: "+hand.getAllCards());
-       // System.out.println("Flush: "+hc.getUsersBestHand(hand));
+        //System.out.println("Flush: "+hc.getUsersBestHand(hand));
     }
     @Test
     public void testStraightReturn() throws Exception{
