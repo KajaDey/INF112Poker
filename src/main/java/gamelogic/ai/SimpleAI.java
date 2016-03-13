@@ -29,6 +29,7 @@ public class SimpleAI implements GameClient {
     private Optional<Decision> lastDecision = Optional.empty();
     private long stackSize;
 
+    private int playersLeftInCurrentHand;
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
     private long minimumBetThisBettingRound; // The amount the SimpleAI needs to put on the table to remain in the hand
 
@@ -75,13 +76,15 @@ public class SimpleAI implements GameClient {
         if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
+                    minimumBetThisBettingRound = 0;
                     return new Decision(Decision.Move.RAISE, minimumRaise);
                 }
                 else {
-                    return new Decision(Decision.Move.CALL);
+                    return new Decision(Decision.Move.CHECK);
                 }
             }
             else {
+                minimumBetThisBettingRound = 0;
                 return new Decision(Decision.Move.CALL);
             }
         }
@@ -107,7 +110,8 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void startNewHand() {
-
+        playersLeftInCurrentHand = amountOfPlayers;
+        holeCards.clear();
     }
 
     @Override
@@ -152,6 +156,9 @@ public class SimpleAI implements GameClient {
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             minimumBetThisBettingRound += decision.size;
             minimumRaise = decision.size;
+        }
+        if (decision.move == Decision.Move.FOLD) {
+            playersLeftInCurrentHand--;
         }
     }
 
@@ -203,7 +210,9 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
+
         this.amountOfPlayers = amountOfPlayers;
+        this.playersLeftInCurrentHand = amountOfPlayers;
     }
 
     @Override
