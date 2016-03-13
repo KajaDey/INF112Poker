@@ -14,9 +14,15 @@ import main.java.gamelogic.GameController;
  */
 public class MainScreen {
 
+    /**
+     * Creates the layout for the main screen, containing buttons, text fields, labels and choicebox.
+     * @param window The "old" window that needs to be refreshed
+     * @param gameController
+     * @return The horizontal box containing all the information of the screen.
+     */
     public static HBox makeLayout(Stage window,GameController gameController){
         Font standardFont = new Font("Areal",15);
-        Font info = new Font("Monaco", 30);
+        Font infoFont = new Font("Monaco", 30);
         Insets standardPadding = new Insets(5,5,5,5);
         Insets largePadding = new Insets(15);
         int standardButton = 75;
@@ -25,13 +31,20 @@ public class MainScreen {
         VBox verticalButtonAndChoiceBox = new VBox();
 
         //Top-text
-        String infoText = "Heads Up Poker!";
+        String title = "Heads Up Poker!";
+        String info = "This is an implementation of heads up Texas hold'em.\n" +
+                "Since the program isn't fully implemented yet, you can only choose \"Single player\" and play against one AI\n" +
+                "Enter your name, and start playing!";
 
-        Label label = ObjectStandards.makeStandardLabelWhite(infoText, "");
-        label.setPadding(largePadding);
-        label.setFont(info);
+        Label titleText = ObjectStandards.makeStandardLabelWhite(title, "");
+        titleText.setPadding(largePadding);
+        titleText.setFont(infoFont);
 
-        verticalButtonAndChoiceBox.getChildren().addAll(label);
+        Label infoText = ObjectStandards.makeStandardLabelWhite(info, "");
+        infoText.setPadding(largePadding);
+        infoText.setFont(new Font("Areal", 15));
+
+        verticalButtonAndChoiceBox.getChildren().addAll(titleText,infoText);
         verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
         horisontalFull.setAlignment(Pos.CENTER);
@@ -61,11 +74,6 @@ public class MainScreen {
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue(), gameController);
         });
 
-        /**
-         * Makes pressing enter key work the same way as
-         * pressing the button, for some magical, mysterious reason.
-         * I wonder why...
-         */
         playersIn.setOnAction(e -> {
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue(), gameController);

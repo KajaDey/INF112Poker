@@ -5,6 +5,9 @@ import main.java.gamelogic.Hand;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -33,8 +36,6 @@ public class TwoPairsTest {
 
     @Test
     public void testMatch() throws Exception {
-        //    public Hand(Card card1, Card card2, List<Card> communityCards) {
-        //Card card1 = Card.of(5, Card.Suit.HEARTS).get(); // hjerter 5
         hand = new Hand(holeCard, holeCard1,communityCards);
         twoPairs = new TwoPairs();
 
@@ -61,5 +62,21 @@ public class TwoPairsTest {
         assertTrue(hand.getAllCards().contains(communityCards.get(0)));
         assertTrue(hand.getAllCards().contains(communityCards.get(1)));
         assertTrue(hand.getAllCards().contains(communityCards.get(2)));
+    }
+
+    @Test
+    public void testRightCompareValues() {
+        hand = new Hand(holeCard, holeCard1,communityCards);
+        twoPairs = new TwoPairs();
+        twoPairs.match(hand);
+
+        List<Integer> compareValues = twoPairs.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 8);
+        assertTrue(compareValues.get(1) == 5);
+        assertTrue(compareValues.get(2) == 7);
+
+        assertTrue(compareValues.size() == 3);
+
     }
 }

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -13,13 +14,12 @@ import static org.junit.Assert.*;
  * Created by Vegar on 09/03/16.
  */
 public class FlushTest {
-    Hand hand = null;
-    Hand hand2 = null;
+    Hand hand1,hand2 = null;
     Flush flush = new Flush();
+
     @Before
     public void setUp() throws Exception {
         Card card = null;
-
         ArrayList<Card> communityCards = new ArrayList<>();
 
         communityCards.add(card.of(10, Card.Suit.SPADES).get());
@@ -32,17 +32,32 @@ public class FlushTest {
         Card kingOfSpades = card.of(13, Card.Suit.SPADES).get();
         Card kingOfHearts = card.of(14, Card.Suit.HEARTS).get();
 
-        hand = new Hand(aceOfSpades,kingOfSpades,communityCards);
+        hand1 = new Hand(aceOfSpades,kingOfSpades,communityCards);
         hand2 = new Hand(aceOfSpades,kingOfHearts,communityCards);
     }
 
     @Test
     public void testFlushTrue() throws Exception {
-        assertTrue(flush.match(hand));
+        assertTrue(flush.match(hand1));
     }
 
     @Test
     public void testFlushFalse() throws Exception {
         assertFalse(flush.match(hand2));
+    }
+
+    @Test
+    public void testRightCompareValues() {
+        flush.match(hand1);
+        List<Integer> compareValues = flush.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 14);
+        assertTrue(compareValues.get(1) == 13);
+        assertTrue(compareValues.get(2) == 10);
+        assertTrue(compareValues.get(3) == 8);
+        assertTrue(compareValues.get(4) == 5);
+
+        assertTrue(compareValues.size() == 5);
+
     }
 }

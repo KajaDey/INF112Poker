@@ -11,45 +11,77 @@ import java.util.Optional;
 
 /**
  * Created by kaja on 08.03.2016.
- *
- *
+ * <p/>
  * check for the best possible hand:
  * straight, flush, house, xofakind (four/three/two cards of the same rank), 2par, highcard
- *
  */
 public class HandCalculator {
 
-    public Optional<List<Card>> getUsersBestHand(Hand hand){
+    public enum HandType {
+        STRAIGHT_FLUSH, QUAD, HOUSE, FLUSH, STRAIGHT, TRIPS, TWO_PAIRS, PAIR, HIGH_CARD;
+    }
 
-        //TODO: Not finished, logic in classes, and missing hands in list need to be filled out
+    private Optional<List<Card>> bestHand;
+    private List<IRule> rules;
+    private HandType handType;
+    private StraightFlush straightFlush;
+    private xOfaKind quad, trips, pair;
+    private House house;
+    private Flush flush;
+    private Straight straight;
+    private TwoPairs twoPairs;
+    private HighCard highCard;
+    private IRule rule;
 
-        Optional<List<Card>> bestHand = Optional.empty();
-        StraightFlush straightFlush = new StraightFlush();
-        xOfaKind quad = new xOfaKind(4);
-        //TODO: add house
-        Flush flush = new Flush();
-        Straight straight = new Straight();
-        xOfaKind tress = new xOfaKind(3);
-        TwoPairs twoPairs = new TwoPairs();
-        xOfaKind pair = new xOfaKind(2);
-        HighCard highCard = new HighCard();
+    public HandCalculator(Hand hand) {
 
-        List<IRule> hands = new ArrayList<>();
-        hands.add(straightFlush);
-        hands.add(quad);
-        hands.add(flush);
-        hands.add(straight);
-        hands.add(tress);
-        hands.add(twoPairs);
-        hands.add(pair);
-        hands.add(highCard);
+        bestHand = Optional.empty();
+        straightFlush = new StraightFlush();
+        quad = new xOfaKind(4);
+        house = new House();
+        flush = new Flush();
+        straight = new Straight();
+        trips = new xOfaKind(3);
+        twoPairs = new TwoPairs();
+        pair = new xOfaKind(2);
+        highCard = new HighCard();
 
-        for(IRule ir : hands){
-            if(ir.match(hand))
-                return ir.getHand();
+
+        rules = new ArrayList<>();
+        rules.add(straightFlush);
+        rules.add(quad);
+        rules.add(house);
+        rules.add(flush);
+        rules.add(straight);
+        rules.add(trips);
+        rules.add(twoPairs);
+        rules.add(pair);
+        rules.add(highCard);
+
+        for (IRule r : rules) {
+            if (r.match(hand)) {
+                bestHand = r.getHand();
+                handType = r.getType();
+                rule = r;
+                break;
+            }
         }
+    }
 
+    public List<IRule> getRules() {
+        return rules;
+    }
+
+    public Optional<List<Card>> getBestHand() {
         return bestHand;
+    }
+
+    public HandType getHandType() {
+        return handType;
+    }
+
+    public IRule getFoundRule() {
+        return rule;
     }
 }
 

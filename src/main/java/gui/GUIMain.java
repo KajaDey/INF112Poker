@@ -20,19 +20,36 @@ public class GUIMain extends Application{
             this.gamecontroller= new  GameController(this);
     }
 
-    public void displayLobbyScreen(String name, int numberOfPlayers, String gameType,GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings,gamecontroller);
-    }
-
     public static void main(String[] args) {
         GUIMain gui = new GUIMain();
         launch(args);
     }
+    public void displayErrorMessageToLobby(String message){
+        GameLobby.displayErrorMessage(message,gamecontroller);
+    }
 
-    public void start(Stage window) throws Exception {
+    /**
+     * Displays the lobby screen
+     * @param gameSettings The settings to be displayed
+     */
+    public void displayLobbyScreen(String name, int numberOfPlayers, String gameType, GameSettings gameSettings){
+        GameLobby.createScreenForGameLobby(gameSettings,gamecontroller, name);
+    }
+
+    /**
+     * Starts the displayment of initial screen.
+     * @param window The window to be displayed
+     */
+    public void start(Stage window){
         SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gamecontroller), "Main Screen");
     }
 
+    /**
+     * Displays the game screen
+     * @param settings The settings to use
+     * @param userID The id of the user
+     * @return The GUIClient to display
+     */
     public GUIClient displayGameScreen(GameSettings settings, int userID) {
         this.gameScreen = new GameScreen(userID);
         this.client = new GUIClient(userID, gameScreen);
@@ -44,6 +61,14 @@ public class GUIMain extends Application{
         return client;
     }
 
+    /**
+     * Inserts a player into the game.
+     * @param userID The ID of the player
+     * @param name The name of the player
+     * @param stackSize The player's stack size
+     * @param pos The position on the table
+     * @return The game screen containing the new player
+     */
     public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
         return gameScreen.insertPlayer(userID, name, stackSize, pos);
     }

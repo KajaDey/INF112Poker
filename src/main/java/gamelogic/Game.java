@@ -1,9 +1,12 @@
 package main.java.gamelogic;
 
+import main.java.gui.GUIClient;
 import main.java.gui.GameSettings;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -14,12 +17,14 @@ public class Game {
     private Table table;
     private Player [] players;
     private GameController gameController;
+    private GameSettings gamesettings;
 
     //Settings
     private int maxNumberOfPlayers;
     private int numberOfPlayers = 0;
     private int blindLevelDuration;
     private long startSB, startBB;
+    private long currentSB, currentBB;
     private long startStack;
 
     //Indexes
@@ -29,11 +34,16 @@ public class Game {
 
     //Rounds
     private int roundNumber = 0;
-    private long minimumBetThisRound = 0;
-    private long currentBet = 0;
+    private long currentBet = 0L;
+    private long biggestBet;
+
+    private long pot = 0;
+    private Map<Integer, Long> stackSizes;
+    private Card [] communityCards;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
+        this.gamesettings = gamesettings;
 
         this.maxNumberOfPlayers = 2;
         this.table = new Table(maxNumberOfPlayers);
@@ -43,127 +53,201 @@ public class Game {
         this.startSB = (long) gamesettings.smallBlind;
         this.startBB = (long) gamesettings.bigBlind;
         this.blindLevelDuration = gamesettings.levelDuration;
+        this.stackSizes = new HashMap<>();
+
     }
 
     public void playGame() {
         assert numberOfPlayers == maxNumberOfPlayers : "Incorrect number of players";
         // TODO set clock
 
-        List<Player> playersStillPlaying = new ArrayList<>();
-        long SB = startSB, BB = startBB;
+        //Initiate clients
+        gameController.initClients(gamesettings);
+
+        currentSB = startSB;
+        currentBB = startBB;
+
+        boolean remainingPlayers = true;
 
         Handloop:
-        while (numberOfPlayers > 1) {
-            initializeNewRound(playersStillPlaying);
+        while (true) {
+            gameController.setStackSizes(stackSizes);
+            gameController.startNewHand();
 
-            // Deal cards to all players, starting from player next to dealer
+            List<Player> playersStillPlaying = new ArrayList<>();
+            initializeNewHand(playersStillPlaying);
+
+            //Generate cards
             Deck deck = new Deck();
-            for (Player p : playersStillPlaying) {
-                Card card1 = deck.draw().get(), card2 = deck.draw().get();
-                p.setHand(card1, card2);
-                gameController.setHandForClient(p.getID(), card1, card2);
-            }
+            dealHoleCards(deck, playersStillPlaying);
+            communityCards = generateCommunityCards(deck);
 
-            // TODO play hand:
-            currentBet = BB;
-            boolean bigBlindHasActed = false;
+            currentBet = currentBB;
+            biggestBet = currentBB;
 
             // PREFLOP ROUND
-            postBlinds(playersStillPlaying, SB, BB);
+            postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
 
-            int actingPlayerIndex = 2;
+            remainingPlayers = bettingRound(playersStillPlaying, 2);
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
-            while (true) {
-                actingPlayerIndex %= numberOfPlayers;
-                Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
-                Decision decision = getValidDecisionFromPlayer(playerToAct);
-                playerToAct.act(decision);
+            setFlop();
 
-              //  if (actingPlayerIndex == bigBlindIndex)
-              //      bigBlindHasActed = true;
+            currentBet = 0L;
+            biggestBet = 0;
+            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
-                System.out.println(playerToAct.getName() + ": " + decision);
-                gameController.setDecisionForClient(playerToAct.getID(), decision);
+            setTurn();
 
-                int nextPlayerToActIndex = (actingPlayerIndex + 1) % numberOfPlayers;
-                Player nextPlayerToAct = playersStillPlaying.get(nextPlayerToActIndex);
-                if (nextPlayerToAct.getLastDecision().isPresent()) {
-                    if (nextPlayerToAct.getLastDecision().get().size == decision.size && bigBlindHasActed) {
-                        System.out.println("We agree, bettinground over");
-                    }
+            currentBet = 0L;
+            biggestBet = 0;
+            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
+
+            setRiver();
+
+            currentBet = 0L;
+            biggestBet = 0;
+
+            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
+
+            //SHOWDOWN
+            System.out.println("SHOWDOWN");
+            if (playersStillPlaying.size() > 1) {
+                for (Player player : playersStillPlaying) {
+                    System.out.println("Player " + player.getID() + ": " + player.cardsOnHand());
                 }
-
-                actingPlayerIndex++;
+                System.out.println("Community cards: ");
+                for (Card c : communityCards) {
+                    System.out.println(c + " ");
+                }
             }
 
+            playersStillPlaying.get(0).incrementStack(pot);
+            delay(1000L);
 
+            ArrayList<Integer> stillPlaying = new ArrayList<Integer>();
+            for (Player p : playersStillPlaying)
+                stillPlaying.add(p.getID());
 
-
-            /*
-            while (true) {
-                for (Player p : playersStillPlaying) {
-                    Decision decision = p.getLastDecision().get();
-                    //gameController.getDecisionFromClient(p.ID())
-
-                    switch (decision.move) {
-                        case CHECK:
-                            if (previousDecision != null && previousDecision.move != Decision.Move.CHECK) {
-                                throw new RuntimeException("Illegal move");
-                            } else if (previousDecision == null) {
-                                continue;
-                            }
-                            break;
-                        case FOLD:
-                            playersStillPlaying.remove(p);
-                            break;
-                        case CALL:
-                            if (decision.size != minimumBetThisRound) {
-                                throw new RuntimeException("Illegal move");
-                            }
-                            pot += decision.size;
-                            break;
-                        case BET: break;
-                        case RAISE: break;
-                        // TODO: had to go to quiz....
-                    }
-
-                    previousDecision = decision; // when his turn ends
-                }
-
-            }
-            // TODO: check for blindraise
-            */
-
+            gameController.showDown(stillPlaying, 0);
         }
+    }
 
+    private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex) {
+        int numberOfActedPlayers = 0;
 
+        while (true) {
+            actingPlayerIndex %= numberOfPlayers;
+            Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
+            Decision decision = getValidDecisionFromPlayer(playerToAct);
+            playerToAct.act(decision, currentBet);
+
+            System.out.println(playerToAct.getName() + " acted: " + decision);
+            gameController.setDecisionForClient(playerToAct.getID(), decision);
+
+            switch(decision.move) {
+                case RAISE:case BET:
+                    numberOfActedPlayers = 1;
+                    currentBet += decision.size;
+                    System.out.println("Decisionsize: " + decision.size + " Currentbet: " + currentBet + " Stack: " + playerToAct.getStackSize());
+                    assert decision.size >= biggestBet || playerToAct.getStackSize() == 0;
+                    biggestBet = Math.max(biggestBet, decision.size);
+                    biggestBet = decision.size;
+                    break;
+                case FOLD: playersStillPlaying.remove(playerToAct); break;
+                default: numberOfActedPlayers++;
+            }
+
+            //If only one player left in hand
+            if (playersStillPlaying.size() <= 1) {
+                System.out.println("Only one player left, hand over");
+                return false;
+            }
+
+            //If all players have acted
+            if (numberOfActedPlayers == playersStillPlaying.size()) {
+                System.out.println("Bettinground finished, hand continues");
+                updateStackSizes();
+                updatePot();
+                return true;
+            }
+
+            actingPlayerIndex++;
+        }
+    }
+
+    private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
+        Decision postSB = new Decision(Decision.Move.BET, SB);
+        Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
+        Player SBPlayer = playersStillPlaying.get(sbID);
+        Player BBPlayer = playersStillPlaying.get(bbID);
+        SBPlayer.act(postSB, currentBet);
+        BBPlayer.act(postBB, currentBet);
+        gameController.setDecisionForClient(sbID, postSB);
+        gameController.setDecisionForClient(bbID, postBB);
     }
 
     private Decision getValidDecisionFromPlayer(Player playerToAct) {
+        int errors = 0;
+        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
+        long stackSize = playerToAct.getStackSize();
+
         while (true) {
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
-
             switch (decision.move) {
                 case FOLD: return decision;
                 case CHECK: if (currentBet == 0) return decision; break;
-                case CALL: if (currentBet == decision.size) return decision; break;
-                case RAISE: if (currentBet *2 <= decision.size) return decision; break;
+                case CALL:
+                    if (currentBet >= currentBB)
+                        return decision;
+                    else if (currentBet == 0) {
+                        System.out.println("Player tried to call 0, returned check instead");
+                        return new Decision(Decision.Move.CHECK);
+                    }
+                    break;
+
+                case BET:
+                    if (decision.size >=stackSize)
+                        return new Decision(Decision.Move.BET, stackSize);
+                    else if(decision.size >= currentBB)
+                        return decision;
+                    break;
+
+                case RAISE:
+                    if (decision.size + biggestBet == stackSize) {
+                        return decision;
+                    }
+                    else if (decision.size >= biggestBet)
+                        return decision;
+
+                    break;
             }
+
+            System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
+
+            if (errors++ == 10) System.exit(0); // <-- superhack
         }
     }
 
-    private void initializeNewRound(List<Player> playersStillPlaying) {
+    private void initializeNewHand(List<Player> playersStillPlaying) {
+        this.pot = 0;
+
         dealerIndex = roundNumber%numberOfPlayers;
         if (numberOfPlayers == 2) {
-            smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
-        } else {
             smallBlindIndex = roundNumber %numberOfPlayers;
+        } else {
+            smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player p = players[(smallBlindIndex+i) % numberOfPlayers];
-            if (p.stillPlaying())
-                playersStillPlaying.add(p);
+            Player player = players[(smallBlindIndex+i) % numberOfPlayers];
+            if (player.stillPlaying()) {
+                playersStillPlaying.add(player);
+                player.setAmountPutOnTableThisBettingRound(0);
+            }
         }
 
         bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
@@ -183,27 +267,63 @@ public class Game {
             }
         }
 
+        stackSizes.put(ID, gamesettings.getStartStack());
+
         return table.addPlayer(p);
     }
 
-    private boolean removePlayer(Player p) {
-        // TODO: anything else?
-        numberOfPlayers--;
-        return table.removePlayer(p);
+    private void updateStackSizes() {
+        for (Player p : players) {
+            stackSizes.put(p.getID(), p.getStackSize());
+        }
+
+        gameController.setStackSizes(stackSizes);
     }
 
-    private void postBlinds(List<Player> playersStillPlaying, Long SB, Long BB) {
-        Decision postSB = new Decision(Decision.Move.BET, SB);
-        Decision postBB = new Decision(Decision.Move.RAISE, BB);
-        Player SBPlayer = playersStillPlaying.get(0);
-        Player BBPlayer = playersStillPlaying.get(1);
-        SBPlayer.act(postSB);
-        BBPlayer.act(postBB);
-        gameController.setDecisionForClient(SBPlayer.getID(), postSB);
-        gameController.setDecisionForClient(BBPlayer.getID(), postBB);
+    private void delay(Long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch(Exception e) {
+            System.out.println("Error when sleeping thread " + Thread.currentThread());
+        }
+    }
+
+    private void setFlop() {
+        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2], pot);
+    }
+
+    private void setTurn() {
+        gameController.setTurn(communityCards[3], pot);
+    }
+
+    private void setRiver() {
+        gameController.setRiver(communityCards[4], pot);
+    }
+
+    private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
+        for (Player p : playersStillPlaying) {
+            Card card1 = deck.draw().get(), card2 = deck.draw().get();
+            p.setHand(card1, card2);
+            gameController.setHandForClient(p.getID(), card1, card2);
+        }
     }
 
     public boolean isValid() {
         return startStack > 0 && startBB < startStack && startSB < startBB && maxNumberOfPlayers > 1 && maxNumberOfPlayers < 8;
     }
+
+    private void updatePot() {
+        for (Player p : players) {
+            pot += p.getAmountPutOnTableThisBettingRound();
+            p.setAmountPutOnTableThisBettingRound(0L);
+        }
+    }
+
+    private Card[] generateCommunityCards(Deck deck) {
+        Card [] commCards = new Card[5];
+        for (int i = 0; i < commCards.length; i++)
+            commCards[i] = deck.draw().get();
+        return commCards;
+    }
+
 }

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -53,5 +54,19 @@ public class HighCardTest {
         assertEquals(card3, hc.getHand().get().get(2));
         assertEquals(card4, hc.getHand().get().get(3));
         assertEquals(card5, hc.getHand().get().get(4));
+    }
+
+    @Test
+    public void testRightCompareValues() throws Exception {
+        List<Integer> compareValues = hc.getCompareValues();
+        // 14, 13, 11, 10, 8
+        assertTrue(compareValues.get(0) == 14);
+        assertTrue(compareValues.get(1) == 13);
+        assertTrue(compareValues.get(2) == 11);
+        assertTrue(compareValues.get(3) == 10);
+        assertTrue(compareValues.get(4) == 8);
+
+        assertTrue(compareValues.size() == 5);
+
     }
 }

@@ -7,55 +7,69 @@ import java.util.Optional;
  */
 public class Player extends User {
 
-    private long stackSize;
-    private int ID;
     private Hand hand;
     private Table table;
-    private Optional<Decision> lastDecision = Optional.empty();
-    public boolean inHand;
+
+    private int ID;
+    private long stackSize;
+    private long putOnTableThisRound = 0;
 
     public Player(String name, long stackSize, Table table, int ID) {
         super(name);
         this.stackSize = stackSize;
         this.table = table;
         this.ID = ID;
-        this.inHand = false;
     }
 
     public int getID() {
         return ID;
     }
 
-    public void act(Decision decision) {
+    public void act(Decision decision, Long currentBet) {
         switch (decision.move) {
             case BET:
-            case RAISE:
-            case CALL:
+                assert putOnTableThisRound == 0 : "Player " + ID + " bet while putOnTableThisRound was != 0";
+                this.putOnTableThisRound = decision.size;
                 this.stackSize -= decision.size;
                 break;
+            case RAISE:
+                long totalPutOnTable = ((currentBet-putOnTableThisRound) + decision.size);
+                this.stackSize -= totalPutOnTable;
+                this.putOnTableThisRound = totalPutOnTable;
+                break;
+            case CALL:
+                this.stackSize -= (currentBet - putOnTableThisRound);
+                this.putOnTableThisRound = currentBet;
+                break;
         }
-
-        this.lastDecision = Optional.of(decision);
     }
 
-    public Optional<Decision> getLastDecision() {
-        return lastDecision;
+    public long getAmountPutOnTableThisBettingRound() {
+        return putOnTableThisRound;
     }
 
     public long getStackSize() {
         return stackSize;
     }
 
-    public void setStackSize(long stackSize) {
-        this.stackSize = stackSize;
-    }
-
     public void setHand(Card card1, Card card2) {
         this.hand = new Hand(card1, card2, table.getCommunityCards());
     }
 
+    public String cardsOnHand() {
+        return hand.getHoleCards().get(0) + " " + hand.getHoleCards().get(1);
+    }
+
     public boolean stillPlaying() {
         return stackSize > 0;
+    }
+
+    public void setAmountPutOnTableThisBettingRound(long amount) {
+        this.putOnTableThisRound = amount;
+    }
+
+    public void incrementStack(long size) {
+        stackSize += size;
     }
 }
 

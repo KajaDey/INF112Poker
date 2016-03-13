@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.gamelogic.GameController;
 
@@ -18,7 +19,20 @@ import main.java.gamelogic.GameController;
  */
 public class GameLobby {
 
-    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController){
+    private static Label amountOfChips;
+    private static Label numberOfPlayers;
+    private static Label bigBlind;
+    private static Label smallBlind;
+    private static Label levelDuration;
+    private static Label joinedPlayers;
+
+    /**
+     * Creates the screen for the gamelobby and shows it on the screen
+     *
+     * @param gameSettings
+     * @param gameController
+     */
+    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController, String name){
 
         Stage window = new Stage();
 
@@ -36,12 +50,12 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
-        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
-        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
-        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
-        Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n - Jostein\n - André", "");
+        amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
+        numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
+        bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
+        smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
+        levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
+        joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
 
 
         //ActionListeners
@@ -79,7 +93,16 @@ public class GameLobby {
 
     }
 
-    public static HBox createScreenForSettings(Stage window,GameController gameController){
+    /**
+     *
+     * Creates a layout for the settingsScreen and displays it
+     *
+     * @param window
+     * @param gameController
+     * @return A settingScreen
+     */
+
+    public static HBox createScreenForSettings(Stage window, GameController gameController){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -103,7 +126,6 @@ public class GameLobby {
         smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
         levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
 
-
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
@@ -112,7 +134,7 @@ public class GameLobby {
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
         levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window,gameController));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);
@@ -125,4 +147,42 @@ public class GameLobby {
         return fullBox;
     }
 
+    public static void updateLabels(GameSettings gameSettings){
+        amountOfChips.setText("Chips: " + gameSettings.getStartStack() + "$");
+        numberOfPlayers.setText("Number of players: " + gameSettings.getMaxNumberOfPlayers() + "");
+        bigBlind.setText("Big blind: " + gameSettings.getBigBlind() + "$");
+        smallBlind.setText("Small blind: " + gameSettings.getSmallBlind() + "$");
+        levelDuration.setText("Level duration: " + gameSettings.getLevelDuration() + "min");
+        //joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + , "");
+    }
+
+    public static void displayErrorMessage(String message,GameController gameController){
+
+        System.err.println("Illegal settings. Please insert valid numbers.");
+
+        Stage errorMessage = new Stage();
+
+        VBox layout = new VBox();
+        layout.setPadding(new Insets(10, 10, 10, 10));
+
+        Label label = new Label(message);
+        label.setFont(new Font("Areal", 50));
+
+        Button backToSettings = new Button("Alright. Take me back to the settings menu");
+        backToSettings.setFont((new Font("Areal",14)));
+        backToSettings.setOnAction(e -> {
+            ButtonListeners.errorButtonListener(gameController);
+            errorMessage.close();
+        });
+
+        layout.getChildren().addAll(label, backToSettings);
+        layout.setAlignment(Pos.CENTER);
+
+        errorMessage.initModality(Modality.APPLICATION_MODAL);
+        errorMessage.setTitle("Settings");
+        Scene scene = new Scene(layout);
+        errorMessage.setScene(scene);
+        errorMessage.show();
+
+    }
 }

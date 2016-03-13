@@ -2,6 +2,7 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +26,20 @@ public interface IRule {
      * @return the five-card hand, or empty
      */
     public Optional<List<Card>> getHand();
+
+    /**
+     * Tells which kind of hand you have, represented by an enum
+     * @return the type of rule
+     */
+    public HandCalculator.HandType getType();
+
+
+    /**
+     * Returns a sorted list of values in a hand to easily compare hands of the same rule.
+     * E.g House will return {quad value, pair value}.
+     *
+     * @return list of values to compare
+     */
+    public List<Integer> getCompareValues();
+
 }

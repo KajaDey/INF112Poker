@@ -21,26 +21,27 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount){
+    public static void betButtonListener(String betAmount, String buttonText){
         try {
-            Decision decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
-            client.setDecision(decision);
-            //Notify client-thread
-            client.decisionMade();
+            if (buttonText.equalsIgnoreCase("Raise to")) {
+                client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
+            } else if (buttonText.equalsIgnoreCase("Bet")) {
+                client.setDecision(Decision.Move.BET, Long.valueOf(betAmount));
+            }
         } catch (Exception e){
-
+            e.printStackTrace();
         }
-
     }
 
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(){
-        client.setDecision(new Decision(Decision.Move.CHECK));
-
-        //Notify client-thread
-        client.decisionMade();
+    public static void checkButtonListener(String buttonText){
+        if (buttonText.equals("Call")) {
+            client.setDecision(Decision.Move.CALL);
+        } else if (buttonText.equals("Check")) {
+            client.setDecision(Decision.Move.CHECK);
+        }
     }
 
     /**
@@ -54,25 +55,20 @@ public class ButtonListeners {
      * What happens when the foldButton is pushed
      */
     public static void foldButtonListener(){
-        client.setDecision(new Decision(Decision.Move.FOLD));
-
-        //Notify client-thread
-        client.decisionMade();
+        client.setDecision(Decision.Move.FOLD);
     }
 
     /**
      * What happens when the maxButton is pushed
      */
-    public static void maxButtonListener(String betAmount){ betButtonListener(betAmount);
+    public static void maxButtonListener(String betAmount){
     }
 
     /**
      * What happens when the potButton is pushed
      */
-    public static void potButtonListener(String betAmount){
-        betButtonListener(betAmount);
+    public static void potButtonListener(String betAmount) {
     }
-
 
     /**
      * What happens when the settingsButton is pushed
@@ -85,7 +81,6 @@ public class ButtonListeners {
         settings.setScene(scene);
         settings.show();
     }
-
     /**
      * What happens when the acceptSettingsButton is pushed
      */
@@ -95,7 +90,7 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText));
 
-            SceneBuilder.updateLobbyScreen(gameSettings,gameController);
+            GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             window.close();
 
@@ -110,23 +105,18 @@ public class ButtonListeners {
     public static void cancelSettingsButtonListener(Stage window) {
         window.close();
     }
-
-
     /**
      * What happens when the startGameButton is pushed
      */
     public static void startGameButtonListener(GameController gameController) {
         gameController.startTournamentButtonClicked(gameSettings);
     }
-
     /**
      * What happens when the leaveLobbyButton is pushed
      */
-
     public static void leaveLobbyButtonListener(GameController gameController) {
         SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable", gameController), "Main Screen");
     }
-
     /**
      * Listener for the button on the enter button on the main screen
      */
@@ -135,18 +125,26 @@ public class ButtonListeners {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
                 gameSettings = gameController.gameSettings;
-
             }
             else SceneBuilder.createSceneForInitialScreen("PokerTable",gameController);
         }catch (NumberFormatException e){
 
         }
     }
+
+
+    public static void errorButtonListener(GameController gameController) {
+
+        settingsButtonListener(gameController);
+
+    }
+
     /**
-     *
+     * sets the client
      */
     public static void setClient(GUIClient c) {
         client = c;
     }
+
 
 }

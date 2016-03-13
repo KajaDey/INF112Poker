@@ -84,4 +84,17 @@ public class StraightTest {
         assertTrue(straigt.getHand().get().contains(card5)); // highest in straight
         assertFalse(straigt.getHand().get().contains(card8)); // no ace
     }
+
+    @Test
+    public void testRightCompareValues() {
+        hand = new Hand(card1, card2, Arrays.asList(card3, card4, card7, card7, card8));
+        straigt = new Straight();
+
+        straigt.match(hand);
+        List<Integer> compareValues = straigt.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 5);
+        assertTrue(compareValues.size() == 1);
+
+    }
 }

@@ -27,8 +27,10 @@ public class SimpleAI implements GameClient {
     private Optional<Decision> lastDecision = Optional.empty();
     private long stackSize;
 
+    private boolean betHasBeenPlaced;
+    private int playersLeftInCurrentHand;
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
-    private long minimumBetThisBettingRound; // The amount the SimpleAI needs to put on the table to remain in the hand
+    private long currentBet; // The amount the SimpleAI needs to put on the table to remain in the hand
 
     public SimpleAI(int playerId) {
         this(playerId, 1.0);
@@ -70,20 +72,39 @@ public class SimpleAI implements GameClient {
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
         if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
-            if (minimumBetThisBettingRound == 0) {
+            if (currentBet == 0) {
                 if (stackSize >= minimumRaise) {
-                    return new Decision(Decision.Move.RAISE, minimumRaise);
+
+                    stackSize -= minimumRaise;
+                    if(betHasBeenPlaced) {
+                        return new Decision(Decision.Move.RAISE, minimumRaise);
+                    }
+                    else {
+                        return new Decision(Decision.Move.BET, minimumRaise);
+                    }
                 }
                 else {
-                    return new Decision(Decision.Move.CALL);
+                    return new Decision(Decision.Move.CHECK);
+                }
+            }
+            else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) { // If the hand is really good
+                if (stackSize >= minimumRaise + currentBet) {
+                    stackSize -= minimumRaise + currentBet;
+                    return new Decision(Decision.Move.RAISE, minimumRaise);
+                }
+                else { // Go all in
+                    long raiseBy = stackSize - currentBet;
+                    stackSize = 0;
+                    return new Decision(Decision.Move.RAISE, raiseBy);
                 }
             }
             else {
+                stackSize -= currentBet;
                 return new Decision(Decision.Move.CALL);
             }
         }
         else {
-            if (minimumBetThisBettingRound == 0) {
+            if (currentBet == 0) {
                 return new Decision(Decision.Move.CHECK);
             }
             else {
@@ -95,10 +116,15 @@ public class SimpleAI implements GameClient {
     /**
      * Called whenever there is a new round, after the SimpleAI has gotten its new hole cards
      */
-    public void newRound() {
+    public void newBettingRound() {
         minimumRaise = bigBlindAmount;
-        // Probably not need to set minimumBetTHisBettingRound, because it gets set once positions are set
-        // TODO ensure that this is the case
+        betHasBeenPlaced = false;
+    }
+
+    @Override
+    public void startNewHand() {
+        playersLeftInCurrentHand = amountOfPlayers;
+        holeCards.clear();
     }
 
     @Override
@@ -113,43 +139,45 @@ public class SimpleAI implements GameClient {
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
         if (this.getID() == userID) {
+            holeCards = new ArrayList<Card>(2);
             assert holeCards.size() == 0;
+            newBettingRound();
             holeCards.add(card1);
             holeCards.add(card2);
         }
     }
 
-    public void setHoleCards(Card card1, Card card2) {
-        assert holeCards.size() == 0;
-        holeCards.add(card1);
-        holeCards.add(card2);
-        this.newRound();
-    }
-
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        assert stackSizes.size() > 2 && amountOfPlayers >= 2;
+        assert stackSizes.size() >= 2 && amountOfPlayers >= 2;
         this.stackSize = stackSizes.get(this.playerId);
     }
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
-            minimumBetThisBettingRound += decision.size;
-            minimumRaise = decision.size;
+            if (playerId == this.playerId) {
+                currentBet = 0;
+            }
+            else {
+                currentBet += decision.size;
+            }
+            betHasBeenPlaced = true;
+            minimumRaise = Math.max(decision.size, bigBlindAmount);
+        }
+        if (decision.move == Decision.Move.FOLD) {
+            playersLeftInCurrentHand--;
         }
     }
 
     @Override
-    public void showdown(Map<Integer, List<Card>> holeCards) {
+    public void showdown(ArrayList<Integer> playersStillPlaying, int winnerID) {
 
     }
 
     @Override
     public void setBigBlind(int bigBlind) {
         this.bigBlindAmount = bigBlind;
-        this.minimumRaise = bigBlind;
     }
 
     @Override
@@ -163,33 +191,26 @@ public class SimpleAI implements GameClient {
         position = positions.get(playerId);
         if (positions.size() == 2) {
             if (position == 1) {
-                minimumBetThisBettingRound = 0; // Is big blind
+                stackSize -= Math.min(stackSize, bigBlindAmount); // Is big blind
             }
             else {
-                minimumBetThisBettingRound = smallBlindAmount; // Is small blind
+                stackSize -= Math.min(stackSize, smallBlindAmount); // Is small blind
             }
         }
         else {
             if (position == 1) {
-                minimumBetThisBettingRound = bigBlindAmount - smallBlindAmount; // Is small blind
+                stackSize -= Math.min(stackSize, smallBlindAmount); // Is small blind
             }
             else if (position == 2) {
-                minimumBetThisBettingRound = 0; // Is big blind
-            }
-            else {
-                minimumBetThisBettingRound = bigBlindAmount;
+                stackSize -= Math.min(stackSize, bigBlindAmount); // Is big blind
             }
         }
-    }
-
-    @Override
-    public void setStartChips(long startChips) {
-        stackSize = startChips;
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
         this.amountOfPlayers = amountOfPlayers;
+        this.playersLeftInCurrentHand = amountOfPlayers;
     }
 
     @Override
@@ -198,22 +219,17 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void setLastMove(Map<Integer,Decision> lastMove) {
-
+    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+        newBettingRound();
     }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3) {
-
+    public void setTurn(Card turn, long currentPotSize) {
+        newBettingRound();
     }
 
     @Override
-    public void setTurn(Card turn) {
-
-    }
-
-    @Override
-    public void setRiver(Card river) {
-
+    public void setRiver(Card river, long currentPotSize) {
+        newBettingRound();
     }
 }

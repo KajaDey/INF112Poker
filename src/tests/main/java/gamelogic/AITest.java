@@ -28,7 +28,7 @@ public class AITest {
             positions.put(2, 1);
             simpleAi.setPositions(positions);
 
-            simpleAi.setHoleCards(Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
+            simpleAi.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
             HashMap<Integer, Long> stackSizes = new HashMap<>();
             stackSizes.put(0, 1000L);
             stackSizes.put(1, 1000L);
@@ -53,7 +53,10 @@ public class AITest {
             positions.put(2, 2);
             simpleAi.setPositions(positions);
 
-            simpleAi.setHoleCards(Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
+            simpleAi.playerMadeDecision(1, new Decision(Decision.Move.BET, 25));
+            simpleAi.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 25));
+
+            simpleAi.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
             HashMap<Integer, Long> stackSizes = new HashMap<>();
             stackSizes.put(0, 1000L);
             stackSizes.put(1, 1000L);
@@ -72,7 +75,7 @@ public class AITest {
             simpleAi.setSmallBlind(10);
             simpleAi.setAmountOfPlayers(3);
 
-            simpleAi.setHoleCards(Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
+            simpleAi.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
 
             HashMap<Integer, Integer> positions = new HashMap<>();
             positions.put(0, 0);

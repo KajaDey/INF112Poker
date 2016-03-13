@@ -2,8 +2,10 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +18,6 @@ public class Flush implements IRule {
     @Override
     public boolean match(Hand hand) {
         List<Card> allCards = hand.getAllCards();
-        //TODO: Check sorting descending order.
         allCards.sort(Card::compareTo);
 
         int nrOfSpades=0;
@@ -36,29 +37,30 @@ public class Flush implements IRule {
         }
 
         if(nrOfClubs > 4){
-            for(int i= allCards.size()-1; i <=0; i--){
+            for(int i= allCards.size()-1; i >-1; i--){
                 if(allCards.get(i).suit == Card.Suit.CLUBS && returnHand.size()<5)
                     returnHand.add(allCards.get(i));
             }
         }
 
         if(nrOfDiamonds > 4){
-            for(int i = allCards.size()-1; i<=0; i--){
+            for(int i = allCards.size()-1; i>-1; i--){
                 if(allCards.get(i).suit == Card.Suit.DIAMONDS && returnHand.size()<5)
                     returnHand.add(allCards.get(i));
             }
         }
         if(nrOfHearts > 4){
-            for(int i = allCards.size()-1; i <= 0; i--){
+            for(int i = allCards.size()-1; i >-1; i--){
                 if(allCards.get(i).suit == Card.Suit.HEARTS && returnHand.size()<5)
                     returnHand.add(allCards.get(i));
             }
 
         }
         if(nrOfSpades > 4){
-            for(int i = allCards.size()-1; i <= 0; i--){
-                if(allCards.get(i).suit == Card.Suit.SPADES && returnHand.size()<5)
-                    returnHand.add(allCards.get(i)) ;
+            for(int i = allCards.size()-1; i >-1; i--){
+                if(allCards.get(i).suit == Card.Suit.SPADES && returnHand.size()<5) {
+                    returnHand.add(allCards.get(i));
+                }
             }
 
         }
@@ -68,7 +70,24 @@ public class Flush implements IRule {
 
     @Override
     public Optional<List<Card>> getHand() {
-        return Optional.of(returnHand);
+        if (returnHand.size() > 0) {
+            return Optional.of(returnHand);
+        }
+        return Optional.empty();
     }
 
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.FLUSH;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        returnHand.sort(Card::compareTo);
+        List<Integer> compareValues = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            compareValues.add(returnHand.get(4 - i).rank);
+        }
+        return compareValues;
+    }
 }

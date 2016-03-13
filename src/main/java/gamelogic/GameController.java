@@ -3,6 +3,7 @@ package main.java.gamelogic;
 import main.java.gamelogic.ai.SimpleAI;
 import main.java.gui.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,17 +12,16 @@ import java.util.Map;
  */
 public class GameController {
 
-    public Game game;
-    public Map<Integer, GameClient> clients;
-    public GUIMain mainGUI;
+    private Game game;
+    private Map<Integer, GameClient> clients;
+    private GUIMain mainGUI;
     public GameSettings gameSettings;
-
+    private String name;
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
         gameSettings = new GameSettings(1000, 50, 25, 2, 10);
     }
-
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
@@ -29,6 +29,7 @@ public class GameController {
 
         //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
+        this.name = name;
 
     }
 
@@ -37,6 +38,7 @@ public class GameController {
         game = new Game(gamesettings, this);
         if (!game.isValid()) {
             //TODO: Tell GUI to display error-message that settings are not valid
+            mainGUI.displayErrorMessageToLobby("Illegal settings!");
             return;
         }
 
@@ -46,10 +48,10 @@ public class GameController {
         //Init GUIGameClient
         GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
         clients.put(0, guiClient);
-        game.addPlayer("Kristian", 0);
+        game.addPlayer(this.name, 0);
 
         //AIGameClient
-        SimpleAI aiClient = new SimpleAI(1);
+        GameClient aiClient = new SimpleAI(1, 1.5);
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
@@ -57,7 +59,7 @@ public class GameController {
         initClients(gamesettings);
 
         //TODO: add all players to GUI
-        mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");
+        mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack(), "Dealer");
         mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack(), "Big blind");
 
         Thread thread = new Thread("GameThread") {
@@ -75,23 +77,26 @@ public class GameController {
             GameClient client = clients.get(clientID);
             client.setBigBlind(gamesettings.getBigBlind());
             client.setSmallBlind(gamesettings.getSmallBlind());
-            client.setStartChips(gamesettings.getStartStack());
         }
     }
 
     public Decision getDecisionFromClient(int ID) {
-
         GameClient client = clients.get(ID);
         if (client == null) {
             return null;
         }
-
         return client.getDecision();
-
     }
 
     public void setGameSettings(GameSettings gameSettings) {
         this.gameSettings = gameSettings;
+    }
+
+    public void showDown(ArrayList<Integer> playersStillPlaying, int winnerID) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            c.showdown(playersStillPlaying, winnerID);
+        }
     }
 
     public void setHandForClient(int userID, Card card1, Card card2) {
@@ -108,50 +113,40 @@ public class GameController {
         }
     }
 
-    public void setFlop(Card card1, Card card2, Card card3) {
+    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setFlop(card1, card2, card3);
+            c.setFlop(card1, card2, card3, currentPotSize);
         }
     }
 
-    public void setTurn(Card turn) {
+    public void setTurn(Card turn, long currentPotSize) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setTurn(turn);
+            c.setTurn(turn, currentPotSize);
         }
     }
 
-    public void setRiver(Card river) {
+    public void setRiver(Card river, long currentPotSize) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setRiver(river);
+            c.setRiver(river, currentPotSize);
         }
     }
 
-    public void tests() {
-        Deck deck = new Deck();
+    public void setStackSizes(Map<Integer, Long> stackSizes) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            assert stackSizes.size() == 2;
+            c.setAmountOfPlayers(stackSizes.size());
+            c.setStackSizes(stackSizes);
+        }
+    }
 
-        this.setHandForClient(0, deck.draw().get(), deck.draw().get());
-        this.setHandForClient(1, deck.draw().get(), deck.draw().get());
-
-
-        Decision d = getDecisionFromClient(0);
-        clients.get(0).playerMadeDecision(0, d);
-        Decision opponentD = clients.get(1).getDecision();
-        clients.get(0).playerMadeDecision(1, opponentD);
-        this.setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
-
-        d = getDecisionFromClient(0);
-        clients.get(0).playerMadeDecision(0,d);
-        opponentD = clients.get(1).getDecision();
-        clients.get(0).playerMadeDecision(1, opponentD);
-        this.setTurn(deck.draw().get());
-
-        d = getDecisionFromClient(0);
-        clients.get(0).playerMadeDecision(0,d);
-        opponentD = clients.get(1).getDecision();
-        clients.get(0).playerMadeDecision(1, opponentD);
-        this.setRiver(deck.draw().get());
+    public void startNewHand() {
+        for (Integer clientID : clients.keySet()) {
+            GameClient client = clients.get(clientID);
+            client.startNewHand();
+        }
     }
 }

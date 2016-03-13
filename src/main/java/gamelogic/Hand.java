@@ -1,5 +1,7 @@
 package main.java.gamelogic;
 
+import main.java.gamelogic.rules.IRule;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,5 +49,30 @@ public class Hand {
         return "Hand{" +
                 "allCards=" + allCards +
                 '}';
+    }
+
+    public int compareTo(Hand other) {
+        HandCalculator myCalculator = new HandCalculator(this);
+        HandCalculator otherCalculator = new HandCalculator(other);
+
+        HandCalculator.HandType myHandType = myCalculator.getHandType();
+        HandCalculator.HandType otherHandType = otherCalculator.getHandType();
+
+        if (myHandType == otherHandType) {
+            List<Integer> myCompareValues = myCalculator.getFoundRule().getCompareValues();
+            List<Integer> otherCompareValues = otherCalculator.getFoundRule().getCompareValues();
+
+            for (int i = 0; i < myCompareValues.size(); i++) {
+                int comp = myCompareValues.get(i).compareTo(otherCompareValues.get(i));
+                if (comp != 0) return comp;
+            }
+            return 0;
+        }
+
+        for (IRule rule : myCalculator.getRules()) {
+            if (rule.getType() == myHandType) return 1;
+            else if (rule.getType() == otherHandType) return -1;
+        }
+        return 0;
     }
 }
