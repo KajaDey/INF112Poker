@@ -321,7 +321,7 @@ public class GameScreen {
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             Runnable task = () -> {
                 checkCallButton.setText("Call");
-                betRaiseButton.setText("Raise");
+                betRaiseButton.setText("Raise to");
             };
             Platform.runLater(task);
         }

@@ -23,7 +23,7 @@ public class ButtonListeners {
      */
     public static void betButtonListener(String betAmount, String buttonText){
         try {
-            if (buttonText.equalsIgnoreCase("Raise")) {
+            if (buttonText.equalsIgnoreCase("Raise to")) {
                 client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
             } else if (buttonText.equalsIgnoreCase("Bet")) {
                 client.setDecision(Decision.Move.BET, Long.valueOf(betAmount));

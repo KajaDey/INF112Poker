@@ -158,22 +158,24 @@ public class GameLobby {
 
     public static void displayErrorMessage(String message,GameController gameController){
 
+        System.err.println("Illegal settings. Please insert valid numbers.");
+
         Stage errorMessage = new Stage();
 
         VBox layout = new VBox();
         layout.setPadding(new Insets(10, 10, 10, 10));
 
         Label label = new Label(message);
-        label.setFont(new Font("Areal", 100));
+        label.setFont(new Font("Areal", 50));
 
-        Button button = new Button("Chill, i'll fix it");
-        button.setFont((new Font("Areal",30)));
-        button.setOnAction(e -> {
+        Button backToSettings = new Button("Alright. Take me back to the settings menu");
+        backToSettings.setFont((new Font("Areal",14)));
+        backToSettings.setOnAction(e -> {
             ButtonListeners.errorButtonListener(gameController);
             errorMessage.close();
         });
 
-        layout.getChildren().addAll(label, button);
+        layout.getChildren().addAll(label, backToSettings);
         layout.setAlignment(Pos.CENTER);
 
         errorMessage.initModality(Modality.APPLICATION_MODAL);
