@@ -34,7 +34,9 @@ public class Game {
 
     //Rounds
     private int roundNumber = 0;
-    private Long currentBet = 0L;
+    private long currentBet = 0L;
+    private long biggestBet;
+
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
@@ -81,6 +83,7 @@ public class Game {
             communityCards = generateCommunityCards(deck);
 
             currentBet = currentBB;
+            biggestBet = currentBB;
 
             // PREFLOP ROUND
             postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
@@ -91,18 +94,22 @@ public class Game {
             setFlop();
 
             currentBet = 0L;
+            biggestBet = 0;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
             setTurn();
 
             currentBet = 0L;
+            biggestBet = 0;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
             setRiver();
 
             currentBet = 0L;
+            biggestBet = 0;
+
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
@@ -141,6 +148,8 @@ public class Game {
                 case RAISE:case BET:
                     numberOfActedPlayers = 1;
                     currentBet += decision.size;
+                    assert decision.size >= biggestBet;
+                    biggestBet = decision.size;
                     break;
                 case FOLD: playersStillPlaying.remove(playerToAct); break;
                 default: numberOfActedPlayers++;
@@ -206,7 +215,7 @@ public class Game {
                     if (decision.size >= stackSize) {
                         return new Decision(Decision.Move.RAISE, stackSize - currentBet);
                     }
-                    else if (decision.size >= currentBet)
+                    else if (decision.size >= biggestBet)
                         return decision;
 
                     break;
