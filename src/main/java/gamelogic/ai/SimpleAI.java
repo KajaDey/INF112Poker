@@ -29,6 +29,7 @@ public class SimpleAI implements GameClient {
     private Optional<Decision> lastDecision = Optional.empty();
     private long stackSize;
 
+    private boolean betHasBeenPlaced;
     private int playersLeftInCurrentHand;
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
     private long minimumBetThisBettingRound; // The amount the SimpleAI needs to put on the table to remain in the hand
@@ -72,12 +73,15 @@ public class SimpleAI implements GameClient {
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
-        System.out.println("minimum bet: " + minimumBetThisBettingRound);
-
         if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
-                    return new Decision(Decision.Move.BET, minimumRaise);
+                    if(betHasBeenPlaced) {
+                        return new Decision(Decision.Move.RAISE, minimumRaise);
+                    }
+                    else {
+                        return new Decision(Decision.Move.BET, minimumRaise);
+                    }
                 }
                 else {
                     return new Decision(Decision.Move.CHECK);
@@ -105,6 +109,7 @@ public class SimpleAI implements GameClient {
      */
     public void newBettingRound() {
         minimumRaise = bigBlindAmount;
+        betHasBeenPlaced = false;
     }
 
     @Override
@@ -141,7 +146,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-        System.out.println("Player " + playerId + " made decision " + decision);
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             if (playerId == this.playerId) {
                 minimumBetThisBettingRound = 0;
@@ -149,7 +153,7 @@ public class SimpleAI implements GameClient {
             else {
                 minimumBetThisBettingRound += decision.size;
             }
-            System.out.println("minimum bet: " + minimumBetThisBettingRound);
+            betHasBeenPlaced = true;
             minimumRaise = Math.max(decision.size, bigBlindAmount);
         }
         if (decision.move == Decision.Move.FOLD) {

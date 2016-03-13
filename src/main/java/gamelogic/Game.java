@@ -223,9 +223,11 @@ public class Game {
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player p = players[(smallBlindIndex+i) % numberOfPlayers];
-            if (p.stillPlaying())
-                playersStillPlaying.add(p);
+            Player player = players[(smallBlindIndex+i) % numberOfPlayers];
+            if (player.stillPlaying()) {
+                playersStillPlaying.add(player);
+                player.setAmountPutOnTableThisBettingRound(0);
+            }
         }
 
         bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
