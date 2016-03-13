@@ -38,8 +38,7 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-
-    private Button betRaiseButton, checkCallButton, foldButton, backButton;
+    private Button betRaiseButton, checkCallButton, foldButton;
 
 
     //Textfields
@@ -322,7 +321,7 @@ public class GameScreen {
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             Runnable task = () -> {
                 checkCallButton.setText("Call");
-                betRaiseButton.setText("Raise");
+                betRaiseButton.setText("Raise to");
             };
             Platform.runLater(task);
         }

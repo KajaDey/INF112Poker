@@ -53,6 +53,9 @@ public class AITest {
             positions.put(2, 2);
             simpleAi.setPositions(positions);
 
+            simpleAi.playerMadeDecision(1, new Decision(Decision.Move.BET, 25));
+            simpleAi.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 25));
+
             simpleAi.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
             HashMap<Integer, Long> stackSizes = new HashMap<>();
             stackSizes.put(0, 1000L);

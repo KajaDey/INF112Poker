@@ -109,6 +109,11 @@ public class Game {
 
             //SHOWDOWN
             System.out.println("SHOWDOWN");
+            if (playersStillPlaying.size() > 1) {
+                for (Player player : playersStillPlaying) {
+                    System.out.println("Player " + player.getID() + player.cardsOnHand());
+                }
+            }
 
         }
     }

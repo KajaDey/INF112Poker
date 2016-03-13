@@ -56,6 +56,10 @@ public class Player extends User {
         this.hand = new Hand(card1, card2, table.getCommunityCards());
     }
 
+    public String cardsOnHand() {
+        return hand.getHoleCards().get(0) + " " + hand.getHoleCards().get(1);
+    }
+
     public boolean stillPlaying() {
         return stackSize > 0;
     }
