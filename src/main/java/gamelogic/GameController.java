@@ -51,7 +51,7 @@ public class GameController {
         game.addPlayer(this.name, 0);
 
         //AIGameClient
-        GameClient aiClient = new SimpleAI(1, 2.0);
+        GameClient aiClient = new SimpleAI(1, 1.5);
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
