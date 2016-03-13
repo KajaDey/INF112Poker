@@ -127,16 +127,10 @@ public class SimpleAI implements GameClient {
         if (this.getID() == userID) {
             holeCards = new ArrayList<Card>(2);
             assert holeCards.size() == 0;
+            newBettingRound();
             holeCards.add(card1);
             holeCards.add(card2);
         }
-    }
-
-    public void setHoleCards(Card card1, Card card2) {
-        assert holeCards.size() == 0;
-        newBettingRound();
-        holeCards.add(card1);
-        holeCards.add(card2);
     }
 
     @Override
