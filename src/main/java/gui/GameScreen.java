@@ -38,7 +38,7 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-    private Button betRaiseButton, checkCallButton, doubleButton, foldButton, maxButton, potButton, backButton;
+    private Button betRaiseButton, checkCallButton, doubleButton, foldButton, maxButton, potButton;
 
     //Textfields
     private TextField amountTextfield;
@@ -217,18 +217,14 @@ public class GameScreen {
         opponentLeftCardImage = ImageViewer.getEmptyImageView("opponent");
         opponentRightCardImage = ImageViewer.getEmptyImageView("opponent");
 
-
         opponentNameLabel = ObjectStandards.makeStandardLabelWhite("Name:", name);
         opponentStackSizeLabel = ObjectStandards.makeStandardLabelWhite("Chips:", stackSize + "");
         opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
         opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
-        backButton = ObjectStandards.makeStandardButton("Back");
-
         HBox cardsAndStats = new HBox();
         VBox opponentStats = new VBox();
         VBox fullBox = new VBox();
-        HBox evenFullerBox = new HBox();
 
         opponentStats.getChildren().addAll(opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel);
         opponentStats.setSpacing(5);
@@ -238,7 +234,6 @@ public class GameScreen {
         cardsAndStats.setAlignment(Pos.TOP_CENTER);
         fullBox.getChildren().addAll(cardsAndStats, opponentLastMoveLabel);
         fullBox.setAlignment(Pos.BOTTOM_CENTER);
-        evenFullerBox.getChildren().setAll(fullBox, backButton);
 
         return fullBox;
 
@@ -354,9 +349,9 @@ public class GameScreen {
 
             Runnable task;
             if (clientID == playerID) {
-                task = () -> this.playerStackLabel.setText(stackSizeText);
+                task = () -> this.playerStackLabel.setText("Amount of chips: " + stackSizeText);
             } else {
-                task = () -> this.opponentStackSizeLabel.setText(stackSizeText);
+                task = () -> this.opponentStackSizeLabel.setText("Amount of chips: " + stackSizeText);
             }
             Platform.runLater(task);
         }
