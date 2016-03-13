@@ -15,6 +15,7 @@ public class GUIClient implements GameClient {
 
     //Needed variables
     private GameScreen gameScreen;
+    private long currentBet = 0;
     private Decision decision;
 
     private int id;
@@ -43,11 +44,23 @@ public class GUIClient implements GameClient {
         return decision;
     }
 
-    public synchronized void decisionMade() {
+    /**
+     * Called from ButtonListeners-class to nofify the client that a decision has been made
+     *
+     * @param move
+     * @param moveSize
+     */
+    public synchronized void setDecision(Decision.Move move, long moveSize) {
+        switch (move) {
+            case BET: this.decision = new Decision(move, moveSize); break;
+            case RAISE: this.decision = new Decision(move, moveSize - currentBet); break;
+            case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
+        }
+
         notifyAll();
     }
 
-    public void setDecision(Decision decision) { this.decision = decision; }
+    public void setDecision(Decision.Move move) { setDecision(move, 0); }
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
@@ -92,12 +105,16 @@ public class GUIClient implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
+        switch (decision.move) {
+            case BET: currentBet = decision.size; break;
+            case RAISE: currentBet += decision.size; break;
+        }
         gameScreen.playerMadeDecision(playerId, decision);
     }
 
     @Override
     public void showdown(Map<Integer, List<Card>> holeCards) {
-        //TODO: Update label in GUI
+
     }
 
     @Override

@@ -23,36 +23,25 @@ public class ButtonListeners {
      */
     public static void betButtonListener(String betAmount, String buttonText){
         try {
-            Decision decision = null;
             if (buttonText.equalsIgnoreCase("Raise")) {
-                decision = new Decision(Decision.Move.RAISE, Long.valueOf(betAmount));
+                client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
             } else if (buttonText.equalsIgnoreCase("Bet")) {
-                decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
+                client.setDecision(Decision.Move.BET, Long.valueOf(betAmount));
             }
-
-            client.setDecision(decision);
-            //Notify client-thread
-            client.decisionMade();
         } catch (Exception e){
-
+            e.printStackTrace();
         }
-
     }
 
     /**
      * What happens when the checkButton is pushed
      */
     public static void checkButtonListener(String buttonText){
-        Decision decision = null;
         if (buttonText.equals("Call")) {
-            decision = new Decision(Decision.Move.CALL);
+            client.setDecision(Decision.Move.CALL);
         } else if (buttonText.equals("Check")) {
-            decision = new Decision(Decision.Move.CHECK);
+            client.setDecision(Decision.Move.CHECK);
         }
-
-        client.setDecision(decision);
-        //Notify client-thread
-        client.decisionMade();
     }
 
     /**
@@ -66,10 +55,7 @@ public class ButtonListeners {
      * What happens when the foldButton is pushed
      */
     public static void foldButtonListener(){
-        client.setDecision(new Decision(Decision.Move.FOLD));
-
-        //Notify client-thread
-        client.decisionMade();
+        client.setDecision(Decision.Move.FOLD);
     }
 
     /**
@@ -145,6 +131,7 @@ public class ButtonListeners {
 
         }
     }
+
     /**
      * sets the client
      */

@@ -15,6 +15,7 @@ public class Player extends User {
     private int ID;
     private long stackSize;
     private long putOnTableThisRound = 0;
+    private String name;
 
     public Player(String name, long stackSize, Table table, int ID) {
         super(name);
@@ -33,14 +34,20 @@ public class Player extends User {
                 assert putOnTableThisRound == 0 : "Player bet while putOnTableThisRound was != 0";
                 this.putOnTableThisRound = decision.size;
                 this.stackSize -= decision.size;
+                System.out.println("Player " + this.getName() + " bet " + decision.size + ". New stacksize is " + this.stackSize);
+
                 break;
             case RAISE:
                 this.putOnTableThisRound += decision.size;
                 this.stackSize -= (decision.size);
+                System.out.println("Player " + this.getName() + " raised " + decision.size + ". New stacksize is " + this.stackSize);
+
                 break;
             case CALL:
                 this.putOnTableThisRound = currentBet;
                 this.stackSize -= (currentBet - putOnTableThisRound);
+                System.out.println("Player " + this.getName() + " called " + currentBet + ". New stacksize is " + this.stackSize);
+
                 break;
         }
 

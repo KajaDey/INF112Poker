@@ -173,7 +173,12 @@ public class Game {
             switch (decision.move) {
                 //TODO: Check that player has enough chips for this decision
                 case FOLD: return decision;
-                case CALL: if (currentBet >= currentBB) return decision; break;
+                case CALL:
+                    if (currentBet >= currentBB)
+                        return decision;
+                    else if (currentBet == 0)
+                        return new Decision(Decision.Move.CHECK);
+                    break;
                 case BET: if (decision.size >= currentBB) return decision; break;
                 case CHECK: if (currentBet == 0) return decision; break;
                 case RAISE: if (currentBet *2 <= decision.size) return decision; break;
@@ -202,10 +207,6 @@ public class Game {
 
         bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
     }
-
-
-
-
 
     public boolean addPlayer(String name, int ID) {
         if (numberOfPlayers >= maxNumberOfPlayers) {
