@@ -14,6 +14,12 @@ import main.java.gamelogic.GameController;
  */
 public class MainScreen {
 
+    /**
+     * Creates the layout for the main screen, containing buttons, text fields, labels and choicebox.
+     * @param window The "old" window that needs to be refreshed
+     * @param gameController
+     * @return The horizontal box containing all the information of the screen.
+     */
     public static HBox makeLayout(Stage window,GameController gameController){
         Font standardFont = new Font("Areal",15);
         Font info = new Font("Monaco", 30);
@@ -61,11 +67,6 @@ public class MainScreen {
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue(), gameController);
         });
 
-        /**
-         * Makes pressing enter key work the same way as
-         * pressing the button, for some magical, mysterious reason.
-         * I wonder why...
-         */
         playersIn.setOnAction(e -> {
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), playersIn.getText(), choiceBox.getValue(), gameController);

@@ -21,8 +21,7 @@ public class ObjectStandards {
 
     /**
      * A template for a button
-     *
-     * @param name
+     * @param name The name of the button
      * @return a new button
      */
     public static Button makeStandardButton(String name){

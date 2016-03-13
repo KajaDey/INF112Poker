@@ -32,20 +32,9 @@ public class ImageViewer {
     }
 
     /**
-     * Shows the cards of the opponent
-     * @param card1 The first card
-     * @param card2 The second card
-     * @return The new layout which contains the shown cards.
-     */
-    /*public static Scene showOpponentCards(String card1, String card2){
-        String card1Out = returnURLPathForCardSprites(card1);
-        String card2Out = returnURLPathForCardSprites(card2);
-
-        return GameScreen.makeSceneForOpponentCards(card1Out, card2Out);
-    }*/
-
-    /**
-     * Show community cards
+     * Shows the community cards
+     * @param cardPlacement The table placement of the cards
+     * @param cardName The name of the card
      */
     public void showCommunityCard(int cardPlacement, String cardName){
         //TODO: Make it possible for the community cards to be shown
@@ -94,6 +83,11 @@ public class ImageViewer {
         return imageView;
     }
 
+    /**
+     * Returns an empty image view, with the correct image size.
+     * @param player The type of player. Either a player or an opponent.
+     * @return The total image view.
+     */
     public static ImageView getEmptyImageView(String player){
         int imageSize = 0;
         if (player.equals("player"))
