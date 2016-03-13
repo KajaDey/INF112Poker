@@ -223,18 +223,22 @@ public class GameScreen {
         opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
         opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
-        HBox horizontalLayout = new HBox();
-        VBox verticalLayout = new VBox();
-        VBox fullBox = new VBox();
+        backButton = ObjectStandards.makeStandardButton("Back");
 
-        verticalLayout.getChildren().addAll(opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel);
-        verticalLayout.setSpacing(5);
-        verticalLayout.setAlignment(Pos.CENTER);
-        horizontalLayout.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, verticalLayout);
-        horizontalLayout.setSpacing(10);
-        horizontalLayout.setAlignment(Pos.TOP_CENTER);
-        fullBox.getChildren().addAll(horizontalLayout, opponentLastMoveLabel);
+        HBox cardsAndStats = new HBox();
+        VBox opponentStats = new VBox();
+        VBox fullBox = new VBox();
+        HBox evenFullerBox = new HBox();
+
+        opponentStats.getChildren().addAll(opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel);
+        opponentStats.setSpacing(5);
+        opponentStats.setAlignment(Pos.CENTER);
+        cardsAndStats.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, opponentStats);
+        cardsAndStats.setSpacing(10);
+        cardsAndStats.setAlignment(Pos.TOP_CENTER);
+        fullBox.getChildren().addAll(cardsAndStats, opponentLastMoveLabel);
         fullBox.setAlignment(Pos.BOTTOM_CENTER);
+        evenFullerBox.getChildren().setAll(fullBox, backButton);
 
         return fullBox;
 
