@@ -116,6 +116,12 @@ public class Game {
 
             playersStillPlaying.get(0).incrementStack(pot);
             delay(1000L);
+
+            ArrayList<Integer> stillPlaying = new ArrayList<Integer>();
+            for (Player p : playersStillPlaying)
+                stillPlaying.add(p.getID());
+
+            gameController.showDown(stillPlaying, 0);
         }
     }
 

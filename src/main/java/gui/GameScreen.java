@@ -16,6 +16,8 @@ import javafx.scene.text.Font;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,6 +42,8 @@ public class GameScreen {
     //Buttons
     private Button betRaiseButton, checkCallButton, foldButton;
 
+    //Playercards
+    private Map<Integer, Card[]> holeCards;
 
     //Textfields
     private TextField amountTextfield;
@@ -51,6 +55,7 @@ public class GameScreen {
         this.playerID = ID;
         borderPane = new BorderPane();
         scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
+        holeCards = new HashMap<>();
     }
 
     //TODO: Javadoc
@@ -76,6 +81,8 @@ public class GameScreen {
     //TODO: Javadoc
 
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
+        Card [] opponentHoleCards = {leftCard, rightCard};
+        holeCards.put(userID, opponentHoleCards);
         if (userID == this.playerID) {
             //Set player hand
             Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
@@ -238,6 +245,28 @@ public class GameScreen {
 
         return fullBox;
 
+    }
+
+    /**
+     * Shows the cards of the players around the table
+     * @param stillPlaying The players who are still in the game
+     * @param idForWinner The winner of the game
+     */
+    public void showDown(ArrayList<Integer> stillPlaying, int idForWinner){
+        Card[] cards;
+
+        for (Integer i: stillPlaying){
+            cards = holeCards.get(i);
+            Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
+            Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
+            Runnable task = () -> {
+                if (i != playerID) {
+                    opponentLeftCardImage.setImage(leftImage);
+                    opponentRightCardImage.setImage(rightImage);
+                }
+            };
+            Platform.runLater(task);
+        }
     }
 
     /**
