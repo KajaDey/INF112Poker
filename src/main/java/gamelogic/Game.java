@@ -113,7 +113,6 @@ public class Game {
         }
     }
 
-
     private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex) {
         int numberOfActedPlayers = 0;
 
@@ -184,7 +183,7 @@ public class Game {
                     break;
                 case BET: if (decision.size >= currentBB) return decision; break;
                 case CHECK: if (currentBet == 0) return decision; break;
-                case RAISE: if (currentBet *2 <= decision.size) return decision; break;
+                case RAISE: if (decision.size >= currentBet) return decision; break;
             }
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
