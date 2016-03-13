@@ -37,6 +37,7 @@ public class GameController {
         game = new Game(gamesettings, this);
         if (!game.isValid()) {
             //TODO: Tell GUI to display error-message that settings are not valid
+            mainGUI.displayErrorMessageToLobby("WHY U NO WORK");
             return;
         }
 

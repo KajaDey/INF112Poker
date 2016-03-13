@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import main.java.gamelogic.GameController;
 
@@ -101,7 +102,7 @@ public class GameLobby {
      * @return A settingScreen
      */
 
-    public static HBox createScreenForSettings(Stage window,GameController gameController){
+    public static HBox createScreenForSettings(Stage window, GameController gameController){
 
         HBox fullBox = new HBox();
         VBox labelBox = new VBox();
@@ -125,7 +126,6 @@ public class GameLobby {
         smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
         levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
 
-
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
@@ -148,12 +148,39 @@ public class GameLobby {
     }
 
     public static void updateLabels(GameSettings gameSettings){
-        amountOfChips.setText("Chips: "+ gameSettings.getStartStack() + "$");
-        numberOfPlayers.setText("Number of players: "+ gameSettings.getMaxNumberOfPlayers()+"");
-        bigBlind.setText("Big blind: "+ gameSettings.getBigBlind() + "$");
-        smallBlind.setText("Small blind: "+ gameSettings.getSmallBlind() + "$");
-        levelDuration.setText("Level duration: "+ gameSettings.getLevelDuration() + "min");
+        amountOfChips.setText("Chips: " + gameSettings.getStartStack() + "$");
+        numberOfPlayers.setText("Number of players: " + gameSettings.getMaxNumberOfPlayers() + "");
+        bigBlind.setText("Big blind: " + gameSettings.getBigBlind() + "$");
+        smallBlind.setText("Small blind: " + gameSettings.getSmallBlind() + "$");
+        levelDuration.setText("Level duration: " + gameSettings.getLevelDuration() + "min");
         //joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + , "");
     }
 
+    public static void displayErrorMessage(String message,GameController gameController){
+
+        Stage errorMessage = new Stage();
+
+        VBox layout = new VBox();
+        layout.setPadding(new Insets(10, 10, 10, 10));
+
+        Label label = new Label(message);
+        label.setFont(new Font("Areal", 100));
+
+        Button button = new Button("Chill, i'll fix it");
+        button.setFont((new Font("Areal",30)));
+        button.setOnAction(e -> {
+            ButtonListeners.errorButtonListener(gameController);
+            errorMessage.close();
+        });
+
+        layout.getChildren().addAll(label, button);
+        layout.setAlignment(Pos.CENTER);
+
+        errorMessage.initModality(Modality.APPLICATION_MODAL);
+        errorMessage.setTitle("Settings");
+        Scene scene = new Scene(layout);
+        errorMessage.setScene(scene);
+        errorMessage.show();
+
+    }
 }

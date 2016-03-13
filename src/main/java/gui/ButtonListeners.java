@@ -132,11 +132,19 @@ public class ButtonListeners {
         }
     }
 
+
+    public static void errorButtonListener(GameController gameController) {
+
+        settingsButtonListener(gameController);
+
+    }
+
     /**
      * sets the client
      */
     public static void setClient(GUIClient c) {
         client = c;
     }
+
 
 }

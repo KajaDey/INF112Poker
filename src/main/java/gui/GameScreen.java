@@ -38,7 +38,7 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-    private Button betRaiseButton, checkCallButton, doubleButton, foldButton, maxButton, potButton;
+    private Button betRaiseButton, checkCallButton, doubleButton, foldButton, maxButton, potButton, backButton;
 
     //Textfields
     private TextField amountTextfield;
@@ -140,7 +140,6 @@ public class GameScreen {
         potButton = ObjectStandards.makeStandardButton("Pot");
         doubleButton = ObjectStandards.makeStandardButton("Double");
         maxButton = ObjectStandards.makeStandardButton("Max");
-
         //Actions
         betRaiseButton.setOnAction(e -> {
             ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
@@ -150,7 +149,6 @@ public class GameScreen {
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
         maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
         potButton.setOnAction(e -> ButtonListeners.potButtonListener(amountTextfield.getText()));
-
         //Add objects to the boxes
 
         stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
@@ -225,18 +223,22 @@ public class GameScreen {
         opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
         opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
-        HBox horizontalLayout = new HBox();
-        VBox verticalLayout = new VBox();
-        VBox fullBox = new VBox();
+        backButton = ObjectStandards.makeStandardButton("Back");
 
-        verticalLayout.getChildren().addAll(opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel);
-        verticalLayout.setSpacing(5);
-        verticalLayout.setAlignment(Pos.CENTER);
-        horizontalLayout.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, verticalLayout);
-        horizontalLayout.setSpacing(10);
-        horizontalLayout.setAlignment(Pos.TOP_CENTER);
-        fullBox.getChildren().addAll(horizontalLayout, opponentLastMoveLabel);
+        HBox cardsAndStats = new HBox();
+        VBox opponentStats = new VBox();
+        VBox fullBox = new VBox();
+        HBox evenFullerBox = new HBox();
+
+        opponentStats.getChildren().addAll(opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel);
+        opponentStats.setSpacing(5);
+        opponentStats.setAlignment(Pos.CENTER);
+        cardsAndStats.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, opponentStats);
+        cardsAndStats.setSpacing(10);
+        cardsAndStats.setAlignment(Pos.TOP_CENTER);
+        fullBox.getChildren().addAll(cardsAndStats, opponentLastMoveLabel);
         fullBox.setAlignment(Pos.BOTTOM_CENTER);
+        evenFullerBox.getChildren().setAll(fullBox, backButton);
 
         return fullBox;
 
