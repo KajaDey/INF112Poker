@@ -9,7 +9,6 @@ public class Player extends User {
 
     private Hand hand;
     private Table table;
-    private Optional<Decision> lastDecision = Optional.empty();
 
     private int ID;
     private long stackSize;
@@ -41,12 +40,8 @@ public class Player extends User {
             case CALL:
                 this.stackSize -= (currentBet - putOnTableThisRound);
                 this.putOnTableThisRound = currentBet;
-                System.out.println("Player " + this.getName() + " called " + currentBet + ". New stacksize is " + this.stackSize);
-
                 break;
         }
-
-        this.lastDecision = Optional.of(decision);
     }
 
     public long getAmountPutOnTableThisBettingRound() {

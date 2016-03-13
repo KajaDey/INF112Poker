@@ -166,13 +166,14 @@ public class Game {
     private Decision getValidDecisionFromPlayer(Player playerToAct) {
         int errors = 0;
         System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
+        long stackSize = playerToAct.getStackSize();
 
         while (true) {
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
-
             switch (decision.move) {
                 //TODO: Check that player has enough chips for this decision
                 case FOLD: return decision;
+                case CHECK: if (currentBet == 0) return decision; break;
                 case CALL:
                     if (currentBet >= currentBB)
                         return decision;
@@ -181,9 +182,22 @@ public class Game {
                         return new Decision(Decision.Move.CHECK);
                     }
                     break;
-                case BET: if (decision.size >= currentBB) return decision; break;
-                case CHECK: if (currentBet == 0) return decision; break;
-                case RAISE: if (decision.size >= currentBet) return decision; break;
+
+                case BET:
+                    if (decision.size >=stackSize)
+                        return new Decision(Decision.Move.BET, stackSize);
+                    else if(decision.size >= currentBB)
+                        return decision;
+                    break;
+
+                case RAISE:
+                    if (decision.size >= stackSize) {
+                        return new Decision(Decision.Move.RAISE, stackSize - currentBet);
+                    }
+                    else if (decision.size >= currentBet)
+                        return decision;
+
+                    break;
             }
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
