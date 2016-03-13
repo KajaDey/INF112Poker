@@ -17,7 +17,7 @@ public class SimpleAI implements GameClient {
     private final double contemptFactor;
 
     private final int playerId;
-    private int amountOfPlayers;
+    protected int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
 
     private int bigBlindAmount;

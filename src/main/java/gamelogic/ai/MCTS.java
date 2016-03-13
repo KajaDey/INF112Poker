@@ -2,6 +2,7 @@ package main.java.gamelogic.ai;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -18,9 +19,39 @@ public class MCTS<Pos, Move> {
     public int totalSearches;
 
     public final BiFunction<Pos, Move, Pos> doMove;
+
     public final Function<Pos, Optional<Double>> terminalEvaluation;
     public final Function<Pos, ArrayList<Move>> allLegalMoves;
 
+    public MCTS(Pos startPosition, BiFunction<Pos, Move, Pos> doMove, Function<Pos, ArrayList<Move>> allLegalMoves,
+                Function<Pos, Optional<Double>> getTerminalEvaluation) {
+        this.startPosition = startPosition;
+        this.totalSearches = 0;
+
+        this.doMove = doMove;
+        this.allLegalMoves = allLegalMoves;
+        this.terminalEvaluation = getTerminalEvaluation;
+
+        assert startPosition != null && doMove != null && allLegalMoves != null && getTerminalEvaluation != null;
+
+        rootNode = new TreeNode(startPosition, true);
+    }
+
+    public void computeNodes(int nodes) {
+        while (nodes > 0) {
+            rootNode.select();
+            nodes--;
+        }
+    }
+
+    public void computeForMs(long milliseconds) {
+        assert milliseconds > 100;
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < milliseconds - 50) {
+            computeNodes(1000);
+        }
+
+    }
 
     public class TreeNode {
         private double value;
@@ -71,7 +102,7 @@ public class MCTS<Pos, Move> {
                 return tempValue / searches + Math.sqrt(2) * Math.sqrt(Math.log(totalSearches) / searches);
             }
             else {
-                return !maximizing ? Double.POSITIVE_INFINITY : Double.POSITIVE_INFINITY;
+                return Double.POSITIVE_INFINITY;
             }
         }
 
@@ -79,12 +110,16 @@ public class MCTS<Pos, Move> {
 
             if (allChildrenAreExplored) {
                 TreeNode bestNode;
-                if (maximizing) {
-                    bestNode = children.stream().max((child1, child2) -> Double.compare(child1.get().explorationValue(), child2.get().explorationValue())).get().get();
+                if (maximizing) {/*
+                    bestNode = children.stream()
+                            .map(node -> node.get().explorationValue())
+                            .max((child1, child2) -> Double.compare(explorationValue(), explorationValue())).get();
+                */
                 }
-                else {
-                    bestNode = children.stream().max((child1, child2) -> Double.compare(child1.get().explorationValue(), child2.get().explorationValue())).get().get();
-                }
+                Comparator<TreeNode> explorationValueComparator = (node1, node2) -> Double.compare(node1.explorationValue(), node2.explorationValue());
+
+                bestNode = children.stream().map(Optional::get).max(explorationValueComparator).get();
+
                 if (bestNode.isTerminal) {
                     Double eval = terminalEvaluation.apply((Pos) bestNode.position).get();
                     addValue(eval);
@@ -149,22 +184,4 @@ public class MCTS<Pos, Move> {
             return "Avg: " + value / searches + ", val: " + value + ", n: " + searches;
         }
     }
-
-    public MCTS(Pos startPosition, BiFunction<Pos, Move, Pos> doMove, Function<Pos, ArrayList<Move>> allLegalMoves,
-                Function<Pos, Optional<Double>> getTerminalEvaluation) {
-        this.startPosition = startPosition;
-        this.totalSearches = 0;
-
-        this.doMove = doMove;
-        this.allLegalMoves = allLegalMoves;
-        this.terminalEvaluation = getTerminalEvaluation;
-
-        assert startPosition != null && doMove != null && allLegalMoves != null && getTerminalEvaluation != null;
-
-        rootNode = new TreeNode(startPosition, true);
-    }
-
-
-
-
 }
