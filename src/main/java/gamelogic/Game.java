@@ -117,7 +117,11 @@ public class Game {
             System.out.println("SHOWDOWN");
             if (playersStillPlaying.size() > 1) {
                 for (Player player : playersStillPlaying) {
-                    System.out.println("Player " + player.getID() + player.cardsOnHand());
+                    System.out.println("Player " + player.getID() + ": " + player.cardsOnHand());
+                }
+                System.out.println("Community cards: ");
+                for (Card c : communityCards) {
+                    System.out.println(c + " ");
                 }
             }
 
@@ -213,6 +217,7 @@ public class Game {
 
                 case RAISE:
                     if (decision.size >= stackSize) {
+                        System.out.println("Player " + playerToAct.getName() + " tried to raise _TO_ " + (decision.size + currentBet) + " but only has " + stackSize);
                         return new Decision(Decision.Move.RAISE, stackSize - currentBet);
                     }
                     else if (decision.size >= biggestBet)
