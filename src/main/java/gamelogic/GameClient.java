@@ -35,7 +35,7 @@ public interface GameClient {
     void setStackSizes(Map<Integer, Long> stackSizes);
 
     /**
-     * Sends the decision of another player
+     * Sends a decision made by any player. Is sent to all players, including the player that made the decision
      */
     void playerMadeDecision(Integer playerId, Decision decision);
 
