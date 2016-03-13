@@ -34,9 +34,9 @@ public class Player extends User {
                 this.stackSize -= decision.size;
                 break;
             case RAISE:
-                this.putOnTableThisRound += decision.size;
-                this.stackSize -= (decision.size);
-
+                long totalPutOnTable = ((currentBet-putOnTableThisRound) + decision.size);
+                this.stackSize -= totalPutOnTable;
+                this.putOnTableThisRound = totalPutOnTable;
                 break;
             case CALL:
                 this.stackSize -= (currentBet - putOnTableThisRound);
