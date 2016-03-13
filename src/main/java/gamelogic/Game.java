@@ -70,7 +70,6 @@ public class Game {
         Handloop:
         while (true) {
             gameController.setStackSizes(stackSizes);
-            delay(1000L);
             gameController.startNewHand();
 
             List<Player> playersStillPlaying = new ArrayList<>();
@@ -87,25 +86,25 @@ public class Game {
             postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
 
             remainingPlayers = bettingRound(playersStillPlaying, 2);
-            if (!remainingPlayers) { continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
             setFlop();
 
             currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
-            if (!remainingPlayers) { continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
             setTurn();
 
             currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
-            if (!remainingPlayers) { continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
             setRiver();
 
             currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
-            if (!remainingPlayers) { continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
             //SHOWDOWN
             System.out.println("SHOWDOWN");
@@ -115,6 +114,8 @@ public class Game {
                 }
             }
 
+            playersStillPlaying.get(0).incrementStack(pot);
+            delay(1000L);
         }
     }
 

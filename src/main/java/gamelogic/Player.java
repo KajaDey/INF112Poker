@@ -67,5 +67,9 @@ public class Player extends User {
     public void setAmountPutOnTableThisBettingRound(long amount) {
         this.putOnTableThisRound = amount;
     }
+
+    public void incrementStack(long size) {
+        stackSize += size;
+    }
 }
 

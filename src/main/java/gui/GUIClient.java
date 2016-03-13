@@ -17,6 +17,7 @@ public class GUIClient implements GameClient {
     private GameScreen gameScreen;
     private long currentBet = 0;
     private Decision decision;
+    private Map<Integer, Long> stackSizes;
 
     private int id;
 
@@ -51,9 +52,19 @@ public class GUIClient implements GameClient {
      * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
+        if (moveSize > stackSizes.get(id)) {
+            //Display error: "You don't have this much in your stack" and return without notifying
+            System.out.println("You dont have this much in your stack");
+            return;
+        }
+
         switch (move) {
-            case BET: this.decision = new Decision(move, moveSize); break;
-            case RAISE: this.decision = new Decision(move, moveSize - currentBet); break;
+            case BET:
+                this.decision = new Decision(move, moveSize);
+                break;
+            case RAISE:
+                this.decision = new Decision(move, moveSize - currentBet);
+                break;
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
 
@@ -100,6 +111,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
+        this.stackSizes = stackSizes;
         gameScreen.updateStackSizes(stackSizes);
     }
 

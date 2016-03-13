@@ -359,13 +359,13 @@ public class GameScreen {
     }
 
     public void newBettingRound(long potSize) {
-        try { Thread.sleep(2000L); } catch (Exception e) { e.printStackTrace(); }
+        setPot(potSize);
+        try { Thread.sleep(1500L); } catch (Exception e) { e.printStackTrace(); }
 
         Runnable task = () -> {
             this.currentBet = 0;
             this.playerLastMoveLabel.setText("");
             this.opponentLastMoveLabel.setText("");
-            this.potLabel.setText("Pot: " + potSize);
             checkCallButton.setText("Check");
             betRaiseButton.setText("Bet");
         };
@@ -376,7 +376,7 @@ public class GameScreen {
     public void setPot(long pot) {
         String potString = Long.toString(pot);
 
-        Runnable task = () -> potLabel.setText(potString);
+        Runnable task = () -> potLabel.setText("Pot: " + potString);
         Platform.runLater(task);
     }
 
