@@ -152,7 +152,9 @@ public class Game {
                 case RAISE:case BET:
                     numberOfActedPlayers = 1;
                     currentBet += decision.size;
-                    assert decision.size >= biggestBet;
+                    System.out.println("Decisionsize: " + decision.size + " Currentbet: " + currentBet + " Stack: " + playerToAct.getStackSize());
+                    assert decision.size >= biggestBet || playerToAct.getStackSize() == 0;
+                    biggestBet = Math.max(biggestBet, decision.size);
                     biggestBet = decision.size;
                     break;
                 case FOLD: playersStillPlaying.remove(playerToAct); break;
@@ -215,8 +217,8 @@ public class Game {
                     break;
 
                 case RAISE:
-                    if (decision.size >= stackSize) {
-
+                    if (decision.size + biggestBet == stackSize) {
+                        return decision;
                     }
                     else if (decision.size >= biggestBet)
                         return decision;
