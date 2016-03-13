@@ -18,6 +18,13 @@ import main.java.gamelogic.GameController;
  */
 public class GameLobby {
 
+
+    /**
+     * Creates the screen for the gamelobby and shows it on the screen
+     *
+     * @param gameSettings
+     * @param gameController
+     */
     public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController){
 
         Stage window = new Stage();
@@ -78,6 +85,15 @@ public class GameLobby {
         SceneBuilder.showCurrentScene(scene, "GameLobby");
 
     }
+
+    /**
+     *
+     * Creates a layout for the settingsScreen and displays it
+     *
+     * @param window
+     * @param gameController
+     * @return A settingScreen
+     */
 
     public static HBox createScreenForSettings(Stage window,GameController gameController){
 

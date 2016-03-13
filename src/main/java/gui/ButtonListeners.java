@@ -141,7 +141,7 @@ public class ButtonListeners {
         }
     }
     /**
-     *
+     * sets the client
      */
     public static void setClient(GUIClient c) {
         client = c;
