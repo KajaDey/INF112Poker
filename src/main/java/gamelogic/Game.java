@@ -187,7 +187,6 @@ public class Game {
         while (true) {
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
             switch (decision.move) {
-                //TODO: Check that player has enough chips for this decision
                 case FOLD: return decision;
                 case CHECK: if (currentBet == 0) return decision; break;
                 case CALL:
@@ -208,8 +207,7 @@ public class Game {
 
                 case RAISE:
                     if (decision.size >= stackSize) {
-                        System.out.println("Player " + playerToAct.getName() + " tried to raise _TO_ " + (decision.size + currentBet) + " but only has " + stackSize);
-                        return new Decision(Decision.Move.RAISE, stackSize - currentBet);
+
                     }
                     else if (decision.size >= currentBet)
                         return decision;

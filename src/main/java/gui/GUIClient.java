@@ -53,7 +53,7 @@ public class GUIClient implements GameClient {
      * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
-        if (moveSize > stackSizes.get(id)) {
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
             //Display error: "You don't have this much in your stack" and return without notifying
             System.out.println("You dont have this much in your stack");
             return;
