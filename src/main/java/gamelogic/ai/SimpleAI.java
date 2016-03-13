@@ -101,7 +101,6 @@ public class SimpleAI implements GameClient {
     /**
      * Called whenever there is a new round, after the SimpleAI has gotten its new hole cards
      */
-    @Override
     public void newBettingRound() {
         minimumRaise = bigBlindAmount;
         // Probably not need to set minimumBetTHisBettingRound, because it gets set once positions are set
@@ -112,11 +111,6 @@ public class SimpleAI implements GameClient {
     public void startNewHand() {
         playersLeftInCurrentHand = amountOfPlayers;
         holeCards.clear();
-    }
-
-    @Override
-    public void setPot(long potsize) {
-
     }
 
     @Override
@@ -140,6 +134,7 @@ public class SimpleAI implements GameClient {
 
     public void setHoleCards(Card card1, Card card2) {
         assert holeCards.size() == 0;
+        newBettingRound();
         holeCards.add(card1);
         holeCards.add(card2);
     }
@@ -204,11 +199,6 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void setStartChips(long startChips) {
-        stackSize = startChips;
-    }
-
-    @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
 
         this.amountOfPlayers = amountOfPlayers;
@@ -221,22 +211,17 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void setLastMove(Map<Integer,Decision> lastMove) {
-
-    }
-
-    @Override
     public void setFlop(Card card1, Card card2, Card card3) {
-
+        newBettingRound();
     }
 
     @Override
     public void setTurn(Card turn) {
-
+        newBettingRound();
     }
 
     @Override
     public void setRiver(Card river) {
-
+        newBettingRound();
     }
 }

@@ -70,6 +70,7 @@ public class Game {
 
         Handloop:
         while (true) {
+            gameController.setStackSizes(stackSizes);
             delay(1000L);
             gameController.startNewHand();
 

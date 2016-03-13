@@ -73,7 +73,6 @@ public class GameController {
             GameClient client = clients.get(clientID);
             client.setBigBlind(gamesettings.getBigBlind());
             client.setSmallBlind(gamesettings.getSmallBlind());
-            client.setStartChips(gamesettings.getStartStack());
         }
     }
 
@@ -136,7 +135,6 @@ public class GameController {
     public void newBettingRound() {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.newBettingRound();
         }
     }
 
@@ -150,7 +148,6 @@ public class GameController {
     public void setPot(Long pot) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setPot(pot);
         }
     }
 }

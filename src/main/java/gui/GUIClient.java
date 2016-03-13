@@ -78,11 +78,6 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void newBettingRound() {
-        gameScreen.newBettingRound();
-    }
-
-    @Override
     public void startNewHand() {
         gameScreen.startNewHand();
     }
@@ -118,11 +113,6 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void setStartChips(long startChips) {
-
-    }
-
-    @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
 
     }
@@ -130,15 +120,6 @@ public class GUIClient implements GameClient {
     @Override
     public void setLevelDuration(int levelDuration) {
 
-    }
-
-    @Override
-    public void setLastMove(Map<Integer,Decision> lastMove) {
-    }
-
-    @Override
-    public void setPot(long pot){
-        gameScreen.setPot(pot);
     }
 
     public int getID() {
