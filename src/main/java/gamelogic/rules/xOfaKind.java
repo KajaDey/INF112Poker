@@ -2,17 +2,14 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by kaja on 08.03.2016.
- *
+ * <p/>
  * Checks if we have a hand with either 4/3/2 cards of the same rank.
- *
- *
  */
 public class xOfaKind implements IRule {
     private boolean fourOfaKind;
@@ -23,10 +20,11 @@ public class xOfaKind implements IRule {
     private List<Card> tempHand = new ArrayList<>(5);
     private List<Card> markedCards = new ArrayList<>(5);
 
-    private int nrToCheck=0;
+    private int nrToCheck;
+    private List<Integer> compareValues = new ArrayList<>();
 
-    public xOfaKind(int nrToCheck){
-        this.nrToCheck=nrToCheck;
+    public xOfaKind(int nrToCheck) {
+        this.nrToCheck = nrToCheck;
     }
 
     /**
@@ -40,25 +38,26 @@ public class xOfaKind implements IRule {
         allCards = hand.getAllCards();
         allCards.sort(Card::compareTo);
 
-        for (int i = allCards.size()-1; i >-1; i--) { //desc
+        for (int i = allCards.size() - 1; i > -1; i--) { //desc
 
             int rankToCheck = allCards.get(i).rank;
             tempHand.add(allCards.get(i));
             markedCards.add(allCards.get(i));
 
-            for(int j=allCards.size()-2; j>-1; j--) {
+            for (int j = allCards.size() - 2; j > -1; j--) {
 
-                if ((rankToCheck == allCards.get(j).rank)&& !markedCards.contains(allCards.get(j))) {
+                if ((rankToCheck == allCards.get(j).rank) && !markedCards.contains(allCards.get(j))) {
                     tempHand.add(allCards.get(j));
                     markedCards.add(allCards.get(j));
                 }
             }
 
-            switch(nrToCheck) {
+            switch (nrToCheck) {
                 case 4:
-                    if(tempHand.size() == 4) {
+                    if (tempHand.size() == 4) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 1;
+                        compareValues.add(rankToCheck);
                         addHighCards(nrOfCardsToAdd);
                         fourOfaKind = true;
                         return true;
@@ -68,24 +67,26 @@ public class xOfaKind implements IRule {
                     if (tempHand.size() == 3) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 2;
+                        compareValues.add(rankToCheck);
                         addHighCards(nrOfCardsToAdd);
                         threeOfaKind = true;
                         return true;
                     }
                     break;
                 case 2:
-                     if (tempHand.size() == 2) {
+                    if (tempHand.size() == 2) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 3;
+                        compareValues.add(rankToCheck);
                         addHighCards(nrOfCardsToAdd);
                         twoOfaKind = true;
-                         return true;
-                     }
-                     break;
+                        return true;
+                    }
+                    break;
             }
             tempHand.clear();
             markedCards.clear();
-            if(fourOfaKind || threeOfaKind ||  twoOfaKind)
+            if (fourOfaKind || threeOfaKind || twoOfaKind)
                 break;
         }
         return (false);
@@ -100,15 +101,28 @@ public class xOfaKind implements IRule {
         return Optional.empty();
     }
 
-    private void addHighCards(int nrOfCardsToAdd){
-        int counter=0;
-        for (int i = allCards.size()-1; i >-1; i--) { //desc
+    private void addHighCards(int nrOfCardsToAdd) {
+        int counter = 0;
+        for (int i = allCards.size() - 1; i > -1; i--) { //desc
             if (!markedCards.contains(allCards.get(i))) {
                 returnHand.add(allCards.get(i));
+                compareValues.add(allCards.get(i).rank);
                 counter++;
-                if (counter == nrOfCardsToAdd )
+                if (counter == nrOfCardsToAdd)
                     break;
             }
         }
+    }
+
+    @Override
+    public HandCalculator.HandType getType() {
+        return nrToCheck == 4 ? HandCalculator.HandType.QUAD
+                : nrToCheck == 3 ? HandCalculator.HandType.TRIPS
+                : HandCalculator.HandType.PAIR;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return compareValues;
     }
 }

@@ -2,6 +2,7 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class StraightFlush implements IRule {
 
     private List<Card> returnHand = new ArrayList<>();
     private List<Card> cards;
+    private List<Integer> compareValues;
 
     @Override
     public boolean match(Hand hand) {
@@ -30,6 +32,7 @@ public class StraightFlush implements IRule {
 
         if (straightFlushMatch) {
             returnHand.addAll(straight.getHand().get());
+            compareValues = straight.getCompareValues();
         }
 
         return straightFlushMatch;
@@ -42,6 +45,7 @@ public class StraightFlush implements IRule {
         }
         return Optional.empty();
     }
+
 
     /**
      *  Fills and returns an array of all cards of the most common suit.
@@ -95,7 +99,16 @@ public class StraightFlush implements IRule {
             mainSuitCount = numHearts;
             mainSuit = Card.Suit.HEARTS;
         }
-
         return mainSuit;
+    }
+
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT_FLUSH;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return compareValues;
     }
 }

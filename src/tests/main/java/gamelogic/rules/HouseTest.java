@@ -38,7 +38,7 @@ public class HouseTest {
 
     @Test
     public void testMatchWhenFullHouse() throws Exception {
-        hand = new Hand(card6, card7, Arrays.asList(card1, card4, card2, card3, card5));
+        hand = new Hand(card6, card7, Arrays.asList(card1, card2, card3, card4, card5));
         assertTrue(house.match(hand));
     }
 
@@ -68,5 +68,17 @@ public class HouseTest {
         hand = new Hand(card1, card2, Arrays.asList(card4, card5, card8, card9, card10));
 
         assertFalse(house.match(hand));
+    }
+
+    @Test
+    public void testRightCompareValues() {
+        hand = new Hand(card6, card7, Arrays.asList(card1, card2, card3, card4, card5));
+        house.match(hand);
+
+        List<Integer> compareValues = house.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 3);
+        assertTrue(compareValues.get(1) == 2);
+        assertTrue(compareValues.size() == 2);
     }
 }

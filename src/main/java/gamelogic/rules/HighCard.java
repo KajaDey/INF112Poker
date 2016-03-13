@@ -2,11 +2,9 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Vegar on 09/03/16.
@@ -27,5 +25,20 @@ public class HighCard implements IRule {
     @Override
     public Optional<List<Card>> getHand() {
         return Optional.of(returnHand);
+    }
+
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.HIGH_CARD;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        returnHand.sort(Card::compareTo);
+        List<Integer> compareValues = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            compareValues.add(returnHand.get(4 - i).rank);
+        }
+        return compareValues;
     }
 }

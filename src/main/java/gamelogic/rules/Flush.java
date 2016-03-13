@@ -2,8 +2,10 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,4 +76,18 @@ public class Flush implements IRule {
         return Optional.empty();
     }
 
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.FLUSH;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        returnHand.sort(Card::compareTo);
+        List<Integer> compareValues = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            compareValues.add(returnHand.get(4 - i).rank);
+        }
+        return compareValues;
+    }
 }
