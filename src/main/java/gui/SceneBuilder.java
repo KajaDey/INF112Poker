@@ -31,9 +31,9 @@ public class SceneBuilder {
      * @param gameSettings The settings to display
      * @param gameController
      */
-    public static void updateLobbyScreen(GameSettings gameSettings, GameController gameController){
+    /*public static void updateLobbyScreen(GameSettings gameSettings, GameController gameController){
        //GameLobby.createScreenForGameLobby(gameSettings,gameController);
-    }
+    }*/
 
 
     /**

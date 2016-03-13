@@ -99,7 +99,7 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText));
 
-            SceneBuilder.updateLobbyScreen(gameSettings,gameController);
+            GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             window.close();
 
