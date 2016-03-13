@@ -3,6 +3,7 @@ import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,8 +114,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(Map<Integer, List<Card>> holeCards) {
-
+    public void showdown(ArrayList<Integer> playersStillPlaying, int winnerID) {
+        gameScreen.showDown(playersStillPlaying, winnerID);
     }
 
     @Override

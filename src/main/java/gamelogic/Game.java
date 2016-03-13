@@ -115,6 +115,11 @@ public class Game {
                 }
             }
 
+            ArrayList<Integer> stillPlaying = new ArrayList<Integer>();
+            for (Player p : playersStillPlaying)
+                stillPlaying.add(p.getID());
+
+            gameController.showDown(stillPlaying, 0);
         }
     }
 

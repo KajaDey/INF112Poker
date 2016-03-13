@@ -1,5 +1,8 @@
 package main.java.gamelogic;
 
+import edu.princeton.cs.algs4.In;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +46,7 @@ public interface GameClient {
      * After a showdown, the client receives the hole cards of all the players still in the hand,
      * as a map indexed by the players' IDs
      */
-    void showdown(Map<Integer, List<Card>> holeCards);
+    void showdown(ArrayList<Integer> playersStillPlaying, int winnerID);
 
     /**
      * Sends the value of big blind
