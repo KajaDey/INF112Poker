@@ -31,7 +31,7 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displayLobbyScreen(String name, int numberOfPlayers, String gameType, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings,gamecontroller);
+        GameLobby.createScreenForGameLobby(gameSettings,gamecontroller, name);
     }
 
     /**
