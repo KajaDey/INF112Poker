@@ -5,7 +5,6 @@ import main.java.gamelogic.Hand;
 import main.java.gamelogic.HandCalculator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +32,7 @@ public class StraightFlush implements IRule {
 
         if (straightFlushMatch) {
             returnHand.addAll(straight.getHand().get());
-            compareValues = straight.compareValues();
+            compareValues = straight.getCompareValues();
         }
 
         return straightFlushMatch;
@@ -109,7 +108,7 @@ public class StraightFlush implements IRule {
     }
 
     @Override
-    public List<Integer> compareValues() {
+    public List<Integer> getCompareValues() {
         return compareValues;
     }
 }

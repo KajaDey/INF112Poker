@@ -4,10 +4,7 @@ import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
 import main.java.gamelogic.HandCalculator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by kaja on 08.03.2016.
@@ -23,7 +20,8 @@ public class xOfaKind implements IRule {
     private List<Card> tempHand = new ArrayList<>(5);
     private List<Card> markedCards = new ArrayList<>(5);
 
-    private int nrToCheck = 0;
+    private int nrToCheck;
+    private List<Integer> compareValues = new ArrayList<>();
 
     public xOfaKind(int nrToCheck) {
         this.nrToCheck = nrToCheck;
@@ -59,6 +57,7 @@ public class xOfaKind implements IRule {
                     if (tempHand.size() == 4) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 1;
+                        compareValues.add(rankToCheck);
                         addHighCards(nrOfCardsToAdd);
                         fourOfaKind = true;
                         return true;
@@ -68,6 +67,7 @@ public class xOfaKind implements IRule {
                     if (tempHand.size() == 3) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 2;
+                        compareValues.add(rankToCheck);
                         addHighCards(nrOfCardsToAdd);
                         threeOfaKind = true;
                         return true;
@@ -77,6 +77,7 @@ public class xOfaKind implements IRule {
                     if (tempHand.size() == 2) {
                         returnHand.addAll(tempHand);
                         int nrOfCardsToAdd = 3;
+                        compareValues.add(rankToCheck);
                         addHighCards(nrOfCardsToAdd);
                         twoOfaKind = true;
                         return true;
@@ -105,6 +106,7 @@ public class xOfaKind implements IRule {
         for (int i = allCards.size() - 1; i > -1; i--) { //desc
             if (!markedCards.contains(allCards.get(i))) {
                 returnHand.add(allCards.get(i));
+                compareValues.add(allCards.get(i).rank);
                 counter++;
                 if (counter == nrOfCardsToAdd)
                     break;
@@ -120,8 +122,7 @@ public class xOfaKind implements IRule {
     }
 
     @Override
-    public List<Integer> compareValues() {
-
-        return Arrays.asList(1);
+    public List<Integer> getCompareValues() {
+        return compareValues;
     }
 }

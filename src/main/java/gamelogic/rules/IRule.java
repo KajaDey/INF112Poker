@@ -40,6 +40,6 @@ public interface IRule {
      *
      * @return list of values to compare
      */
-    public List<Integer> compareValues();
+    public List<Integer> getCompareValues();
 
 }

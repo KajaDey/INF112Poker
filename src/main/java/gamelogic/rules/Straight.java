@@ -120,7 +120,7 @@ public class Straight implements IRule {
         if (addAceLow) {
             for (int i = 0; i < 5; i++) {
                 if (returnCards.get(4 - i).rank != 14) {
-                    highCard = returnCards.get(5-i).rank;
+                    highCard = returnCards.get(4-i).rank;
                     break;
                 }
             }
@@ -135,7 +135,7 @@ public class Straight implements IRule {
     }
 
     @Override
-    public List<Integer> compareValues() {
+    public List<Integer> getCompareValues() {
         return Arrays.asList(highCard);
     }
 }

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -43,5 +44,20 @@ public class FlushTest {
     @Test
     public void testFlushFalse() throws Exception {
         assertFalse(flush.match(hand2));
+    }
+
+    @Test
+    public void testRightCompareValues() {
+        flush.match(hand1);
+        List<Integer> compareValues = flush.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 14);
+        assertTrue(compareValues.get(1) == 13);
+        assertTrue(compareValues.get(2) == 10);
+        assertTrue(compareValues.get(3) == 8);
+        assertTrue(compareValues.get(4) == 5);
+
+        assertTrue(compareValues.size() == 5);
+
     }
 }

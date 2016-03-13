@@ -81,4 +81,16 @@ public class StraightFlushTest {
         assertFalse(straightFlush.match(hand));
     }
 
+    @Test
+    public void testRightCompareValues() {
+        hand = new Hand(card1, card2, Arrays.asList(card3, card4, card5, card6, card6));
+        straightFlush = new StraightFlush();
+
+        straightFlush.match(hand);
+        List<Integer> compareValues = straightFlush.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 6);
+        assertTrue(compareValues.size() == 1);
+    }
+
 }

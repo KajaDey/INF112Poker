@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -36,6 +37,7 @@ public class xOfaKindTest {
         holeCard4 = card.of(10, Card.Suit.SPADES).get();
     }
 
+
     @Test
     public void testFourLikeCards() throws Exception {
         hand1 = new Hand(holeCard1,holeCard2,communityCards);
@@ -65,5 +67,49 @@ public class xOfaKindTest {
         hand1 = new Hand(holeCard1,holeCard2,communityCards);
         xOf4.match(hand1);
         assert(xOf4.getHand().isPresent());
+    }
+
+    @Test
+    public void testRightCompareValuesFour() {
+        hand1 = new Hand(holeCard1,holeCard2,communityCards);
+        xOf4.match(hand1);
+
+        List<Integer> compareValues = xOf4.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 9);
+        assertTrue(compareValues.get(1) == 12);
+
+        assertTrue(compareValues.size() == 2);
+
+    }
+
+    @Test
+    public void testRightCompareValuesThree() {
+        hand1 = new Hand(holeCard1,holeCard3,communityCards);
+        xOf3.match(hand1);
+
+        List<Integer> compareValues = xOf3.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 9);
+        assertTrue(compareValues.get(1) == 12);
+        assertTrue(compareValues.get(2) == 11);
+
+        assertTrue(compareValues.size() == 3);
+    }
+
+    @Test
+    public void testRightCompareValuesTwo() {
+        hand1 = new Hand(holeCard3,holeCard4,communityCards);
+        xOf2.match(hand1);
+
+        List<Integer> compareValues = xOf2.getCompareValues();
+
+        assertTrue(compareValues.get(0) == 11);
+        assertTrue(compareValues.get(1) == 12);
+        assertTrue(compareValues.get(2) == 10);
+        assertTrue(compareValues.get(3) == 10);
+
+        assertTrue(compareValues.size() == 4);
+
     }
 }

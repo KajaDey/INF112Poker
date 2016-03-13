@@ -82,7 +82,7 @@ public class Flush implements IRule {
     }
 
     @Override
-    public List<Integer> compareValues() {
+    public List<Integer> getCompareValues() {
         returnHand.sort(Card::compareTo);
         List<Integer> compareValues = new ArrayList<>();
         for (int i = 0; i < 5; i++) {

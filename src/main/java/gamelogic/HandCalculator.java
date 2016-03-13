@@ -31,6 +31,7 @@ public class HandCalculator {
     private Straight straight;
     private TwoPairs twoPairs;
     private HighCard highCard;
+    private IRule rule;
 
     public HandCalculator(Hand hand) {
 
@@ -57,10 +58,11 @@ public class HandCalculator {
         rules.add(pair);
         rules.add(highCard);
 
-        for (IRule rule : rules) {
-            if (rule.match(hand)) {
-                bestHand = rule.getHand();
-                handType = rule.getType();
+        for (IRule r : rules) {
+            if (r.match(hand)) {
+                bestHand = r.getHand();
+                handType = r.getType();
+                rule = r;
                 break;
             }
         }
@@ -76,6 +78,10 @@ public class HandCalculator {
 
     public HandType getHandType() {
         return handType;
+    }
+
+    public IRule getFoundRule() {
+        return rule;
     }
 }
 

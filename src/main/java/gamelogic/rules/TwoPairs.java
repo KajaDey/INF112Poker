@@ -19,7 +19,6 @@ public class TwoPairs implements IRule {
     private boolean onePair = false;
     private List<Card> returnHand = new ArrayList<Card>();
     private int firstPairValue, secondPairValue, highCard;
-    private List<Integer> compareValues = new ArrayList<>();
 
     @Override
     public boolean match(Hand hand) {
@@ -68,7 +67,9 @@ public class TwoPairs implements IRule {
     }
 
     @Override
-    public List<Integer> compareValues() {
+    public List<Integer> getCompareValues() {
+        List<Integer> compareValues = new ArrayList<>();
+
         if (firstPairValue > secondPairValue) {
             compareValues.add(firstPairValue);
             compareValues.add(secondPairValue);

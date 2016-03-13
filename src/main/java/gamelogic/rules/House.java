@@ -41,11 +41,19 @@ public class House implements IRule {
                 }
             }
         }
+        setHand();
         return isFullHouse;
     }
 
     @Override
     public Optional<List<Card>> getHand() {
+        if (bestCards.size() > 0) {
+            return Optional.of(bestCards);
+        }
+        return Optional.empty();
+    }
+
+    public void setHand() {
 
         bestCards = new ArrayList<Card>();
 
@@ -78,10 +86,6 @@ public class House implements IRule {
                 break;
             }
         }
-        if (bestCards.size() > 0) {
-            return Optional.of(bestCards);
-        }
-        return Optional.empty();
     }
 
     @Override
@@ -90,7 +94,7 @@ public class House implements IRule {
     }
 
     @Override
-    public List<Integer> compareValues() {
+    public List<Integer> getCompareValues() {
         return compareValues;
     }
 }
