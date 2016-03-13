@@ -90,9 +90,14 @@ public class SimpleAI implements GameClient {
                 }
             }
             else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) { // If the hand is really good
-
-                stackSize -= minimumRaise + minimumBetThisBettingRound;
-                return new Decision(Decision.Move.RAISE, minimumRaise);
+                if (stackSize >= minimumRaise) {
+                    stackSize -= minimumRaise + minimumBetThisBettingRound;
+                    return new Decision(Decision.Move.RAISE, minimumRaise);
+                }
+                else { // Go all in
+                    stackSize = 0;
+                    return new Decision(Decision.Move.RAISE, stackSize);
+                }
             }
             else {
                 stackSize -= minimumBetThisBettingRound;
