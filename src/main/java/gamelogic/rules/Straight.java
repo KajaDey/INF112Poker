@@ -2,8 +2,10 @@ package main.java.gamelogic.rules;
 
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Hand;
+import main.java.gamelogic.HandCalculator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,15 +15,17 @@ import java.util.Optional;
 public class Straight implements IRule {
     private int drawCount = 1;
     private int lastCardIndex;
-    private List<Card> cards;
-    private List<Card> returnCards = new ArrayList<>();
+    private List<Card> cards, returnCards;
     private boolean lookingForStraightFlush = false;
+    private HandCalculator.HandType type = HandCalculator.HandType.STRAIGHT;
+    private int highCard = 0;
 
     /**
      * Regular constructor, used in most cases
      */
     public Straight() {
         cards = new ArrayList<>();
+        returnCards = new ArrayList<>();
     }
 
     /**
@@ -29,8 +33,9 @@ public class Straight implements IRule {
      * @param flushCards list of cards to check for straight
      */
     public Straight(List<Card> flushCards){
-        this.cards = flushCards;
-        this.lookingForStraightFlush = true;
+        cards = flushCards;
+        lookingForStraightFlush = true;
+        returnCards = new ArrayList<>();
     }
 
     @Override
@@ -109,5 +114,28 @@ public class Straight implements IRule {
             numberOfCardsAdded++;
             indexToAdd++;
         }
+
+        returnCards.sort(Card::compareTo);
+
+        if (addAceLow) {
+            for (int i = 0; i < 5; i++) {
+                if (returnCards.get(4 - i).rank != 14) {
+                    highCard = returnCards.get(5-i).rank;
+                    break;
+                }
+            }
+        } else {
+            highCard = returnCards.get(4).rank;
+        }
+    }
+
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT;
+    }
+
+    @Override
+    public List<Integer> compareValues() {
+        return Arrays.asList(highCard);
     }
 }
