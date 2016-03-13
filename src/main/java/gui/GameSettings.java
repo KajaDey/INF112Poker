@@ -3,6 +3,10 @@ package main.java.gui;
 /**
  * Created by ady on 09/03/16.
  */
+
+/**
+ * A class that contains all the settings we need to know
+ */
 public class GameSettings {
 
     public long startStack;
@@ -19,22 +23,40 @@ public class GameSettings {
         this.levelDuration = levelDuration;
     }
 
+    /**
+     * @return startStack
+     */
+
     public long getStartStack() {
         return startStack;
     }
+
+    /**
+     * @return bigBlind
+     */
 
     public int getBigBlind() {
         return bigBlind;
     }
 
+    /**
+     * @return smallBlind
+     */
+
     public int getSmallBlind() {
         return smallBlind;
     }
 
+    /**
+     * @return maxNumberOfPlayers
+     */
     public int getMaxNumberOfPlayers() {
         return maxNumberOfPlayers;
     }
 
+    /**
+     * @return levelDuration
+     */
     public int getLevelDuration() {
         return levelDuration;
     }

@@ -52,10 +52,14 @@ public class GameScreen {
         scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
     }
 
+    //TODO: Javadoc
+
     public Scene createSceneForGameScreen(GameSettings settings) {
         borderPane.setCenter(makeBoardLayout(settings.getSmallBlind(), settings.getBigBlind()));
         return scene;
     }
+
+    //TODO: Javadoc
 
     public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
         if (userID == playerID) {
@@ -67,6 +71,8 @@ public class GameScreen {
         }
         return true;
     }
+
+    //TODO: Javadoc
 
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         if (userID == this.playerID) {
@@ -200,6 +206,15 @@ public class GameScreen {
         return horizontalLayout;
     }
 
+    /**
+     * Makes the layout for the opponentScreen
+     *
+     * @param userID
+     * @param name
+     * @param stackSize
+     * @param pos
+     * @return a layout
+     */
     public VBox makeOpponentLayout(int userID, String name, long stackSize, String pos) {
 
         opponentLeftCardImage = ImageViewer.getEmptyImageView("opponent");
@@ -228,6 +243,14 @@ public class GameScreen {
 
     }
 
+    /**
+     * Displays the flop on the screen
+     *
+     * @param card1
+     * @param card2
+     * @param card3
+     */
+
     public void displayFlop(Card card1, Card card2, Card card3) {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
@@ -241,17 +264,35 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    /**
+     * Displays the fourth card on the board
+     *
+     * @param turn
+     */
+
     public void displayTurn(Card turn) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turn.getCardNameForGui()));
         Runnable task = () -> communityCards[3].setImage(turnImage);
         Platform.runLater(task);
     }
 
+    /**
+     * Displays the fifth card on the board
+     *
+     * @param river
+     */
+
     public void displayRiver(Card river) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(river.getCardNameForGui()));
         Runnable task = () -> communityCards[4].setImage(riverImage);
         Platform.runLater(task);
     }
+
+    /**
+     * Show the buttons on the board
+     *
+     * @param visible
+     */
 
     public void setActionsVisible(boolean visible) {
         Runnable task = () -> {
@@ -267,6 +308,7 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    //TODO:KRISTIAN!!!!!!!
     public void playerMadeDecision(int ID, Decision decision) {
         String decisionText = decision.move.toString() + " ";
 
@@ -297,6 +339,12 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    /**
+     * Updates the stack size for all the players
+     *
+     * @param stackSizes
+     */
+
     public void updateStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : stackSizes.keySet()) {
             String stackSizeText = ""+stackSizes.get(clientID);
@@ -310,6 +358,7 @@ public class GameScreen {
             Platform.runLater(task);
         }
     }
+    //TODO:KRISTIAN!!!!!!!
 
     public void newBettingRound() {
         Runnable task = () -> {
@@ -322,13 +371,14 @@ public class GameScreen {
 
     }
 
+    //TODO:KRISTIAN!!!!!!!
     public void setPot(long pot) {
         String potString = Long.toString(pot);
 
         Runnable task = () -> potLabel.setText(potString);
         Platform.runLater(task);
     }
-
+    //TODO:KRISTIAN!!!!!!!
     public void setName(int ID, String name) {
         Runnable task;
         if (ID == playerID)
@@ -337,7 +387,7 @@ public class GameScreen {
             task = () -> opponentNameLabel.setText("Name: " + name);
         Platform.runLater(task);
     }
-
+    //TODO:KRISTIAN!!!!!!!
     public void startNewHand() {
         Runnable task = () -> {
             for (ImageView imageview : communityCards)
