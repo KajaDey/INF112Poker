@@ -117,7 +117,6 @@ public class GameScreen {
         VBox twoButtonsLeft = new VBox();
         VBox twoButtonsRight = new VBox();
 
-
         //////Make all the elements i want to add to the playerLayout//////////
         playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize +"");
         playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Positions:", pos);

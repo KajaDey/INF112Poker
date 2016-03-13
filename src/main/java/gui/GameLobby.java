@@ -19,13 +19,14 @@ import main.java.gamelogic.GameController;
 public class GameLobby {
 
 
+
     /**
      * Creates the screen for the gamelobby and shows it on the screen
      *
      * @param gameSettings
      * @param gameController
      */
-    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController){
+    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController, String name){
 
         Stage window = new Stage();
 
@@ -48,7 +49,7 @@ public class GameLobby {
         Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
         Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
-        Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n - Jostein\n - André", "");
+        Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
 
 
         //ActionListeners

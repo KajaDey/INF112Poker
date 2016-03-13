@@ -32,7 +32,7 @@ public class SceneBuilder {
      * @param gameController
      */
     public static void updateLobbyScreen(GameSettings gameSettings, GameController gameController){
-       GameLobby.createScreenForGameLobby(gameSettings,gameController);
+       //GameLobby.createScreenForGameLobby(gameSettings,gameController);
     }
 
 
