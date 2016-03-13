@@ -13,30 +13,35 @@ public class SceneBuilder {
 
     static Stage window = new Stage();
 
+    /**
+     * Displays a given scene
+     * @param scene The scene to display
+     * @param titleIn The title of the scene
+     */
     public static void showCurrentScene(Scene scene, String titleIn){
-
         window.close();
         window = new Stage();
         window.setTitle(titleIn);
         window.setScene(scene);
         window.show();
-
     }
 
-    /*public static void updateGameScreen(GUIClient client){
-         BorderPane borderPane = new BorderPane();
-        borderPane.setCenter(GameScreen.makeBoardLayout(client));
-        borderPane.setBottom(GameScreen.makePlayerLayout(client));
-        borderPane.setTop(GameScreen.makeOpponentLayout(client));
-
-    }*/
-
-
+    /**
+     * Updates the lobby screen, so that it displays the correct info
+     * @param gameSettings The settings to display
+     * @param gameController
+     */
     public static void updateLobbyScreen(GameSettings gameSettings, GameController gameController){
        GameLobby.createScreenForGameLobby(gameSettings,gameController);
     }
 
 
+    /**
+     * Creates the sceen for the initial (main) screen
+     * @param imageName The name of the background that will be used
+     * @param gameController
+     * @return The scene to be shown
+     */
     public static Scene createSceneForInitialScreen(String imageName,GameController gameController){
         Stage window = new Stage();
         window.setTitle("Welcome to The Game!");
