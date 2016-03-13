@@ -95,8 +95,9 @@ public class SimpleAI implements GameClient {
                     return new Decision(Decision.Move.RAISE, minimumRaise);
                 }
                 else { // Go all in
+                    long raiseBy = stackSize;
                     stackSize = 0;
-                    return new Decision(Decision.Move.RAISE, stackSize);
+                    return new Decision(Decision.Move.RAISE, raiseBy);
                 }
             }
             else {
