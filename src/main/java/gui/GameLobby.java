@@ -18,7 +18,12 @@ import main.java.gamelogic.GameController;
  */
 public class GameLobby {
 
-
+    private static Label amountOfChips;
+    private static Label numberOfPlayers;
+    private static Label bigBlind;
+    private static Label smallBlind;
+    private static Label levelDuration;
+    private static Label joinedPlayers;
 
     /**
      * Creates the screen for the gamelobby and shows it on the screen
@@ -44,12 +49,12 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
         leaveLobby.setFont(new Font("Areal",30));
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
-        Label bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
-        Label smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
-        Label levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
-        Label joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
+        amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
+        numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
+        bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
+        smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
+        levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
+        joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
 
 
         //ActionListeners
@@ -129,7 +134,7 @@ public class GameLobby {
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
         levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window,gameController));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);
@@ -140,6 +145,15 @@ public class GameLobby {
         fullBox.getChildren().addAll(labelBox, textFieldBox);
 
         return fullBox;
+    }
+
+    public static void updateLabels(GameSettings gameSettings){
+        amountOfChips.setText("Chips: "+ gameSettings.getStartStack() + "$");
+        numberOfPlayers.setText("Number of players: "+ gameSettings.getMaxNumberOfPlayers()+"");
+        bigBlind.setText("Big blind: "+ gameSettings.getBigBlind() + "$");
+        smallBlind.setText("Small blind: "+ gameSettings.getSmallBlind() + "$");
+        levelDuration.setText("Level duration: "+ gameSettings.getLevelDuration() + "min");
+        //joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + , "");
     }
 
 }
