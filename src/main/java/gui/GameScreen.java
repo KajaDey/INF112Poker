@@ -38,8 +38,7 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-
-    private Button betRaiseButton, checkCallButton, foldButton, backButton;
+    private Button betRaiseButton, checkCallButton, foldButton;
 
 
     //Textfields
