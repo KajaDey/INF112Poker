@@ -38,7 +38,9 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-    private Button betRaiseButton, checkCallButton, doubleButton, foldButton, maxButton, potButton;
+
+    private Button betRaiseButton, checkCallButton, foldButton, backButton;
+
 
     //Textfields
     private TextField amountTextfield;
@@ -119,7 +121,7 @@ public class GameScreen {
 
         //////Make all the elements i want to add to the playerLayout//////////
         playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize +"");
-        playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Positions:", pos);
+        playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
 
@@ -134,12 +136,13 @@ public class GameScreen {
         amountTextfield.setMaxWidth(standardButton * 2);
 
         //Buttons in the VBox
-        betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         checkCallButton = ObjectStandards.makeStandardButton("Check");
         foldButton = ObjectStandards.makeStandardButton("Fold");
-        potButton = ObjectStandards.makeStandardButton("Pot");
-        doubleButton = ObjectStandards.makeStandardButton("Double");
-        maxButton = ObjectStandards.makeStandardButton("Max");
+        betRaiseButton = ObjectStandards.makeStandardButton("Bet");
+        betRaiseButton.setMinHeight(58);
+        //potButton = ObjectStandards.makeStandardButton("Pot");
+        //doubleButton = ObjectStandards.makeStandardButton("Double");
+        //maxButton = ObjectStandards.makeStandardButton("Max");
         //Actions
         betRaiseButton.setOnAction(e -> {
             ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
@@ -147,8 +150,8 @@ public class GameScreen {
         checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
         //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
-        maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
-        potButton.setOnAction(e -> ButtonListeners.potButtonListener(amountTextfield.getText()));
+        //maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
+        //potButton.setOnAction(e -> ButtonListeners.potButtonListener(amountTextfield.getText()));
         //Add objects to the boxes
 
         stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
@@ -156,11 +159,10 @@ public class GameScreen {
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
         inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
-        twoButtonsLeft.getChildren().addAll(betRaiseButton, maxButton);
+        twoButtonsLeft.getChildren().addAll(betRaiseButton);
         twoButtonsLeft.setAlignment(Pos.CENTER);
-        twoButtonsRight.getChildren().addAll(doubleButton, potButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
-        fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsLeft, twoButtonsRight);
+        fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsLeft);
         fullBox.setAlignment(Pos.BOTTOM_CENTER);
         fullBoxWithLastMove.getChildren().addAll(playerLastMoveLabel, fullBox);
         fullBoxWithLastMove.setAlignment(Pos.BOTTOM_CENTER);
@@ -294,10 +296,10 @@ public class GameScreen {
         Runnable task = () -> {
             betRaiseButton.setVisible(visible);
             checkCallButton.setVisible(visible);
-            doubleButton.setVisible(visible);
+            //doubleButton.setVisible(visible);
             foldButton.setVisible(visible);
-            maxButton.setVisible(visible);
-            potButton.setVisible(visible);
+            //maxButton.setVisible(visible);
+            //potButton.setVisible(visible);
 
             amountTextfield.setVisible(visible);
         };
