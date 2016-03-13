@@ -72,6 +72,8 @@ public class SimpleAI implements GameClient {
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
+        System.out.println("minimum bet: " + minimumBetThisBettingRound);
+
         if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
             if (minimumBetThisBettingRound == 0) {
                 if (stackSize >= minimumRaise) {
@@ -139,6 +141,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
+        System.out.println("Player " + playerId + " made decision " + decision);
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             if (playerId == this.playerId) {
                 minimumBetThisBettingRound = 0;
@@ -146,7 +149,8 @@ public class SimpleAI implements GameClient {
             else {
                 minimumBetThisBettingRound += decision.size;
             }
-            minimumRaise = decision.size;
+            System.out.println("minimum bet: " + minimumBetThisBettingRound);
+            minimumRaise = Math.max(decision.size, bigBlindAmount);
         }
         if (decision.move == Decision.Move.FOLD) {
             playersLeftInCurrentHand--;
