@@ -3,6 +3,7 @@ package main.java.gamelogic;
 import main.java.gamelogic.ai.SimpleAI;
 import main.java.gui.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +90,13 @@ public class GameController {
 
     public void setGameSettings(GameSettings gameSettings) {
         this.gameSettings = gameSettings;
+    }
+
+    public void showDown(ArrayList<Integer> playersStillPlaying, int winnerID) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient c = clients.get(clientID);
+            c.showdown(playersStillPlaying, winnerID);
+        }
     }
 
     public void setHandForClient(int userID, Card card1, Card card2) {
