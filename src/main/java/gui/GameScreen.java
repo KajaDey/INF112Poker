@@ -363,6 +363,8 @@ public class GameScreen {
     }
 
     public void newBettingRound(long potSize) {
+        try { Thread.sleep(2000L); } catch (Exception e) { e.printStackTrace(); }
+
         Runnable task = () -> {
             this.currentBet = 0;
             this.playerLastMoveLabel.setText("");

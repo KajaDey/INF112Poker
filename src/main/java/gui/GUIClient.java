@@ -72,30 +72,30 @@ public class GUIClient implements GameClient {
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
         gameScreen.setHandForUser(userID, card1, card2);
-        gameScreen.newBettingRound(0);
     }
 
     @Override
     public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         gameScreen.displayFlop(card1, card2, card3);
-        gameScreen.newBettingRound(currentPotSize);
+        newBettingRound(currentPotSize);
     }
 
     @Override
     public void setTurn(Card turn, long currentPotSize) {
         gameScreen.displayTurn(turn);
-        gameScreen.newBettingRound(currentPotSize);
+        newBettingRound(currentPotSize);
     }
 
     @Override
     public void setRiver(Card river, long currentPotSize) {
         gameScreen.displayRiver(river);
-        gameScreen.newBettingRound(currentPotSize);
+        newBettingRound(currentPotSize);
     }
 
     @Override
     public void startNewHand() {
         gameScreen.startNewHand();
+        newBettingRound(0);
     }
 
     @Override
@@ -141,6 +141,12 @@ public class GUIClient implements GameClient {
     public void setLevelDuration(int levelDuration) {
         //TODO: Update label in GUI
     }
+
+    public void newBettingRound(long potSize) {
+        gameScreen.newBettingRound(potSize);
+        currentBet = 0;
+    }
+
 
     public int getID() {
         return id;

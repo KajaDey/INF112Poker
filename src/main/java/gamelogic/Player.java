@@ -43,8 +43,8 @@ public class Player extends User {
 
                 break;
             case CALL:
-                this.putOnTableThisRound = currentBet;
                 this.stackSize -= (currentBet - putOnTableThisRound);
+                this.putOnTableThisRound = currentBet;
                 System.out.println("Player " + this.getName() + " called " + currentBet + ". New stacksize is " + this.stackSize);
 
                 break;

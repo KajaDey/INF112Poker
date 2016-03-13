@@ -38,7 +38,6 @@ public class Game {
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
-    private long delayTime = 2000L;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -166,8 +165,10 @@ public class Game {
     }
 
     private Decision getValidDecisionFromPlayer(Player playerToAct) {
+        int errors = 0;
+        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
+
         while (true) {
-            System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
 
             switch (decision.move) {
@@ -187,7 +188,8 @@ public class Game {
             }
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
-            System.exit(1);
+
+            if (errors++ == 10) System.exit(0); // <-- superhack
         }
     }
 
@@ -247,17 +249,14 @@ public class Game {
 
     private void setFlop() {
         gameController.setFlop(communityCards[0], communityCards[1], communityCards[2], pot);
-        delay(delayTime);
     }
 
     private void setTurn() {
         gameController.setTurn(communityCards[3], pot);
-        delay(delayTime);
     }
 
     private void setRiver() {
         gameController.setRiver(communityCards[4], pot);
-        delay(delayTime);
     }
 
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
