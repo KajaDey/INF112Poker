@@ -34,7 +34,7 @@ public class Game {
 
     //Rounds
     private int roundNumber = 0;
-    private long currentBet = 0;
+    private Long currentBet = 0L;
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
@@ -92,21 +92,21 @@ public class Game {
             setFlop();
             gameController.newBettingRound();
 
-            currentBet = 0;
+            currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
 
             setTurn();
             gameController.newBettingRound();
 
-            currentBet = 0;
+            currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
 
             setRiver();
             gameController.newBettingRound();
 
-            currentBet = 0;
+            currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
 
@@ -138,7 +138,10 @@ public class Game {
             gameController.setDecisionForClient(playerToAct.getID(), decision);
 
             switch(decision.move) {
-                case RAISE:case BET: numberOfActedPlayers = 1; break;
+                case RAISE:case BET:
+                    numberOfActedPlayers = 1;
+                    currentBet += decision.size;
+                    break;
                 case FOLD: playersStillPlaying.remove(playerToAct); break;
                 default: numberOfActedPlayers++;
             }
