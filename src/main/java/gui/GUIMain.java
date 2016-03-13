@@ -24,7 +24,9 @@ public class GUIMain extends Application{
         GUIMain gui = new GUIMain();
         launch(args);
     }
-
+    public void displayErrorMessageToLobby(String message){
+        GameLobby.displayErrorMessage(message,gamecontroller);
+    }
 
     /**
      * Displays the lobby screen
