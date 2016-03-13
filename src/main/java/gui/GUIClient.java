@@ -25,7 +25,6 @@ public class GUIClient implements GameClient {
     }
 
 
-
     @Override
     public synchronized Decision getDecision(){
         //Make buttons visible
@@ -60,21 +59,25 @@ public class GUIClient implements GameClient {
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
         gameScreen.setHandForUser(userID, card1, card2);
+        gameScreen.newBettingRound(0);
     }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3) {
+    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         gameScreen.displayFlop(card1, card2, card3);
+        gameScreen.newBettingRound(currentPotSize);
     }
 
     @Override
-    public void setTurn(Card turn) {
+    public void setTurn(Card turn, long currentPotSize) {
         gameScreen.displayTurn(turn);
+        gameScreen.newBettingRound(currentPotSize);
     }
 
     @Override
-    public void setRiver(Card river) {
+    public void setRiver(Card river, long currentPotSize) {
         gameScreen.displayRiver(river);
+        gameScreen.newBettingRound(currentPotSize);
     }
 
     @Override
@@ -94,32 +97,32 @@ public class GUIClient implements GameClient {
 
     @Override
     public void showdown(Map<Integer, List<Card>> holeCards) {
-
+        //TODO: Update label in GUI
     }
 
     @Override
     public void setBigBlind(int bigBlind) {
-
+        //TODO: Update label in GUI
     }
 
     @Override
     public void setSmallBlind(int smallBlind) {
-
+        //TODO: Update label in GUI
     }
 
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
-
+        //TODO: Update label in GUI
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-
+        //TODO: Update label in GUI
     }
 
     @Override
     public void setLevelDuration(int levelDuration) {
-
+        //TODO: Update label in GUI
     }
 
     public int getID() {

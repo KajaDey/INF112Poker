@@ -104,24 +104,24 @@ public class GameController {
         }
     }
 
-    public void setFlop(Card card1, Card card2, Card card3) {
+    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setFlop(card1, card2, card3);
+            c.setFlop(card1, card2, card3, currentPotSize);
         }
     }
 
-    public void setTurn(Card turn) {
+    public void setTurn(Card turn, long currentPotSize) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setTurn(turn);
+            c.setTurn(turn, currentPotSize);
         }
     }
 
-    public void setRiver(Card river) {
+    public void setRiver(Card river, long currentPotSize) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setRiver(river);
+            c.setRiver(river, currentPotSize);
         }
     }
 
@@ -134,22 +134,10 @@ public class GameController {
         }
     }
 
-    public void newBettingRound() {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-        }
-    }
-
     public void startNewHand() {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
             client.startNewHand();
-        }
-    }
-
-    public void setPot(Long pot) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
         }
     }
 }

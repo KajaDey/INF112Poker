@@ -307,7 +307,6 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
-    //TODO:KRISTIAN!!!!!!!
     public void playerMadeDecision(int ID, Decision decision) {
         String decisionText = decision.move.toString() + " ";
 
@@ -360,13 +359,13 @@ public class GameScreen {
             Platform.runLater(task);
         }
     }
-    //TODO:KRISTIAN!!!!!!!
 
-    public void newBettingRound() {
+    public void newBettingRound(long potSize) {
         Runnable task = () -> {
             this.currentBet = 0;
             this.playerLastMoveLabel.setText("");
             this.opponentLastMoveLabel.setText("");
+            this.potLabel.setText("Pot: " + potSize);
             checkCallButton.setText("Check");
             betRaiseButton.setText("Bet");
         };
@@ -374,14 +373,14 @@ public class GameScreen {
 
     }
 
-    //TODO:KRISTIAN!!!!!!!
     public void setPot(long pot) {
         String potString = Long.toString(pot);
 
         Runnable task = () -> potLabel.setText(potString);
         Platform.runLater(task);
     }
-    //TODO:KRISTIAN!!!!!!!
+
+
     public void setName(int ID, String name) {
         Runnable task;
         if (ID == playerID)
@@ -390,7 +389,8 @@ public class GameScreen {
             task = () -> opponentNameLabel.setText("Name: " + name);
         Platform.runLater(task);
     }
-    //TODO:KRISTIAN!!!!!!!
+
+
     public void startNewHand() {
         Runnable task = () -> {
             for (ImageView imageview : communityCards)
@@ -398,5 +398,9 @@ public class GameScreen {
         };
         Platform.runLater(task);
         setPot(0L);
+    }
+
+    public void delay(long millis) {
+        try { Thread.sleep(millis); } catch (Exception e) { e.printStackTrace(); }
     }
 }

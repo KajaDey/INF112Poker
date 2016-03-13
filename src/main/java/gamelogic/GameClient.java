@@ -77,9 +77,9 @@ public interface GameClient {
     void setLevelDuration(int levelDuration);
 
 
-    void setFlop(Card card1, Card card2, Card card3);
-    void setTurn(Card turn);
-    void setRiver(Card river);
+    void setFlop(Card card1, Card card2, Card card3, long currentPotSize);
+    void setTurn(Card turn, long currentPotSize);
+    void setRiver(Card river, long currentPotSize);
 
     /**
      * Sent at the start of each hand, before hole cards etc are sent.

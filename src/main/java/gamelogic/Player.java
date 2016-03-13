@@ -30,6 +30,7 @@ public class Player extends User {
     public void act(Decision decision, Long currentBet) {
         switch (decision.move) {
             case BET:
+                assert putOnTableThisRound == 0 : "Player bet while putOnTableThisRound was != 0";
                 this.putOnTableThisRound = decision.size;
                 this.stackSize -= decision.size;
                 break;
@@ -38,8 +39,8 @@ public class Player extends User {
                 this.stackSize -= (decision.size);
                 break;
             case CALL:
-                this.putOnTableThisRound += currentBet;
-                this.stackSize -= currentBet;
+                this.putOnTableThisRound = currentBet;
+                this.stackSize -= (currentBet - putOnTableThisRound);
                 break;
         }
 

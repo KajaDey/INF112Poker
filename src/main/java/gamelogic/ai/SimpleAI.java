@@ -200,7 +200,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-
         this.amountOfPlayers = amountOfPlayers;
         this.playersLeftInCurrentHand = amountOfPlayers;
     }
@@ -211,17 +210,17 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3) {
+    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         newBettingRound();
     }
 
     @Override
-    public void setTurn(Card turn) {
+    public void setTurn(Card turn, long currentPotSize) {
         newBettingRound();
     }
 
     @Override
-    public void setRiver(Card river) {
+    public void setRiver(Card river, long currentPotSize) {
         newBettingRound();
     }
 }

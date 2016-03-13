@@ -91,27 +91,22 @@ public class Game {
             if (!remainingPlayers) { continue; }
 
             setFlop();
-            gameController.newBettingRound();
 
             currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
 
             setTurn();
-            gameController.newBettingRound();
 
             currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
 
             setRiver();
-            gameController.newBettingRound();
 
             currentBet = 0L;
             remainingPlayers = bettingRound(playersStillPlaying, 0);
             if (!remainingPlayers) { continue; }
-
-            gameController.setPot(pot);
 
             //SHOWDOWN
             System.out.println("SHOWDOWN");
@@ -119,12 +114,6 @@ public class Game {
         }
     }
 
-    private Card[] generateCommunityCards(Deck deck) {
-        Card [] commCards = new Card[5];
-        for (int i = 0; i < commCards.length; i++)
-            commCards[i] = deck.draw().get();
-        return commCards;
-    }
 
     private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex) {
         int numberOfActedPlayers = 0;
@@ -165,6 +154,17 @@ public class Game {
         }
     }
 
+    private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
+        Decision postSB = new Decision(Decision.Move.BET, SB);
+        Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
+        Player SBPlayer = playersStillPlaying.get(sbID);
+        Player BBPlayer = playersStillPlaying.get(bbID);
+        SBPlayer.act(postSB, currentBet);
+        BBPlayer.act(postBB, currentBet);
+        gameController.setDecisionForClient(sbID, postSB);
+        gameController.setDecisionForClient(bbID, postBB);
+    }
+
     private Decision getValidDecisionFromPlayer(Player playerToAct) {
         while (true) {
             System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
@@ -203,6 +203,10 @@ public class Game {
         bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
     }
 
+
+
+
+
     public boolean addPlayer(String name, int ID) {
         if (numberOfPlayers >= maxNumberOfPlayers) {
             return false;
@@ -230,17 +234,6 @@ public class Game {
         gameController.setStackSizes(stackSizes);
     }
 
-    private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
-        Decision postSB = new Decision(Decision.Move.BET, SB);
-        Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
-        Player SBPlayer = playersStillPlaying.get(sbID);
-        Player BBPlayer = playersStillPlaying.get(bbID);
-        SBPlayer.act(postSB, currentBet);
-        BBPlayer.act(postBB, currentBet);
-        gameController.setDecisionForClient(sbID, postSB);
-        gameController.setDecisionForClient(bbID, postBB);
-    }
-
     private void delay(Long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -250,20 +243,17 @@ public class Game {
     }
 
     private void setFlop() {
-        gameController.setPot(pot);
-        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
+        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2], pot);
         delay(delayTime);
     }
 
     private void setTurn() {
-        gameController.setPot(pot);
-        gameController.setTurn(communityCards[3]);
+        gameController.setTurn(communityCards[3], pot);
         delay(delayTime);
     }
 
     private void setRiver() {
-        gameController.setPot(pot);
-        gameController.setRiver(communityCards[4]);
+        gameController.setRiver(communityCards[4], pot);
         delay(delayTime);
     }
 
@@ -286,5 +276,11 @@ public class Game {
         }
     }
 
+    private Card[] generateCommunityCards(Deck deck) {
+        Card [] commCards = new Card[5];
+        for (int i = 0; i < commCards.length; i++)
+            commCards[i] = deck.draw().get();
+        return commCards;
+    }
 
 }
