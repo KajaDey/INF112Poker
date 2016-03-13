@@ -32,7 +32,7 @@ public class SimpleAI implements GameClient {
     private boolean betHasBeenPlaced;
     private int playersLeftInCurrentHand;
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
-    private long minimumBetThisBettingRound; // The amount the SimpleAI needs to put on the table to remain in the hand
+    private long currentBet; // The amount the SimpleAI needs to put on the table to remain in the hand
 
     public SimpleAI(int playerId) {
         this(playerId, 1.0);
@@ -74,7 +74,7 @@ public class SimpleAI implements GameClient {
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
         if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
-            if (minimumBetThisBettingRound == 0) {
+            if (currentBet == 0) {
                 if (stackSize >= minimumRaise) {
 
                     stackSize -= minimumRaise;
@@ -90,23 +90,23 @@ public class SimpleAI implements GameClient {
                 }
             }
             else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) { // If the hand is really good
-                if (stackSize >= minimumRaise + minimumBetThisBettingRound) {
-                    stackSize -= minimumRaise + minimumBetThisBettingRound;
+                if (stackSize >= minimumRaise + currentBet) {
+                    stackSize -= minimumRaise + currentBet;
                     return new Decision(Decision.Move.RAISE, minimumRaise);
                 }
                 else { // Go all in
-                    long raiseBy = stackSize - minimumBetThisBettingRound;
+                    long raiseBy = stackSize - currentBet;
                     stackSize = 0;
                     return new Decision(Decision.Move.RAISE, raiseBy);
                 }
             }
             else {
-                stackSize -= minimumBetThisBettingRound;
+                stackSize -= currentBet;
                 return new Decision(Decision.Move.CALL);
             }
         }
         else {
-            if (minimumBetThisBettingRound == 0) {
+            if (currentBet == 0) {
                 return new Decision(Decision.Move.CHECK);
             }
             else {
@@ -159,10 +159,10 @@ public class SimpleAI implements GameClient {
     public void playerMadeDecision(Integer playerId, Decision decision) {
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
             if (playerId == this.playerId) {
-                minimumBetThisBettingRound = 0;
+                currentBet = 0;
             }
             else {
-                minimumBetThisBettingRound += decision.size;
+                currentBet += decision.size;
             }
             betHasBeenPlaced = true;
             minimumRaise = Math.max(decision.size, bigBlindAmount);
