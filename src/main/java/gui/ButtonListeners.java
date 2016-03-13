@@ -21,9 +21,15 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount){
+    public static void betButtonListener(String betAmount, String buttonText){
         try {
-            Decision decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
+            Decision decision = null;
+            if (buttonText.equalsIgnoreCase("Raise")) {
+                decision = new Decision(Decision.Move.RAISE, Long.valueOf(betAmount));
+            } else if (buttonText.equalsIgnoreCase("Bet")) {
+                decision = new Decision(Decision.Move.BET, Long.valueOf(betAmount));
+            }
+
             client.setDecision(decision);
             //Notify client-thread
             client.decisionMade();
@@ -69,14 +75,13 @@ public class ButtonListeners {
     /**
      * What happens when the maxButton is pushed
      */
-    public static void maxButtonListener(String betAmount){ betButtonListener(betAmount);
+    public static void maxButtonListener(String betAmount){
     }
 
     /**
      * What happens when the potButton is pushed
      */
-    public static void potButtonListener(String betAmount){
-        betButtonListener(betAmount);
+    public static void potButtonListener(String betAmount) {
     }
 
     /**

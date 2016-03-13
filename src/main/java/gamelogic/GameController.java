@@ -15,6 +15,7 @@ public class GameController {
     private Map<Integer, GameClient> clients;
     private GUIMain mainGUI;
     public GameSettings gameSettings;
+    private String name;
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
@@ -27,6 +28,7 @@ public class GameController {
 
         //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
+        this.name = name;
 
     }
 
@@ -44,7 +46,7 @@ public class GameController {
         //Init GUIGameClient
         GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
         clients.put(0, guiClient);
-        game.addPlayer("Kristian", 0);
+        game.addPlayer(this.name, 0);
 
         //AIGameClient
         GameClient aiClient = new SimpleAI(1, 2.0);
@@ -55,7 +57,7 @@ public class GameController {
         initClients(gamesettings);
 
         //TODO: add all players to GUI
-        mainGUI.insertPlayer(0, "Kristian", gamesettings.getStartStack(), "Dealer");
+        mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack(), "Dealer");
         mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack(), "Big blind");
 
         Thread thread = new Thread("GameThread") {

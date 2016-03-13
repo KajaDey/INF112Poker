@@ -38,7 +38,7 @@ public class GameScreen {
     private ImageView [] communityCards = new ImageView[5];
 
     //Buttons
-    private Button betButton, checkCallButton, doubleButton, foldButton, maxButton, potButton;
+    private Button betRaiseButton, checkCallButton, doubleButton, foldButton, maxButton, potButton;
 
     //Textfields
     private TextField amountTextfield;
@@ -126,15 +126,15 @@ public class GameScreen {
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
         playerRightCardImage = ImageViewer.getEmptyImageView("player");
 
-        //Amount to betButton
+        //Amount to betRaiseButton
         amountTextfield = new TextField();
-        amountTextfield.setPromptText("Amount to betButton");
+        amountTextfield.setPromptText("Amount to betRaiseButton");
         amountTextfield.setFont(standardFont);
         amountTextfield.setPadding(standardPadding);
         amountTextfield.setMaxWidth(standardButton * 2);
 
         //Buttons in the VBox
-        betButton = ObjectStandards.makeStandardButton("Bet");
+        betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         checkCallButton = ObjectStandards.makeStandardButton("Check");
         foldButton = ObjectStandards.makeStandardButton("Fold");
         potButton = ObjectStandards.makeStandardButton("Pot");
@@ -142,8 +142,8 @@ public class GameScreen {
         maxButton = ObjectStandards.makeStandardButton("Max");
 
         //Actions
-        betButton.setOnAction(e -> {
-            ButtonListeners.betButtonListener(amountTextfield.getText());
+        betRaiseButton.setOnAction(e -> {
+            ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
         });
         checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
         //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
@@ -158,7 +158,7 @@ public class GameScreen {
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
         inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
-        twoButtonsLeft.getChildren().addAll(betButton, maxButton);
+        twoButtonsLeft.getChildren().addAll(betRaiseButton, maxButton);
         twoButtonsLeft.setAlignment(Pos.CENTER);
         twoButtonsRight.getChildren().addAll(doubleButton, potButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
@@ -295,7 +295,7 @@ public class GameScreen {
 
     public void setActionsVisible(boolean visible) {
         Runnable task = () -> {
-            betButton.setVisible(visible);
+            betRaiseButton.setVisible(visible);
             checkCallButton.setVisible(visible);
             doubleButton.setVisible(visible);
             foldButton.setVisible(visible);
@@ -322,7 +322,10 @@ public class GameScreen {
         }
 
         if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
-            Runnable task = () -> checkCallButton.setText("Call");
+            Runnable task = () -> {
+                checkCallButton.setText("Call");
+                betRaiseButton.setText("Raise");
+            };
             Platform.runLater(task);
         }
 
@@ -365,6 +368,7 @@ public class GameScreen {
             this.playerLastMoveLabel.setText("");
             this.opponentLastMoveLabel.setText("");
             checkCallButton.setText("Check");
+            betRaiseButton.setText("Bet");
         };
         Platform.runLater(task);
 

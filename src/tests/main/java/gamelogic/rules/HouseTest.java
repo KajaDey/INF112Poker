@@ -34,8 +34,6 @@ public class HouseTest {
         card8 = Card.of(4, Card.Suit.HEARTS).get();
         card9 = Card.of(5, Card.Suit.HEARTS).get();
         card10 = Card.of(6, Card.Suit.HEARTS).get();
-
-
     }
 
     @Test
