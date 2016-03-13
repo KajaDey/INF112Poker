@@ -11,7 +11,6 @@ public class Player extends User {
     private Table table;
     private Optional<Decision> lastDecision = Optional.empty();
 
-
     private int ID;
     private long stackSize;
     private long putOnTableThisRound = 0;

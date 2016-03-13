@@ -176,8 +176,10 @@ public class Game {
                 case CALL:
                     if (currentBet >= currentBB)
                         return decision;
-                    else if (currentBet == 0)
+                    else if (currentBet == 0) {
+                        System.out.println("Player tried to call 0, returned check instead");
                         return new Decision(Decision.Move.CHECK);
+                    }
                     break;
                 case BET: if (decision.size >= currentBB) return decision; break;
                 case CHECK: if (currentBet == 0) return decision; break;
