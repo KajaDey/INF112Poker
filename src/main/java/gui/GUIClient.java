@@ -126,8 +126,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(ArrayList<Integer> playersStillPlaying, int winnerID) {
-        gameScreen.showDown(playersStillPlaying, winnerID);
+    public void showdown(ArrayList<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
+        gameScreen.showDown(playersStillPlaying, winnerID, holeCards);
     }
 
     @Override

@@ -39,13 +39,10 @@ public class GameScreen {
     //ImageViews
     private ImageView playerLeftCardImage, playerRightCardImage;
     private ImageView opponentLeftCardImage, opponentRightCardImage;
-    private ImageView [] communityCards = new ImageView[5];
+    private ImageView[] communityCards = new ImageView[5];
 
     //Buttons
     private Button betRaiseButton, checkCallButton, foldButton;
-
-    //Playercards
-    private Map<Integer, Card[]> holeCards;
 
     //Textfields
     private TextField amountTextfield;
@@ -57,7 +54,6 @@ public class GameScreen {
         this.playerID = ID;
         borderPane = new BorderPane();
         scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
-        holeCards = new HashMap<>();
     }
 
     //TODO: Javadoc
@@ -84,30 +80,23 @@ public class GameScreen {
 
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         DropShadow dropShadow = new DropShadow();
+        //Images
+        Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
+        Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
+        Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
 
-        Card [] opponentHoleCards = {leftCard, rightCard};
-        holeCards.put(userID, opponentHoleCards);
-        if (userID == this.playerID) {
-            //Set player hand
-            Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
-            Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
-            Runnable task = () -> {
-                playerLeftCardImage.setImage(leftImage);
-                playerRightCardImage.setImage(rightImage);
+        Runnable task = () -> {
+            playerLeftCardImage.setImage(leftImage);
+            playerRightCardImage.setImage(rightImage);
 
-                playerLeftCardImage.setEffect(dropShadow);
-                playerRightCardImage.setEffect(dropShadow);
-            };
-            Platform.runLater(task);
-        } else {
+            playerLeftCardImage.setEffect(dropShadow);
+            playerRightCardImage.setEffect(dropShadow);
+
             //Set opponent hand
-            Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
-            Runnable task = () -> {
-                opponentLeftCardImage.setImage(backImage);
-                opponentRightCardImage.setImage(backImage);
-            };
-            Platform.runLater(task);
-        }
+            opponentLeftCardImage.setImage(backImage);
+            opponentRightCardImage.setImage(backImage);
+        };
+        Platform.runLater(task);
     }
 
     /**
@@ -133,7 +122,7 @@ public class GameScreen {
         VBox twoButtonsRight = new VBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
-        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize +"");
+        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize + "");
         playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
@@ -262,13 +251,14 @@ public class GameScreen {
 
     /**
      * Shows the cards of the players around the table
+     *
      * @param stillPlaying The players who are still in the game
-     * @param winnerID The winner of the game
+     * @param winnerID     The winner of the game
      */
-    public void showDown(ArrayList<Integer> stillPlaying, int winnerID){
+    public void showDown(ArrayList<Integer> stillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
         Card[] cards;
 
-        for (Integer i: stillPlaying){
+        for (Integer i : stillPlaying) {
             cards = holeCards.get(i);
             Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
@@ -351,11 +341,13 @@ public class GameScreen {
     public void playerMadeDecision(int ID, Decision decision) {
         String decisionText = decision.move.toString() + " ";
 
-        switch(decision.move) {
+        switch (decision.move) {
             case BET:
                 decisionText += (currentBet = decision.size);
                 break;
-            case CALL: decisionText += currentBet; break;
+            case CALL:
+                decisionText += currentBet;
+                break;
             case RAISE:
                 decisionText += (currentBet += decision.size);
                 break;
@@ -389,7 +381,7 @@ public class GameScreen {
 
     public void updateStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : stackSizes.keySet()) {
-            String stackSizeText = ""+stackSizes.get(clientID);
+            String stackSizeText = "" + stackSizes.get(clientID);
 
             Runnable task;
             if (clientID == playerID) {
@@ -403,7 +395,11 @@ public class GameScreen {
 
     public void newBettingRound(long potSize) {
         setPot(potSize);
-        try { Thread.sleep(1500L); } catch (Exception e) { e.printStackTrace(); }
+        try {
+            Thread.sleep(1500L);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Runnable task = () -> {
             this.currentBet = 0;
@@ -423,7 +419,6 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
-
     public void setName(int ID, String name) {
         Runnable task;
         if (ID == playerID)
@@ -432,7 +427,6 @@ public class GameScreen {
             task = () -> opponentNameLabel.setText("Name: " + name);
         Platform.runLater(task);
     }
-
 
     public void startNewHand() {
         Runnable task = () -> {
@@ -445,10 +439,11 @@ public class GameScreen {
 
     /**
      * Displays the winner of the round
+     *
      * @param winnerName The name of the winner
-     * @param pot The pot that the winner won
+     * @param pot        The pot that the winner won
      */
-    public void showWinner(String winnerName, long pot){
+    public void showWinner(String winnerName, long pot) {
         String potString = String.valueOf(pot);
 
         Runnable task = () -> winnerLabel.setText(winnerName + " won the pot of: " + potString);
@@ -458,6 +453,10 @@ public class GameScreen {
 
 
     public void delay(long millis) {
-        try { Thread.sleep(millis); } catch (Exception e) { e.printStackTrace(); }
+        try {
+            Thread.sleep(millis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

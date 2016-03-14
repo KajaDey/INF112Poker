@@ -92,18 +92,16 @@ public class GameController {
         this.gameSettings = gameSettings;
     }
 
-    public void showDown(ArrayList<Integer> playersStillPlaying, int winnerID) {
+    public void showDown(ArrayList<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(playersStillPlaying, winnerID);
+            c.showdown(playersStillPlaying, winnerID, holeCards);
         }
     }
 
-    public void setHandForClient(int userID, Card card1, Card card2) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.setHandForClient(userID, card1, card2);
-        }
+    public void setHandForClient(int clientID, Card card1, Card card2) {
+        GameClient c = clients.get(clientID);
+        c.setHandForClient(clientID, card1, card2);
     }
 
     public void setDecisionForClient(int userID, Decision decision) {

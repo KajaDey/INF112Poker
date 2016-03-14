@@ -129,7 +129,7 @@ public class Game {
             for (Player p : playersStillPlaying)
                 stillPlaying.add(p.getID());
 
-            gameController.showDown(stillPlaying, 0);
+            gameController.showDown(stillPlaying, 0, holeCards);
         }
     }
 
