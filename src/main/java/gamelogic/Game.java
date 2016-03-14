@@ -36,7 +36,6 @@ public class Game {
     private int roundNumber = 0;
     private long currentBet = 0L;
     private long biggestBet;
-
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
@@ -164,7 +163,6 @@ public class Game {
                 case RAISE:case BET:
                     numberOfActedPlayers = 1;
                     currentBet += decision.size;
-                    System.out.println("Decisionsize: " + decision.size + " Currentbet: " + currentBet + " Stack: " + playerToAct.getStackSize());
                     assert decision.size >= biggestBet || playerToAct.getStackSize() == 0;
                     biggestBet = Math.max(biggestBet, decision.size);
                     biggestBet = decision.size;
