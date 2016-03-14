@@ -120,7 +120,6 @@ public class GameScreen {
         HBox twoButtonsUnderInput = new HBox();
         twoButtonsUnderInput.setMaxWidth(50);
         VBox twoButtonsLeft = new VBox();
-        VBox twoButtonsRight = new VBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
         playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize + "");
@@ -151,20 +150,24 @@ public class GameScreen {
         });
         checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
-        //Add objects to the boxes
 
+        //Add objects to the boxes
         stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
         stats.setAlignment(Pos.CENTER);
+
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
+
         inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
+
         twoButtonsLeft.getChildren().addAll(betRaiseButton);
         twoButtonsLeft.setAlignment(Pos.CENTER);
-        twoButtonsRight.setAlignment(Pos.CENTER);
+
         fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsLeft);
-        fullBox.setAlignment(Pos.BOTTOM_CENTER);
+        fullBox.setAlignment(Pos.CENTER);
+
         fullBoxWithLastMove.getChildren().addAll(playerLastMoveLabel, fullBox);
-        fullBoxWithLastMove.setAlignment(Pos.BOTTOM_CENTER);
+        fullBoxWithLastMove.setAlignment(Pos.CENTER);
 
         this.setActionsVisible(false);
         return fullBoxWithLastMove;
@@ -181,9 +184,9 @@ public class GameScreen {
             communityCards[i] = ImageViewer.getEmptyImageView("player");
         }
 
-        HBox horizontalLayout = new HBox();
-        VBox verticalLayout = new VBox();
-        VBox totalLayout = new VBox();
+        HBox cardLayout = new HBox();
+        VBox statsLayout = new VBox();
+        VBox fullLayout = new VBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
@@ -192,21 +195,22 @@ public class GameScreen {
         potLabel = ObjectStandards.makeStandardLabelWhite("Pot", "");
         winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
-        verticalLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
-        verticalLayout.setSpacing(10);
-        verticalLayout.setAlignment(Pos.CENTER);
+        statsLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
+        statsLayout.setSpacing(10);
+        statsLayout.setAlignment(Pos.CENTER);
 
         for (ImageView card : communityCards) {
-            horizontalLayout.getChildren().add(card);
+            cardLayout.getChildren().add(card);
         }
-        horizontalLayout.getChildren().add(verticalLayout);
-        horizontalLayout.setSpacing(10);
-        horizontalLayout.setAlignment(Pos.CENTER);
 
-        totalLayout.getChildren().setAll(horizontalLayout, winnerLabel);
-        totalLayout.setAlignment(Pos.CENTER);
+        cardLayout.getChildren().add(statsLayout);
+        cardLayout.setSpacing(10);
+        cardLayout.setAlignment(Pos.CENTER);
 
-        return totalLayout;
+        fullLayout.getChildren().setAll(cardLayout, winnerLabel);
+        fullLayout.setAlignment(Pos.CENTER);
+
+        return fullLayout;
     }
 
     /**
@@ -237,9 +241,9 @@ public class GameScreen {
         opponentStats.setAlignment(Pos.CENTER);
         cardsAndStats.getChildren().addAll(opponentLeftCardImage, opponentRightCardImage, opponentStats);
         cardsAndStats.setSpacing(10);
-        cardsAndStats.setAlignment(Pos.TOP_CENTER);
+        cardsAndStats.setAlignment(Pos.CENTER);
         fullBox.getChildren().addAll(cardsAndStats, opponentLastMoveLabel);
-        fullBox.setAlignment(Pos.BOTTOM_CENTER);
+        fullBox.setAlignment(Pos.CENTER);
 
         return fullBox;
 
