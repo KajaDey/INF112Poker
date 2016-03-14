@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
+import main.java.gamelogic.GameController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ public class GameScreen {
     //Labels
     private Label playerStackLabel, playerPositionLabel, playerLastMoveLabel, playerNameLabel;
     private Label opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel, opponentLastMoveLabel;
-    private Label currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel;
+    private Label currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel, winnerLabel;
 
     //ImageViews
     private ImageView playerLeftCardImage, playerRightCardImage;
@@ -81,6 +83,8 @@ public class GameScreen {
     //TODO: Javadoc
 
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
+        DropShadow dropShadow = new DropShadow();
+
         Card [] opponentHoleCards = {leftCard, rightCard};
         holeCards.put(userID, opponentHoleCards);
         if (userID == this.playerID) {
@@ -90,6 +94,9 @@ public class GameScreen {
             Runnable task = () -> {
                 playerLeftCardImage.setImage(leftImage);
                 playerRightCardImage.setImage(rightImage);
+
+                playerLeftCardImage.setEffect(dropShadow);
+                playerRightCardImage.setEffect(dropShadow);
             };
             Platform.runLater(task);
         } else {
@@ -112,7 +119,7 @@ public class GameScreen {
 
         //Setting standards i want to use
         Font standardFont = new Font("Areal", 15);
-        Insets standardPadding = new Insets(5, 5, 5, 5);
+        Insets standardPadding = new Insets(5, 5, 5, 8);
         int standardButton = 75;
 
         //Make ALL the boxes
@@ -146,6 +153,7 @@ public class GameScreen {
         foldButton = ObjectStandards.makeStandardButton("Fold");
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         betRaiseButton.setMinHeight(58);
+
         //potButton = ObjectStandards.makeStandardButton("Pot");
         //doubleButton = ObjectStandards.makeStandardButton("Double");
         //maxButton = ObjectStandards.makeStandardButton("Max");
@@ -182,7 +190,7 @@ public class GameScreen {
      *
      * @return a boardLayout
      */
-    public HBox makeBoardLayout(int smallBlind, int bigBlind) {
+    public VBox makeBoardLayout(int smallBlind, int bigBlind) {
 
         for (int i = 0; i < communityCards.length; i++) {
             communityCards[i] = ImageViewer.getEmptyImageView("player");
@@ -190,12 +198,14 @@ public class GameScreen {
 
         HBox horizontalLayout = new HBox();
         VBox verticalLayout = new VBox();
+        VBox totalLayout = new VBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
         nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
         nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("Pot", "");
+        winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         verticalLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
         verticalLayout.setSpacing(10);
@@ -208,7 +218,10 @@ public class GameScreen {
         horizontalLayout.setSpacing(10);
         horizontalLayout.setAlignment(Pos.CENTER);
 
-        return horizontalLayout;
+        totalLayout.getChildren().setAll(horizontalLayout, winnerLabel);
+        totalLayout.setAlignment(Pos.CENTER);
+
+        return totalLayout;
     }
 
     /**
@@ -250,9 +263,9 @@ public class GameScreen {
     /**
      * Shows the cards of the players around the table
      * @param stillPlaying The players who are still in the game
-     * @param idForWinner The winner of the game
+     * @param winnerID The winner of the game
      */
-    public void showDown(ArrayList<Integer> stillPlaying, int idForWinner){
+    public void showDown(ArrayList<Integer> stillPlaying, int winnerID){
         Card[] cards;
 
         for (Integer i: stillPlaying){
@@ -265,6 +278,7 @@ public class GameScreen {
                     opponentRightCardImage.setImage(rightImage);
                 }
             };
+            showWinner("Jostein", 500L);
             Platform.runLater(task);
         }
     }
@@ -428,6 +442,20 @@ public class GameScreen {
         Platform.runLater(task);
         setPot(0L);
     }
+
+    /**
+     * Displays the winner of the round
+     * @param winnerName The name of the winner
+     * @param pot The pot that the winner won
+     */
+    public void showWinner(String winnerName, long pot){
+        String potString = String.valueOf(pot);
+
+        Runnable task = () -> winnerLabel.setText(winnerName + " won the pot of: " + potString);
+        Platform.runLater(task);
+
+    }
+
 
     public void delay(long millis) {
         try { Thread.sleep(millis); } catch (Exception e) { e.printStackTrace(); }
