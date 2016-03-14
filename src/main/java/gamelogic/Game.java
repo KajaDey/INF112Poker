@@ -351,7 +351,11 @@ public class Game {
     }
 
     private int findWinnersID(ArrayList<Integer> playersStillPlaying) {
-        
+
         return 0;
+    }
+
+    private void showDown() {
+        int userID = findWinnersID(null);
     }
 }
