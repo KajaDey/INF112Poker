@@ -54,7 +54,6 @@ public class Game {
         this.startBB = (long) gamesettings.bigBlind;
         this.blindLevelDuration = gamesettings.levelDuration;
         this.stackSizes = new HashMap<>();
-
     }
 
     public void playGame() {
@@ -90,35 +89,27 @@ public class Game {
             currentBet = currentBB;
             biggestBet = currentBB;
 
-            // PREFLOP ROUND
+            //Preflop
             postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
-
-            remainingPlayers = bettingRound(playersStillPlaying, 2);
+            remainingPlayers = bettingRound(playersStillPlaying, 2, true);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
+            //Flop
             setFlop();
-
-            currentBet = 0L;
-            biggestBet = 0;
-            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
+            //Turn
             setTurn();
-
-            currentBet = 0L;
-            biggestBet = 0;
-            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
+            //River
             setRiver();
-
-            currentBet = 0L;
-            biggestBet = 0;
-
-            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
-            //SHOWDOWN
+            //Showdown
             System.out.println("SHOWDOWN");
             if (playersStillPlaying.size() > 1) {
                 for (Player player : playersStillPlaying) {
@@ -126,8 +117,9 @@ public class Game {
                 }
                 System.out.println("Community cards: ");
                 for (Card c : communityCards) {
-                    System.out.println(c + " ");
+                    System.out.print(c + " ");
                 }
+                System.out.println();
             }
 
             playersStillPlaying.get(0).incrementStack(pot);
@@ -141,8 +133,12 @@ public class Game {
         }
     }
 
-    private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex) {
+    private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex, boolean isPreflop) {
         int numberOfActedPlayers = 0;
+        if (!isPreflop) {
+            currentBet = 0;
+            biggestBet = 0;
+        }
 
         while (true) {
             actingPlayerIndex %= numberOfPlayers;
@@ -158,7 +154,7 @@ public class Game {
                 }
             }
 
-            Decision decision = getValidDecisionFromPlayer(playerToAct);
+            Decision decision = getValidDecisionFromPlayer(playerToAct, isPreflop);
             playerToAct.act(decision, currentBet);
 
             System.out.println(playerToAct.getName() + " acted: " + decision);
@@ -185,7 +181,6 @@ public class Game {
 
             //If all players have acted
             if (numberOfActedPlayers == playersStillPlaying.size()) {
-                System.out.println("Bettinground finished, hand continues");
                 updateStackSizes();
                 updatePot();
                 return true;
@@ -200,22 +195,22 @@ public class Game {
         Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
         Player SBPlayer = playersStillPlaying.get(sbID);
         Player BBPlayer = playersStillPlaying.get(bbID);
-        SBPlayer.act(postSB, currentBet);
-        BBPlayer.act(postBB, currentBet);
+        SBPlayer.act(postSB, 0);
+        BBPlayer.act(postBB, BB-SB);
         gameController.setDecisionForClient(sbID, postSB);
         gameController.setDecisionForClient(bbID, postBB);
     }
 
-    private Decision getValidDecisionFromPlayer(Player playerToAct) {
+    private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreflop) {
         int errors = 0;
-        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
+        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet + " Biggest bet is " + biggestBet);
         long stackSize = playerToAct.getStackSize();
 
         while (true) {
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
             switch (decision.move) {
                 case FOLD: return decision;
-                case CHECK: if (currentBet == 0) return decision; break;
+                case CHECK: if (biggestBet == 0 || (isPreflop)) return decision; break;
                 case CALL:
                     if (currentBet >= currentBB)
                         return decision;
@@ -330,6 +325,7 @@ public class Game {
 
     private void updatePot() {
         for (Player p : players) {
+            System.out.println(p.getName() + " put on table this bettinground: " + p.getAmountPutOnTableThisBettingRound());
             pot += p.getAmountPutOnTableThisBettingRound();
             p.setAmountPutOnTableThisBettingRound(0L);
         }
@@ -344,7 +340,9 @@ public class Game {
 
     private int numberOfPlayersAllIn(List<Player> playersStillPlaying) {
         int numberOfPlayersAllIn = 0;
+
         for (Player p : playersStillPlaying) {
+            assert p.getStackSize() >= 0 : p.getName() + "'s stack was " + p.getStackSize();
             if (p.getStackSize() == 0)
                 numberOfPlayersAllIn++;
         }
