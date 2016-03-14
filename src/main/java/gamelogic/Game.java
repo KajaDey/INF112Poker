@@ -31,7 +31,7 @@ public class Game {
 
     //Rounds
     private int roundNumber = 0;
-    private long currentBet = 0L;
+    private long currentBet = 0;
     private long biggestBet;
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
@@ -89,22 +89,22 @@ public class Game {
             //Preflop
             postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
             remainingPlayers = bettingRound(playersStillPlaying, 2, true);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
 
             //Flop
             setFlop();
             remainingPlayers = bettingRound(playersStillPlaying, 0, false);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
 
             //Turn
             setTurn();
             remainingPlayers = bettingRound(playersStillPlaying, 0, false);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
 
             //River
             setRiver();
             remainingPlayers = bettingRound(playersStillPlaying, 0, false);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
+            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
 
             //Showdown
             System.out.println("SHOWDOWN");
@@ -119,14 +119,13 @@ public class Game {
                 System.out.println();
             }
 
-            playersStillPlaying.get(0).incrementStack(pot);
-            delay(1000L);
-
             this.showDown();
         }
     }
 
     private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex, boolean isPreflop) {
+        gameController.setStackSizes(stackSizes);
+
         int numberOfActedPlayers = 0;
         if (!isPreflop) {
             currentBet = 0;
@@ -172,6 +171,8 @@ public class Game {
             //If only one player left in hand
             if (playersStillPlaying.size() <= 1) {
                 System.out.println("Only one player left, hand over");
+                updateStackSizes();
+                updatePot();
                 return false;
             }
 
@@ -282,13 +283,14 @@ public class Game {
 
     private void updateStackSizes() {
         for (Player p : players) {
+            p.updateStackSize();
             stackSizes.put(p.getID(), p.getStackSize());
         }
 
         gameController.setStackSizes(stackSizes);
     }
 
-    private void delay(Long milliseconds) {
+    private void delay(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
         } catch (Exception e) {
@@ -312,7 +314,7 @@ public class Game {
         for (Player p : playersStillPlaying) {
             Card[] cards = {deck.draw().get(), deck.draw().get()};
             p.setHand(cards[0], cards[1]);
-            holeCards.put((Integer) p.getID(), cards);
+            holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
         }
     }
@@ -323,9 +325,8 @@ public class Game {
 
     private void updatePot() {
         for (Player p : players) {
-            System.out.println(p.getName() + " put on table this bettinground: " + p.getAmountPutOnTableThisBettingRound());
             pot += p.getAmountPutOnTableThisBettingRound();
-            p.setAmountPutOnTableThisBettingRound(0L);
+            p.setAmountPutOnTableThisBettingRound(0);
         }
     }
 
@@ -341,7 +342,7 @@ public class Game {
 
         for (Player p : playersStillPlaying) {
             assert p.getStackSize() >= 0 : p.getName() + "'s stack was " + p.getStackSize();
-            if (p.getStackSize() == 0)
+            if (p.getStackSize() <= 0)
                 numberOfPlayersAllIn++;
         }
         return numberOfPlayersAllIn;
@@ -372,5 +373,13 @@ public class Game {
         int winnerID = findWinnerID(IDStillPlaying);
 
         gameController.showDown(IDStillPlaying, winnerID, holeCards); // playersStillPlaying<Integer>, winnerID
+
+        for (Player p : playersStillPlaying) {
+            if (p.getID() == winnerID)
+                p.incrementStack(pot);
+        }
+
+        updateStackSizes();
+        delay(5000);
     }
 }
