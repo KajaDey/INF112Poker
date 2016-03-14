@@ -159,7 +159,6 @@ public class GameLobby {
         label.setFont(new Font("Areal", 50));
 
         Button backToSettings = ObjectStandards.makeStandardButton("Alright. Take me back to the settings menu");
-        backToSettings.setFont((new Font("Areal",14)));
         backToSettings.setOnAction(e -> {
             ButtonListeners.errorButtonListener(gameController);
             errorMessage.close();
