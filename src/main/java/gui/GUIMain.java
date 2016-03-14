@@ -4,9 +4,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import main.java.gamelogic.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by ady on 05/03/16.
  */
@@ -33,7 +30,7 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displayLobbyScreen(String name, int numberOfPlayers, String gameType, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings,gamecontroller, name);
+        GameLobby.createScreenForGameLobby(gameSettings, gamecontroller, name);
     }
 
     /**
@@ -41,7 +38,7 @@ public class GUIMain extends Application{
      * @param window The window to be displayed
      */
     public void start(Stage window){
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gamecontroller), "Main Screen");
+        MainScreen.createSceneForMainScreen("PokerTable", gamecontroller);
     }
 
     /**

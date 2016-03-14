@@ -83,11 +83,11 @@ public class ObjectStandards {
      * @param value The value of the label
      * @return The label
      */
-    public static Label makeLabelForHeadLine(String name, String value){
-        Label label = new Label(name + " " + value);
+    public static Label makeLabelForHeadLine(String name){
+        Label label = new Label(name);
         Insets padding = new Insets(20,20,20,20);
 
-        label.setFont(new Font("Areal", 25));
+        label.setFont(new Font("Areal", 30));
         label.setPadding(padding);
         label.setTextFill(Color.web("#ffffff"));
         label.setEffect(dropShadow);
@@ -142,7 +142,7 @@ public class ObjectStandards {
     public static Label makeLabelForSettingsScreen(String name){
         Label label = new Label(name + " ");
         Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(5,5,5,5);
+        Insets standardPadding = new Insets(7,7,7,7);
 
         label.setFont(standardFont);
         label.setPadding(standardPadding);
@@ -183,7 +183,7 @@ public class ObjectStandards {
         textField.setMaxWidth(150);
         textField.setPadding(padding);
 
-        textField.setStyle(styling);
+        //textField.setStyle(styling);
 
         return textField;
     }
