@@ -37,9 +37,9 @@ public class GameController {
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
-        if (!game.isValid()) {
+        if (!(game.getError() == null)) {
             //TODO: Tell GUI to display error-message that settings are not valid
-            mainGUI.displayErrorMessageToLobby("Illegal settings!");
+            mainGUI.displayErrorMessageToLobby(game.getError());
             return;
         }
 
@@ -63,14 +63,14 @@ public class GameController {
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack(), "Dealer");
         mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack(), "Big blind");
 
-        Thread thread = new Thread("GameThread") {
+        Thread gameThread = new Thread("GameThread") {
             @Override
             public void run() {
                 game.playGame();
             }
         };
 
-        thread.start();
+        gameThread.start();
     }
 
     public void initClients(GameSettings gamesettings) {
