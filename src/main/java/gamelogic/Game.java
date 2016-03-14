@@ -39,6 +39,7 @@ public class Game {
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
+    private Map<Integer, Card[]> holeCards;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -260,6 +261,7 @@ public class Game {
         }
 
         bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
+        holeCards = new HashMap<>();
     }
 
     public boolean addPlayer(String name, int ID) {
@@ -311,9 +313,10 @@ public class Game {
 
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
         for (Player p : playersStillPlaying) {
-            Card card1 = deck.draw().get(), card2 = deck.draw().get();
-            p.setHand(card1, card2);
-            gameController.setHandForClient(p.getID(), card1, card2);
+            Card [] cards = {deck.draw().get(), deck.draw().get()};
+            p.setHand(cards[0], cards[1]);
+            holeCards.put((Integer)p.getID(), cards);
+            gameController.setHandForClient(p.getID(), cards[0], cards[1]);
         }
     }
 
@@ -347,4 +350,8 @@ public class Game {
         return numberOfPlayersAllIn;
     }
 
+    private int findWinnersID(ArrayList<Integer> playersStillPlaying) {
+        
+        return 0;
+    }
 }
