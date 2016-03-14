@@ -3,10 +3,7 @@ package main.java.gamelogic;
 import main.java.gui.GUIClient;
 import main.java.gui.GameSettings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -348,20 +345,19 @@ public class Game {
     }
 
     private int findWinnerID(List<Integer> playersStillPlaying) {
-        //     private Card[] communityCards;
-        //     private Map<Integer, Card[]> holeCards;
-
-        // sjekk alle spillernes holeCards, lag hånd, compare
         int bestPlayer = playersStillPlaying.get(0);
-        Card card = holeCards.get(bestPlayer)[0];
-//        Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], );
+        Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
 
         for (Integer i : playersStillPlaying) {
+            Hand currentHand = new Hand(holeCards.get(i)[0], holeCards.get(i)[1], Arrays.asList(communityCards));
 
+            if (currentHand.compareTo(bestHand) > 0) {
+                bestHand = currentHand;
+                bestPlayer = i;
+            }
         }
 
-
-        return 0;
+        return bestPlayer;
     }
 
     private void showDown() {
