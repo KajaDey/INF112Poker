@@ -232,7 +232,7 @@ public class Game {
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
 
-            if (errors++ == 10) System.exit(0); // <-- superhack
+            if (errors++ == 10) System.exit(0); // <-- TODO: remove superhack
         }
     }
 
@@ -365,9 +365,8 @@ public class Game {
         for (Player p : playersStillPlaying) {
             IDStillPlaying.add(p.getID());
         }
-
         int winnerID = findWinnerID(IDStillPlaying);
 
-        gameController.showDown(IDStillPlaying, winnerID, holeCards); // playersStillPlaying<Integer>, winnerID
+        gameController.showDown(IDStillPlaying, winnerID, holeCards);
     }
 }

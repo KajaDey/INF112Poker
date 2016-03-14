@@ -86,6 +86,17 @@ public class HandTest {
     }
 
     @Test
+    public void testAlCardsEqualsHoleCardsPlusCommunityCards() {
+        List<Card> allCards = straightFlushHand.getAllCards();
+        List<Card> holeCards = straightFlushHand.getHoleCards();
+        List<Card> communityCards = straightFlushHand.getCommunityCards();
+        assertTrue(allCards.containsAll(holeCards));
+        assertTrue(allCards.containsAll(communityCards));
+
+        assertTrue(allCards.size() == holeCards.size() + communityCards.size());
+    }
+
+    @Test
     public void testStraightFlushVSQuads() {
         assertTrue(straightFlushHand.compareTo(quadsHand) > 0);
     }
