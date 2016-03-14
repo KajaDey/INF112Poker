@@ -40,6 +40,7 @@ public class Game {
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
     private Map<Integer, Card[]> holeCards;
+    private List<Player> playersStillPlaying;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -73,7 +74,7 @@ public class Game {
             gameController.setStackSizes(stackSizes);
             gameController.startNewHand();
 
-            List<Player> playersStillPlaying = new ArrayList<>();
+            playersStillPlaying = new ArrayList<>();
             initializeNewHand(playersStillPlaying);
 
             if (playersStillPlaying.size() <= 1) {
@@ -125,11 +126,7 @@ public class Game {
             playersStillPlaying.get(0).incrementStack(pot);
             delay(1000L);
 
-            ArrayList<Integer> stillPlaying = new ArrayList<Integer>();
-            for (Player p : playersStillPlaying)
-                stillPlaying.add(p.getID());
-
-            gameController.showDown(stillPlaying, 0, holeCards);
+            this.showDown();
         }
     }
 
@@ -245,22 +242,22 @@ public class Game {
     private void initializeNewHand(List<Player> playersStillPlaying) {
         this.pot = 0;
 
-        dealerIndex = roundNumber%numberOfPlayers;
+        dealerIndex = roundNumber % numberOfPlayers;
         if (numberOfPlayers == 2) {
-            smallBlindIndex = roundNumber %numberOfPlayers;
+            smallBlindIndex = roundNumber % numberOfPlayers;
         } else {
             smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = players[(smallBlindIndex+i) % numberOfPlayers];
+            Player player = players[(smallBlindIndex + i) % numberOfPlayers];
             if (player.stillPlaying()) {
                 playersStillPlaying.add(player);
                 player.setAmountPutOnTableThisBettingRound(0);
             }
         }
 
-        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
+        bigBlindIndex = (smallBlindIndex + 1) % numberOfPlayers;
         holeCards = new HashMap<>();
     }
 
@@ -294,7 +291,7 @@ public class Game {
     private void delay(Long milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Error when sleeping thread " + Thread.currentThread());
         }
     }
@@ -313,9 +310,9 @@ public class Game {
 
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
         for (Player p : playersStillPlaying) {
-            Card [] cards = {deck.draw().get(), deck.draw().get()};
+            Card[] cards = {deck.draw().get(), deck.draw().get()};
             p.setHand(cards[0], cards[1]);
-            holeCards.put((Integer)p.getID(), cards);
+            holeCards.put((Integer) p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
         }
     }
@@ -333,7 +330,7 @@ public class Game {
     }
 
     private Card[] generateCommunityCards(Deck deck) {
-        Card [] commCards = new Card[5];
+        Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
         return commCards;
@@ -350,12 +347,31 @@ public class Game {
         return numberOfPlayersAllIn;
     }
 
-    private int findWinnersID(ArrayList<Integer> playersStillPlaying) {
+    private int findWinnerID(List<Integer> playersStillPlaying) {
+        //     private Card[] communityCards;
+        //     private Map<Integer, Card[]> holeCards;
+
+        // sjekk alle spillernes holeCards, lag hånd, compare
+        int bestPlayer = playersStillPlaying.get(0);
+        Card card = holeCards.get(bestPlayer)[0];
+//        Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], );
+
+        for (Integer i : playersStillPlaying) {
+
+        }
+
 
         return 0;
     }
 
     private void showDown() {
-        int userID = findWinnersID(null);
+        List<Integer> IDStillPlaying = new ArrayList<>();
+        for (Player p : playersStillPlaying) {
+            IDStillPlaying.add(p.getID());
+        }
+
+        int winnerID = findWinnerID(IDStillPlaying);
+
+        gameController.showDown(IDStillPlaying, winnerID, holeCards); // playersStillPlaying<Integer>, winnerID
     }
 }

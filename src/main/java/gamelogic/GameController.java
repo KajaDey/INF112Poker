@@ -5,6 +5,7 @@ import main.java.gui.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,7 +93,7 @@ public class GameController {
         this.gameSettings = gameSettings;
     }
 
-    public void showDown(ArrayList<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
+    public void showDown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
             c.showdown(playersStillPlaying, winnerID, holeCards);

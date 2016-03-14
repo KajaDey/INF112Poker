@@ -20,6 +20,7 @@ import main.java.gamelogic.GameController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -250,7 +251,7 @@ public class GameScreen {
      * @param stillPlaying The players who are still in the game
      * @param winnerID     The winner of the game
      */
-    public void showDown(ArrayList<Integer> stillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
+    public void showDown(List<Integer> stillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
         Card[] cards;
 
         for (Integer i : stillPlaying) {
@@ -263,7 +264,7 @@ public class GameScreen {
                     opponentRightCardImage.setImage(rightImage);
                 }
             };
-            showWinner("Jostein", 500L);
+            showWinner("Jostein", 500L); // TODO fix
             Platform.runLater(task);
         }
     }
