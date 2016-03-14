@@ -33,10 +33,10 @@ public class Player extends User {
                 this.stackSize -= decision.size;
                 break;
             case RAISE:
-                System.out.println("Curr " + currentBet + ", putOnTable: " + putOnTableThisRound + ", dec: " + decision.size);
                 long totalPutOnTable = ((currentBet-putOnTableThisRound) + decision.size);
-                this.stackSize -= totalPutOnTable;
-                this.putOnTableThisRound = totalPutOnTable;
+                this.stackSize -= (totalPutOnTable + putOnTableThisRound);
+                this.putOnTableThisRound += totalPutOnTable;
+                System.out.println("New put on table: " + putOnTableThisRound);
                 break;
             case CALL:
                 this.stackSize -= (currentBet - putOnTableThisRound);

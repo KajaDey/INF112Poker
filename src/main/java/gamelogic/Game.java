@@ -56,7 +56,6 @@ public class Game {
 
     public void playGame() {
         assert numberOfPlayers == maxNumberOfPlayers : "Incorrect number of players";
-        // TODO set clock
 
         //Initiate clients
         gameController.initClients(gamesettings);
@@ -137,6 +136,7 @@ public class Game {
         while (true) {
             actingPlayerIndex %= numberOfPlayers;
             Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
+
             //Check if the player is already all in
             if (playerToAct.getStackSize() == 0) {
                 if (numberOfPlayersAllIn(playersStillPlaying) >= playersStillPlaying.size() - 1) {
@@ -150,6 +150,9 @@ public class Game {
 
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreflop);
             playerToAct.act(decision, currentBet);
+
+            //This changes to false when BB has acted for the first time preflop, to ensure that he can not check to a raise
+            isPreflop = (isPreflop && (actingPlayerIndex == bigBlindIndex)) ? false : isPreflop;
 
             System.out.println(playerToAct.getName() + " acted: " + decision);
             gameController.setDecisionForClient(playerToAct.getID(), decision);
