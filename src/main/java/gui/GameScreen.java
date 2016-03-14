@@ -34,6 +34,7 @@ public class GameScreen {
     BorderPane borderPane;
     Scene scene;
     private int playerID;
+    private int numberOfPlayers = 0;
 
     //Labels
     private Label playerStackLabel, playerPositionLabel, playerLastMoveLabel, playerNameLabel;
@@ -53,8 +54,7 @@ public class GameScreen {
     private TextField amountTextfield;
 
     //Storagevariables
-    private long currentBet = 0;
-    private long pot;
+    private long currentBet = 0, pot = 0;
     private Map<Integer, String> names = new HashMap<Integer, String>();
     private long currentSmallBlind, currentBigBlind;
 
@@ -82,19 +82,19 @@ public class GameScreen {
      * @param userID
      * @param name
      * @param stackSize
-     * @param pos
      * @return player objects
      */
 
-    public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
+    public boolean insertPlayer(int userID, String name, long stackSize) {
         names.put(userID, name);
         if (userID == playerID) {
             //Insert player
-            borderPane.setBottom(makePlayerLayout(userID, name, stackSize, pos));
+            borderPane.setBottom(makePlayerLayout(userID, name, stackSize));
         } else {
             //insert opponent
-            borderPane.setTop(makeOpponentLayout(userID, name, stackSize, pos));
+            borderPane.setTop(makeOpponentLayout(userID, name, stackSize));
         }
+        this.numberOfPlayers++;
         return true;
     }
 
@@ -135,7 +135,7 @@ public class GameScreen {
      *
      * @return A VBox with the player layout
      */
-    public VBox makePlayerLayout(int userID, String name, long stackSize, String pos) {
+    public VBox makePlayerLayout(int userID, String name, long stackSize) {
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -146,8 +146,8 @@ public class GameScreen {
         VBox twoButtonsLeft = new VBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
-        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Amount of chips:", stackSize + "");
-        playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
+        playerStackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
+        playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
 
@@ -214,13 +214,13 @@ public class GameScreen {
         HBox cardLayout = new HBox();
         VBox statsLayout = new VBox();
         VBox fullLayout = new VBox();
-        HBox endGameLayout = new HBox();
+        //HBox endGameLayout = new HBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
         nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
         nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
-        potLabel = ObjectStandards.makeStandardLabelWhite("Pot", "");
+        potLabel = ObjectStandards.makeStandardLabelWhite("", "");
         winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         statsLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
@@ -248,17 +248,15 @@ public class GameScreen {
      * @param userID
      * @param name
      * @param stackSize
-     * @param pos
      * @return a layout
      */
-    public VBox makeOpponentLayout(int userID, String name, long stackSize, String pos) {
-
+    public VBox makeOpponentLayout(int userID, String name, long stackSize) {
         opponentLeftCardImage = ImageViewer.getEmptyImageView("opponent");
         opponentRightCardImage = ImageViewer.getEmptyImageView("opponent");
 
         opponentNameLabel = ObjectStandards.makeStandardLabelWhite("Name:", name);
-        opponentStackSizeLabel = ObjectStandards.makeStandardLabelWhite("Chips:", stackSize + "");
-        opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position:", pos);
+        opponentStackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
+        opponentPositionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
         opponentLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         HBox cardsAndStats = new HBox();
@@ -275,7 +273,6 @@ public class GameScreen {
         fullBox.setAlignment(Pos.CENTER);
 
         return fullBox;
-
     }
 
     /**
@@ -574,4 +571,20 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    public void setPositions(Map<Integer, Integer> positions) {
+        Runnable task;
+        for (Integer id : positions.keySet()) {
+            String pos = "Position: " + getPositionName(positions.get(id));
+            if (id == playerID) {
+                task = () -> playerPositionLabel.setText(pos);
+            } else {
+                task = () -> opponentPositionLabel.setText(pos);
+            }
+            Platform.runLater(task);
+        }
+    }
+
+    private String getPositionName(int pos) {
+        return (pos == 0 ? "Dealer" : pos == 1 ? "Small blind" : pos == 2 ? "Big blind" : pos == 3 ? "UTG" : "UTG+" + (pos-3));
+    }
 }

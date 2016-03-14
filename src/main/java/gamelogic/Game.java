@@ -38,6 +38,7 @@ public class Game {
     private Card [] communityCards;
     private Map<Integer, Card[]> holeCards;
     private List<Player> playersStillPlaying;
+    private Map<Integer, Integer> positions;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -240,7 +241,9 @@ public class Game {
     }
 
     private void initializeNewHand(List<Player> playersStillPlaying) {
+        positions = new HashMap<Integer, Integer>();
         this.pot = 0;
+
 
         dealerIndex = roundNumber % numberOfPlayers;
         if (numberOfPlayers == 2) {
@@ -260,6 +263,20 @@ public class Game {
         bigBlindIndex = (smallBlindIndex + 1) % numberOfPlayers;
         holeCards = new HashMap<>();
         roundNumber++;
+
+        //Determine positions on the table based on the order of playersStillPlaying
+        if (playersStillPlaying.size() == 2) {
+            //Special case if only two players (dealer and small blind is same pos)
+            positions.put(playersStillPlaying.get(0).getID(), 0);
+            positions.put(playersStillPlaying.get(1).getID(), 2);
+        } else {
+            for (int i = 0; i < playersStillPlaying.size(); i++) {
+                positions.put(playersStillPlaying.get(i).getID(), i);
+            }
+        }
+
+        gameController.setPositions(positions);
+
     }
 
     public boolean addPlayer(String name, int ID) {

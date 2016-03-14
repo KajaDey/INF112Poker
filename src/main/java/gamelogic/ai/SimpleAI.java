@@ -208,7 +208,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
-        assert positions.size() > 2 && amountOfPlayers >= 2;
+        assert positions.size() >= 2 && amountOfPlayers >= 2;
         position = positions.get(playerId);
         if (positions.size() == 2) {
             if (position == 1) {

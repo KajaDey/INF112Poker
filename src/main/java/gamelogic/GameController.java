@@ -60,8 +60,8 @@ public class GameController {
         initClients(gamesettings);
 
         //TODO: add all players to GUI
-        mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack(), "Dealer");
-        mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack(), "Big blind");
+        mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
+        mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack());
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -153,6 +153,13 @@ public class GameController {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
             client.gameOver(winnerID);
+        }
+    }
+
+    public void setPositions(Map<Integer, Integer> positions) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient client = clients.get(clientID);
+            client.setPositions(positions);
         }
     }
 }

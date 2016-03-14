@@ -157,8 +157,13 @@ public class GUIClient implements GameClient {
     }
 
     @Override
+    /**
+     * Sends every player's position, as a map indexed by the players' IDs.
+     * A value of 0 corresponds to the dealer, 1 is small blind, 2 is big blind etc
+     * Sent at the start of each hand
+     */
     public void setPositions(Map<Integer, Integer> positions) {
-        //TODO: Update label in GUI
+        gameScreen.setPositions(positions);
     }
 
     @Override

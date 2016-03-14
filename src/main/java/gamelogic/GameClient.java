@@ -59,9 +59,9 @@ public interface GameClient {
     void setSmallBlind(int smallBlind);
 
     /**
-     * Sends every player's position, as a map indexed by the players' IDs.
-     * A value of 0 corresponds to the dealer, 1 is big blind, etc
-     * Sent at the start of each hand
+     *  Sends every player's position, as a map indexed by the players' IDs.
+     *  A value of 0 corresponds to the dealer, 1 is small blind, 2 is big blind etc
+     *  Sent at the start of each hand
      */
     void setPositions(Map<Integer, Integer> setPositions);
 
