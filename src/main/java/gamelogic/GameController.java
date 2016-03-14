@@ -5,6 +5,7 @@ import main.java.gui.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +21,7 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(1000, 50, 25, 2, 10);
+        gameSettings = new GameSettings(5000, 50, 25, 2, 10);
     }
 
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
@@ -51,7 +52,7 @@ public class GameController {
         game.addPlayer(this.name, 0);
 
         //AIGameClient
-        GameClient aiClient = new SimpleAI(1, 1.5);
+        GameClient aiClient = new SimpleAI(1, 1.0);
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
@@ -92,18 +93,16 @@ public class GameController {
         this.gameSettings = gameSettings;
     }
 
-    public void showDown(ArrayList<Integer> playersStillPlaying, int winnerID) {
+    public void showDown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(playersStillPlaying, winnerID);
+            c.showdown(playersStillPlaying, winnerID, holeCards);
         }
     }
 
-    public void setHandForClient(int userID, Card card1, Card card2) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.setHandForClient(userID, card1, card2);
-        }
+    public void setHandForClient(int clientID, Card card1, Card card2) {
+        GameClient c = clients.get(clientID);
+        c.setHandForClient(clientID, card1, card2);
     }
 
     public void setDecisionForClient(int userID, Decision decision) {

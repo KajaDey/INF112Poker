@@ -45,29 +45,10 @@ public class ButtonListeners {
     }
 
     /**
-     * What happens when the doubleButton is pushed
-     */
-    public static void doubleButtonListener(String betAmount){
-        //Not yet implemented
-    }
-
-    /**
      * What happens when the foldButton is pushed
      */
     public static void foldButtonListener(){
         client.setDecision(Decision.Move.FOLD);
-    }
-
-    /**
-     * What happens when the maxButton is pushed
-     */
-    public static void maxButtonListener(String betAmount){
-    }
-
-    /**
-     * What happens when the potButton is pushed
-     */
-    public static void potButtonListener(String betAmount) {
     }
 
     /**

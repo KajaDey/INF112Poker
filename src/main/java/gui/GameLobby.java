@@ -25,6 +25,7 @@ public class GameLobby {
     private static Label smallBlind;
     private static Label levelDuration;
     private static Label joinedPlayers;
+    private static Label headLine;
 
     /**
      * Creates the screen for the gamelobby and shows it on the screen
@@ -38,17 +39,21 @@ public class GameLobby {
 
         //Boxes
         VBox gameRules = new VBox();
-        HBox startLeave = new HBox();
-        HBox layoutNoStartButton = new HBox();
+        VBox players = new VBox();
+        VBox buttons = new VBox();
+        HBox layoutNoHeadline = new HBox();
         VBox fullLayout = new VBox();
 
         //Objects
         Button settings = ObjectStandards.makeStandardButton("Settings");
+        settings.setMinWidth(120);
+        settings.setMinHeight(50);
         Button startGame = ObjectStandards.makeStandardButton("Start game");
-        startGame.setFont(new Font("Areal", 30));
-        startLeave.setSpacing(30);
+        startGame.setMinWidth(120);
+        startGame.setMinHeight(50);
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
-        leaveLobby.setFont(new Font("Areal",30));
+        leaveLobby.setMinWidth(120);
+        leaveLobby.setMinHeight(50);
 
         amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
         numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
@@ -56,7 +61,9 @@ public class GameLobby {
         smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
         joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
-
+        headLine = new Label("Game Lobby");
+        headLine.setFont(new Font("Areal", 25));
+        headLine.setPadding(new Insets(20,20,20,20));
 
         //ActionListeners
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
@@ -68,24 +75,28 @@ public class GameLobby {
         leaveLobby.setOnAction(e -> {
             window.close();
             ButtonListeners.leaveLobbyButtonListener(gameController);
-                });
+        });
 
         //Put objects in boxes
-        gameRules.getChildren().addAll(settings, amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
+        gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
-        layoutNoStartButton.getChildren().addAll(joinedPlayers, gameRules);
-        layoutNoStartButton.setAlignment(Pos.CENTER);
 
-        startLeave.getChildren().addAll(startGame, leaveLobby);
-        startLeave.setAlignment(Pos.CENTER);
+        //players.getChildren().addAll(joinedPlayers);
+        players.setAlignment(Pos.CENTER_LEFT);
 
-        fullLayout.getChildren().addAll(layoutNoStartButton,startLeave);
+        buttons.getChildren().addAll(startGame, leaveLobby, settings);
+        buttons.setAlignment(Pos.CENTER_LEFT);
+
+        layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);
+        layoutNoHeadline.setAlignment(Pos.CENTER);
+
+
+        fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
 
         //set scene
-
         BorderPane gameScreenLayout = new BorderPane();
-        gameScreenLayout.setPadding(new Insets(10,10,10,10));
+        gameScreenLayout.setPadding(new Insets(10, 10, 10, 10));
         gameScreenLayout.setCenter(fullLayout);
 
         Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);

@@ -3,10 +3,7 @@ package main.java.gamelogic;
 import main.java.gui.GUIClient;
 import main.java.gui.GameSettings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -36,10 +33,11 @@ public class Game {
     private int roundNumber = 0;
     private long currentBet = 0L;
     private long biggestBet;
-
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
+    private Map<Integer, Card[]> holeCards;
+    private List<Player> playersStillPlaying;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -54,7 +52,6 @@ public class Game {
         this.startBB = (long) gamesettings.bigBlind;
         this.blindLevelDuration = gamesettings.levelDuration;
         this.stackSizes = new HashMap<>();
-
     }
 
     public void playGame() {
@@ -74,8 +71,13 @@ public class Game {
             gameController.setStackSizes(stackSizes);
             gameController.startNewHand();
 
-            List<Player> playersStillPlaying = new ArrayList<>();
+            playersStillPlaying = new ArrayList<>();
             initializeNewHand(playersStillPlaying);
+
+            if (playersStillPlaying.size() <= 1) {
+                System.out.println("Game over");
+                return;
+            }
 
             //Generate cards
             Deck deck = new Deck();
@@ -85,35 +87,27 @@ public class Game {
             currentBet = currentBB;
             biggestBet = currentBB;
 
-            // PREFLOP ROUND
+            //Preflop
             postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
-
-            remainingPlayers = bettingRound(playersStillPlaying, 2);
+            remainingPlayers = bettingRound(playersStillPlaying, 2, true);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
+            //Flop
             setFlop();
-
-            currentBet = 0L;
-            biggestBet = 0;
-            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
+            //Turn
             setTurn();
-
-            currentBet = 0L;
-            biggestBet = 0;
-            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
+            //River
             setRiver();
-
-            currentBet = 0L;
-            biggestBet = 0;
-
-            remainingPlayers = bettingRound(playersStillPlaying, 0);
+            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
             if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); continue; }
 
-            //SHOWDOWN
+            //Showdown
             System.out.println("SHOWDOWN");
             if (playersStillPlaying.size() > 1) {
                 for (Player player : playersStillPlaying) {
@@ -121,28 +115,40 @@ public class Game {
                 }
                 System.out.println("Community cards: ");
                 for (Card c : communityCards) {
-                    System.out.println(c + " ");
+                    System.out.print(c + " ");
                 }
+                System.out.println();
             }
 
             playersStillPlaying.get(0).incrementStack(pot);
             delay(1000L);
 
-            ArrayList<Integer> stillPlaying = new ArrayList<Integer>();
-            for (Player p : playersStillPlaying)
-                stillPlaying.add(p.getID());
-
-            gameController.showDown(stillPlaying, 0);
+            this.showDown();
         }
     }
 
-    private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex) {
+    private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex, boolean isPreflop) {
         int numberOfActedPlayers = 0;
+        if (!isPreflop) {
+            currentBet = 0;
+            biggestBet = 0;
+        }
 
         while (true) {
             actingPlayerIndex %= numberOfPlayers;
             Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
-            Decision decision = getValidDecisionFromPlayer(playerToAct);
+            //Check if the player is already all in
+            if (playerToAct.getStackSize() == 0) {
+                if (numberOfPlayersAllIn(playersStillPlaying) >= playersStillPlaying.size() - 1) {
+                    //Everyone (or everyone but 1 player) is all in
+                    return true;
+                } else {
+                    //Player is all in, don't ask for decision
+                    continue;
+                }
+            }
+
+            Decision decision = getValidDecisionFromPlayer(playerToAct, isPreflop);
             playerToAct.act(decision, currentBet);
 
             System.out.println(playerToAct.getName() + " acted: " + decision);
@@ -152,7 +158,6 @@ public class Game {
                 case RAISE:case BET:
                     numberOfActedPlayers = 1;
                     currentBet += decision.size;
-                    System.out.println("Decisionsize: " + decision.size + " Currentbet: " + currentBet + " Stack: " + playerToAct.getStackSize());
                     assert decision.size >= biggestBet || playerToAct.getStackSize() == 0;
                     biggestBet = Math.max(biggestBet, decision.size);
                     biggestBet = decision.size;
@@ -169,7 +174,6 @@ public class Game {
 
             //If all players have acted
             if (numberOfActedPlayers == playersStillPlaying.size()) {
-                System.out.println("Bettinground finished, hand continues");
                 updateStackSizes();
                 updatePot();
                 return true;
@@ -184,22 +188,22 @@ public class Game {
         Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
         Player SBPlayer = playersStillPlaying.get(sbID);
         Player BBPlayer = playersStillPlaying.get(bbID);
-        SBPlayer.act(postSB, currentBet);
-        BBPlayer.act(postBB, currentBet);
+        SBPlayer.act(postSB, 0);
+        BBPlayer.act(postBB, BB-SB);
         gameController.setDecisionForClient(sbID, postSB);
         gameController.setDecisionForClient(bbID, postBB);
     }
 
-    private Decision getValidDecisionFromPlayer(Player playerToAct) {
+    private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreflop) {
         int errors = 0;
-        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet);
+        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet + " Biggest bet is " + biggestBet);
         long stackSize = playerToAct.getStackSize();
 
         while (true) {
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
             switch (decision.move) {
                 case FOLD: return decision;
-                case CHECK: if (currentBet == 0) return decision; break;
+                case CHECK: if (biggestBet == 0 || (isPreflop)) return decision; break;
                 case CALL:
                     if (currentBet >= currentBB)
                         return decision;
@@ -235,22 +239,23 @@ public class Game {
     private void initializeNewHand(List<Player> playersStillPlaying) {
         this.pot = 0;
 
-        dealerIndex = roundNumber%numberOfPlayers;
+        dealerIndex = roundNumber % numberOfPlayers;
         if (numberOfPlayers == 2) {
-            smallBlindIndex = roundNumber %numberOfPlayers;
+            smallBlindIndex = roundNumber % numberOfPlayers;
         } else {
             smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = players[(smallBlindIndex+i) % numberOfPlayers];
+            Player player = players[(smallBlindIndex + i) % numberOfPlayers];
             if (player.stillPlaying()) {
                 playersStillPlaying.add(player);
                 player.setAmountPutOnTableThisBettingRound(0);
             }
         }
 
-        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
+        bigBlindIndex = (smallBlindIndex + 1) % numberOfPlayers;
+        holeCards = new HashMap<>();
     }
 
     public boolean addPlayer(String name, int ID) {
@@ -283,7 +288,7 @@ public class Game {
     private void delay(Long milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Error when sleeping thread " + Thread.currentThread());
         }
     }
@@ -302,9 +307,10 @@ public class Game {
 
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
         for (Player p : playersStillPlaying) {
-            Card card1 = deck.draw().get(), card2 = deck.draw().get();
-            p.setHand(card1, card2);
-            gameController.setHandForClient(p.getID(), card1, card2);
+            Card[] cards = {deck.draw().get(), deck.draw().get()};
+            p.setHand(cards[0], cards[1]);
+            holeCards.put((Integer) p.getID(), cards);
+            gameController.setHandForClient(p.getID(), cards[0], cards[1]);
         }
     }
 
@@ -314,16 +320,54 @@ public class Game {
 
     private void updatePot() {
         for (Player p : players) {
+            System.out.println(p.getName() + " put on table this bettinground: " + p.getAmountPutOnTableThisBettingRound());
             pot += p.getAmountPutOnTableThisBettingRound();
             p.setAmountPutOnTableThisBettingRound(0L);
         }
     }
 
     private Card[] generateCommunityCards(Deck deck) {
-        Card [] commCards = new Card[5];
+        Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
         return commCards;
     }
 
+    private int numberOfPlayersAllIn(List<Player> playersStillPlaying) {
+        int numberOfPlayersAllIn = 0;
+
+        for (Player p : playersStillPlaying) {
+            assert p.getStackSize() >= 0 : p.getName() + "'s stack was " + p.getStackSize();
+            if (p.getStackSize() == 0)
+                numberOfPlayersAllIn++;
+        }
+        return numberOfPlayersAllIn;
+    }
+
+    private int findWinnerID(List<Integer> playersStillPlaying) {
+        int bestPlayer = playersStillPlaying.get(0);
+        Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
+
+        for (Integer i : playersStillPlaying) {
+            Hand currentHand = new Hand(holeCards.get(i)[0], holeCards.get(i)[1], Arrays.asList(communityCards));
+
+            if (currentHand.compareTo(bestHand) > 0) {
+                bestHand = currentHand;
+                bestPlayer = i;
+            }
+        }
+
+        return bestPlayer;
+    }
+
+    private void showDown() {
+        List<Integer> IDStillPlaying = new ArrayList<>();
+        for (Player p : playersStillPlaying) {
+            IDStillPlaying.add(p.getID());
+        }
+
+        int winnerID = findWinnerID(IDStillPlaying);
+
+        gameController.showDown(IDStillPlaying, winnerID, holeCards); // playersStillPlaying<Integer>, winnerID
+    }
 }

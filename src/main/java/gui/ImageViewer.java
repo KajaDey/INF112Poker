@@ -1,6 +1,7 @@
 package main.java.gui;
 
 import javafx.scene.Scene;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -68,6 +69,8 @@ public class ImageViewer {
      * @return An ImageView containing the image of the card.
      */
     public static ImageView setCardImage(String player, String imageName){
+
+
         int imageSize = 0;
         if (player.equals("player"))
             imageSize = 130;
