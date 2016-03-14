@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -166,6 +167,11 @@ public class GameScreen {
         betRaiseButton.setOnAction(e -> {
             if(!amountTextfield.getText().equals(""))
             ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+        });
+
+        amountTextfield.setOnAction(e -> {
+            if (!amountTextfield.getText().equals(""))
+                ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
         });
         checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
@@ -521,6 +527,13 @@ public class GameScreen {
             endGame.setTitle("Congratulation!");
 
             vBox.setAlignment(Pos.CENTER);
+
+
+            vBox.setStyle("-fx-background-color:#42b43d, " +
+                    "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +
+                    "linear-gradient(#218a0f, #42b43d), " +
+                    "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
+                    "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
 
             backToMainScreen.setOnAction(e -> {
                 endGame.close();

@@ -158,7 +158,7 @@ public class GameLobby {
         Label label = new Label(message);
         label.setFont(new Font("Areal", 50));
 
-        Button backToSettings = new Button("Alright. Take me back to the settings menu");
+        Button backToSettings = ObjectStandards.makeStandardButton("Alright. Take me back to the settings menu");
         backToSettings.setFont((new Font("Areal",14)));
         backToSettings.setOnAction(e -> {
             ButtonListeners.errorButtonListener(gameController);
@@ -167,6 +167,12 @@ public class GameLobby {
 
         layout.getChildren().addAll(label, backToSettings);
         layout.setAlignment(Pos.CENTER);
+
+        layout.setStyle("-fx-background-color:#42b43d, " +
+                "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +
+                "linear-gradient(#218a0f, #42b43d), " +
+                "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
+                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
 
         errorMessage.initModality(Modality.APPLICATION_MODAL);
         errorMessage.setTitle("Settings");
