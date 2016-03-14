@@ -59,14 +59,27 @@ public class GameScreen {
         scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
     }
 
-    //TODO: Javadoc
+    /**
+     * Creates the game screen
+     *
+     * @param settings
+     * @return a scene containing a gamscreen
+     */
 
     public Scene createSceneForGameScreen(GameSettings settings) {
         borderPane.setCenter(makeBoardLayout(settings.getSmallBlind(), settings.getBigBlind()));
         return scene;
     }
 
-    //TODO: Javadoc
+    /**
+     * Insert players to the screen
+     *
+     * @param userID
+     * @param name
+     * @param stackSize
+     * @param pos
+     * @return player objects
+     */
 
     public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
         names.put(userID, name);
@@ -80,7 +93,13 @@ public class GameScreen {
         return true;
     }
 
-    //TODO: Javadoc
+    /**
+     * Displays the card pictures to the screen
+     *
+     * @param userID
+     * @param leftCard
+     * @param rightCard
+     */
 
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         DropShadow dropShadow = new DropShadow();
@@ -330,6 +349,12 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    /**
+     * Update buttons and show any players last move
+     *
+     * @param ID
+     * @param decision
+     */
     public void playerMadeDecision(int ID, Decision decision) {
         String decisionText = decision.move.toString() + " ";
 
@@ -382,6 +407,12 @@ public class GameScreen {
         }
     }
 
+    /**
+     * Starting a new betting round an resets buttons
+     *
+     * @param potSize
+     */
+
     public void newBettingRound(long potSize) {
         setPot(potSize);
         try {
@@ -401,6 +432,11 @@ public class GameScreen {
 
     }
 
+    /**
+     * Set the pot label
+     *
+     * @param pot
+     */
     public void setPot(long pot) {
         this.pot = pot;
         String potString = Long.toString(pot);
@@ -409,6 +445,11 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    /**
+     * Set name to all the players
+     *
+     * @param names
+     */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
         Runnable task = () -> {
@@ -417,6 +458,10 @@ public class GameScreen {
         };
         Platform.runLater(task);
     }
+
+    /**
+     * Start a new hard
+     */
 
     public void startNewHand() {
         Runnable task = () -> {
@@ -440,5 +485,19 @@ public class GameScreen {
         Runnable task = () -> winnerLabel.setText(winnerName + " won the pot of: " + potString);
         Platform.runLater(task);
 
+    }
+
+    /**
+     * What happens when the game is over
+     *
+     * @param userId
+     */
+
+    public void gameOver(int userId){
+
+        Label label = new Label(names.get(userId) + "is the winner of this match!");
+        HBox hBox = new HBox(label);
+
+        SceneBuilder.showCurrentScene(hBox,"Congratulations!!!");
     }
 }
