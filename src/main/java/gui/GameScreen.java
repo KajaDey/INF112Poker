@@ -143,18 +143,13 @@ public class GameScreen {
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         betRaiseButton.setMinHeight(58);
 
-        //potButton = ObjectStandards.makeStandardButton("Pot");
-        //doubleButton = ObjectStandards.makeStandardButton("Double");
-        //maxButton = ObjectStandards.makeStandardButton("Max");
         //Actions
         betRaiseButton.setOnAction(e -> {
+            if(!amountTextfield.getText().equals(""))
             ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
         });
         checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
-        //doubleButton.setOnAction(e -> ButtonListeners.doubleButtonListener(amountTextfield.getText()));
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
-        //maxButton.setOnAction(e -> ButtonListeners.maxButtonListener(amountTextfield.getText()));
-        //potButton.setOnAction(e -> ButtonListeners.potButtonListener(amountTextfield.getText()));
         //Add objects to the boxes
 
         stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
@@ -328,11 +323,7 @@ public class GameScreen {
         Runnable task = () -> {
             betRaiseButton.setVisible(visible);
             checkCallButton.setVisible(visible);
-            //doubleButton.setVisible(visible);
             foldButton.setVisible(visible);
-            //maxButton.setVisible(visible);
-            //potButton.setVisible(visible);
-
             amountTextfield.setVisible(visible);
         };
         Platform.runLater(task);
