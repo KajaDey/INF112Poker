@@ -67,6 +67,7 @@ public class GUIClient implements GameClient {
             return;
         }
 
+
         switch (move) {
             case BET:
                 this.decision = new Decision(move, moveSize);
@@ -77,6 +78,7 @@ public class GUIClient implements GameClient {
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
 
+        gameScreen.setErrorStateOfAmountTextfield(false);
         notifyAll();
     }
 

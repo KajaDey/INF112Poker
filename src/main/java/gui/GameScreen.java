@@ -380,7 +380,7 @@ public class GameScreen {
             Platform.runLater(task);
         }
 
-
+        setErrorStateOfAmountTextfield(false);
         final String finalDecision = decisionText;
 
         Runnable task;
