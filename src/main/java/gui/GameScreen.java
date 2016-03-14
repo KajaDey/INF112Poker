@@ -268,7 +268,10 @@ public class GameScreen {
                     opponentRightCardImage.setImage(rightImage);
                 }
             };
-            showWinner("Jostein", 500L); // TODO fix
+            String winnerName = ""+winnerID; // TODO fix
+            long winnerStack = 500L; // TODO fix
+
+            showWinner(winnerName, winnerStack);
             Platform.runLater(task);
         }
     }
