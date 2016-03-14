@@ -138,7 +138,7 @@ public class Game {
             Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
 
             //Check if the player is already all in
-            if (playerToAct.getStackSize() == 0) {
+            if (playerToAct.getStackSize() - playerToAct.getAmountPutOnTableThisBettingRound() == 0) {
                 if (numberOfPlayersAllIn(playersStillPlaying) >= playersStillPlaying.size() - 1) {
                     //Everyone (or everyone but 1 player) is all in
                     return true;
@@ -235,8 +235,7 @@ public class Game {
             }
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
-
-            System.exit(1); // <-- TODO: remove superhack
+            System.exit(1);
         }
     }
 
@@ -363,7 +362,7 @@ public class Game {
 
         for (Player p : playersStillPlaying) {
             assert p.getStackSize() >= 0 : p.getName() + "'s stack was " + p.getStackSize();
-            if (p.getStackSize() <= 0)
+            if (p.getStackSize() - p.getAmountPutOnTableThisBettingRound() <= 0)
                 numberOfPlayersAllIn++;
         }
         return numberOfPlayersAllIn;
