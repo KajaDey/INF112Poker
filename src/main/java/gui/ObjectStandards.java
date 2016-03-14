@@ -197,7 +197,6 @@ public class ObjectStandards {
 
         TextField textField = new TextField();
         textField.setFont(new Font("Areal", 15));
-        textField.setMinWidth(75);
         textField.setMaxWidth(75);
         textField.setPadding(padding);
 
@@ -215,11 +214,11 @@ public class ObjectStandards {
         TextField textField = new TextField();
         textField.setPromptText(promptText);
         textField.setFont(new Font("Areal", 15));
-        textField.setMinWidth(150);
-        textField.setMinWidth(150);
+        //textField.setMinWidth(150);
+        textField.setMaxWidth(150);
         textField.setPadding(padding);
 
-        textField.setStyle(styling);
+        //textField.setStyle(styling);
 
         return textField;
     }

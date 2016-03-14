@@ -118,11 +118,11 @@ public class GameLobby {
         Label smallBlind = ObjectStandards.makeStandardLabelBlack("Small blind:", "");
         Label levelDuration = ObjectStandards.makeStandardLabelBlack("Level duration:", "");
 
-        TextField amountOfChipsTF = ObjectStandards.makeStandardTextField();
-        TextField numberOfPlayersTF = ObjectStandards.makeStandardTextField();
-        TextField bigBlindTF = ObjectStandards.makeStandardTextField();
-        TextField smallBlindTF = ObjectStandards.makeStandardTextField();
-        TextField levelDurationTF = ObjectStandards.makeStandardTextField();
+        TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField bigBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField smallBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField levelDurationTF = ObjectStandards.makeTextFieldForSettingsScreen();
 
         amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
         numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
