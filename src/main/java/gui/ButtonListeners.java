@@ -123,5 +123,9 @@ public class ButtonListeners {
         client = c;
     }
 
+    public static void returnToMainMenuButtonListener(){
+        MainScreen.refreshSceneForMainScreen();
+    }
+
 
 }
