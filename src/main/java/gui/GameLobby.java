@@ -38,17 +38,21 @@ public class GameLobby {
 
         //Boxes
         VBox gameRules = new VBox();
-        HBox startLeave = new HBox();
-        HBox layoutNoStartButton = new HBox();
-        VBox fullLayout = new VBox();
+        VBox players = new VBox();
+        VBox buttons = new VBox();
+        HBox fullLayout = new HBox();
+
 
         //Objects
         Button settings = ObjectStandards.makeStandardButton("Settings");
+        settings.setMinWidth(100);
+        settings.setMinHeight(50);
         Button startGame = ObjectStandards.makeStandardButton("Start game");
-        startGame.setFont(new Font("Areal", 30));
-        startLeave.setSpacing(30);
+        startGame.setMinWidth(100);
+        startGame.setMinHeight(50);
         Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
-        leaveLobby.setFont(new Font("Areal",30));
+        leaveLobby.setMinWidth(100);
+        leaveLobby.setMinHeight(50);
 
         amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
         numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
@@ -71,15 +75,15 @@ public class GameLobby {
                 });
 
         //Put objects in boxes
-        gameRules.getChildren().addAll(settings, amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
+        gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
-        layoutNoStartButton.getChildren().addAll(joinedPlayers, gameRules);
-        layoutNoStartButton.setAlignment(Pos.CENTER);
+        players.getChildren().addAll(joinedPlayers);
+        players.setAlignment(Pos.CENTER_LEFT);
 
-        startLeave.getChildren().addAll(startGame, leaveLobby);
-        startLeave.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(startGame, leaveLobby,settings);
+        buttons.setAlignment(Pos.CENTER_LEFT);
 
-        fullLayout.getChildren().addAll(layoutNoStartButton,startLeave);
+        fullLayout.getChildren().addAll(players,gameRules,buttons);
         fullLayout.setAlignment(Pos.CENTER);
 
         //set scene
