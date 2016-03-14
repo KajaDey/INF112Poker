@@ -46,7 +46,6 @@ public class HandCalculator {
         pair = new xOfaKind(2);
         highCard = new HighCard();
 
-
         rules = new ArrayList<>();
         rules.add(straightFlush);
         rules.add(quad);

@@ -182,7 +182,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void showdown(ArrayList<Integer> playersStillPlaying, int winnerID) {
+    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
 
     }
 

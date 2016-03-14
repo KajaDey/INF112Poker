@@ -3,10 +3,7 @@ package main.java.gamelogic;
 import main.java.gui.GUIClient;
 import main.java.gui.GameSettings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -36,10 +33,11 @@ public class Game {
     private int roundNumber = 0;
     private long currentBet = 0L;
     private long biggestBet;
-
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
+    private Map<Integer, Card[]> holeCards;
+    private List<Player> playersStillPlaying;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -73,7 +71,7 @@ public class Game {
             gameController.setStackSizes(stackSizes);
             gameController.startNewHand();
 
-            List<Player> playersStillPlaying = new ArrayList<>();
+            playersStillPlaying = new ArrayList<>();
             initializeNewHand(playersStillPlaying);
 
             if (playersStillPlaying.size() <= 1) {
@@ -125,11 +123,7 @@ public class Game {
             playersStillPlaying.get(0).incrementStack(pot);
             delay(1000L);
 
-            ArrayList<Integer> stillPlaying = new ArrayList<Integer>();
-            for (Player p : playersStillPlaying)
-                stillPlaying.add(p.getID());
-
-            gameController.showDown(stillPlaying, 0);
+            this.showDown();
         }
     }
 
@@ -164,7 +158,6 @@ public class Game {
                 case RAISE:case BET:
                     numberOfActedPlayers = 1;
                     currentBet += decision.size;
-                    System.out.println("Decisionsize: " + decision.size + " Currentbet: " + currentBet + " Stack: " + playerToAct.getStackSize());
                     assert decision.size >= biggestBet || playerToAct.getStackSize() == 0;
                     biggestBet = Math.max(biggestBet, decision.size);
                     biggestBet = decision.size;
@@ -246,22 +239,23 @@ public class Game {
     private void initializeNewHand(List<Player> playersStillPlaying) {
         this.pot = 0;
 
-        dealerIndex = roundNumber%numberOfPlayers;
+        dealerIndex = roundNumber % numberOfPlayers;
         if (numberOfPlayers == 2) {
-            smallBlindIndex = roundNumber %numberOfPlayers;
+            smallBlindIndex = roundNumber % numberOfPlayers;
         } else {
             smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            Player player = players[(smallBlindIndex+i) % numberOfPlayers];
+            Player player = players[(smallBlindIndex + i) % numberOfPlayers];
             if (player.stillPlaying()) {
                 playersStillPlaying.add(player);
                 player.setAmountPutOnTableThisBettingRound(0);
             }
         }
 
-        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
+        bigBlindIndex = (smallBlindIndex + 1) % numberOfPlayers;
+        holeCards = new HashMap<>();
     }
 
     public boolean addPlayer(String name, int ID) {
@@ -294,7 +288,7 @@ public class Game {
     private void delay(Long milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Error when sleeping thread " + Thread.currentThread());
         }
     }
@@ -313,9 +307,10 @@ public class Game {
 
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
         for (Player p : playersStillPlaying) {
-            Card card1 = deck.draw().get(), card2 = deck.draw().get();
-            p.setHand(card1, card2);
-            gameController.setHandForClient(p.getID(), card1, card2);
+            Card[] cards = {deck.draw().get(), deck.draw().get()};
+            p.setHand(cards[0], cards[1]);
+            holeCards.put((Integer) p.getID(), cards);
+            gameController.setHandForClient(p.getID(), cards[0], cards[1]);
         }
     }
 
@@ -332,7 +327,7 @@ public class Game {
     }
 
     private Card[] generateCommunityCards(Deck deck) {
-        Card [] commCards = new Card[5];
+        Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
         return commCards;
@@ -349,4 +344,30 @@ public class Game {
         return numberOfPlayersAllIn;
     }
 
+    private int findWinnerID(List<Integer> playersStillPlaying) {
+        int bestPlayer = playersStillPlaying.get(0);
+        Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
+
+        for (Integer i : playersStillPlaying) {
+            Hand currentHand = new Hand(holeCards.get(i)[0], holeCards.get(i)[1], Arrays.asList(communityCards));
+
+            if (currentHand.compareTo(bestHand) > 0) {
+                bestHand = currentHand;
+                bestPlayer = i;
+            }
+        }
+
+        return bestPlayer;
+    }
+
+    private void showDown() {
+        List<Integer> IDStillPlaying = new ArrayList<>();
+        for (Player p : playersStillPlaying) {
+            IDStillPlaying.add(p.getID());
+        }
+
+        int winnerID = findWinnerID(IDStillPlaying);
+
+        gameController.showDown(IDStillPlaying, winnerID, holeCards); // playersStillPlaying<Integer>, winnerID
+    }
 }
