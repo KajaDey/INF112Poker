@@ -22,8 +22,8 @@ public class SimpleAI implements GameClient {
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
 
-    private int bigBlindAmount;
-    private int smallBlindAmount;
+    private long bigBlindAmount;
+    private long smallBlindAmount;
     private int position; // 0 is dealer
 
     private Optional<Decision> lastDecision = Optional.empty();
@@ -197,12 +197,12 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void setBigBlind(int bigBlind) {
+    public void setBigBlind(long bigBlind) {
         this.bigBlindAmount = bigBlind;
     }
 
     @Override
-    public void setSmallBlind(int smallBlind) {
+    public void setSmallBlind(long smallBlind) {
         this.smallBlindAmount = smallBlind;
     }
 
