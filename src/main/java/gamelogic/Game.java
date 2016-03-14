@@ -31,7 +31,7 @@ public class Game {
 
     //Rounds
     private int roundNumber = 0;
-    private long currentBet = 0;
+    private long currentBet = 0L;
     private long biggestBet;
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
@@ -236,7 +236,7 @@ public class Game {
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
 
-            if (errors++ == 10) System.exit(0); // <-- superhack
+            if (errors++ == 10) System.exit(0); // <-- TODO: remove superhack
         }
     }
 
@@ -349,6 +349,7 @@ public class Game {
     }
 
     private int findWinnerID(List<Integer> playersStillPlaying) {
+        // TODO next sprint: handle split
         int bestPlayer = playersStillPlaying.get(0);
         Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
 
@@ -371,7 +372,7 @@ public class Game {
         }
 
         int winnerID = findWinnerID(IDStillPlaying);
-
+        
         for (Player p : playersStillPlaying) {
             if (p.getID() == winnerID)
                 p.incrementStack(pot);

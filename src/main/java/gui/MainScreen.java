@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.*;
@@ -23,6 +24,21 @@ import java.awt.Color;
  * Created by Jostein on 07.03.2016.
  */
 public class MainScreen {
+
+    /**
+     * Creates the sceen for the initial (main) screen
+     * @param imageName The name of the background that will be used
+     * @param gameController
+     * @return The scene to be shown
+     */
+    public static void createSceneForMainScreen(String imageName, GameController gameController){
+        Stage window = new Stage();
+
+        BorderPane mainScreenLayout = new BorderPane();
+        mainScreenLayout.setPadding(new Insets(10,10,10,10));
+        mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
+        SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
+    }
 
     /**
      * Creates the layout for the main screen, containing buttons, text fields, labels and choicebox.
@@ -44,11 +60,9 @@ public class MainScreen {
                 "Since the program isn't fully implemented yet, you can only choose \"Single player\" and play against one AI\n" +
                 "Enter your name, and start playing!";
 
-        Label titleText = ObjectStandards.makeStandardLabelWhite(title, "");
-        titleText.setPadding(largePadding);
-        titleText.setFont(infoFont);
+        Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 
-        Label infoText = ObjectStandards.makeStandardLabelWhite(info, "");
+        Label infoText = ObjectStandards.makeStandardLabelWhite(info,"");
         infoText.setPadding(largePadding);
         infoText.setFont(new Font("Areal", 15));
 
@@ -62,9 +76,9 @@ public class MainScreen {
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
         Button enter = ObjectStandards.makeStandardButton("Enter");
-        enter.setMinWidth(2*standardButton);
+        enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
-        choiceBox.setMinWidth(2*standardButton);
+        choiceBox.setMinWidth(2 * standardButton);
         choiceBox.getItems().addAll("Single Player", "Multi Player");
         choiceBox.setValue("Single Player");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));

@@ -44,24 +44,16 @@ public class GameLobby {
         VBox fullLayout = new VBox();
 
         //Objects
-        Button settings = ObjectStandards.makeStandardButton("Settings");
-        settings.setMinWidth(120);
-        settings.setMinHeight(50);
-        Button startGame = ObjectStandards.makeStandardButton("Start game");
-        startGame.setMinWidth(120);
-        startGame.setMinHeight(50);
-        Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
-        leaveLobby.setMinWidth(120);
-        leaveLobby.setMinHeight(50);
+        Button settings = ObjectStandards.makeButtonForLobbyScreen("Settings");
+        Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
+        Button leaveLobby = ObjectStandards.makeButtonForLobbyScreen("Leave lobby");
 
         amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
         numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
         bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
         smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
-        headLine = new Label("Game Lobby");
-        headLine.setFont(new Font("Areal", 25));
-        headLine.setPadding(new Insets(20, 20, 20, 20));
+        headLine = ObjectStandards.makeLabelForHeadLine("Game Lobby");
 
         //ActionListeners
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
@@ -79,19 +71,14 @@ public class GameLobby {
         gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
 
-        //players.getChildren().addAll(joinedPlayers);
-        players.setAlignment(Pos.CENTER_LEFT);
-
         buttons.getChildren().addAll(startGame, leaveLobby, settings);
         buttons.setAlignment(Pos.CENTER_LEFT);
 
         layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);
         layoutNoHeadline.setAlignment(Pos.CENTER);
 
-
         fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
-
 
         SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
 
@@ -112,11 +99,11 @@ public class GameLobby {
         VBox labelBox = new VBox();
         VBox textFieldBox = new VBox();
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelBlack("Chips:", "");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelBlack("Number of players:", "");
-        Label bigBlind = ObjectStandards.makeStandardLabelBlack("Big blind:", "");
-        Label smallBlind = ObjectStandards.makeStandardLabelBlack("Small blind:", "");
-        Label levelDuration = ObjectStandards.makeStandardLabelBlack("Level duration:", "");
+        Label amountOfChips = ObjectStandards.makeLabelForSettingsScreen("Chips:");
+        Label numberOfPlayers = ObjectStandards.makeLabelForSettingsScreen("Number of players:");
+        Label bigBlind = ObjectStandards.makeLabelForSettingsScreen("Big blind:");
+        Label smallBlind = ObjectStandards.makeLabelForSettingsScreen("Small blind:");
+        Label levelDuration = ObjectStandards.makeLabelForSettingsScreen("Level duration:");
 
         TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();

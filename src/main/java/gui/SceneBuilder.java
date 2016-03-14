@@ -43,24 +43,4 @@ public class SceneBuilder {
         window.setScene(scene);
         window.show();
     }
-
-    /**
-     * Creates the sceen for the initial (main) screen
-     * @param imageName The name of the background that will be used
-     * @param gameController
-     * @return The scene to be shown
-     */
-    public static BorderPane createSceneForInitialScreen(String imageName,GameController gameController){
-        Stage window = new Stage();
-        window.setTitle("Welcome to The Game!");
-
-        BorderPane mainScreenLayout = new BorderPane();
-        mainScreenLayout.setPadding(new Insets(10,10,10,10));
-        mainScreenLayout.setCenter(MainScreen.makeLayout(window,gameController));
-
-        //Scene scene = new Scene(ImageViewer.setBackground(imageName, mainScreenLayout, 1920, 1080), 1280, 720);
-
-        return mainScreenLayout;
-    }
-
 }
