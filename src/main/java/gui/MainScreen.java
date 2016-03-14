@@ -25,6 +25,9 @@ import java.awt.Color;
  */
 public class MainScreen {
 
+    private static String imgName;
+    private static GameController gc;
+
     /**
      * Creates the sceen for the initial (main) screen
      * @param imageName The name of the background that will be used
@@ -33,11 +36,17 @@ public class MainScreen {
      */
     public static void createSceneForMainScreen(String imageName, GameController gameController){
         Stage window = new Stage();
+        imgName = imageName;
+        gc = gameController;
 
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
         SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
+    }
+
+    public static void refreshSceneForMainScreen() {
+        createSceneForMainScreen(imgName, gc);
     }
 
     /**

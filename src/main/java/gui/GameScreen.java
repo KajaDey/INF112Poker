@@ -14,6 +14,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameController;
@@ -36,6 +38,7 @@ public class GameScreen {
     private Label playerStackLabel, playerPositionLabel, playerLastMoveLabel, playerNameLabel;
     private Label opponentNameLabel, opponentStackSizeLabel, opponentPositionLabel, opponentLastMoveLabel;
     private Label currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel, winnerLabel;
+    private Label endGameScreen;
 
     //ImageViews
     private ImageView playerLeftCardImage, playerRightCardImage;
@@ -147,6 +150,7 @@ public class GameScreen {
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
 
+
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
         playerRightCardImage = ImageViewer.getEmptyImageView("player");
 
@@ -204,6 +208,7 @@ public class GameScreen {
         HBox cardLayout = new HBox();
         VBox statsLayout = new VBox();
         VBox fullLayout = new VBox();
+        HBox endGameLayout = new HBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
@@ -218,7 +223,7 @@ public class GameScreen {
 
         for (ImageView card : communityCards) {
             cardLayout.getChildren().add(card);
-        }
+        };
 
         cardLayout.getChildren().add(statsLayout);
         cardLayout.setSpacing(10);
@@ -226,6 +231,7 @@ public class GameScreen {
 
         fullLayout.getChildren().setAll(cardLayout, winnerLabel);
         fullLayout.setAlignment(Pos.CENTER);
+
 
         return fullLayout;
     }
@@ -500,10 +506,32 @@ public class GameScreen {
      * @param userId
      */
     public void gameOver(int userId){
-        Label label = new Label(names.get(userId) + "is the winner of this match!");
-        HBox hBox = new HBox(label);
 
-        Runnable task = () -> SceneBuilder.showCurrentScene(hBox,"Congratulations!!!");
+        Runnable task = () -> {
+
+            VBox vBox = new VBox();
+            Button backToMainScreen = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
+            backToMainScreen.setMinWidth(200);
+
+            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(userId) + " is the winner!","");
+            endGameScreen.setFont(new Font("Areal", 30));
+
+            Stage endGame = new Stage();
+            endGame.initModality(Modality.APPLICATION_MODAL);
+            endGame.setTitle("Congratulation!");
+
+            vBox.setAlignment(Pos.CENTER);
+
+            backToMainScreen.setOnAction(e -> {
+                endGame.close();
+                ButtonListeners.returnToMainMenuButtonListener();
+            });
+
+            vBox.getChildren().addAll(endGameScreen,backToMainScreen);
+            Scene scene = new Scene(vBox,600,100);
+            endGame.setScene(scene);
+            endGame.show();
+        };
         Platform.runLater(task);
     }
 
