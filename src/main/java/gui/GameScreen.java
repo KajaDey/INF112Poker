@@ -203,7 +203,7 @@ public class GameScreen {
      *
      * @return a boardLayout
      */
-    public VBox makeBoardLayout(int smallBlind, int bigBlind) {
+    public VBox makeBoardLayout(long smallBlind, long bigBlind) {
         this.currentSmallBlind = smallBlind;
         this.currentBigBlind = bigBlind;
 

@@ -49,12 +49,16 @@ public class Game {
         this.players = new Player[maxNumberOfPlayers];
 
         this.startStack = gamesettings.startStack;
-        this.startSB = (long) gamesettings.smallBlind;
-        this.startBB = (long) gamesettings.bigBlind;
+        this.startSB = gamesettings.smallBlind;
+        this.startBB = gamesettings.bigBlind;
         this.blindLevelDuration = gamesettings.levelDuration;
         this.stackSizes = new HashMap<>();
     }
 
+    /**
+     * Plays a game until a player has won.
+     *
+     */
     public void playGame() {
         assert numberOfPlayers == maxNumberOfPlayers : "Incorrect number of players";
 
@@ -125,6 +129,15 @@ public class Game {
         }
     }
 
+    /**
+     * Runs one betting round until all players still in the hand have checked, or bet the same amount.
+     * Returns false if there is only one player left in the hand (everyone else folded), else true
+     *
+     * @param playersStillPlaying Players still in the hand
+     * @param actingPlayerIndex Index of the acting player
+     * @param isPreflop true if the hand is preflop, else false
+     * @return false if the hand is over, else true
+     */
     private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex, boolean isPreflop) {
         gameController.setStackSizes(stackSizes);
 
@@ -189,6 +202,15 @@ public class Game {
         }
     }
 
+    /**
+     * Automatically post small and big blind for given players
+     *
+     * @param playersStillPlaying Players still in the game
+     * @param sbID ID of the player to post small blind
+     * @param bbID ID of the player to post big blind
+     * @param SB Small blind amount
+     * @param BB Big blind amount
+     */
     private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
         Decision postSB = new Decision(Decision.Move.BET, SB);
         Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
@@ -200,7 +222,15 @@ public class Game {
         gameController.setDecisionForClient(bbID, postBB);
     }
 
+    /**
+     * Gets a valid decision from a player, and checks if it is valid. The decision is returned if the move is valid.
+     *
+     * @param playerToAct Player to get decision from
+     * @param isPreflop true if the decision is made pre flop, else false
+     * @return Player's valid decision
+     */
     private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreflop) {
+        int errors = 0;
         System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet + " Biggest bet is " + biggestBet);
         long stackSize = playerToAct.getStackSize();
 
@@ -240,6 +270,12 @@ public class Game {
         }
     }
 
+    /**
+     * Called when a new hand is about to start. Sets which player has dealer button, small and big blind.
+     * Updates which players are still playing, and removes last hand's hole cards so that they are ready to get new ones.
+     *
+     * @param playersStillPlaying List of players still in the game
+     */
     private void initializeNewHand(List<Player> playersStillPlaying) {
         positions = new HashMap<Integer, Integer>();
         this.pot = 0;
@@ -279,6 +315,13 @@ public class Game {
 
     }
 
+    /**
+     * Adds a new player to the game. The player is given a start stack size.
+     *
+     * @param name Name of the player
+     * @param ID Player-ID
+     * @return true if player was added successfully, else false
+     */
     public boolean addPlayer(String name, int ID) {
         if (numberOfPlayers >= maxNumberOfPlayers) {
             return false;
@@ -298,6 +341,9 @@ public class Game {
         return table.addPlayer(p);
     }
 
+    /**
+     * Updates the stack sizes of each player after a hand is played.
+     */
     private void updateStackSizes() {
         long minPutOnTable = Integer.MAX_VALUE;
         for (Player p : players)
@@ -312,6 +358,11 @@ public class Game {
         gameController.setStackSizes(stackSizes);
     }
 
+    /**
+     * Pauses the thread for a given amount of time.
+     *
+     * @param milliseconds Delay length
+     */
     private void delay(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -320,18 +371,33 @@ public class Game {
         }
     }
 
+    /**
+     * Tells the game controller to display the flop.
+     */
     private void setFlop() {
         gameController.setFlop(communityCards[0], communityCards[1], communityCards[2], pot);
     }
 
+    /**
+     * Tells the game controller to display the turn.
+     */
     private void setTurn() {
         gameController.setTurn(communityCards[3], pot);
     }
 
+    /**
+     * Tells the game controller to display the river.
+     */
     private void setRiver() {
         gameController.setRiver(communityCards[4], pot);
     }
 
+    /**
+     * Deals hole cards to each player still in the game.
+     *
+     * @param deck Deck to draw from
+     * @param playersStillPlaying Players still in the game
+     */
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
         for (Player p : playersStillPlaying) {
             Card[] cards = {deck.draw().get(), deck.draw().get()};
@@ -360,6 +426,9 @@ public class Game {
         return error;
     }
 
+    /**
+     * Updates the pot for each hand played
+     */
     private void updatePot() {
         for (Player p : players) {
             pot += p.getAmountPutOnTableThisBettingRound();
@@ -367,6 +436,11 @@ public class Game {
         }
     }
 
+    /**
+     * Randomly generates and returns five community cards from the deck.
+     * @param deck Deck to draw from
+     * @return Array of community cards
+     */
     private Card[] generateCommunityCards(Deck deck) {
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
@@ -374,6 +448,12 @@ public class Game {
         return commCards;
     }
 
+    /**
+     * Calculates how many players are all in this round.
+     *
+     * @param playersStillPlaying Players still in the hand
+     * @return Number of players all in
+     */
     private int numberOfPlayersAllIn(List<Player> playersStillPlaying) {
         int numberOfPlayersAllIn = 0;
 
@@ -385,6 +465,12 @@ public class Game {
         return numberOfPlayersAllIn;
     }
 
+    /**
+     * Finds ID of the player who won the hand
+     *
+     * @param playersStillPlaying Players still in the hand
+     * @return Winner-ID
+     */
     private int findWinnerID(List<Integer> playersStillPlaying) {
         // TODO next sprint: handle split
         int bestPlayer = playersStillPlaying.get(0);
@@ -402,6 +488,9 @@ public class Game {
         return bestPlayer;
     }
 
+    /**
+     * Displays each player's hole cards after a hand is over, and gives the pot to the winning player.
+     */
     private void showDown() {
         List<Integer> IDStillPlaying = new ArrayList<>();
         for (Player p : playersStillPlaying) {

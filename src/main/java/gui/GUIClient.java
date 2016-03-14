@@ -3,6 +3,7 @@ import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -145,13 +146,13 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void setBigBlind(int bigBlind) {
+    public void setBigBlind(long bigBlind) {
         this.bigBlind = bigBlind;
         //TODO: Update label in GUI
     }
 
     @Override
-    public void setSmallBlind(int smallBlind) {
+    public void setSmallBlind(long smallBlind) {
         this.smallBlind = smallBlind;
         //TODO: Update label in GUI
     }

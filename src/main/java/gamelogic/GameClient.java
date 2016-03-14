@@ -50,13 +50,13 @@ public interface GameClient {
      * Sends the value of big blind
      * Sent at game start, and every time big blind is changed
      */
-    void setBigBlind(int bigBlind);
+    void setBigBlind(long bigBlind);
 
     /**
      * Sends the value of small blind
      * Sent at game start, and every time small blind is changed
      */
-    void setSmallBlind(int smallBlind);
+    void setSmallBlind(long smallBlind);
 
     /**
      *  Sends every player's position, as a map indexed by the players' IDs.
