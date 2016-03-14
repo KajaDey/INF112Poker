@@ -148,4 +148,11 @@ public class GameController {
             client.startNewHand();
         }
     }
+
+    public void gameOver(int winnerID) {
+        for (Integer clientID : clients.keySet()) {
+            GameClient client = clients.get(clientID);
+            client.gameOver(winnerID);
+        }
+    }
 }

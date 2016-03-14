@@ -52,6 +52,7 @@ public class GameScreen {
     private long currentBet = 0;
     private long pot;
     private Map<Integer, String> names = new HashMap<Integer, String>();
+    private long currentSmallBlind, currentBigBlind;
 
     public GameScreen(int ID) {
         this.playerID = ID;
@@ -193,6 +194,8 @@ public class GameScreen {
      * @return a boardLayout
      */
     public VBox makeBoardLayout(int smallBlind, int bigBlind) {
+        this.currentSmallBlind = smallBlind;
+        this.currentBigBlind = bigBlind;
 
         for (int i = 0; i < communityCards.length; i++) {
             communityCards[i] = ImageViewer.getEmptyImageView("player");
@@ -361,9 +364,11 @@ public class GameScreen {
         switch (decision.move) {
             case BET:
                 decisionText += (currentBet = decision.size);
+                setAmountTextfield(currentBet*2 + "");
                 break;
             case RAISE:
                 decisionText += (currentBet += decision.size);
+                setAmountTextfield(currentBet+decision.size + "");
                 break;
         }
 
@@ -427,6 +432,7 @@ public class GameScreen {
             this.opponentLastMoveLabel.setText("");
             checkCallButton.setText("Check");
             betRaiseButton.setText("Bet");
+            this.setAmountTextfield(currentBigBlind+"");
         };
         Platform.runLater(task);
 
@@ -494,10 +500,15 @@ public class GameScreen {
      */
 
     public void gameOver(int userId){
-
         Label label = new Label(names.get(userId) + "is the winner of this match!");
         HBox hBox = new HBox(label);
 
-        SceneBuilder.showCurrentScene(hBox,"Congratulations!!!");
+        Runnable task = () -> SceneBuilder.showCurrentScene(hBox,"Congratulations!!!");
+        Platform.runLater(task);
+    }
+
+    public void setAmountTextfield(String message) {
+        Runnable task = () -> amountTextfield.setText(message);
+        Platform.runLater(task);
     }
 }

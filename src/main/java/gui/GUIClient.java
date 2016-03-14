@@ -109,6 +109,11 @@ public class GUIClient implements GameClient {
     }
 
     @Override
+    public void gameOver(int winnerID) {
+        gameScreen.gameOver(winnerID);
+    }
+
+    @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
         gameScreen.updateStackSizes(stackSizes);

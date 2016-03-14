@@ -131,6 +131,11 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
+    public void gameOver(int winnerID) {
+
+    }
+
+    @Override
     public void setPlayerNames(Map<Integer, String> names) {
 
     }

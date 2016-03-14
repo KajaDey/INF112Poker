@@ -74,7 +74,8 @@ public class Game {
             initializeNewHand(playersStillPlaying);
 
             if (playersStillPlaying.size() <= 1) {
-                System.out.println("Game over");
+                assert playersStillPlaying.size() != 0 : "Game ended, but no player won";
+                gameController.gameOver(playersStillPlaying.get(0).getID());
                 return;
             }
 

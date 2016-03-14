@@ -86,4 +86,10 @@ public interface GameClient {
      * Sent at the start of each hand, before hole cards etc are sent.
      */
     void startNewHand();
+
+    /**
+     *  Called when the game ends (only 1 player has chips left)
+     *  @param winnerID ID of winner
+     */
+    void gameOver(int winnerID);
 }
