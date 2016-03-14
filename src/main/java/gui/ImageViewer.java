@@ -50,7 +50,7 @@ public class ImageViewer {
      * @param borderPane The new pane. Contains the background
      * @return The new BorderPane
      */
-    public static BorderPane setBackground(String imageIn, BorderPane borderPane, int sizeX, int sizeY){
+    public static Pane setBackground(String imageIn, Pane borderPane, int sizeX, int sizeY){
         Image image = new Image(returnURLPathForImages(imageIn));
 
         BackgroundSize backgroundSize = new BackgroundSize(sizeX,sizeY, false, false, true, true);
