@@ -18,7 +18,7 @@ public class Straight implements IRule {
     private List<Card> cards, returnCards;
     private boolean lookingForStraightFlush = false;
     private HandCalculator.HandType type = HandCalculator.HandType.STRAIGHT;
-    private int highCard = 0;
+    private int highCard;
 
     /**
      * Regular constructor, used in most cases
@@ -101,7 +101,7 @@ public class Straight implements IRule {
         while (numberOfCardsAdded < maxCardsToAdd) {
             if (indexToAdd == cards.size() -1) {
                 returnCards.add(cards.get(indexToAdd));
-                return;
+                break;
             }
             int thisRank = cards.get(indexToAdd).rank;
             int nextRank = cards.get(indexToAdd + 1).rank;
