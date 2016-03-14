@@ -226,7 +226,7 @@ public class Game {
                     break;
 
                 case RAISE:
-                    if (decision.size + biggestBet == stackSize) {
+                    if (decision.size + currentBet == stackSize) {
                         return decision;
                     }
                     else if (decision.size >= biggestBet)

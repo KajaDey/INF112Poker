@@ -368,7 +368,7 @@ public class GameScreen {
                 break;
             case RAISE:
                 decisionText += (currentBet += decision.size);
-                setAmountTextfield(currentBet+decision.size + "");
+                setAmountTextfield(Math.max(currentBet+decision.size, currentBigBlind*2) + "");
                 break;
         }
 
@@ -433,6 +433,7 @@ public class GameScreen {
             checkCallButton.setText("Check");
             betRaiseButton.setText("Bet");
             this.setAmountTextfield(currentBigBlind+"");
+            this.setErrorStateOfAmountTextfield(false);
         };
         Platform.runLater(task);
 
@@ -494,11 +495,10 @@ public class GameScreen {
     }
 
     /**
-     * What happens when the game is over
+     * Called when the game is over. Display a message with who the winner is
      *
      * @param userId
      */
-
     public void gameOver(int userId){
         Label label = new Label(names.get(userId) + "is the winner of this match!");
         HBox hBox = new HBox(label);
@@ -507,8 +507,30 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    /**
+     * Set the text in the amount text field
+     * @param message
+     */
     public void setAmountTextfield(String message) {
         Runnable task = () -> amountTextfield.setText(message);
         Platform.runLater(task);
     }
+
+    /**
+     *  Set the border around the amount textfield to red, indicating an error
+     * @param error
+     */
+
+    public void setErrorStateOfAmountTextfield(boolean error) {
+        Runnable task;
+        if (error) {
+            task = () -> amountTextfield.setStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
+        }
+        else {
+            task = () -> amountTextfield.setStyle("-fx-border-color: rgb(255, 255, 255) ; -fx-border-width: 3px ;");
+        }
+
+        Platform.runLater(task);
+    }
+
 }

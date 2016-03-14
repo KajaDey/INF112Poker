@@ -3,7 +3,6 @@ import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +15,10 @@ public class GUIClient implements GameClient {
 
     //Needed variables
     private GameScreen gameScreen;
-    private long currentBet = 0;
+    private long currentBet = 0, currentRaise = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
+    private int smallBlind, bigBlind;
 
     private int id;
 
@@ -55,7 +55,15 @@ public class GUIClient implements GameClient {
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
             //Display error: "You don't have this much in your stack" and return without notifying
-            System.out.println("You dont have this much in your stack");
+            System.out.println("You don't have this much in your stack");
+            gameScreen.setErrorStateOfAmountTextfield(true);
+            return;
+        }
+
+        if (move == Decision.Move.RAISE && moveSize-currentBet < Math.max(bigBlind, currentRaise) &&
+                (moveSize != stackSizes.get(id))) {
+            System.out.println("Raise is to small");
+            gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
@@ -123,7 +131,7 @@ public class GUIClient implements GameClient {
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
             case BET: currentBet = decision.size; break;
-            case RAISE: currentBet += decision.size; break;
+            case RAISE: currentRaise = decision.size; currentBet += currentRaise; break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
     }
@@ -136,11 +144,13 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setBigBlind(int bigBlind) {
+        this.bigBlind = bigBlind;
         //TODO: Update label in GUI
     }
 
     @Override
     public void setSmallBlind(int smallBlind) {
+        this.smallBlind = smallBlind;
         //TODO: Update label in GUI
     }
 
