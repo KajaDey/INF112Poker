@@ -96,6 +96,7 @@ public class SimpleAI implements GameClient {
                 }
                 else { // Go all in
                     long raiseBy = stackSize - currentBet;
+                    System.out.println("AI: Going all in with stacksize " + stackSize);
                     stackSize = 0;
                     return new Decision(Decision.Move.RAISE, raiseBy);
                 }
