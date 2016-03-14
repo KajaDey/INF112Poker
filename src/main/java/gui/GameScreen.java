@@ -120,12 +120,18 @@ public class GameScreen {
             playerLeftCardImage.setEffect(dropShadow);
             playerRightCardImage.setEffect(dropShadow);
 
+            playerLeftCardImage.setVisible(true);
+            playerRightCardImage.setVisible(true);
             //Set opponent hand
             opponentLeftCardImage.setImage(backImage);
             opponentRightCardImage.setImage(backImage);
 
             opponentLeftCardImage.setEffect(dropShadow);
             opponentRightCardImage.setEffect(dropShadow);
+
+            opponentLeftCardImage.setVisible(true);
+            opponentRightCardImage.setVisible(true);
+
         };
         Platform.runLater(task);
     }
@@ -152,8 +158,14 @@ public class GameScreen {
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
 
 
+        Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
+
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
         playerRightCardImage = ImageViewer.getEmptyImageView("player");
+        playerLeftCardImage.setImage(backOfCards);
+        playerRightCardImage.setImage(backOfCards);
+        playerLeftCardImage.setVisible(false);
+        playerRightCardImage.setVisible(false);
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
@@ -204,17 +216,18 @@ public class GameScreen {
      * @return a boardLayout
      */
     public VBox makeBoardLayout(long smallBlind, long bigBlind) {
+        DropShadow dropShadow = new DropShadow();
         this.currentSmallBlind = smallBlind;
         this.currentBigBlind = bigBlind;
 
         for (int i = 0; i < communityCards.length; i++) {
             communityCards[i] = ImageViewer.getEmptyImageView("player");
+            communityCards[i].setEffect(dropShadow);
         }
 
         HBox cardLayout = new HBox();
         VBox statsLayout = new VBox();
         VBox fullLayout = new VBox();
-        //HBox endGameLayout = new HBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
@@ -227,11 +240,9 @@ public class GameScreen {
         statsLayout.setSpacing(10);
         statsLayout.setAlignment(Pos.CENTER);
 
-        for (ImageView card : communityCards) {
-            cardLayout.getChildren().add(card);
-        };
-
         cardLayout.getChildren().add(statsLayout);
+        cardLayout.getChildren().addAll(communityCards);
+
         cardLayout.setSpacing(10);
         cardLayout.setAlignment(Pos.CENTER);
 
@@ -253,6 +264,13 @@ public class GameScreen {
     public VBox makeOpponentLayout(int userID, String name, long stackSize) {
         opponentLeftCardImage = ImageViewer.getEmptyImageView("opponent");
         opponentRightCardImage = ImageViewer.getEmptyImageView("opponent");
+
+        Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
+
+        opponentLeftCardImage.setImage(backOfCards);
+        opponentRightCardImage.setImage(backOfCards);
+        opponentLeftCardImage.setVisible(false);
+        opponentRightCardImage.setVisible(false);
 
         opponentNameLabel = ObjectStandards.makeStandardLabelWhite("Name:", name);
         opponentStackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
@@ -315,8 +333,11 @@ public class GameScreen {
 
         Runnable task = () -> {
             communityCards[0].setImage(card1Image);
+            communityCards[0].setVisible(true);
             communityCards[1].setImage(card2Image);
+            communityCards[1].setVisible(true);
             communityCards[2].setImage(card3Image);
+            communityCards[2].setVisible(true);
         };
         Platform.runLater(task);
     }
@@ -329,7 +350,10 @@ public class GameScreen {
 
     public void displayTurn(Card turn) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turn.getCardNameForGui()));
-        Runnable task = () -> communityCards[3].setImage(turnImage);
+        Runnable task = () -> {
+            communityCards[3].setImage(turnImage);
+            communityCards[3].setVisible(true);
+        };
         Platform.runLater(task);
     }
 
@@ -341,7 +365,10 @@ public class GameScreen {
 
     public void displayRiver(Card river) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(river.getCardNameForGui()));
-        Runnable task = () -> communityCards[4].setImage(riverImage);
+        Runnable task = () -> {
+            communityCards[4].setImage(riverImage);
+            communityCards[4].setVisible(true);
+        };
         Platform.runLater(task);
     }
 
@@ -480,9 +507,12 @@ public class GameScreen {
      */
 
     public void startNewHand() {
+        Image image = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
         Runnable task = () -> {
-            for (ImageView imageview : communityCards)
-                imageview.setImage(null);
+            for (ImageView imageview : communityCards) {
+                imageview.setImage(image);
+                imageview.setVisible(false);
+            }
             winnerLabel.setText("");
         };
         Platform.runLater(task);
