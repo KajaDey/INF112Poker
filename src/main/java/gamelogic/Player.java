@@ -34,10 +34,9 @@ public class Player extends User {
             case RAISE:
                 long totalPutOnTable = ((currentBet-putOnTableThisRound) + decision.size);
                 this.putOnTableThisRound += totalPutOnTable;
-                System.out.println("New put on table: " + putOnTableThisRound);
                 break;
             case CALL:
-                this.putOnTableThisRound = currentBet;
+                this.putOnTableThisRound = Math.min(currentBet, this.stackSize);
                 break;
         }
     }

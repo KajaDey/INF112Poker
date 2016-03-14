@@ -337,9 +337,6 @@ public class GameScreen {
             case BET:
                 decisionText += (currentBet = decision.size);
                 break;
-            case CALL:
-                decisionText += currentBet;
-                break;
             case RAISE:
                 decisionText += (currentBet += decision.size);
                 break;

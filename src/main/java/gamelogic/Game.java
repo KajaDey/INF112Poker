@@ -282,7 +282,12 @@ public class Game {
     }
 
     private void updateStackSizes() {
+        long minPutOnTable = Integer.MAX_VALUE;
+        for (Player p : players)
+            minPutOnTable = Math.min(minPutOnTable, p.getAmountPutOnTableThisBettingRound());
+
         for (Player p : players) {
+            p.setAmountPutOnTableThisBettingRound(minPutOnTable);
             p.updateStackSize();
             stackSizes.put(p.getID(), p.getStackSize());
         }
@@ -372,7 +377,7 @@ public class Game {
         }
 
         int winnerID = findWinnerID(IDStillPlaying);
-        
+
         for (Player p : playersStillPlaying) {
             if (p.getID() == winnerID)
                 p.incrementStack(pot);
@@ -380,7 +385,7 @@ public class Game {
         updateStackSizes();
         updatePot();
 
-        gameController.showDown(IDStillPlaying, winnerID, holeCards, pot); // playersStillPlaying<Integer>, winnerID
+        gameController.showDown(IDStillPlaying, winnerID, holeCards, pot);
         delay(5000);
     }
 }
