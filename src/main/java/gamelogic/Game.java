@@ -200,7 +200,6 @@ public class Game {
     }
 
     private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreflop) {
-        int errors = 0;
         System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet + " Biggest bet is " + biggestBet);
         long stackSize = playerToAct.getStackSize();
 
@@ -237,7 +236,7 @@ public class Game {
 
             System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
 
-            if (errors++ == 10) System.exit(0); // <-- TODO: remove superhack
+            System.exit(1); // <-- TODO: remove superhack
         }
     }
 
@@ -261,6 +260,7 @@ public class Game {
 
         bigBlindIndex = (smallBlindIndex + 1) % numberOfPlayers;
         holeCards = new HashMap<>();
+        roundNumber++;
     }
 
     public boolean addPlayer(String name, int ID) {
