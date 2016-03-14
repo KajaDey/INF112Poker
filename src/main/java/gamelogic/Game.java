@@ -77,6 +77,11 @@ public class Game {
             List<Player> playersStillPlaying = new ArrayList<>();
             initializeNewHand(playersStillPlaying);
 
+            if (playersStillPlaying.size() <= 1) {
+                System.out.println("Game over");
+                return;
+            }
+
             //Generate cards
             Deck deck = new Deck();
             dealHoleCards(deck, playersStillPlaying);
@@ -142,6 +147,17 @@ public class Game {
         while (true) {
             actingPlayerIndex %= numberOfPlayers;
             Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
+            //Check if the player is already all in
+            if (playerToAct.getStackSize() == 0) {
+                if (numberOfPlayersAllIn(playersStillPlaying) >= playersStillPlaying.size() - 1) {
+                    //Everyone (or everyone but 1 player) is all in
+                    return true;
+                } else {
+                    //Player is all in, don't ask for decision
+                    continue;
+                }
+            }
+
             Decision decision = getValidDecisionFromPlayer(playerToAct);
             playerToAct.act(decision, currentBet);
 
@@ -324,6 +340,15 @@ public class Game {
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
         return commCards;
+    }
+
+    private int numberOfPlayersAllIn(List<Player> playersStillPlaying) {
+        int numberOfPlayersAllIn = 0;
+        for (Player p : playersStillPlaying) {
+            if (p.getStackSize() == 0)
+                numberOfPlayersAllIn++;
+        }
+        return numberOfPlayersAllIn;
     }
 
 }
