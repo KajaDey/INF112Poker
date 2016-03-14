@@ -1,0 +1,29 @@
+Møte 4 - 09.03.2016, kl 15:15
+Sekretær: Mariah Vårum
+
+Oppmøte:
+Morten
+Vegar
+Ragnhild
+Kaja
+Simon
+Andrè
+Jostein
+Mariah
+Henrik
+Kristian
+
+Hva er gjort siden sist:
+Implementert AI-logikk.
+Har begynt å implementere GameLogic. HandCalculator.
+
+Diskusjon:
+Kommunikasjon mellom GUI og GameController.
+Kommunikasjon innad i GUI.
+Testing av regel-implementasjon.
+
+Plan til neste møte:
+Få implementert alt av regler. Fortsette med det.
+Fokus på kommunikasjon mellom GameController og GUI.
+
+Tid for neste møte: Mandag 14.03 kl 15:00

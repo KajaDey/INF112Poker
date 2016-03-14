@@ -99,6 +99,9 @@ public class GameScreen {
             //Set opponent hand
             opponentLeftCardImage.setImage(backImage);
             opponentRightCardImage.setImage(backImage);
+
+            opponentLeftCardImage.setEffect(dropShadow);
+            opponentRightCardImage.setEffect(dropShadow);
         };
         Platform.runLater(task);
     }
@@ -109,12 +112,6 @@ public class GameScreen {
      * @return A VBox with the player layout
      */
     public VBox makePlayerLayout(int userID, String name, long stackSize, String pos) {
-
-        //Setting standards i want to use
-        Font standardFont = new Font("Areal", 15);
-        Insets standardPadding = new Insets(5, 5, 5, 8);
-        int standardButton = 75;
-
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -133,12 +130,7 @@ public class GameScreen {
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
         playerRightCardImage = ImageViewer.getEmptyImageView("player");
 
-        //Amount to betRaiseButton
-        amountTextfield = new TextField();
-        amountTextfield.setPromptText("Amount to betRaiseButton");
-        amountTextfield.setFont(standardFont);
-        amountTextfield.setPadding(standardPadding);
-        amountTextfield.setMaxWidth(standardButton * 2);
+        amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
