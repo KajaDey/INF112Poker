@@ -24,11 +24,10 @@ public class GameLobby {
     private static Label bigBlind;
     private static Label smallBlind;
     private static Label levelDuration;
-    private static Label joinedPlayers;
     private static Label headLine;
 
     /**
-     * Creates the screen for the gamelobby and shows it on the screen
+     * Creates the screen for the gameLobby and shows it on the screen
      *
      * @param gameSettings
      * @param gameController
@@ -60,10 +59,9 @@ public class GameLobby {
         bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
         smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
-        joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
         headLine = new Label("Game Lobby");
         headLine.setFont(new Font("Areal", 25));
-        headLine.setPadding(new Insets(20,20,20,20));
+        headLine.setPadding(new Insets(20, 20, 20, 20));
 
         //ActionListeners
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
@@ -94,13 +92,8 @@ public class GameLobby {
         fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
 
-        //set scene
-        BorderPane gameScreenLayout = new BorderPane();
-        gameScreenLayout.setPadding(new Insets(10, 10, 10, 10));
-        gameScreenLayout.setCenter(fullLayout);
 
-        Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
-        SceneBuilder.showCurrentScene(scene, "GameLobby");
+        SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
 
     }
 
@@ -125,11 +118,11 @@ public class GameLobby {
         Label smallBlind = ObjectStandards.makeStandardLabelBlack("Small blind:", "");
         Label levelDuration = ObjectStandards.makeStandardLabelBlack("Level duration:", "");
 
-        TextField amountOfChipsTF = ObjectStandards.makeStandardTextField();
-        TextField numberOfPlayersTF = ObjectStandards.makeStandardTextField();
-        TextField bigBlindTF = ObjectStandards.makeStandardTextField();
-        TextField smallBlindTF = ObjectStandards.makeStandardTextField();
-        TextField levelDurationTF = ObjectStandards.makeStandardTextField();
+        TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField bigBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField smallBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField levelDurationTF = ObjectStandards.makeTextFieldForSettingsScreen();
 
         amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
         numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
@@ -159,12 +152,11 @@ public class GameLobby {
     }
 
     public static void updateLabels(GameSettings gameSettings){
-        amountOfChips.setText("Chips: " + gameSettings.getStartStack() + "$");
-        numberOfPlayers.setText("Number of players: " + gameSettings.getMaxNumberOfPlayers() + "");
-        bigBlind.setText("Big blind: " + gameSettings.getBigBlind() + "$");
-        smallBlind.setText("Small blind: " + gameSettings.getSmallBlind() + "$");
-        levelDuration.setText("Level duration: " + gameSettings.getLevelDuration() + "min");
-        //joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + , "");
+        amountOfChips.setText("Chips:  " + gameSettings.getStartStack() + "$");
+        numberOfPlayers.setText("Number of players:  " + gameSettings.getMaxNumberOfPlayers() + "");
+        bigBlind.setText("Big blind:  " + gameSettings.getBigBlind() + "$");
+        smallBlind.setText("Small blind:  " + gameSettings.getSmallBlind() + "$");
+        levelDuration.setText("Level duration:  " + gameSettings.getLevelDuration() + "min");
     }
 
     public static void displayErrorMessage(String message,GameController gameController){

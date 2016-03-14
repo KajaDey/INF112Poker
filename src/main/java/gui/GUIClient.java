@@ -76,9 +76,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
-        for (Integer id : names.keySet()) {
-            gameScreen.setName(id, names.get(id));
-        }
+        gameScreen.setNames(names);
     }
 
     @Override

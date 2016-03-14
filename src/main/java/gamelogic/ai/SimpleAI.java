@@ -158,18 +158,26 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-        if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
-            if (playerId == this.playerId) {
-                currentBet = 0;
-            }
-            else {
-                currentBet += decision.size;
-            }
-            betHasBeenPlaced = true;
-            minimumRaise = Math.max(decision.size, bigBlindAmount);
-        }
-        if (decision.move == Decision.Move.FOLD) {
-            playersLeftInCurrentHand--;
+        switch (decision.move) {
+            case CALL:
+                if (playerId == this.playerId) {
+                    currentBet = 0;
+                }
+                break;
+
+            case RAISE:
+            case BET:
+                if (playerId == this.playerId) {
+                    currentBet = 0;
+                } else {
+                    currentBet += decision.size;
+                }
+                betHasBeenPlaced = true;
+                minimumRaise = Math.max(decision.size, bigBlindAmount);
+                break;
+            case FOLD:
+                playersLeftInCurrentHand--;
+            break;
         }
     }
 

@@ -1,0 +1,33 @@
+Møte 5 - 14.03 kl 15:00
+Sekretær: André
+
+Oppmøte:
+Morten
+Vegar
+Ragnhild
+Kaja
+Simon
+André
+Jostein
+Mariah
+Henrik
+Kristian
+
+Hva er gjort siden sist:
+Fått kommunikasjon mellom backend og GUI. Endret layout på GUI. 
+Alle klasser for ulike hender skrevet ferdig og testet
+HandCalculator skrevet ferdig, og testet.
+Fikset bugs i AI
+Laget gameloop som kommuniserer med klienter via game controller. 
+
+
+Diskusjon:
+Bestemte oss for å gå over til ant.
+ 
+
+Plan til neste møte:
+litt refaktiorering. Fikse ant.
+Klargjøre for mulige felles oppdateringer av diagrammene.  
+
+Tid for neste møte:
+Tirsdag 14.03 kl 10:15

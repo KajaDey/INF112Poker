@@ -30,16 +30,13 @@ public class Player extends User {
             case BET:
                 assert putOnTableThisRound == 0 : "Player " + ID + " bet while putOnTableThisRound was != 0";
                 this.putOnTableThisRound = decision.size;
-                this.stackSize -= decision.size;
                 break;
             case RAISE:
-                System.out.println("Curr " + currentBet + ", putOnTable: " + putOnTableThisRound + ", dec: " + decision.size);
                 long totalPutOnTable = ((currentBet-putOnTableThisRound) + decision.size);
-                this.stackSize -= totalPutOnTable;
-                this.putOnTableThisRound = totalPutOnTable;
+                this.putOnTableThisRound += totalPutOnTable;
+                System.out.println("New put on table: " + putOnTableThisRound);
                 break;
             case CALL:
-                this.stackSize -= (currentBet - putOnTableThisRound);
                 this.putOnTableThisRound = currentBet;
                 break;
         }
@@ -71,6 +68,10 @@ public class Player extends User {
 
     public void incrementStack(long size) {
         stackSize += size;
+    }
+
+    public void updateStackSize() {
+        stackSize -= putOnTableThisRound;
     }
 }
 

@@ -50,6 +50,8 @@ public class GameScreen {
 
     //Storagevariables
     private long currentBet = 0;
+    private long pot;
+    private Map<Integer, String> names = new HashMap<Integer, String>();
 
     public GameScreen(int ID) {
         this.playerID = ID;
@@ -67,6 +69,7 @@ public class GameScreen {
     //TODO: Javadoc
 
     public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
+        names.put(userID, name);
         if (userID == playerID) {
             //Insert player
             borderPane.setBottom(makePlayerLayout(userID, name, stackSize, pos));
@@ -96,6 +99,9 @@ public class GameScreen {
             //Set opponent hand
             opponentLeftCardImage.setImage(backImage);
             opponentRightCardImage.setImage(backImage);
+
+            opponentLeftCardImage.setEffect(dropShadow);
+            opponentRightCardImage.setEffect(dropShadow);
         };
         Platform.runLater(task);
     }
@@ -106,12 +112,6 @@ public class GameScreen {
      * @return A VBox with the player layout
      */
     public VBox makePlayerLayout(int userID, String name, long stackSize, String pos) {
-
-        //Setting standards i want to use
-        Font standardFont = new Font("Areal", 15);
-        Insets standardPadding = new Insets(5, 5, 5, 8);
-        int standardButton = 75;
-
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -130,12 +130,7 @@ public class GameScreen {
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
         playerRightCardImage = ImageViewer.getEmptyImageView("player");
 
-        //Amount to betRaiseButton
-        amountTextfield = new TextField();
-        amountTextfield.setPromptText("Amount to betRaiseButton");
-        amountTextfield.setFont(standardFont);
-        amountTextfield.setPadding(standardPadding);
-        amountTextfield.setMaxWidth(standardButton * 2);
+        amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
@@ -268,11 +263,9 @@ public class GameScreen {
                     opponentRightCardImage.setImage(rightImage);
                 }
             };
-            String winnerName = ""+winnerID; // TODO fix
-            long winnerStack = 500L; // TODO fix
-
-            showWinner(winnerName, winnerStack);
             Platform.runLater(task);
+
+            showWinner(names.get(winnerID), pot);
         }
     }
 
@@ -412,18 +405,19 @@ public class GameScreen {
     }
 
     public void setPot(long pot) {
+        this.pot = pot;
         String potString = Long.toString(pot);
 
         Runnable task = () -> potLabel.setText("Pot: " + potString);
         Platform.runLater(task);
     }
 
-    public void setName(int ID, String name) {
-        Runnable task;
-        if (ID == playerID)
-            task = () -> playerNameLabel.setText("Name: " + name);
-        else
-            task = () -> opponentNameLabel.setText("Name: " + name);
+    public void setNames(Map<Integer, String> names) {
+        this.names = names;
+        Runnable task = () -> {
+            playerNameLabel.setText("Name: " + names.get(playerID));
+            opponentNameLabel.setText("Name: " + names.get(1));
+        };
         Platform.runLater(task);
     }
 
@@ -431,9 +425,10 @@ public class GameScreen {
         Runnable task = () -> {
             for (ImageView imageview : communityCards)
                 imageview.setImage(null);
+            winnerLabel.setText("");
         };
         Platform.runLater(task);
-        setPot(0L);
+        setPot(0);
     }
 
     /**
@@ -448,14 +443,5 @@ public class GameScreen {
         Runnable task = () -> winnerLabel.setText(winnerName + " won the pot of: " + potString);
         Platform.runLater(task);
 
-    }
-
-
-    public void delay(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
