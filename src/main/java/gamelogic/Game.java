@@ -160,7 +160,7 @@ public class Game {
                 case RAISE:case BET:
                     numberOfActedPlayers = 1;
                     currentBet += decision.size;
-                    assert decision.size >= biggestBet || playerToAct.getStackSize() == 0;
+                    assert decision.size >= biggestBet || playerToAct.getStackSize() - playerToAct.getAmountPutOnTableThisBettingRound() == 0;
                     biggestBet = Math.max(biggestBet, decision.size);
                     biggestBet = decision.size;
                     break;
@@ -372,14 +372,14 @@ public class Game {
 
         int winnerID = findWinnerID(IDStillPlaying);
 
-        gameController.showDown(IDStillPlaying, winnerID, holeCards); // playersStillPlaying<Integer>, winnerID
-
         for (Player p : playersStillPlaying) {
             if (p.getID() == winnerID)
                 p.incrementStack(pot);
         }
-
         updateStackSizes();
+        updatePot();
+
+        gameController.showDown(IDStillPlaying, winnerID, holeCards, pot); // playersStillPlaying<Integer>, winnerID
         delay(5000);
     }
 }

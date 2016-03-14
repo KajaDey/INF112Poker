@@ -93,10 +93,10 @@ public class GameController {
         this.gameSettings = gameSettings;
     }
 
-    public void showDown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
+    public void showDown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(playersStillPlaying, winnerID, holeCards);
+            c.showdown(playersStillPlaying, winnerID, holeCards, pot);
         }
     }
 
