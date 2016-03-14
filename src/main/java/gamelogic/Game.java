@@ -349,6 +349,7 @@ public class Game {
     }
 
     private int findWinnerID(List<Integer> playersStillPlaying) {
+        // TODO next sprint: handle split
         int bestPlayer = playersStillPlaying.get(0);
         Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
 
