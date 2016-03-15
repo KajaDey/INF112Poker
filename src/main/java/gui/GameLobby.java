@@ -1,4 +1,4 @@
-package main.java.gui;
+package gui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.gamelogic.GameController;
+import gamelogic.GameController;
 
 /**
  * Created by ady on 07/03/16.

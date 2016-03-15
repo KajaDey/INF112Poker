@@ -1,7 +1,6 @@
-package main.java.gamelogic;
+package gamelogic;
 
-import main.java.gui.GUIClient;
-import main.java.gui.GameSettings;
+import gui.GameSettings;
 
 import java.util.*;
 

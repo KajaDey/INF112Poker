@@ -1,10 +1,10 @@
-package main.java.gui;
+package gui;
 
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameController;
+import gamelogic.Decision;
+import gamelogic.GameController;
 
 /**
  * Created by ady on 07/03/16.

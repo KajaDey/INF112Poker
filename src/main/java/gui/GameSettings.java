@@ -1,4 +1,4 @@
-package main.java.gui;
+package gui;
 
 /**
  * Created by ady on 09/03/16.
