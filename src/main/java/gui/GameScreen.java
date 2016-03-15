@@ -169,7 +169,7 @@ public class GameScreen {
         checkCallButton = ObjectStandards.makeStandardButton("Check");
         foldButton = ObjectStandards.makeStandardButton("Fold");
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
-        betRaiseButton.setMinHeight(58);
+        betRaiseButton.setMinHeight(66);
 
         //Actions
         betRaiseButton.setOnAction(e -> {
