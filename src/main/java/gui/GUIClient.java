@@ -3,7 +3,6 @@ import main.java.gamelogic.Card;
 import main.java.gamelogic.Decision;
 import main.java.gamelogic.GameClient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
