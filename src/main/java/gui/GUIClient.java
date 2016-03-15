@@ -19,7 +19,7 @@ public class GUIClient implements GameClient {
     private long currentBet = 0, currentRaise = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
-    private int smallBlind, bigBlind;
+    private long smallBlind, bigBlind;
 
     private int id;
 

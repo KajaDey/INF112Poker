@@ -151,7 +151,6 @@ public class GameScreen {
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
 
-
         playerLeftCardImage = ImageViewer.getEmptyImageView("player");
         playerRightCardImage = ImageViewer.getEmptyImageView("player");
 
