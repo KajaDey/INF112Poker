@@ -63,7 +63,7 @@ public class SimpleAI implements GameClient {
 
         int rankDistance = Math.abs(holeCards.get(0).rank - holeCards.get(1).rank);
         switch (rankDistance) {
-            case 0: handQuality *= 1.5; break;
+            case 0: handQuality *= 1.6; break;
             case 1: handQuality *= 1.4; break;
             case 2: handQuality *= 1.2; break;
             case 3: handQuality *= 1.1; break;
@@ -90,7 +90,7 @@ public class SimpleAI implements GameClient {
                 }
             }
             // If someone has already raised, raise more if the hand is really good
-            else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) {
+            else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) {
                 Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
                 if (raiseAmount.isPresent()) {
                     return new Decision(Decision.Move.RAISE, raiseAmount.get());
