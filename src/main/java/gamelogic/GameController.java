@@ -51,14 +51,15 @@ public class GameController {
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
-        if (!(game.getError() == null)) {
+        String error;
+        if (((error = game.getError()) != null)) {
             //TODO: Tell GUI to display error-message that settings are not valid
-            mainGUI.displayErrorMessageToLobby(game.getError());
+            mainGUI.displayErrorMessageToLobby(error);
             return;
         }
 
         //Empty map of clients
-        clients = new HashMap<Integer, GameClient>();
+        clients = new HashMap<>();
 
         //Init GUIGameClient
         GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
@@ -70,12 +71,13 @@ public class GameController {
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
-        //Should maybe be called by game
-        initClients(gamesettings);
 
         //TODO: add all players to GUI
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
         mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack());
+
+        //Should maybe be called by game
+        initClients(gamesettings);
 
         Thread gameThread = new Thread("GameThread") {
             @Override
