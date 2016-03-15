@@ -415,6 +415,8 @@ public class Game {
         String error = null;
         if (startStack < 0) {
             error = "Startstack must be a positive whole number";
+        } else if (startStack < startBB * 10){
+            error = "Startstack must be at least 10 times the big blind";
         } else if(startBB < 0 || startSB < 0) {
             error = "All blinds must be positive whole numbers";
         } else if (startBB < startSB * 2) {

@@ -156,7 +156,7 @@ public class GameScreen {
         playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        
+
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
 
