@@ -107,9 +107,29 @@ public class Game {
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex = (isPreFlop ? 0 : 1);
 
-        
+        //Check values correct
+        System.out.println(currentMinimumRaise + " " + highestAmountPutOnTable);
 
-        return true;
+        int numberOfPlayersSinceLastAgressor = 0;
+
+        while (true) {
+            //Check if all players are all in and betting round should be skipped
+            if (numberOfPlayersWithChipsLeft() <= 1) { return true; }
+
+            //Determine who's turn it is
+            actingPlayerIndex %= playersStillInCurrentHand.size();
+            Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
+
+            //Check if player is already all in
+            if (playerToAct.getStackSize() == 0) { continue; }
+
+            //Get decision for the acting player
+            Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
+            playerToAct.act(decision, highestAmountPutOnTable);
+
+            
+            return true;
+        }
     }
 
     /**
@@ -149,12 +169,51 @@ public class Game {
      * Gets a valid decision from a player, and checks if it is valid. The decision is returned if the move is valid.
      *
      * @param playerToAct Player to get decision from
-     * @param isPreflop true if the decision is made pre flop, else false
      * @return Player's valid decision
      */
-    private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreflop) {
+    private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreFlop) {
+        long stackSize = playerToAct.getStackSize();
+        boolean playerCanCheckBigBlind =
+                isPreFlop && playerToAct.getAmountPutOnTableThisBettingRound() == currentBB && highestAmountPutOnTable == currentBB;
 
-        return null;
+        while(true) {
+            //Get a decision for playerToAct from GameController
+            Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
+
+            //Test if decision is valid
+            switch(decision.move) {
+                case FOLD: case ALL_IN:
+                    return decision;
+
+                case CHECK:
+                    if (highestAmountPutOnTable == 0)
+                        return decision;
+                    else if (playerCanCheckBigBlind)
+                        return decision;
+                    break;
+
+                case CALL:
+                    assert highestAmountPutOnTable >= 0 : playerToAct.getName() + " tried to call when amount put on table was " + highestAmountPutOnTable;
+                    if (stackSize >= highestAmountPutOnTable)
+                        return decision;
+                    else
+                        return new Decision(Decision.Move.ALL_IN);
+
+                case BET:
+                    if (highestAmountPutOnTable == 0)
+                        return decision;
+                    break;
+
+                case RAISE:
+                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise when highest amount put on table was 0";
+                    if (decision.size >= currentMinimumRaise)
+                        return decision;
+                    break;
+                default: System.out.println("Unknown move: " + decision.move);
+            }
+
+            System.out.println("Invalid decision from " + playerToAct.getName() + ": " + decision);
+        }
     }
 
     /**
