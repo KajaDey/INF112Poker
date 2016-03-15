@@ -131,7 +131,6 @@ public class SimpleAI implements GameClient {
      * Also removes the appropriate amount of chips from stackSize
      * May go all in. Will return Optional.empty() if it goes all in AND that would require raise by < 0
      * @param randomModifier Modifier that gets multipled by the handquality
-     * @param handQuality
      */
     public Optional<Long> getRaiseAmount(double randomModifier, int handQuality) {
         long raiseAmount;
@@ -153,7 +152,7 @@ public class SimpleAI implements GameClient {
             long raiseBy = stackSize - currentBet;
             System.out.println("AI: Going all in with stacksize " + stackSize);
             stackSize = 0;
-            if (raiseBy < 0) {
+            if (raiseBy <= 0) {
                 return Optional.empty();
             }
             else {
