@@ -6,6 +6,6 @@
 
 *[INF112 drive-mappe](https://drive.google.com/open?id=0B8qv1PNNBC0FRWRzaVNESEJuTkk)
 
-*[CardSprites](http://wheels-cards.wc.lt/index.html)
+*[CardSprites](http://wheels-cards.wc.lt/index.html). Lisensen ligger i CardSprites-mappen
 
 *Bakgrunn er laget av Josten
