@@ -252,6 +252,7 @@ public class SimpleAI implements GameClient {
     public void setPositions(Map<Integer, Integer> positions) {
         assert positions.size() == amountOfPlayers :
         "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
+        assert positions.get(playerId) != null : "AI received positions object which didn't contain its own position";
         position = positions.get(playerId);
         if (positions.size() == 2) {
             if (position == 1) {
