@@ -156,7 +156,7 @@ public class GameLobby {
         layout.setPadding(new Insets(10, 10, 10, 10));
 
         Label label = new Label(message);
-        label.setFont(new Font("Areal", 50));
+        label.setFont(new Font("Areal", 25));
 
         Button backToSettings = ObjectStandards.makeStandardButton("Alright. Take me back to the settings menu");
         backToSettings.setOnAction(e -> {
