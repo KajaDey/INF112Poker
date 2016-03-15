@@ -1,6 +1,6 @@
-package main.java.gamelogic;
+package gamelogic;
 
-import main.java.gamelogic.rules.IRule;
+import gamelogic.rules.IRule;
 
 import java.util.ArrayList;
 import java.util.List;

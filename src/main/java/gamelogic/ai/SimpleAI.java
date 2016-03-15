@@ -1,8 +1,8 @@
-package main.java.gamelogic.ai;
+package gamelogic.ai;
 
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameClient;
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.GameClient;
 
 import java.util.ArrayList;
 import java.util.List;

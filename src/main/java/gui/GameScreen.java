@@ -1,4 +1,4 @@
-package main.java.gui;
+package gui;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -15,8 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
+import gamelogic.Card;
+import gamelogic.Decision;
 
 import java.util.HashMap;
 import java.util.List;

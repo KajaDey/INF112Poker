@@ -1,7 +1,7 @@
-package main.java.gamelogic;
+package gamelogic;
 
-import main.java.gamelogic.ai.SimpleAI;
-import main.java.gui.*;
+import gamelogic.ai.SimpleAI;
+import gui.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

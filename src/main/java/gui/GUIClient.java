@@ -1,7 +1,7 @@
-package main.java.gui;
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameClient;
+package gui;
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.GameClient;
 
 import java.util.List;
 import java.util.Map;
