@@ -3,6 +3,7 @@ import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +14,11 @@ import java.util.Map;
 
 public class GUIClient implements GameClient {
 
-    //Needed variables
     private GameScreen gameScreen;
-    private long currentBet = 0, currentRaise = 0;
+
+    //Storage variables
+    private Map<Integer, Long> amountPutOnTableThisBettingRound;
+    private long minimumRaise = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
@@ -53,32 +56,8 @@ public class GUIClient implements GameClient {
      * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
-            //Display error: "You don't have this much in your stack" and return without notifying
-            System.out.println("You don't have this much in your stack");
-            gameScreen.setErrorStateOfAmountTextfield(true);
-            return;
-        }
+        System.out.println("Decision " + move + " " + moveSize);
 
-        if (move == Decision.Move.RAISE && moveSize-currentBet < Math.max(bigBlind, currentRaise) &&
-                (moveSize != stackSizes.get(id))) {
-            System.out.println("Raise is to small");
-            gameScreen.setErrorStateOfAmountTextfield(true);
-            return;
-        }
-
-
-        switch (move) {
-            case BET:
-                this.decision = new Decision(move, moveSize);
-                break;
-            case RAISE:
-                this.decision = new Decision(move, moveSize - currentBet);
-                break;
-            case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
-        }
-
-        gameScreen.setErrorStateOfAmountTextfield(false);
         notifyAll();
     }
 
@@ -132,8 +111,8 @@ public class GUIClient implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
-            case BET: currentBet = decision.size; break;
-            case RAISE: currentRaise = decision.size; currentBet += currentRaise; break;
+            //case BET: currentBet = decision.size; break;
+            //case RAISE: currentRaise = decision.size; currentBet += currentRaise; break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
     }
@@ -178,7 +157,8 @@ public class GUIClient implements GameClient {
 
     public void newBettingRound(long potSize) {
         gameScreen.newBettingRound(potSize);
-        currentBet = 0;
+        minimumRaise = 0;
+        amountPutOnTableThisBettingRound = new HashMap<>();
     }
 
 

@@ -28,16 +28,14 @@ public class Game {
     private int bigBlindIndex = 0;
     private int smallBlindIndex = 0;
 
-    //Rounds
+    //Round specific
     private int roundNumber = 0;
-    private Map<Integer, Long> amountPutOnTableThisBettingRound;
-    private long currentMinimumRaise = 0;
-    private long pot = 0;
+    private long highestAmountPutOnTable = 0, currentMinimumRaise = 0, pot = 0;
     private Map<Integer, Long> stackSizes;
-    private Card [] communityCards;
+    private List<Player> playersStillInCurrentHand;
     private Map<Integer, Card[]> holeCards;
-    private List<Player> playersStillPlaying;
     private Map<Integer, Integer> positions;
+    private Card [] communityCards;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -48,8 +46,8 @@ public class Game {
         this.players = new Player[maxNumberOfPlayers];
 
         this.startStack = gamesettings.startStack;
-        this.startSB = gamesettings.smallBlind;
-        this.startBB = gamesettings.bigBlind;
+        this.currentSB = (this.startSB = gamesettings.smallBlind);
+        this.currentBB = (this.startBB = gamesettings.bigBlind);
         this.blindLevelDuration = gamesettings.levelDuration;
         this.stackSizes = new HashMap<>();
     }
@@ -60,21 +58,56 @@ public class Game {
      */
     public void playGame() {
 
+        while(numberOfPlayersWithChipsLeft() > 1) {
+            //Get an ordered list of players in the current hand (order BTN, SB, BB...)
+            playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
+
+            //Deal all hole cards and save community cards for later use
+            Deck deck = new Deck();
+            communityCards = getCommunityCards(deck);
+            dealHoleCards(deck, playersStillInCurrentHand);
+
+            //Tell all clients that a new hand has started and update all players stacksizes
+            gameController.startNewHand();
+            gameController.setStackSizes(stackSizes); //TODO: Has all stackSizes been updated correctly
+
+            //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
+            postBlinds();
+
+            //First betting round (preflop)
+            boolean handOver = bettingRound(true);
+
+        }
+
+        //Deal with who won the game.. (should be the only player with chips left
+        assert numberOfPlayersWithChipsLeft() == 1 : "Game over but " + numberOfPlayersWithChipsLeft() + " had chips left";
 
 
+    }
 
+    /**
+     *  Used to find out if game has ended
+     *  Returns the number of players that have getStackSize() > 0
+     *  @return
+     */
+    private int numberOfPlayersWithChipsLeft() {
+        int numberOfPlayersWithChipsLeft = 0;
+        for (Player p : players) {
+            if (p.getStackSize() > 0) numberOfPlayersWithChipsLeft++;
+        }
+        return numberOfPlayersWithChipsLeft;
     }
 
     /**
      * Runs one betting round until all players still in the hand have checked, or bet the same amount.
      * Returns false if there is only one player left in the hand (everyone else folded), else true
      *
-     * @param playersStillPlaying Players still in the hand
-     * @param actingPlayerIndex Index of the acting player
-     * @param isPreflop true if the hand is preflop, else false
-     * @return false if the hand is over, else true
      */
-    private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex, boolean isPreflop) {
+    private boolean bettingRound(boolean isPreFlop) {
+        //Determine who is acting first (based on the isPreFLop-value)
+        int actingPlayerIndex = (isPreFlop ? 0 : 1);
+
+        
 
         return true;
     }
@@ -82,14 +115,34 @@ public class Game {
     /**
      * Automatically post small and big blind for given players
      *
-     * @param playersStillPlaying Players still in the game
-     * @param sbID ID of the player to post small blind
-     * @param bbID ID of the player to post big blind
-     * @param SB Small blind amount
-     * @param BB Big blind amount
      */
-    private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
+    private void postBlinds() {
+        assert playersStillInCurrentHand.size() >= 2 : "Not enough players still playing to post blinds";
+        Decision postSB = new Decision(Decision.Move.SMALL_BLIND, currentSB);
+        Decision postBB = new Decision(Decision.Move.BIG_BLIND, currentBB);
 
+        Player smallBlindPlayer, bigBlindPlayer;
+        if (playersStillInCurrentHand.size() == 2) {
+            smallBlindPlayer = playersStillInCurrentHand.get(0);
+            bigBlindPlayer = playersStillInCurrentHand.get(1);
+        } else {
+            smallBlindPlayer = playersStillInCurrentHand.get(1);
+            bigBlindPlayer = playersStillInCurrentHand.get(2);
+        }
+
+        //Notify GUI and AI about the posting
+        gameController.setDecisionForClient(smallBlindPlayer.getID(), postSB);
+        gameController.setDecisionForClient(bigBlindPlayer.getID(), postBB);
+
+        //Make players act
+        smallBlindPlayer.act(postSB, 0);
+        bigBlindPlayer.act(postBB, 0);
+
+        stackSizes.put(smallBlindPlayer.getID(), smallBlindPlayer.getStackSize());
+        stackSizes.put(bigBlindPlayer.getID(), bigBlindPlayer.getStackSize());
+
+        currentMinimumRaise = currentBB;
+        highestAmountPutOnTable = currentBB;
     }
 
     /**
@@ -105,48 +158,45 @@ public class Game {
     }
 
     /**
-     * Called when a new hand is about to start. Sets which player has dealer button, small and big blind.
-     * Updates which players are still playing, and removes last hand's hole cards so that they are ready to get new ones.
+     * Returns a list of the players who still have chips left (player.getStackSize() > 0).
+     * Order: Dealer button, small blind, big blind, etc...
      *
-     * @param playersStillPlaying List of players still in the game
+     * return Ordered list of players still in the game
      */
-    private void initializeNewHand(List<Player> playersStillPlaying) {
-        positions = new HashMap<Integer, Integer>();
+    private List<Player> getOrderedListOfPlayersStillPlaying() {
+        //Reset the necessary variables
+        positions = new HashMap<>();
+        holeCards = new HashMap<>();
         this.pot = 0;
 
-
+        //Set indexes
         dealerIndex = roundNumber % numberOfPlayers;
-        if (numberOfPlayers == 2) {
-            smallBlindIndex = roundNumber % numberOfPlayers;
-        } else {
-            smallBlindIndex = (roundNumber + 1) % numberOfPlayers;
-        }
+        smallBlindIndex = (numberOfPlayers == 2 ? roundNumber % numberOfPlayers : (roundNumber+1)%numberOfPlayers);
+        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
 
+        List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
+        //Add players to orderedListOfPlayersStillPlaying in order BTN, SB, BB ...
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = players[(smallBlindIndex + i) % numberOfPlayers];
-            if (player.stillPlaying()) {
-                playersStillPlaying.add(player);
-                player.setAmountPutOnTableThisBettingRound(0);
+            if (player.getStackSize() > 0) {
+                orderedListOfPlayersStillPlaying.add(player);
             }
         }
 
-        bigBlindIndex = (smallBlindIndex + 1) % numberOfPlayers;
-        holeCards = new HashMap<>();
-        roundNumber++;
 
-        //Determine positions on the table based on the order of playersStillPlaying
-        if (playersStillPlaying.size() == 2) {
+        //Determine positions on the table based on the order of playersStillInCurrentHand
+        if (orderedListOfPlayersStillPlaying.size() == 2) {
             //Special case if only two players (dealer and small blind is same pos)
-            positions.put(playersStillPlaying.get(0).getID(), 0);
-            positions.put(playersStillPlaying.get(1).getID(), 2);
+            positions.put(orderedListOfPlayersStillPlaying.get(0).getID(), 0);
+            positions.put(orderedListOfPlayersStillPlaying.get(1).getID(), 2);
         } else {
-            for (int i = 0; i < playersStillPlaying.size(); i++) {
-                positions.put(playersStillPlaying.get(i).getID(), i);
+            for (int i = 0; i < orderedListOfPlayersStillPlaying.size(); i++) {
+                positions.put(orderedListOfPlayersStillPlaying.get(i).getID(), i);
             }
         }
 
-        gameController.setPositions(positions);
-
+        roundNumber++;
+        return orderedListOfPlayersStillPlaying;
     }
 
     /**
@@ -161,7 +211,7 @@ public class Game {
             return false;
         }
 
-        Player p = new Player(name, startStack, table, ID);
+        Player p = new Player(name, startStack, ID);
         for (int i = 0; i < maxNumberOfPlayers; i++) {
             if (players[i] == null) {
                 players[i] = p;
@@ -172,24 +222,7 @@ public class Game {
 
         stackSizes.put(ID, gamesettings.getStartStack());
 
-        return table.addPlayer(p);
-    }
-
-    /**
-     * Updates the stack sizes of each player after a hand is played.
-     */
-    private void updateStackSizes() {
-        long minPutOnTable = Integer.MAX_VALUE;
-        for (Player p : players)
-            minPutOnTable = Math.min(minPutOnTable, p.getAmountPutOnTableThisBettingRound());
-
-        for (Player p : players) {
-            p.setAmountPutOnTableThisBettingRound(minPutOnTable);
-            p.updateStackSize();
-            stackSizes.put(p.getID(), p.getStackSize());
-        }
-
-        gameController.setStackSizes(stackSizes);
+        return true;
     }
 
     /**
@@ -235,7 +268,7 @@ public class Game {
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
         for (Player p : playersStillPlaying) {
             Card[] cards = {deck.draw().get(), deck.draw().get()};
-            p.setHand(cards[0], cards[1]);
+            p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
         }
@@ -264,22 +297,13 @@ public class Game {
         return error;
     }
 
-    /**
-     * Updates the pot for each hand played
-     */
-    private void updatePot() {
-        for (Player p : players) {
-            pot += p.getAmountPutOnTableThisBettingRound();
-            p.setAmountPutOnTableThisBettingRound(0);
-        }
-    }
 
     /**
      * Randomly generates and returns five community cards from the deck.
      * @param deck Deck to draw from
      * @return Array of community cards
      */
-    private Card[] generateCommunityCards(Deck deck) {
+    private Card[] getCommunityCards(Deck deck) {
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
@@ -331,20 +355,21 @@ public class Game {
      */
     private void showDown() {
         List<Integer> IDStillPlaying = new ArrayList<>();
-        for (Player p : playersStillPlaying) {
+        for (Player p : playersStillInCurrentHand) {
             IDStillPlaying.add(p.getID());
         }
 
         int winnerID = findWinnerID(IDStillPlaying);
 
-        for (Player p : playersStillPlaying) {
+        for (Player p : playersStillInCurrentHand) {
             if (p.getID() == winnerID)
                 p.incrementStack(pot);
         }
-        updateStackSizes();
-        updatePot();
+
 
         gameController.showDown(IDStillPlaying, winnerID, holeCards, pot);
         delay(5000);
     }
+
+
 }
