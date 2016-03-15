@@ -1,13 +1,8 @@
 package main.java.gui;
 
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import main.java.gamelogic.GameController;
 
 /**
  * Created by ady on 08/03/16.
