@@ -27,7 +27,7 @@
                 <version>1.1.1</version>
                 <executions>
                     <execution>
-                        <phase>test</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>java</goal>
                         </goals>
