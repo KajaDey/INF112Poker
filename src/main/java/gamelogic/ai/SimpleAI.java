@@ -145,7 +145,7 @@ public class SimpleAI implements GameClient {
             raiseAmount = minimumRaise;
         }
 
-        if (stackSize >= raiseAmount + currentBet) {
+        if (stackSize > raiseAmount + currentBet) {
             stackSize -= raiseAmount + currentBet;
             return Optional.of(raiseAmount);
         }
