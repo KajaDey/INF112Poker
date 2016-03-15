@@ -63,7 +63,10 @@ public class AITest {
             stackSizes.put(2, 1000L);
             simpleAi.setStackSizes(stackSizes);
 
-            assertEquals(new Decision(Decision.Move.FOLD), simpleAi.getDecision());
+            Decision decision = simpleAi.getDecision();
+
+            assertEquals("AI did " + decision + " instead of folding at attempt #" + i,
+                    new Decision(Decision.Move.FOLD), simpleAi.getDecision());
         }
     }
 

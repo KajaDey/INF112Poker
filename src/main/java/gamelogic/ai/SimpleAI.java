@@ -73,7 +73,7 @@ public class SimpleAI implements GameClient {
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
-        if (randomModifier * (handQuality / 16.0) > 1 / contemptFactor) { // If the hand is considered "good"
+        if (randomModifier * (handQuality / 18.0) > 1 / contemptFactor) { // If the hand is considered "good"
             if (currentBet == 0) {
                 Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
                 if (raiseAmount.isPresent()) {
@@ -104,7 +104,7 @@ public class SimpleAI implements GameClient {
                 return new Decision(Decision.Move.CALL);
             }
         }
-        else if (randomModifier * (handQuality / 12.0) > 1 / contemptFactor) { // If the hand is decent
+        else if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is decent
             if (currentBet == 0) {
                 return new Decision(Decision.Move.CHECK);
             }
@@ -135,10 +135,10 @@ public class SimpleAI implements GameClient {
      */
     public Optional<Long> getRaiseAmount(double randomModifier, int handQuality) {
         long raiseAmount;
-        if (randomModifier * (handQuality / 24.0) > 1 / contemptFactor) { // If the hand is really good
+        if (randomModifier * (handQuality / 26.0) > 1 / contemptFactor) { // If the hand is really good
             raiseAmount = minimumRaise * 4;
         }
-        else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) { // If the hand is really good
+        else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) { // If the hand is really good
             raiseAmount = minimumRaise * 2;
         }
         else {
@@ -204,6 +204,8 @@ public class SimpleAI implements GameClient {
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         assert stackSizes.size() >= 2 && amountOfPlayers >= 2;
+
+        System.out.println("AI: AI was sent a stacksize of " + stackSizes.get(this.playerId));
         this.stackSize = stackSizes.get(this.playerId);
     }
 
@@ -249,14 +251,17 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
-        assert positions.size() >= 2 && amountOfPlayers >= 2;
+        assert positions.size() == amountOfPlayers :
+        "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
         position = positions.get(playerId);
         if (positions.size() == 2) {
             if (position == 1) {
                 stackSize -= Math.min(stackSize, bigBlindAmount); // Is big blind
+                System.out.println("AI: AI is big blind, stacksize is now " + stackSize);
             }
             else {
                 stackSize -= Math.min(stackSize, smallBlindAmount); // Is small blind
+                System.out.println("AI: AI is small blind, stacksize is now " + stackSize);
             }
         }
         else {
