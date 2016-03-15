@@ -80,7 +80,6 @@ public class ObjectStandards {
     /**
      * Makes a label for different headlines
      * @param name The name of the label
-     * @param value The value of the label
      * @return The label
      */
     public static Label makeLabelForHeadLine(String name){
