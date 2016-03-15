@@ -12,24 +12,31 @@ public class Decision {
         }
     } ;
 
+    /**
+     * FOLD, CHECK, CALL, ALL_IN has a size of -1
+     * BET has a size of the total bet
+     * RAISE has a size of the raise size (_not_ the total)
+     * SMALL_BLIND/BIG_BLIND has a size of current sb/bb
+     **/
+
     public final Move move;
     public final long size;
 
     /*
-    Constructs a decision to raise or bet a certain amount
+    Constructs a decision to raise or bet a certain amount or small/big blind
      */
     public Decision(Move move, long size) {
-        assert move == Move.RAISE || move == Move.BET || move == Move.ALL_IN || move == Move.BIG_BLIND || move == Move.SMALL_BLIND;
+        assert move == Move.RAISE || move == Move.BET || move == Move.BIG_BLIND || move == Move.SMALL_BLIND;
 
         this.move = move;
         this.size = size;
     }
 
     /*
-    Constructs a decision to fold, check or call
+    Constructs a decision to fold, check, call or all in
      */
     public Decision(Move move) {
-        assert move != Move.RAISE && move != Move.BET && move != Move.ALL_IN && move != Move.BIG_BLIND && move != Move.SMALL_BLIND;
+        assert move != Move.RAISE && move != Move.BET && move != Move.BIG_BLIND && move != Move.SMALL_BLIND;
 
         this.move = move;
         this.size = -1;
