@@ -414,15 +414,17 @@ public class Game {
     public String getError() {
         String error = null;
         if (startStack < 0) {
-            error = "Startstack must be a positive whole number";
+            error = "Start stack must be a positive whole number";
         } else if (startStack < startBB * 10){
-            error = "Startstack must be at least 10 times the big blind";
+            error = "Start stack must be at least 10 times the big blind";
         } else if(startBB < 0 || startSB < 0) {
             error = "All blinds must be positive whole numbers";
         } else if (startBB < startSB * 2) {
             error = "Big blind must be at least twice the size of the small blind";
         } else if(maxNumberOfPlayers < 2 || maxNumberOfPlayers > 8) {
             error = "Max number of players must be between 2-8";
+        } else if(blindLevelDuration <= 0) {
+            error = "Blind level must be a positive whole number";
         }
 
         return error;
