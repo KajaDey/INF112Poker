@@ -73,42 +73,47 @@ public class SimpleAI implements GameClient {
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
-        if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is considered "good"
+        if (randomModifier * (handQuality / 16.0) > 1 / contemptFactor) { // If the hand is considered "good"
             if (currentBet == 0) {
-                if (stackSize >= minimumRaise) {
+                Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
+                if (raiseAmount.isPresent()) {
 
-                    stackSize -= minimumRaise;
                     if(betHasBeenPlaced) {
-                        return new Decision(Decision.Move.RAISE, minimumRaise);
+                        return new Decision(Decision.Move.RAISE, raiseAmount.get());
                     }
                     else {
-                        return new Decision(Decision.Move.BET, minimumRaise);
+                        return new Decision(Decision.Move.BET, raiseAmount.get());
                     }
                 }
                 else {
-                    return new Decision(Decision.Move.CHECK);
+                    return new Decision(Decision.Move.CALL);
                 }
             }
-            else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) { // If the hand is really good
-                if (stackSize >= minimumRaise + currentBet) {
-                    stackSize -= minimumRaise + currentBet;
-                    return new Decision(Decision.Move.RAISE, minimumRaise);
+            // If someone has already raised, raise more if the hand is really good
+            else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) {
+                Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
+                if (raiseAmount.isPresent()) {
+                    return new Decision(Decision.Move.RAISE, raiseAmount.get());
                 }
                 else { // Go all in
-                    long raiseBy = stackSize - currentBet;
-                    System.out.println("AI: Going all in with stacksize " + stackSize);
-                    stackSize = 0;
-                    if (raiseBy < 0) {
-                        return new Decision(Decision.Move.CALL);
-                    }
-                    else {
-                        return new Decision(Decision.Move.RAISE, raiseBy);
-                    }
+                    return new Decision(Decision.Move.CALL);
                 }
             }
             else {
                 stackSize -= currentBet;
                 return new Decision(Decision.Move.CALL);
+            }
+        }
+        else if (randomModifier * (handQuality / 12.0) > 1 / contemptFactor) { // If the hand is decent
+            if (currentBet == 0) {
+                return new Decision(Decision.Move.CHECK);
+            }
+            else if (currentBet < stackSize / 20 * randomModifier) {
+                stackSize -= currentBet;
+                return new Decision(Decision.Move.CALL);
+            }
+            else {
+                return new Decision(Decision.Move.FOLD);
             }
         }
         else {
@@ -117,6 +122,42 @@ public class SimpleAI implements GameClient {
             }
             else {
                 return new Decision(Decision.Move.FOLD);
+            }
+        }
+    }
+
+    /**
+     * Returns a legal amount to raise by, which becomes higher if the hand is good
+     * Also removes the appropriate amount of chips from stackSize
+     * May go all in. Will return Optional.empty() if it goes all in AND that would require raise by < 0
+     * @param randomModifier Modifier that gets multipled by the handquality
+     * @param handQuality
+     */
+    public Optional<Long> getRaiseAmount(double randomModifier, int handQuality) {
+        long raiseAmount;
+        if (randomModifier * (handQuality / 24.0) > 1 / contemptFactor) { // If the hand is really good
+            raiseAmount = minimumRaise * 4;
+        }
+        else if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) { // If the hand is really good
+            raiseAmount = minimumRaise * 2;
+        }
+        else {
+            raiseAmount = minimumRaise;
+        }
+
+        if (stackSize >= raiseAmount + currentBet) {
+            stackSize -= raiseAmount + currentBet;
+            return Optional.of(raiseAmount);
+        }
+        else { // Go all in
+            long raiseBy = stackSize - currentBet;
+            System.out.println("AI: Going all in with stacksize " + stackSize);
+            stackSize = 0;
+            if (raiseBy < 0) {
+                return Optional.empty();
+            }
+            else {
+                return Optional.of(raiseBy);
             }
         }
     }
