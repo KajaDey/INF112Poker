@@ -30,8 +30,8 @@ public class Game {
 
     //Rounds
     private int roundNumber = 0;
-    private long currentBet = 0L;
-    private long biggestBet;
+    private Map<Integer, Long> amountPutOnTableThisBettingRound;
+    private long currentMinimumRaise = 0;
     private long pot = 0;
     private Map<Integer, Long> stackSizes;
     private Card [] communityCards;
@@ -59,73 +59,10 @@ public class Game {
      *
      */
     public void playGame() {
-        assert numberOfPlayers == maxNumberOfPlayers : "Incorrect number of players";
 
-        //Initiate clients
-        gameController.initClients(gamesettings);
 
-        currentSB = startSB;
-        currentBB = startBB;
 
-        boolean remainingPlayers = true;
 
-        Handloop:
-        while (true) {
-            gameController.setStackSizes(stackSizes);
-            gameController.startNewHand();
-
-            playersStillPlaying = new ArrayList<>();
-            initializeNewHand(playersStillPlaying);
-
-            if (playersStillPlaying.size() <= 1) {
-                assert playersStillPlaying.size() != 0 : "Game ended, but no player won";
-                gameController.gameOver(playersStillPlaying.get(0).getID());
-                return;
-            }
-
-            //Generate cards
-            Deck deck = new Deck();
-            dealHoleCards(deck, playersStillPlaying);
-            communityCards = generateCommunityCards(deck);
-
-            currentBet = currentBB;
-            biggestBet = currentBB;
-
-            //Preflop
-            postBlinds(playersStillPlaying, smallBlindIndex, bigBlindIndex, currentSB, currentBB);
-            remainingPlayers = bettingRound(playersStillPlaying, 2, true);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
-
-            //Flop
-            setFlop();
-            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
-
-            //Turn
-            setTurn();
-            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
-
-            //River
-            setRiver();
-            remainingPlayers = bettingRound(playersStillPlaying, 0, false);
-            if (!remainingPlayers) { playersStillPlaying.get(0).incrementStack(pot); updateStackSizes(); continue; }
-
-            //Showdown
-            System.out.println("SHOWDOWN");
-            if (playersStillPlaying.size() > 1) {
-                for (Player player : playersStillPlaying) {
-                    System.out.println("Player " + player.getID() + ": " + player.cardsOnHand());
-                }
-                System.out.println("Community cards: ");
-                for (Card c : communityCards) {
-                    System.out.print(c + " ");
-                }
-                System.out.println();
-            }
-
-            this.showDown();
-        }
     }
 
     /**
@@ -138,67 +75,8 @@ public class Game {
      * @return false if the hand is over, else true
      */
     private boolean bettingRound(List<Player> playersStillPlaying, int actingPlayerIndex, boolean isPreflop) {
-        gameController.setStackSizes(stackSizes);
 
-        int numberOfActedPlayers = 0;
-        if (!isPreflop) {
-            currentBet = 0;
-            biggestBet = 0;
-        }
-
-        while (true) {
-            actingPlayerIndex %= numberOfPlayers;
-            Player playerToAct = playersStillPlaying.get(actingPlayerIndex);
-
-            //Check if the player is already all in
-            if (playerToAct.getStackSize() - playerToAct.getAmountPutOnTableThisBettingRound() == 0) {
-                if (numberOfPlayersAllIn(playersStillPlaying) >= playersStillPlaying.size() - 1) {
-                    //Everyone (or everyone but 1 player) is all in
-                    return true;
-                } else {
-                    //Player is all in, don't ask for decision
-                    continue;
-                }
-            }
-
-            Decision decision = getValidDecisionFromPlayer(playerToAct, isPreflop);
-            playerToAct.act(decision, currentBet);
-
-            //This changes to false when BB has acted for the first time preflop, to ensure that he can not check to a raise
-            isPreflop = (isPreflop && (actingPlayerIndex == bigBlindIndex)) ? false : isPreflop;
-
-            System.out.println(playerToAct.getName() + " acted: " + decision);
-            gameController.setDecisionForClient(playerToAct.getID(), decision);
-
-            switch(decision.move) {
-                case RAISE:case BET:
-                    numberOfActedPlayers = 1;
-                    currentBet += decision.size;
-                    assert decision.size >= biggestBet || playerToAct.getStackSize() - playerToAct.getAmountPutOnTableThisBettingRound() == 0;
-                    biggestBet = Math.max(biggestBet, decision.size);
-                    biggestBet = decision.size;
-                    break;
-                case FOLD: playersStillPlaying.remove(playerToAct); break;
-                default: numberOfActedPlayers++;
-            }
-
-            //If only one player left in hand
-            if (playersStillPlaying.size() <= 1) {
-                System.out.println("Only one player left, hand over");
-                updateStackSizes();
-                updatePot();
-                return false;
-            }
-
-            //If all players have acted
-            if (numberOfActedPlayers == playersStillPlaying.size()) {
-                updateStackSizes();
-                updatePot();
-                return true;
-            }
-
-            actingPlayerIndex++;
-        }
+        return true;
     }
 
     /**
@@ -211,14 +89,7 @@ public class Game {
      * @param BB Big blind amount
      */
     private void postBlinds(List<Player> playersStillPlaying, int sbID, int bbID, Long SB, Long BB) {
-        Decision postSB = new Decision(Decision.Move.BET, SB);
-        Decision postBB = new Decision(Decision.Move.RAISE, BB-SB);
-        Player SBPlayer = playersStillPlaying.get(sbID);
-        Player BBPlayer = playersStillPlaying.get(bbID);
-        SBPlayer.act(postSB, 0);
-        BBPlayer.act(postBB, BB-SB);
-        gameController.setDecisionForClient(sbID, postSB);
-        gameController.setDecisionForClient(bbID, postBB);
+
     }
 
     /**
@@ -229,44 +100,8 @@ public class Game {
      * @return Player's valid decision
      */
     private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreflop) {
-        int errors = 0;
-        System.out.println("Player to act " + playerToAct.getName() + " and currentbet is " + currentBet + " Biggest bet is " + biggestBet);
-        long stackSize = playerToAct.getStackSize();
 
-        while (true) {
-            Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
-            switch (decision.move) {
-                case FOLD: return decision;
-                case CHECK: if (biggestBet == 0 || (isPreflop)) return decision; break;
-                case CALL:
-                    if (currentBet >= currentBB)
-                        return decision;
-                    else if (currentBet == 0) {
-                        System.out.println("Player tried to call 0, returned check instead");
-                        return new Decision(Decision.Move.CHECK);
-                    }
-                    break;
-
-                case BET:
-                    if (decision.size >=stackSize)
-                        return new Decision(Decision.Move.BET, stackSize);
-                    else if(decision.size >= currentBB)
-                        return decision;
-                    break;
-
-                case RAISE:
-                    if (decision.size + currentBet == stackSize) {
-                        return decision;
-                    }
-                    else if (decision.size >= biggestBet)
-                        return decision;
-
-                    break;
-            }
-
-            System.out.println("Invalid move: " + playerToAct.getName() + " " + decision);
-            System.exit(1);
-        }
+        return null;
     }
 
     /**
