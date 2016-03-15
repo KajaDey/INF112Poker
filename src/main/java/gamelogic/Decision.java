@@ -5,9 +5,10 @@ package gamelogic;
  */
 
 public class Decision {
-    public static enum Move {FOLD, CHECK, BET, RAISE, CALL;
+    public static enum Move {FOLD, CHECK, BET, RAISE, CALL, BIG_BLIND, SMALL_BLIND, ALL_IN;
         public String toString() {
-            return this == FOLD ? "Fold" : this == CHECK ? "Check" : this == BET ? "Bet" : this == RAISE ? "Raise" : "Call";
+            return this == FOLD ? "Fold" : this == CHECK ? "Check" : this == BET ? "Bet" : this == CALL ? "Call":
+                    this == RAISE ? "Raise" : this == BIG_BLIND ? "Big blind" : this == SMALL_BLIND ? "Small blind" : "All in";
         }
     } ;
 
@@ -18,7 +19,7 @@ public class Decision {
     Constructs a decision to raise or bet a certain amount
      */
     public Decision(Move move, long size) {
-        assert move == Move.RAISE || move == Move.BET;
+        assert move == Move.RAISE || move == Move.BET || move == Move.ALL_IN || move == Move.BIG_BLIND || move == Move.SMALL_BLIND;
 
         this.move = move;
         this.size = size;
@@ -28,7 +29,7 @@ public class Decision {
     Constructs a decision to fold, check or call
      */
     public Decision(Move move) {
-        assert move != Move.RAISE && move != Move.BET;
+        assert move != Move.RAISE && move != Move.BET && move != Move.ALL_IN && move != Move.BIG_BLIND && move != Move.SMALL_BLIND;
 
         this.move = move;
         this.size = -1;
