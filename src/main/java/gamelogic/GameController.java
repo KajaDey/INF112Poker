@@ -216,7 +216,7 @@ public class GameController {
             GameClient c = clients.get(clientID);
             assert stackSizes.size() == 2;
             c.setAmountOfPlayers(stackSizes.size());
-            c.setStackSizes(stackSizes);
+            c.setStackSizes(new HashMap<>(stackSizes));
         }
     }
 

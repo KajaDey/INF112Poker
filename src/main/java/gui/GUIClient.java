@@ -56,7 +56,6 @@ public class GUIClient implements GameClient {
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
-            //Display error: "You don't have this much in your stack" and return without notifying
             System.out.println("You don't have this much in your stack");
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
@@ -145,6 +144,7 @@ public class GUIClient implements GameClient {
                 highestAmountPutOnTableThisBettingRound += decision.size;
                 break;
             case ALL_IN:
+                //TODO: Implement
                 break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
