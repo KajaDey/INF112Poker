@@ -60,7 +60,7 @@ public class Game {
     public void playGame() {
 
         while(numberOfPlayersWithChipsLeft() > 1) {
-            System.out.println("\n\nNew hand");
+            System.out.println("\nNew hand");
             //Tell all clients that a new hand has started and update all players stacksizes
             gameController.startNewHand();
             refreshAllStackSizes();
@@ -77,32 +77,32 @@ public class Game {
             printAllPlayerStacks();
 
             //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
-            System.out.println("\n\nBLINDS");
+            System.out.println("\nBLINDS");
             postBlinds();
             printAllPlayerStacks();
 
             //First betting round (preflop)
-            System.out.println("\n\nPREFLOP:");
+            System.out.println("\nPREFLOP:");
             boolean handContinues = bettingRound(true);
             if (!handContinues) { determineWinner(false);  continue; }
             printAllPlayerStacks();
 
             //Display flop and new betting round
-            System.out.println("\n\nFLOP:");
+            System.out.println("\nFLOP:");
             setFlop();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue; }
             printAllPlayerStacks();
 
             //Display turn and new betting round
-            System.out.println("\n\nTURN:");
+            System.out.println("\nTURN:");
             setTurn();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue;}
             printAllPlayerStacks();
 
             //Display river and new betting round
-            System.out.println("\n\nRIVER:");
+            System.out.println("\nRIVER:");
             setRiver();
             handContinues = bettingRound(false);
             printAllPlayerStacks();
