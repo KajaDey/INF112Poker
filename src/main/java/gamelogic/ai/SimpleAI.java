@@ -62,10 +62,6 @@ public class SimpleAI implements GameClient {
         assert stackSize == stackSizes.get(this.playerId) :
                 "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
 
-        for (int id : stackSizes.keySet()) {
-            System.out.println("AI: Player " + id + " has " + stackSizes.get(id) + " in stack");
-        }
-
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
         if (holeCards.get(0).suit == holeCards.get(1).suit) {
@@ -163,11 +159,9 @@ public class SimpleAI implements GameClient {
 
         if (stackSize >= raiseAmount + currentBet) {
             stackSize -= raiseAmount + currentBet;
-            System.out.println("AI: Raising " + raiseAmount + " top of raise, " + (raiseAmount + currentBet) + " put on table");
             return Optional.of(raiseAmount);
         }
         else { // Go all in
-            System.out.println("AI: Going all in with stacksize " + stackSize);
             stackSize = 0;
             return Optional.empty();
         }
@@ -228,7 +222,6 @@ public class SimpleAI implements GameClient {
                 betHasBeenPlaced = true;
 
                 currentBet = Math.max(stackSizes.get(playerId), currentBet);
-                System.out.println("AI: Player " + playerId + " with stack " + stackSizes.get(playerId) + " went all in, currentBet=" + currentBet);
                 minimumRaise = Math.max(stackSizes.get(playerId), minimumRaise);
                 stackSizes.put(playerId, 0L);
                 break;
