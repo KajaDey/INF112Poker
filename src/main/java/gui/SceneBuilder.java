@@ -20,6 +20,7 @@ public class SceneBuilder {
 
         window.close();
         window = new Stage();
+        window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
         window.setScene(new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080),1280,720));
         window.show();
@@ -34,6 +35,7 @@ public class SceneBuilder {
 
         window.close();
         window = new Stage();
+        window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
         window.setScene(scene);
         window.show();
