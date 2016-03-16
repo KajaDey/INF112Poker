@@ -211,6 +211,24 @@ public class SimpleAI implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
+            //**KRISTIAN**//
+            case BIG_BLIND:
+                betHasBeenPlaced = true;
+                currentBet = decision.size;
+                minimumRaise = bigBlindAmount;
+                if (playerId == this.playerId) {
+                    stackSize -= decision.size;
+                    currentBet = 0;
+                }
+                break;
+            case SMALL_BLIND: {
+                if (playerId == this.playerId) {
+                    stackSize -= decision.size;
+                }
+            }
+
+
+
             case CALL:
                 if (playerId == this.playerId) {
                     currentBet = 0;
@@ -253,7 +271,9 @@ public class SimpleAI implements GameClient {
         assert positions.size() == amountOfPlayers :
         "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
         assert positions.get(playerId) != null : "AI received positions object which didn't contain its own position";
+
         position = positions.get(playerId);
+        /**
         if (positions.size() == 2) {
             if (position == 1) {
                 stackSize -= Math.min(stackSize, bigBlindAmount); // Is big blind
@@ -271,7 +291,7 @@ public class SimpleAI implements GameClient {
             else if (position == 2) {
                 stackSize -= Math.min(stackSize, bigBlindAmount); // Is big blind
             }
-        }
+        } */
     }
 
     @Override

@@ -32,12 +32,16 @@ public class Player extends User {
      * @param decision Move to execute
      * @param highestAmountPutOnTable
      */
-    public void act(Decision decision, long highestAmountPutOnTable) {
+    public void act(Decision decision, long highestAmountPutOnTable, Pot pot) {
+
+        System.out.println("\nHighest amount put on table: " + highestAmountPutOnTable);
+        System.out.println(this.getName() + " put on table: " + putOnTableThisRound);
+        long theCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
             case SMALL_BLIND: case BIG_BLIND:
-                putOnTableThisRound += Math.min(stackSize, decision.size);
-                stackSize -= Math.min(stackSize, decision.size);
-                System.out.println("Player " + this.getName() + " posted his " + decision.move.toString().toLowerCase());
+                putOnTableThisRound = decision.size;
+                stackSize -= decision.size;
+                pot.addToPot(decision.size);
                 break;
 
             case FOLD:
@@ -47,11 +51,26 @@ public class Player extends User {
             case CHECK:
                 break;
 
+            case CALL:
+                if (theCall < 0) {
+                    System.out.println(this.getName() + " " + decision + ": The call is " + theCall);
+                }
+                stackSize -= theCall;
+                putOnTableThisRound = highestAmountPutOnTable;
+                pot.addToPot(theCall);
+                break;
+
             case BET:
                 assert putOnTableThisRound == 0;
+                this.putOnTableThisRound = decision.size;
+                stackSize -= decision.size;
+                pot.addToPot(decision.size);
                 break;
 
             case RAISE:
+                stackSize -= (theCall + decision.size);
+                putOnTableThisRound = highestAmountPutOnTable + decision.size;
+                pot.addToPot(theCall + decision.size);
                 break;
 
             case ALL_IN:
@@ -115,5 +134,8 @@ public class Player extends User {
         stackSize += size;
     }
 
+    public void newBettingRound() {
+        this.putOnTableThisRound = 0;
+    }
 }
 
