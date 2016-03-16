@@ -68,6 +68,7 @@ public class Game {
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
+            gameController.setPositions(new HashMap<>(positions));
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
