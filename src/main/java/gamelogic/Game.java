@@ -104,10 +104,12 @@ public class Game {
             System.out.println("\nRIVER:");
             setRiver();
             handContinues = bettingRound(false);
+            if (!handContinues) { determineWinner(false); continue;}
             printAllPlayerStacks();
 
             //Showdown
             determineWinner(true);
+            printAllPlayerStacks();
         }
 
         //Deal with who won the game.. (should be the only player with chips left
