@@ -76,6 +76,7 @@ public class Player extends User {
      */
     public void setHand(Card card1, Card card2) {
         this.hand = new Hand(card1, card2, table.getCommunityCards());
+        // TODO change
     }
 
     /**
