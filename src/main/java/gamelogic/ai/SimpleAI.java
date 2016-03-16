@@ -27,7 +27,12 @@ public class SimpleAI implements GameClient {
     private int position; // 0 is dealer
 
     private Optional<Decision> lastDecision = Optional.empty();
+
+    // The AI keeps track of its stackSize by changing it in getDecision()
     private long stackSize;
+    // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
+    // by updating it in playerMadeDecision()
+    private Map<Integer, Long> stackSizes;
 
     private boolean betHasBeenPlaced;
     private int playersLeftInCurrentHand;
@@ -54,6 +59,11 @@ public class SimpleAI implements GameClient {
         assert stackSize > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
 
         assert minimumRaise > 0;
+        assert stackSize == stackSizes.get(this.playerId) : "AI: stacksize mismatch";
+
+        for (int id : stackSizes.keySet()) {
+            System.out.println("AI: Player " + id + " has " + stackSizes.get(id) + " in stack");
+        }
 
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
@@ -73,11 +83,11 @@ public class SimpleAI implements GameClient {
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
 
-        if (randomModifier * (handQuality / 18.0) > 1 / contemptFactor) { // If the hand is considered "good"
+        if (randomModifier * (handQuality / 18.0) > 1 / contemptFactor) {
+            // If the hand is considered "good", raise or bet if no one else has done it
             if (currentBet == 0) {
                 Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
                 if (raiseAmount.isPresent()) {
-
                     if(betHasBeenPlaced) {
                         return new Decision(Decision.Move.RAISE, raiseAmount.get());
                     }
@@ -86,22 +96,28 @@ public class SimpleAI implements GameClient {
                     }
                 }
                 else {
-                    return new Decision(Decision.Move.CALL);
+                    return new Decision(Decision.Move.ALL_IN);
                 }
             }
-            // If someone has already raised, raise more if the hand is really good
+            // If someone has already raised, raise anyway if the hand is really good
             else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) {
                 Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
                 if (raiseAmount.isPresent()) {
                     return new Decision(Decision.Move.RAISE, raiseAmount.get());
                 }
                 else { // Go all in
-                    return new Decision(Decision.Move.CALL);
+                    return new Decision(Decision.Move.ALL_IN);
                 }
             }
             else {
-                stackSize -= currentBet;
-                return new Decision(Decision.Move.CALL);
+                if (stackSize > currentBet) {
+                    stackSize -= currentBet;
+                    return new Decision(Decision.Move.CALL);
+                }
+                else {
+                    stackSize = 0;
+                    return new Decision(Decision.Move.ALL_IN);
+                }
             }
         }
         else if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is decent
@@ -129,7 +145,7 @@ public class SimpleAI implements GameClient {
     /**
      * Returns a legal amount to raise by, which becomes higher if the hand is good
      * Also removes the appropriate amount of chips from stackSize
-     * May go all in. Will return Optional.empty() if it goes all in AND that would require raise by < 0
+     * May go all in. Will return Optional.empty() if it goes all in
      * @param randomModifier Modifier that gets multipled by the handquality
      */
     public Optional<Long> getRaiseAmount(double randomModifier, int handQuality) {
@@ -144,20 +160,14 @@ public class SimpleAI implements GameClient {
             raiseAmount = minimumRaise;
         }
 
-        if (stackSize > raiseAmount + currentBet) {
+        if (stackSize >= raiseAmount + currentBet) {
             stackSize -= raiseAmount + currentBet;
             return Optional.of(raiseAmount);
         }
         else { // Go all in
-            long raiseBy = stackSize - currentBet;
             System.out.println("AI: Going all in with stacksize " + stackSize);
             stackSize = 0;
-            if (raiseBy <= 0) {
-                return Optional.empty();
-            }
-            else {
-                return Optional.of(raiseBy);
-            }
+            return Optional.empty();
         }
     }
 
@@ -202,34 +212,42 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        assert stackSizes.size() >= 2 && amountOfPlayers >= 2;
+        assert stackSizes.size() == amountOfPlayers;
 
         System.out.println("AI: AI was sent a stacksize of " + stackSizes.get(this.playerId));
         this.stackSize = stackSizes.get(this.playerId);
+        this.stackSizes = stackSizes;
     }
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
-            //**KRISTIAN**//
-            case BIG_BLIND:
+            case ALL_IN:
                 betHasBeenPlaced = true;
-                currentBet = decision.size;
-                minimumRaise = bigBlindAmount;
+
+                currentBet = Math.max(stackSizes.get(playerId), currentBet);
+                System.out.println("AI: Player " + playerId + " with stack " + stackSizes.get(playerId) + " went all in, currentBet=" + currentBet);
+                minimumRaise = Math.max(stackSizes.get(playerId), minimumRaise);
+                stackSizes.put(playerId, 0L);
+                break;
+
+            case BIG_BLIND:
+            case SMALL_BLIND:
+                betHasBeenPlaced = true;
+                minimumRaise = decision.size;
+
+                stackSizes.put(playerId, stackSizes.get(playerId) - decision.size);
                 if (playerId == this.playerId) {
                     stackSize -= decision.size;
                     currentBet = 0;
                 }
-                break;
-            case SMALL_BLIND: {
-                if (playerId == this.playerId) {
-                    stackSize -= decision.size;
+                else {
+                    currentBet = decision.size;
                 }
-            }
-
-
+                break;
 
             case CALL:
+                stackSizes.put(playerId, stackSizes.get(playerId) - currentBet);
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }
@@ -239,9 +257,12 @@ public class SimpleAI implements GameClient {
             case BET:
                 if (playerId == this.playerId) {
                     currentBet = 0;
-                } else {
+                }
+                else {
                     currentBet += decision.size;
                 }
+                stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.size));
+
                 betHasBeenPlaced = true;
                 minimumRaise = Math.max(decision.size, bigBlindAmount);
                 break;
