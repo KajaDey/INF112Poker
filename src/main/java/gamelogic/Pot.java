@@ -42,6 +42,8 @@ public class Pot {
             }
         }
 
+        potSize -= total;
+
         return total;
     }
 

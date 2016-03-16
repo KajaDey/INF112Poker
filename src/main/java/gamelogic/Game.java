@@ -59,7 +59,6 @@ public class Game {
      */
     public void playGame() {
 
-        roundNumber++;
         while(numberOfPlayersWithChipsLeft() > 1) {
             System.out.println("\n\nNew hand");
             //Tell all clients that a new hand has started and update all players stacksizes
@@ -113,6 +112,13 @@ public class Game {
         //Deal with who won the game.. (should be the only player with chips left
         assert numberOfPlayersWithChipsLeft() == 1 : "Game over but " + numberOfPlayersWithChipsLeft() + " had chips left";
         refreshAllStackSizes();
+
+        for (Player p : players) {
+            if (p.getStackSize() > 0) {
+                gameController.gameOver(p.getID());
+                return;
+            }
+        }
     }
 
     private void determineWinner(boolean isShowDown) {
@@ -172,7 +178,12 @@ public class Game {
             Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
 
             //Check if player is already all in
-            if (playerToAct.getStackSize() == 0) { actingPlayerIndex++; continue; }
+            if (playerToAct.getStackSize() == 0) {
+                if (numberOfPlayersWithChipsLeft() == 0)
+                    return true;
+                actingPlayerIndex++;
+                continue;
+            }
 
             //Get decision for the acting player
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
@@ -493,7 +504,6 @@ public class Game {
      * @return Winner-ID
      */
     private int findWinnerID(List<Integer> playersStillPlaying) {
-        // TODO next sprint: handle split
         int bestPlayer = playersStillPlaying.get(0);
         Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
 
@@ -518,18 +528,24 @@ public class Game {
             IDStillPlaying.add(p.getID());
         }
 
+        //Winner of the main pot
         int winnerID = findWinnerID(IDStillPlaying);
+        Player winner = getPlayerFromID(winnerID);
+        long potShare = pot.getSharePotPlayerCanWin(winnerID);
+        winner.incrementStack(potShare);
+        gameController.showDown(IDStillPlaying, winnerID, holeCards, potShare);
+        IDStillPlaying.remove(new Integer(winnerID));
 
+        //While there are more side pots
         while (pot.getPotSize() > 0) {
-            Player player = getPlayerFromID(winnerID);
-            long potShare = pot.getSharePotPlayerCanWin(winnerID);
-            player.incrementStack(potShare);
-            System.out.println(player.getName() + " got " + potShare);
-            IDStillPlaying.remove(new Integer(winnerID));
             winnerID = findWinnerID(IDStillPlaying);
+            winner = getPlayerFromID(winnerID);
+            potShare = pot.getSharePotPlayerCanWin(winnerID);
+            winner.incrementStack(potShare);
+            System.out.println(winner.getName() + " got " + potShare);
+            IDStillPlaying.remove(new Integer(winnerID));
         }
 
-        gameController.showDown(IDStillPlaying, winnerID, holeCards, pot.getPotSize());
         delay(5000);
     }
 
