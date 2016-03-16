@@ -34,12 +34,12 @@ public class Player extends User {
      */
     public void act(Decision decision, long highestAmountPutOnTable, Pot pot) {
 
-        long theCall = (highestAmountPutOnTable - putOnTableThisRound);
+        long amountToCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
             case SMALL_BLIND: case BIG_BLIND:
                 putOnTableThisRound = decision.size;
                 stackSize -= decision.size;
-                pot.addToPot(decision.size);
+                pot.addToPot(ID, decision.size);
                 break;
 
             case FOLD:
@@ -50,29 +50,27 @@ public class Player extends User {
                 break;
 
             case CALL:
-                if (theCall < 0) {
-                    System.out.println(this.getName() + " " + decision + ": The call is " + theCall);
-                }
-                stackSize -= theCall;
-                putOnTableThisRound = highestAmountPutOnTable;
-                pot.addToPot(theCall);
+                amountToCall = Math.min(amountToCall, stackSize);
+                stackSize -= amountToCall;
+                putOnTableThisRound += amountToCall;
+                pot.addToPot(ID, amountToCall);
                 break;
 
             case BET:
                 assert putOnTableThisRound == 0;
                 this.putOnTableThisRound = decision.size;
                 stackSize -= decision.size;
-                pot.addToPot(decision.size);
+                pot.addToPot(ID, decision.size);
                 break;
 
             case RAISE:
-                stackSize -= (theCall + decision.size);
+                stackSize -= (amountToCall + decision.size);
                 putOnTableThisRound = highestAmountPutOnTable + decision.size;
-                pot.addToPot(theCall + decision.size);
+                pot.addToPot(ID, amountToCall + decision.size);
                 break;
 
             case ALL_IN:
-                //TODO: This does not work at all..
+                pot.addToPot(ID, stackSize);
                 putOnTableThisRound += stackSize;
                 stackSize = 0;
                 break;

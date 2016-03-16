@@ -398,12 +398,12 @@ public class GameScreen {
         String decisionText = decision.move.toString() + " ";
         String checkCallButtonText = "Call";
 
-
         switch (decision.move) {
             case CALL:
-                newStackSize -= (highestAmountPutOnTable - putOnTable.get(ID));
-                putOnTable.put(ID, highestAmountPutOnTable);
+                newStackSize -= Math.min(stackSizes.get(ID), (highestAmountPutOnTable - putOnTable.get(ID)));
+                putOnTable.put(ID, Math.min(stackSizes.get(ID),highestAmountPutOnTable));
                 break;
+
             case BET:
                 putOnTable.put(ID, decision.size);
                 newStackSize -= decision.size;
@@ -431,7 +431,12 @@ public class GameScreen {
                 putOnTable.put(ID, decision.size);
                 break;
             case ALL_IN:
+                if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) { //If raise is valid
+                    highestAmountPutOnTable = putOnTable.get(ID) + stackSizes.get(ID);
+                }
+                putOnTable.put(ID, putOnTable.get(ID) + stackSizes.get(ID));
                 newStackSize = 0;
+                break;
         }
 
         stackSizes.put(ID, newStackSize);
