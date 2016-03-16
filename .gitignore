@@ -12,8 +12,6 @@
 *.DS_STORE
 
 //INTELLIJ
-*.idea
-.idea/*
 *.iml
 
 target/
