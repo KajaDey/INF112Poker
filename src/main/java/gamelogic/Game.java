@@ -10,7 +10,6 @@ import java.util.*;
 public class Game {
 
     //Controls
-    private Table table;
     private Player [] players;
     private GameController gameController;
     private GameSettings gamesettings;
@@ -43,7 +42,6 @@ public class Game {
         this.gamesettings = gamesettings;
 
         this.maxNumberOfPlayers = gamesettings.getMaxNumberOfPlayers();
-        this.table = new Table(maxNumberOfPlayers);
         this.players = new Player[maxNumberOfPlayers];
 
         this.startStack = gamesettings.startStack;
