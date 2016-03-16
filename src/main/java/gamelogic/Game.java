@@ -57,6 +57,7 @@ public class Game {
      */
     public void playGame() {
 
+        Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
             System.out.println("\nNew hand");
             //Tell all clients that a new hand has started and update all players stacksizes
