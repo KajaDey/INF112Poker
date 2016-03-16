@@ -13,6 +13,7 @@
 
 //INTELLIJ
 *.idea
+.idea/*
 *.iml
 
 target/
