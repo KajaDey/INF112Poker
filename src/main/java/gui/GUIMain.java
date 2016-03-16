@@ -39,6 +39,7 @@ public class GUIMain extends Application{
      */
     public void start(Stage window){
         MainScreen.createSceneForMainScreen("PokerTable", gamecontroller);
+
     }
 
     /**
