@@ -34,8 +34,6 @@ public class Player extends User {
      */
     public void act(Decision decision, long highestAmountPutOnTable, Pot pot) {
 
-        System.out.println("\nHighest amount put on table: " + highestAmountPutOnTable);
-        System.out.println(this.getName() + " put on table: " + putOnTableThisRound);
         long theCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
             case SMALL_BLIND: case BIG_BLIND:
@@ -74,6 +72,9 @@ public class Player extends User {
                 break;
 
             case ALL_IN:
+                //TODO: This does not work at all..
+                putOnTableThisRound += stackSize;
+                stackSize = 0;
                 break;
         }
     }
