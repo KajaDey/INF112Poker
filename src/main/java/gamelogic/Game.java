@@ -526,6 +526,14 @@ public class Game {
      * Displays each player's hole cards after a hand is over, and gives the currentPot to the winning player.
      */
     private void showDown() {
+        //Print hole cards and community cards
+        System.out.println("\nShowdown");
+        for (Player p : playersStillInCurrentHand)
+            System.out.println(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1]);
+        for (Card communityCard : communityCards)
+            System.out.print(communityCard + " ");
+        System.out.println();
+
         List<Integer> IDStillPlaying = new ArrayList<>();
         for (Player p : playersStillInCurrentHand) {
             IDStillPlaying.add(p.getID());

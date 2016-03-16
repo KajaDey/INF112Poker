@@ -11,10 +11,11 @@
             Simon Halvorsen
             Vegar Rorvik
 
+* This implementation of texas holdem allows the user to play a game of heads-up poker against an AI.
+
 
 *[Scrum board](https://scrumy.com/inf112gruppe4)
 
-*[INF112 drive-mappe](https://drive.google.com/open?id=0B8qv1PNNBC0FRWRzaVNESEJuTkk)
 
 *[CardSprites]
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
@@ -29,4 +30,4 @@ Terms of Use:
 
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
 
-*Bakgrunn er laget av Josten
+*Backgrund is made by Josten
