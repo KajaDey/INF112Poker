@@ -1,0 +1,26 @@
+Møte 7 - 16.03.2016, kl. 14:15
+Sekretær: Jostein
+
+Oppmøte:
+Jostein
+André
+Vegar
+Simon
+Kaja
+Kristian
+Ragnhild
+Henrik
+Morten
+
+Fraværende: 
+Mariah
+
+Hva er gjort siden sist:
+Skrevet operasjonskontrakter
+Ryddet i GUI-kode
+Oppdatert diagrammer
+Gått tilbake til Maven, og fått det til å fungere
+Refakturert GameLoop, tilpasset AI til dette
+Endret ReadMe, lagt til lisenser
+Skrevet utfyllende JavaDoc
+
