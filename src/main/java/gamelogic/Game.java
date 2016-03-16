@@ -74,8 +74,10 @@ public class Game {
             communityCards = getCommunityCards(deck);
             dealHoleCards(deck, playersStillInCurrentHand);
 
+            printAllPlayerStacks();
 
             //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
+            System.out.println("\n\nBLINDS");
             postBlinds();
             printAllPlayerStacks();
 
