@@ -152,8 +152,10 @@ public class Game {
         highestAmountPutOnTable = (isPreFlop ? currentBB : 0);
         currentMinimumRaise = currentBB;
 
-        for (Player p : players)
-            p.newBettingRound();
+        if (!isPreFlop) {
+            for (Player p : players)
+                p.newBettingRound();
+        }
 
         int numberOfPlayersActedSinceLastAggressor = 0;
 
