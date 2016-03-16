@@ -1,7 +1,6 @@
-package main.java.gui;
+package gui;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,18 +9,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameController;
+import gamelogic.Card;
+import gamelogic.Decision;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +50,11 @@ public class GameScreen {
     private TextField amountTextfield;
 
     //Storagevariables
-    private long currentBet = 0, pot = 0;
-    private Map<Integer, String> names = new HashMap<Integer, String>();
+    private long highestAmountPutOnTable = 0, pot = 0;
     private long currentSmallBlind, currentBigBlind;
+    private Map<Integer, String> names = new HashMap<>();
+    private Map<Integer, Long> stackSizes = new HashMap<>();
+    private Map<Integer, Long> putOnTable = new HashMap<>();
 
     public GameScreen(int ID) {
         this.playerID = ID;
@@ -86,7 +84,8 @@ public class GameScreen {
      */
 
     public boolean insertPlayer(int userID, String name, long stackSize) {
-        names.put(userID, name);
+        this.names.put(userID, name);
+        this.stackSizes.put(userID, stackSize);
         if (userID == playerID) {
             //Insert player
             borderPane.setBottom(makePlayerLayout(userID, name, stackSize));
@@ -156,7 +155,7 @@ public class GameScreen {
         playerPositionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         playerLastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         playerNameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        
+
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
 
@@ -173,7 +172,7 @@ public class GameScreen {
         checkCallButton = ObjectStandards.makeStandardButton("Check");
         foldButton = ObjectStandards.makeStandardButton("Fold");
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
-        betRaiseButton.setMinHeight(58);
+        betRaiseButton.setMinHeight(66);
 
         //Actions
         betRaiseButton.setOnAction(e -> {
@@ -395,35 +394,80 @@ public class GameScreen {
      * @param decision
      */
     public void playerMadeDecision(int ID, Decision decision) {
+        long newStackSize = stackSizes.get(ID);
         String decisionText = decision.move.toString() + " ";
+        String checkCallButtonText = "Call";
 
         switch (decision.move) {
+            case CALL:
+                newStackSize -= Math.min(stackSizes.get(ID), (highestAmountPutOnTable - putOnTable.get(ID)));
+                putOnTable.put(ID, Math.min(stackSizes.get(ID),highestAmountPutOnTable));
+                break;
+
             case BET:
-                decisionText += (currentBet = decision.size);
-                setAmountTextfield(currentBet*2 + "");
+                putOnTable.put(ID, decision.size);
+                newStackSize -= decision.size;
+                decisionText += (highestAmountPutOnTable = decision.size);
+                setAmountTextfield(highestAmountPutOnTable *2 + "");
                 break;
             case RAISE:
-                decisionText += (currentBet += decision.size);
-                setAmountTextfield(Math.max(currentBet+decision.size, currentBigBlind*2) + "");
+                long theCall = highestAmountPutOnTable - putOnTable.get(ID);
+                newStackSize -= (theCall + decision.size);
+                decisionText += (highestAmountPutOnTable += decision.size);
+                setAmountTextfield((highestAmountPutOnTable + decision.size) + "");
+                putOnTable.put(ID, highestAmountPutOnTable);
+                break;
+            case BIG_BLIND:
+                newStackSize -= decision.size;
+                decisionText += (highestAmountPutOnTable = decision.size);
+                setAmountTextfield("" + currentBigBlind * 2);
+                if (ID == playerID) { checkCallButtonText = "Check"; }
+                putOnTable.put(ID, highestAmountPutOnTable);
+                break;
+            case SMALL_BLIND:
+                newStackSize -= decision.size;
+                decisionText += (decision.size);
+                setAmountTextfield("" + currentBigBlind * 2);
+                putOnTable.put(ID, decision.size);
+                break;
+            case ALL_IN:
+                if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) { //If raise is valid
+                    highestAmountPutOnTable = putOnTable.get(ID) + stackSizes.get(ID);
+                }
+                putOnTable.put(ID, putOnTable.get(ID) + stackSizes.get(ID));
+                newStackSize = 0;
                 break;
         }
 
-        if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
-            Runnable task = () -> {
-                checkCallButton.setText("Call");
-                betRaiseButton.setText("Raise to");
-            };
-            Platform.runLater(task);
+        stackSizes.put(ID, newStackSize);
+
+        //Set button texts depending on the action
+        String finalText = checkCallButtonText;
+        switch (decision.move) {
+            case BET:case RAISE:case BIG_BLIND:case SMALL_BLIND:
+                Runnable task = () -> {
+                    checkCallButton.setText(finalText);
+                    betRaiseButton.setText("Raise to");
+                };
+                Platform.runLater(task);
+                break;
         }
 
         setErrorStateOfAmountTextfield(false);
         final String finalDecision = decisionText;
+        final String stackSizeText = "Stack size: " + newStackSize;
 
         Runnable task;
         if (ID == this.playerID) {
-            task = () -> playerLastMoveLabel.setText(finalDecision);
+            task = () -> {
+                playerLastMoveLabel.setText(finalDecision);
+                playerStackLabel.setText(stackSizeText);
+            };
         } else {
-            task = () -> opponentLastMoveLabel.setText(finalDecision);
+            task = () -> {
+                opponentLastMoveLabel.setText(finalDecision);
+                opponentStackSizeLabel.setText(stackSizeText);
+            };
         }
         Platform.runLater(task);
     }
@@ -436,6 +480,7 @@ public class GameScreen {
 
     public void updateStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : stackSizes.keySet()) {
+            this.stackSizes = stackSizes;
             String stackSizeText = "" + stackSizes.get(clientID);
 
             Runnable task;
@@ -456,6 +501,12 @@ public class GameScreen {
 
     public void newBettingRound(long potSize) {
         setPot(potSize);
+
+        //Reset everything people have put on the table
+        for (Integer i : putOnTable.keySet())
+            putOnTable.put(i, 0L);
+        highestAmountPutOnTable = 0;
+
         try {
             Thread.sleep(1500L);
         } catch (Exception e) {
@@ -463,7 +514,7 @@ public class GameScreen {
         }
 
         Runnable task = () -> {
-            this.currentBet = 0;
+            this.highestAmountPutOnTable = 0;
             this.playerLastMoveLabel.setText("");
             this.opponentLastMoveLabel.setText("");
             checkCallButton.setText("Check");
@@ -472,7 +523,6 @@ public class GameScreen {
             this.setErrorStateOfAmountTextfield(false);
         };
         Platform.runLater(task);
-
     }
 
     /**

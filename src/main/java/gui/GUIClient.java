@@ -1,9 +1,9 @@
-package main.java.gui;
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameClient;
+package gui;
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.GameClient;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +14,10 @@ import java.util.Map;
 
 public class GUIClient implements GameClient {
 
-    //Needed variables
     private GameScreen gameScreen;
-    private long currentBet = 0, currentRaise = 0;
+
+    //Storage variables
+    private long minimumRaise = 0, highestAmountPutOnTableThisBettingRound = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
@@ -54,32 +55,40 @@ public class GUIClient implements GameClient {
      * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
-            //Display error: "You don't have this much in your stack" and return without notifying
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
             System.out.println("You don't have this much in your stack");
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
-        if (move == Decision.Move.RAISE && moveSize-currentBet < Math.max(bigBlind, currentRaise) &&
+        if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
-            System.out.println("Raise is to small");
+            System.out.println("Raise is too small");
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
+        if (move == Decision.Move.BET && moveSize < bigBlind) {
+            System.out.println("Bet is too small, must be a minimum of " + bigBlind);
+            gameScreen.setErrorStateOfAmountTextfield(true);
+            return;
+        }
 
         switch (move) {
             case BET:
                 this.decision = new Decision(move, moveSize);
                 break;
             case RAISE:
-                this.decision = new Decision(move, moveSize - currentBet);
+                if (moveSize == stackSizes.get(this.id))
+                    this.decision = new Decision(Decision.Move.ALL_IN);
+                else
+                    this.decision = new Decision(move, moveSize - highestAmountPutOnTableThisBettingRound);
                 break;
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
 
         gameScreen.setErrorStateOfAmountTextfield(false);
+
         notifyAll();
     }
 
@@ -133,8 +142,16 @@ public class GUIClient implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
-            case BET: currentBet = decision.size; break;
-            case RAISE: currentRaise = decision.size; currentBet += currentRaise; break;
+            case BET:case SMALL_BLIND: case BIG_BLIND:
+                highestAmountPutOnTableThisBettingRound = decision.size;
+                break;
+            case RAISE:
+                minimumRaise = decision.size;
+                highestAmountPutOnTableThisBettingRound += decision.size;
+                break;
+            case ALL_IN:
+                //TODO: Implement
+                break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
     }
@@ -179,7 +196,8 @@ public class GUIClient implements GameClient {
 
     public void newBettingRound(long potSize) {
         gameScreen.newBettingRound(potSize);
-        currentBet = 0;
+        minimumRaise = 0;
+        highestAmountPutOnTableThisBettingRound = 0;
     }
 
 

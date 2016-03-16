@@ -1,7 +1,5 @@
-package main.java.gui;
+package gui;
 
-import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -33,18 +31,6 @@ public class ImageViewer {
     }
 
     /**
-     * Shows the community cards
-     * @param cardPlacement The table placement of the cards
-     * @param cardName The name of the card
-     */
-    public void showCommunityCard(int cardPlacement, String cardName){
-        //TODO: Make it possible for the community cards to be shown
-        ImageView card = ImageViewer.setCardImage("player", cardName);
-
-    }
-
-
-    /**
      * Sets an image as a background for a given BorderPane
      * @param imageIn The image to be set as background
      * @param borderPane The new pane. Contains the background
@@ -60,30 +46,6 @@ public class ImageViewer {
         borderPane.setBackground(background);
 
         return borderPane;
-    }
-
-    /**
-     * Method for setting the image of a given card
-     * @param player A string containing info of the player. Is either "player" or "opponent"
-     * @param imageName The name of the card
-     * @return An ImageView containing the image of the card.
-     */
-    public static ImageView setCardImage(String player, String imageName){
-
-
-        int imageSize = 0;
-        if (player.equals("player"))
-            imageSize = 130;
-        else if (player.equals("opponent"))
-            imageSize = 100;
-
-        Image image = new Image(returnURLPathForCardSprites(imageName));
-        ImageView imageView = new ImageView();
-        imageView.setImage(image);
-        imageView.setPreserveRatio(true);
-        imageView.setFitHeight(imageSize);
-
-        return imageView;
     }
 
     /**

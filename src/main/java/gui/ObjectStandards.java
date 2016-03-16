@@ -1,22 +1,12 @@
-package main.java.gui;
+package gui;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 /**
  * Created by ady on 05/03/16.
@@ -149,24 +139,6 @@ public class ObjectStandards {
         return label;
     }
 
-
-    /**
-     * Creates a standard text field for input
-     * @return The text field
-     */
-    public static TextField makeStandardTextField(){
-        TextField textField = new TextField();
-        Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(5,5,5,5);
-        int standardButton = 75;
-
-        textField.setFont(standardFont);
-        textField.setPadding(standardPadding);
-        textField.setMaxWidth(standardButton);
-
-        return textField;
-    }
-
     /**
      * Makes a text field for the main screen. The text field is wide, and has styling.
      * @param promptText The text for the prompt in the text field
@@ -181,8 +153,6 @@ public class ObjectStandards {
         textField.setMinWidth(150);
         textField.setMaxWidth(150);
         textField.setPadding(padding);
-
-        //textField.setStyle(styling);
 
         return textField;
     }
@@ -213,11 +183,8 @@ public class ObjectStandards {
         TextField textField = new TextField();
         textField.setPromptText(promptText);
         textField.setFont(new Font("Areal", 15));
-        //textField.setMinWidth(150);
         textField.setMaxWidth(150);
         textField.setPadding(padding);
-
-        //textField.setStyle(styling);
 
         return textField;
     }

@@ -1,8 +1,8 @@
-package main.java.gui;
+package gui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import main.java.gamelogic.*;
+import gamelogic.*;
 
 /**
  * Created by ady on 05/03/16.
@@ -39,6 +39,7 @@ public class GUIMain extends Application{
      */
     public void start(Stage window){
         MainScreen.createSceneForMainScreen("PokerTable", gamecontroller);
+
     }
 
     /**

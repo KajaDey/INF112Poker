@@ -14,3 +14,6 @@
 //INTELLIJ
 *.idea
 *.iml
+
+target/
+*.log

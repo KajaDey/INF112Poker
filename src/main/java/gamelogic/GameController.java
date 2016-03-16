@@ -1,7 +1,7 @@
-package main.java.gamelogic;
+package gamelogic;
 
-import main.java.gamelogic.ai.SimpleAI;
-import main.java.gui.*;
+import gamelogic.ai.SimpleAI;
+import gui.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,14 +51,15 @@ public class GameController {
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
-        if (!(game.getError() == null)) {
+        String error;
+        if (((error = game.getError()) != null)) {
             //TODO: Tell GUI to display error-message that settings are not valid
-            mainGUI.displayErrorMessageToLobby(game.getError());
+            mainGUI.displayErrorMessageToLobby(error);
             return;
         }
 
         //Empty map of clients
-        clients = new HashMap<Integer, GameClient>();
+        clients = new HashMap<>();
 
         //Init GUIGameClient
         GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
@@ -70,12 +71,13 @@ public class GameController {
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
-        //Should maybe be called by game
-        initClients(gamesettings);
 
         //TODO: add all players to GUI
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
         mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack());
+
+        //Should maybe be called by game
+        initClients(gamesettings);
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -214,7 +216,7 @@ public class GameController {
             GameClient c = clients.get(clientID);
             assert stackSizes.size() == 2;
             c.setAmountOfPlayers(stackSizes.size());
-            c.setStackSizes(stackSizes);
+            c.setStackSizes(new HashMap<>(stackSizes));
         }
     }
 

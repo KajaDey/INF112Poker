@@ -1,7 +1,5 @@
-package main.java.gui;
+package gui;
 
-import com.sun.javafx.binding.ObjectConstant;
-import com.sun.javafx.css.Stylesheet;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -11,14 +9,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import main.java.gamelogic.GameController;
-
-import java.awt.*;
-import java.awt.Color;
+import gamelogic.GameController;
 
 /**
  * Created by Jostein on 07.03.2016.
@@ -56,7 +49,6 @@ public class MainScreen {
      * @return The horizontal box containing all the information of the screen.
      */
     public static HBox makeLayout(Stage window,GameController gameController){
-        Font infoFont = new Font("Monaco", 30);
         Insets largePadding = new Insets(15);
         int standardButton = 75;
 

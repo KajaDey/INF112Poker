@@ -1,4 +1,4 @@
-package main.java.gui;
+package gui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -6,13 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.gamelogic.GameController;
+import gamelogic.GameController;
 
 /**
  * Created by ady on 07/03/16.
@@ -156,7 +155,7 @@ public class GameLobby {
         layout.setPadding(new Insets(10, 10, 10, 10));
 
         Label label = new Label(message);
-        label.setFont(new Font("Areal", 50));
+        label.setFont(new Font("Areal", 25));
 
         Button backToSettings = ObjectStandards.makeStandardButton("Alright. Take me back to the settings menu");
         backToSettings.setOnAction(e -> {

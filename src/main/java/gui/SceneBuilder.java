@@ -1,13 +1,8 @@
-package main.java.gui;
+package gui;
 
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import main.java.gamelogic.GameController;
 
 /**
  * Created by ady on 08/03/16.
@@ -25,6 +20,7 @@ public class SceneBuilder {
 
         window.close();
         window = new Stage();
+        window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
         window.setScene(new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080),1280,720));
         window.show();
@@ -39,6 +35,7 @@ public class SceneBuilder {
 
         window.close();
         window = new Stage();
+        window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
         window.setScene(scene);
         window.show();
