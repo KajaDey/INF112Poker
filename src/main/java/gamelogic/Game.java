@@ -81,23 +81,27 @@ public class Game {
             printAllPlayerStacks();
 
             //First betting round (preflop)
+            System.out.println("\n\nPREFLOP:");
             boolean handContinues = bettingRound(true);
             if (!handContinues) { determineWinner(false);  continue; }
             printAllPlayerStacks();
 
             //Display flop and new betting round
+            System.out.println("\n\nFLOP:");
             setFlop();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue; }
             printAllPlayerStacks();
 
             //Display turn and new betting round
+            System.out.println("\n\nTURN:");
             setTurn();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue;}
             printAllPlayerStacks();
 
             //Display river and new betting round
+            System.out.println("\n\nRIVER:");
             setRiver();
             handContinues = bettingRound(false);
             printAllPlayerStacks();
@@ -108,8 +112,7 @@ public class Game {
 
         //Deal with who won the game.. (should be the only player with chips left
         assert numberOfPlayersWithChipsLeft() == 1 : "Game over but " + numberOfPlayersWithChipsLeft() + " had chips left";
-
-
+        refreshAllStackSizes();
     }
 
     private void determineWinner(boolean isShowDown) {
@@ -159,16 +162,17 @@ public class Game {
 
         int numberOfPlayersActedSinceLastAggressor = 0;
 
+        //Check if all players are all in and betting round should be skipped
+        if (numberOfPlayersWithChipsLeft() <= 1) { return true; }
+
         while (true) {
-            //Check if all players are all in and betting round should be skipped
-            if (numberOfPlayersWithChipsLeft() <= 1) { return true; }
 
             //Determine who's turn it is
             actingPlayerIndex %= playersStillInCurrentHand.size();
             Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
 
             //Check if player is already all in
-            if (playerToAct.getStackSize() == 0) { continue; }
+            if (playerToAct.getStackSize() == 0) { actingPlayerIndex++; continue; }
 
             //Get decision for the acting player
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
@@ -189,6 +193,16 @@ public class Game {
                     currentMinimumRaise = decision.size;
                     break;
                 case ALL_IN:
+                    if(playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable+currentMinimumRaise) {
+                        numberOfPlayersActedSinceLastAggressor = 1; //If all in is a valid raise
+                        currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
+                        highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
+                    } else if (playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable){
+                        numberOfPlayersActedSinceLastAggressor++; //If all in was not a valid raise but a raise
+                        highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
+                    } else {
+                        numberOfPlayersActedSinceLastAggressor++;
+                    }
                     break;
                 case FOLD:
                     playersStillInCurrentHand.remove(playerToAct);
@@ -196,6 +210,8 @@ public class Game {
 
                 default: numberOfPlayersActedSinceLastAggressor++;
             }
+
+            System.out.println(playerToAct.getName()  + " acted: " + decision + ". Highest amount put on table: " + highestAmountPutOnTable);
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1) {
@@ -504,11 +520,14 @@ public class Game {
 
         int winnerID = findWinnerID(IDStillPlaying);
 
-        for (Player p : playersStillInCurrentHand) {
-            if (p.getID() == winnerID)
-                p.incrementStack(pot.getPotSize());
+        while (pot.getPotSize() > 0) {
+            Player player = getPlayerFromID(winnerID);
+            long potShare = pot.getSharePotPlayerCanWin(winnerID);
+            player.incrementStack(potShare);
+            System.out.println(player.getName() + " got " + potShare);
+            IDStillPlaying.remove(new Integer(winnerID));
+            winnerID = findWinnerID(IDStillPlaying);
         }
-
 
         gameController.showDown(IDStillPlaying, winnerID, holeCards, pot.getPotSize());
         delay(5000);
@@ -526,6 +545,13 @@ public class Game {
             System.out.println(p.getName() + "'s stack: " + p.getStackSize());
         }
         System.out.println("Pot: " + pot.getPotSize());
+    }
+
+    public Player getPlayerFromID(int ID) {
+        for (Player p : players) {
+            if (p.getID() == ID) return p;
+        }
+        return null;
     }
 
 }
