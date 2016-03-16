@@ -1,4 +1,4 @@
-package main.java.gui;
+package gui;
 
 /**
  * Created by ady on 09/03/16.
@@ -10,8 +10,8 @@ package main.java.gui;
 public class GameSettings {
 
     public long startStack;
-    public int bigBlind;
-    public int smallBlind;
+    public long bigBlind;
+    public long smallBlind;
     public int maxNumberOfPlayers;
     public int levelDuration;
 
@@ -35,7 +35,7 @@ public class GameSettings {
      * @return bigBlind
      */
 
-    public int getBigBlind() {
+    public long getBigBlind() {
         return bigBlind;
     }
 
@@ -43,7 +43,7 @@ public class GameSettings {
      * @return smallBlind
      */
 
-    public int getSmallBlind() {
+    public long getSmallBlind() {
         return smallBlind;
     }
 

@@ -1,7 +1,7 @@
-package main.java.gamelogic.rules;
+package gamelogic.rules;
 
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Hand;
+import gamelogic.Card;
+import gamelogic.Hand;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -83,6 +83,17 @@ public class HandTest {
         assertTrue(allCards.contains(card6));
         assertTrue(allCards.contains(card7));
         assertTrue(allCards.contains(card8));
+    }
+
+    @Test
+    public void testAlCardsEqualsHoleCardsPlusCommunityCards() {
+        List<Card> allCards = straightFlushHand.getAllCards();
+        List<Card> holeCards = straightFlushHand.getHoleCards();
+        List<Card> communityCards = straightFlushHand.getCommunityCards();
+        assertTrue(allCards.containsAll(holeCards));
+        assertTrue(allCards.containsAll(communityCards));
+
+        assertTrue(allCards.size() == holeCards.size() + communityCards.size());
     }
 
     @Test

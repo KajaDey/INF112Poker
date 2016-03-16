@@ -1,4 +1,4 @@
-package main.java.gamelogic;
+package gamelogic;
 
 import java.util.Optional;
 
@@ -6,71 +6,135 @@ import java.util.Optional;
  * Created by kristianrosland on 07.03.2016.
  */
 public class Player extends User {
-
-    private Hand hand;
-    private Table table;
-
     private int ID;
     private long stackSize;
     private long putOnTableThisRound = 0;
+    private Card[] holeCards;
+    private boolean folded = false;
 
-    public Player(String name, long stackSize, Table table, int ID) {
+    public Player(String name, long stackSize, int ID) {
         super(name);
         this.stackSize = stackSize;
-        this.table = table;
         this.ID = ID;
+
     }
 
+    /**
+     * @return Player ID
+     */
     public int getID() {
         return ID;
     }
 
-    public void act(Decision decision, long currentBet) {
+    /**
+     * Execute a given decision
+     *
+     * @param decision Move to execute
+     * @param highestAmountPutOnTable
+     */
+    public void act(Decision decision, long highestAmountPutOnTable, Pot pot) {
+
+        long amountToCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
-            case BET:
-                assert putOnTableThisRound == 0 : "Player " + ID + " bet while putOnTableThisRound was != 0";
-                this.putOnTableThisRound = decision.size;
-                this.stackSize -= decision.size;
+            case SMALL_BLIND: case BIG_BLIND:
+                putOnTableThisRound = decision.size;
+                stackSize -= decision.size;
+                pot.addToPot(ID, decision.size);
                 break;
-            case RAISE:
-                System.out.println("Curr " + currentBet + ", putOnTable: " + putOnTableThisRound + ", dec: " + decision.size);
-                long totalPutOnTable = ((currentBet-putOnTableThisRound) + decision.size);
-                this.stackSize -= totalPutOnTable;
-                this.putOnTableThisRound = totalPutOnTable;
+
+            case FOLD:
+                this.folded = true;
                 break;
+
+            case CHECK:
+                break;
+
             case CALL:
-                this.stackSize -= (currentBet - putOnTableThisRound);
-                this.putOnTableThisRound = currentBet;
+                amountToCall = Math.min(amountToCall, stackSize);
+                stackSize -= amountToCall;
+                putOnTableThisRound += amountToCall;
+                pot.addToPot(ID, amountToCall);
+                break;
+
+            case BET:
+                assert putOnTableThisRound == 0;
+                this.putOnTableThisRound = decision.size;
+                stackSize -= decision.size;
+                pot.addToPot(ID, decision.size);
+                break;
+
+            case RAISE:
+                stackSize -= (amountToCall + decision.size);
+                putOnTableThisRound = highestAmountPutOnTable + decision.size;
+                pot.addToPot(ID, amountToCall + decision.size);
+                break;
+
+            case ALL_IN:
+                pot.addToPot(ID, stackSize);
+                putOnTableThisRound += stackSize;
+                stackSize = 0;
                 break;
         }
     }
 
+    /**
+     * Gets the total amount the player has put on table this round
+     *
+     * @return Amount put on table
+     */
     public long getAmountPutOnTableThisBettingRound() {
         return putOnTableThisRound;
     }
 
+    /**
+     * Gets the player's stack size
+     *
+     * @return Stack size
+     */
     public long getStackSize() {
         return stackSize;
     }
 
-    public void setHand(Card card1, Card card2) {
-        this.hand = new Hand(card1, card2, table.getCommunityCards());
+    /**
+     * Sets the player's hole cards
+     *
+     * @param card1 Card one in the hand
+     * @param card2 Card two in the hand
+     */
+    public void setHoleCards(Card card1, Card card2) {
+        this.holeCards = new Card[2];
+        holeCards[0] = card1;
+        holeCards[1] = card2;
     }
 
-    public String cardsOnHand() {
-        return hand.getHoleCards().get(0) + " " + hand.getHoleCards().get(1);
+    /**
+     *  Returns the players hole cards
+     * @return Hole cards represented as a Card-array of length 2
+     */
+    public Card[] getHoleCards() {
+        assert holeCards != null : "Hole cards where null when Game asked for them";
+        return holeCards;
     }
 
+    /**
+     * @return true if the player is still playing, else false
+     */
     public boolean stillPlaying() {
-        return stackSize > 0;
+        return !folded;
     }
 
-    public void setAmountPutOnTableThisBettingRound(long amount) {
-        this.putOnTableThisRound = amount;
-    }
 
+    /**
+     * Increments the player's stack with given amount
+     *
+     * @param size Amount added to stack
+     */
     public void incrementStack(long size) {
         stackSize += size;
+    }
+
+    public void newBettingRound() {
+        this.putOnTableThisRound = 0;
     }
 }
 

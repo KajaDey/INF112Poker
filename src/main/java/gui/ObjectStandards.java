@@ -1,22 +1,12 @@
-package main.java.gui;
+package gui;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 /**
  * Created by ady on 05/03/16.
@@ -24,6 +14,17 @@ import javafx.stage.Stage;
 public class ObjectStandards {
 
     private static DropShadow dropShadow = new DropShadow();
+
+    private static String styling = "-fx-background-color:#090a0c, " +
+            "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
+            "linear-gradient(#20262b, #191d22), " +
+            "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
+            "-fx-background-radius: 5,4,3,5; " +
+            "-fx-background-insets: 0,1,2,0; " +
+            "-fx-text-fill: white; " +
+            "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); " +
+            "-fx-text-fill: linear-gradient(white, #d0d0d0)";
+
 
     /**
      * A template for a button
@@ -40,23 +41,49 @@ public class ObjectStandards {
         button.setPadding(standardPadding);
         button.setMinWidth(standardMinWidth);
 
-        //button.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> button.setEffect(dropShadow));
-        //button.addEventHandler(MouseEvent.MOUSE_EXITED, event -> button.setEffect(null));
-
-        //button.setStyle("-fx-base: #bfbfbf;");
-
-        button.setStyle("-fx-background-color:#090a0c, " +
-                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
-                "linear-gradient(#20262b, #191d22), " +
-                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
-                "-fx-background-radius: 5,4,3,5; " +
-                "-fx-background-insets: 0,1,2,0; " +
-                "-fx-text-fill: white; " +
-                "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); " +
-                "-fx-text-fill: linear-gradient(white, #d0d0d0)");
+        button.setStyle(styling);
 
         return button;
     }
+
+    /**
+     * Makes a button for the lobby screen
+     * @param name The name of the button
+     * @return The button to be displayed
+     */
+    public static Button makeButtonForLobbyScreen(String name){
+        Button button = new Button(name);
+        Insets padding = new Insets(5,5,5,5);
+        button.setPadding(padding);
+        button.setFont(new Font("Areal", 15));
+        button.setMinWidth(120);
+        button.setMaxWidth(120);
+        button.setMinHeight(50);
+        button.setMaxHeight(50);
+
+        button.setStyle(styling);
+
+        return button;
+
+    }
+
+    /**
+     * Makes a label for different headlines
+     * @param name The name of the label
+     * @return The label
+     */
+    public static Label makeLabelForHeadLine(String name){
+        Label label = new Label(name);
+        Insets padding = new Insets(20,20,20,20);
+
+        label.setFont(new Font("Areal", 30));
+        label.setPadding(padding);
+        label.setTextFill(Color.web("#ffffff"));
+        label.setEffect(dropShadow);
+
+        return label;
+    }
+
 
     /**
      * Makes a standard label where the text color is white
@@ -97,31 +124,67 @@ public class ObjectStandards {
 
 
     /**
-     * Creates a standard text field for input
-     * @return The text field
+     * Makes a standard text label where the text color is black
+     * @param name The name of the label
+     * @return The created label
      */
-    public static TextField makeStandardTextField(){
-        TextField textField = new TextField();
-
+    public static Label makeLabelForSettingsScreen(String name){
+        Label label = new Label(name + " ");
         Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(5,5,5,5);
-        int standardButton = 75;
+        Insets standardPadding = new Insets(7,7,7,7);
 
-        textField.setFont(standardFont);
-        textField.setPadding(standardPadding);
-        textField.setMaxWidth(standardButton);
-        //textField.setEffect(dropShadow);
+        label.setFont(standardFont);
+        label.setPadding(standardPadding);
 
-        textField.setStyle("-fx-background-color:#090a0c, " +
-                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
-                "linear-gradient(#20262b, #191d22), " +
-                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
-                "-fx-background-radius: 5,4,3,5; " +
-                "-fx-background-insets: 0,1,2,0; " +
-                "-fx-text-fill: white; " +
-                "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); " +
-                "-fx-text-fill: linear-gradient(white, #d0d0d0)");
-        textField.setStyle("-fx-text-fill: white");
+        return label;
+    }
+
+    /**
+     * Makes a text field for the main screen. The text field is wide, and has styling.
+     * @param promptText The text for the prompt in the text field
+     * @return The text field to be displayed
+     */
+    public static TextField makeTextFieldForMainScreen(String promptText){
+        Insets padding = new Insets(5,5,5,5);
+
+        TextField textField = new TextField();
+        textField.setPromptText(promptText);
+        textField.setFont(new Font("Areal", 15));
+        textField.setMinWidth(150);
+        textField.setMaxWidth(150);
+        textField.setPadding(padding);
+
+        return textField;
+    }
+
+    /**
+     * Makes a text field for the settings screen. The text field is narrow, and has no styling.
+     * @return The text field to be displayed.
+     */
+    public static TextField makeTextFieldForSettingsScreen(){
+        Insets padding = new Insets(5,5,8,5);
+
+        TextField textField = new TextField();
+        textField.setFont(new Font("Areal", 15));
+        textField.setMaxWidth(75);
+        textField.setPadding(padding);
+
+        return textField;
+    }
+
+    /**
+     * Makes a text field for the game screen. The text field is wide, and has styling.
+     * @param promptText The prompt text to be shown
+     * @return The text field to be displayed.
+     */
+    public static TextField makeTextFieldForGameScreen(String promptText){
+        Insets padding = new Insets(5,5,5,5);
+
+        TextField textField = new TextField();
+        textField.setPromptText(promptText);
+        textField.setFont(new Font("Areal", 15));
+        textField.setMaxWidth(150);
+        textField.setPadding(padding);
 
         return textField;
     }

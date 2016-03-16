@@ -1,4 +1,4 @@
-package main.java.gamelogic;
+package gamelogic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,24 +44,24 @@ public interface GameClient {
      * After a showdown, the client receives the hole cards of all the players still in the hand,
      * as a map indexed by the players' IDs
      */
-    void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards);
+    void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot);
 
     /**
      * Sends the value of big blind
      * Sent at game start, and every time big blind is changed
      */
-    void setBigBlind(int bigBlind);
+    void setBigBlind(long bigBlind);
 
     /**
      * Sends the value of small blind
      * Sent at game start, and every time small blind is changed
      */
-    void setSmallBlind(int smallBlind);
+    void setSmallBlind(long smallBlind);
 
     /**
-     * Sends every player's position, as a map indexed by the players' IDs.
-     * A value of 0 corresponds to the dealer, 1 is big blind, etc
-     * Sent at the start of each hand
+     *  Sends every player's position, as a map indexed by the players' IDs.
+     *  A value of 0 corresponds to the dealer, 1 is small blind, 2 is big blind etc
+     *  Sent at the start of each hand
      */
     void setPositions(Map<Integer, Integer> setPositions);
 
@@ -86,4 +86,10 @@ public interface GameClient {
      * Sent at the start of each hand, before hole cards etc are sent.
      */
     void startNewHand();
+
+    /**
+     *  Called when the game ends (only 1 player has chips left)
+     *  @param winnerID ID of winner
+     */
+    void gameOver(int winnerID);
 }

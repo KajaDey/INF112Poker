@@ -1,4 +1,4 @@
-package main.java.gui;
+package gui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -6,13 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import main.java.gamelogic.GameController;
+import gamelogic.GameController;
 
 /**
  * Created by ady on 07/03/16.
@@ -24,11 +23,10 @@ public class GameLobby {
     private static Label bigBlind;
     private static Label smallBlind;
     private static Label levelDuration;
-    private static Label joinedPlayers;
     private static Label headLine;
 
     /**
-     * Creates the screen for the gamelobby and shows it on the screen
+     * Creates the screen for the gameLobby and shows it on the screen
      *
      * @param gameSettings
      * @param gameController
@@ -45,25 +43,16 @@ public class GameLobby {
         VBox fullLayout = new VBox();
 
         //Objects
-        Button settings = ObjectStandards.makeStandardButton("Settings");
-        settings.setMinWidth(120);
-        settings.setMinHeight(50);
-        Button startGame = ObjectStandards.makeStandardButton("Start game");
-        startGame.setMinWidth(120);
-        startGame.setMinHeight(50);
-        Button leaveLobby = ObjectStandards.makeStandardButton("Leave lobby");
-        leaveLobby.setMinWidth(120);
-        leaveLobby.setMinHeight(50);
+        Button settings = ObjectStandards.makeButtonForLobbyScreen("Settings");
+        Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
+        Button leaveLobby = ObjectStandards.makeButtonForLobbyScreen("Leave lobby");
 
         amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
         numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
         bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
         smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
-        joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + name, "");
-        headLine = new Label("Game Lobby");
-        headLine.setFont(new Font("Areal", 25));
-        headLine.setPadding(new Insets(20,20,20,20));
+        headLine = ObjectStandards.makeLabelForHeadLine("Game Lobby");
 
         //ActionListeners
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
@@ -81,26 +70,16 @@ public class GameLobby {
         gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
 
-        //players.getChildren().addAll(joinedPlayers);
-        players.setAlignment(Pos.CENTER_LEFT);
-
         buttons.getChildren().addAll(startGame, leaveLobby, settings);
         buttons.setAlignment(Pos.CENTER_LEFT);
 
         layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);
         layoutNoHeadline.setAlignment(Pos.CENTER);
 
-
         fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
 
-        //set scene
-        BorderPane gameScreenLayout = new BorderPane();
-        gameScreenLayout.setPadding(new Insets(10, 10, 10, 10));
-        gameScreenLayout.setCenter(fullLayout);
-
-        Scene scene = new Scene(ImageViewer.setBackground("PokerTable", gameScreenLayout, 1920, 1080), 1280, 720);
-        SceneBuilder.showCurrentScene(scene, "GameLobby");
+        SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
 
     }
 
@@ -119,17 +98,17 @@ public class GameLobby {
         VBox labelBox = new VBox();
         VBox textFieldBox = new VBox();
 
-        Label amountOfChips = ObjectStandards.makeStandardLabelBlack("Chips:", "");
-        Label numberOfPlayers = ObjectStandards.makeStandardLabelBlack("Number of players:", "");
-        Label bigBlind = ObjectStandards.makeStandardLabelBlack("Big blind:", "");
-        Label smallBlind = ObjectStandards.makeStandardLabelBlack("Small blind:", "");
-        Label levelDuration = ObjectStandards.makeStandardLabelBlack("Level duration:", "");
+        Label amountOfChips = ObjectStandards.makeLabelForSettingsScreen("Chips:");
+        Label numberOfPlayers = ObjectStandards.makeLabelForSettingsScreen("Number of players:");
+        Label bigBlind = ObjectStandards.makeLabelForSettingsScreen("Big blind:");
+        Label smallBlind = ObjectStandards.makeLabelForSettingsScreen("Small blind:");
+        Label levelDuration = ObjectStandards.makeLabelForSettingsScreen("Level duration:");
 
-        TextField amountOfChipsTF = ObjectStandards.makeStandardTextField();
-        TextField numberOfPlayersTF = ObjectStandards.makeStandardTextField();
-        TextField bigBlindTF = ObjectStandards.makeStandardTextField();
-        TextField smallBlindTF = ObjectStandards.makeStandardTextField();
-        TextField levelDurationTF = ObjectStandards.makeStandardTextField();
+        TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField bigBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField smallBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField levelDurationTF = ObjectStandards.makeTextFieldForSettingsScreen();
 
         amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
         numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
@@ -159,12 +138,11 @@ public class GameLobby {
     }
 
     public static void updateLabels(GameSettings gameSettings){
-        amountOfChips.setText("Chips: " + gameSettings.getStartStack() + "$");
-        numberOfPlayers.setText("Number of players: " + gameSettings.getMaxNumberOfPlayers() + "");
-        bigBlind.setText("Big blind: " + gameSettings.getBigBlind() + "$");
-        smallBlind.setText("Small blind: " + gameSettings.getSmallBlind() + "$");
-        levelDuration.setText("Level duration: " + gameSettings.getLevelDuration() + "min");
-        //joinedPlayers = ObjectStandards.makeStandardLabelWhite("Players:\n -" + , "");
+        amountOfChips.setText("Chips:  " + gameSettings.getStartStack() + "$");
+        numberOfPlayers.setText("Number of players:  " + gameSettings.getMaxNumberOfPlayers() + "");
+        bigBlind.setText("Big blind:  " + gameSettings.getBigBlind() + "$");
+        smallBlind.setText("Small blind:  " + gameSettings.getSmallBlind() + "$");
+        levelDuration.setText("Level duration:  " + gameSettings.getLevelDuration() + "min");
     }
 
     public static void displayErrorMessage(String message,GameController gameController){
@@ -177,10 +155,9 @@ public class GameLobby {
         layout.setPadding(new Insets(10, 10, 10, 10));
 
         Label label = new Label(message);
-        label.setFont(new Font("Areal", 50));
+        label.setFont(new Font("Areal", 25));
 
-        Button backToSettings = new Button("Alright. Take me back to the settings menu");
-        backToSettings.setFont((new Font("Areal",14)));
+        Button backToSettings = ObjectStandards.makeStandardButton("Alright. Take me back to the settings menu");
         backToSettings.setOnAction(e -> {
             ButtonListeners.errorButtonListener(gameController);
             errorMessage.close();
@@ -188,6 +165,12 @@ public class GameLobby {
 
         layout.getChildren().addAll(label, backToSettings);
         layout.setAlignment(Pos.CENTER);
+
+        layout.setStyle("-fx-background-color:#42b43d, " +
+                "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +
+                "linear-gradient(#218a0f, #42b43d), " +
+                "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
+                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
 
         errorMessage.initModality(Modality.APPLICATION_MODAL);
         errorMessage.setTitle("Settings");

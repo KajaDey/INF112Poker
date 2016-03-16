@@ -1,9 +1,9 @@
-package main.java.gui;
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameClient;
+package gui;
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.GameClient;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +14,13 @@ import java.util.Map;
 
 public class GUIClient implements GameClient {
 
-    //Needed variables
     private GameScreen gameScreen;
-    private long currentBet = 0;
+
+    //Storage variables
+    private long minimumRaise = 0, highestAmountPutOnTableThisBettingRound = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
+    private long smallBlind, bigBlind;
 
     private int id;
 
@@ -54,8 +56,15 @@ public class GUIClient implements GameClient {
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
-            //Display error: "You don't have this much in your stack" and return without notifying
-            System.out.println("You dont have this much in your stack");
+            System.out.println("You don't have this much in your stack");
+            gameScreen.setErrorStateOfAmountTextfield(true);
+            return;
+        }
+
+        if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
+                (moveSize != stackSizes.get(id))) {
+            System.out.println("Raise is to small");
+            gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
@@ -64,10 +73,15 @@ public class GUIClient implements GameClient {
                 this.decision = new Decision(move, moveSize);
                 break;
             case RAISE:
-                this.decision = new Decision(move, moveSize - currentBet);
+                if (moveSize == stackSizes.get(this.id))
+                    this.decision = new Decision(Decision.Move.ALL_IN);
+                else
+                    this.decision = new Decision(move, moveSize - highestAmountPutOnTableThisBettingRound);
                 break;
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
+
+        gameScreen.setErrorStateOfAmountTextfield(false);
 
         notifyAll();
     }
@@ -76,9 +90,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
-        for (Integer id : names.keySet()) {
-            gameScreen.setName(id, names.get(id));
-        }
+        gameScreen.setNames(names);
     }
 
     @Override
@@ -111,6 +123,11 @@ public class GUIClient implements GameClient {
     }
 
     @Override
+    public void gameOver(int winnerID) {
+        gameScreen.gameOver(winnerID);
+    }
+
+    @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
         gameScreen.updateStackSizes(stackSizes);
@@ -119,30 +136,46 @@ public class GUIClient implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
-            case BET: currentBet = decision.size; break;
-            case RAISE: currentBet += decision.size; break;
+            case BET:case SMALL_BLIND: case BIG_BLIND:
+                highestAmountPutOnTableThisBettingRound = decision.size;
+                break;
+            case RAISE:
+                minimumRaise = decision.size;
+                highestAmountPutOnTableThisBettingRound += decision.size;
+                break;
+            case ALL_IN:
+                //TODO: Implement
+                break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
+    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
+        gameScreen.setPot(pot);
         gameScreen.showDown(playersStillPlaying, winnerID, holeCards);
     }
 
     @Override
-    public void setBigBlind(int bigBlind) {
+    public void setBigBlind(long bigBlind) {
+        this.bigBlind = bigBlind;
         //TODO: Update label in GUI
     }
 
     @Override
-    public void setSmallBlind(int smallBlind) {
+    public void setSmallBlind(long smallBlind) {
+        this.smallBlind = smallBlind;
         //TODO: Update label in GUI
     }
 
     @Override
+    /**
+     * Sends every player's position, as a map indexed by the players' IDs.
+     * A value of 0 corresponds to the dealer, 1 is small blind, 2 is big blind etc
+     * Sent at the start of each hand
+     */
     public void setPositions(Map<Integer, Integer> positions) {
-        //TODO: Update label in GUI
+        gameScreen.setPositions(positions);
     }
 
     @Override
@@ -157,7 +190,8 @@ public class GUIClient implements GameClient {
 
     public void newBettingRound(long potSize) {
         gameScreen.newBettingRound(potSize);
-        currentBet = 0;
+        minimumRaise = 0;
+        highestAmountPutOnTableThisBettingRound = 0;
     }
 
 

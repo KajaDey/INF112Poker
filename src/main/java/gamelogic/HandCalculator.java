@@ -1,8 +1,7 @@
-package main.java.gamelogic;
+package gamelogic;
 
-import main.java.gamelogic.rules.*;
-import main.java.gamelogic.rules.Straight;
-import main.java.gamelogic.rules.TwoPairs;
+import gamelogic.rules.*;
+
 
 
 import java.util.ArrayList;

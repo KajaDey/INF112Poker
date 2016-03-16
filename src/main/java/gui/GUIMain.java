@@ -1,11 +1,8 @@
-package main.java.gui;
+package gui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import main.java.gamelogic.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import gamelogic.*;
 
 /**
  * Created by ady on 05/03/16.
@@ -33,7 +30,7 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displayLobbyScreen(String name, int numberOfPlayers, String gameType, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings,gamecontroller, name);
+        GameLobby.createScreenForGameLobby(gameSettings, gamecontroller, name);
     }
 
     /**
@@ -41,7 +38,7 @@ public class GUIMain extends Application{
      * @param window The window to be displayed
      */
     public void start(Stage window){
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable",gamecontroller), "Main Screen");
+        MainScreen.createSceneForMainScreen("PokerTable", gamecontroller);
     }
 
     /**
@@ -66,11 +63,10 @@ public class GUIMain extends Application{
      * @param userID The ID of the player
      * @param name The name of the player
      * @param stackSize The player's stack size
-     * @param pos The position on the table
      * @return The game screen containing the new player
      */
-    public boolean insertPlayer(int userID, String name, long stackSize, String pos) {
-        return gameScreen.insertPlayer(userID, name, stackSize, pos);
+    public boolean insertPlayer(int userID, String name, long stackSize) {
+        return gameScreen.insertPlayer(userID, name, stackSize);
     }
 
 }

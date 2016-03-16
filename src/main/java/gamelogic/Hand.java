@@ -1,6 +1,6 @@
-package main.java.gamelogic;
+package gamelogic;
 
-import main.java.gamelogic.rules.IRule;
+import gamelogic.rules.IRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,10 @@ public class Hand {
         allCards.addAll(communityCards);
     }
 
+    /**
+     * Gets the two hole cards in the hand
+     * @return List of hole cards
+     */
     public List<Card> getHoleCards() {
         List<Card> holeC = new ArrayList<Card>();
         holeC.addAll(holeCards);
@@ -30,6 +34,10 @@ public class Hand {
         return holeC;
     }
 
+    /**
+     * Gets the 3-5 community cards in the hand
+     * @return List of community cards
+     */
     public List<Card> getCommunityCards() {
         List<Card> communityC = new ArrayList<Card>();
         communityC.addAll(communityCards);
@@ -37,6 +45,10 @@ public class Hand {
         return communityC;
     }
 
+    /**
+     * Gets all 5-7 cards in the hand, both hole cards and community cards.
+     * @return List of all cards
+     */
     public List<Card> getAllCards() {
         List<Card> allC = new ArrayList<Card>();
         allC.addAll(allCards);
@@ -51,6 +63,11 @@ public class Hand {
                 '}';
     }
 
+    /**
+     * Compares two hands using the rules of poker hands.
+     * @param other Hand to compare to this
+     * @return 1 if this hand is better, -1 if other hand is better, 0 if equal
+     */
     public int compareTo(Hand other) {
         HandCalculator myCalculator = new HandCalculator(this);
         HandCalculator otherCalculator = new HandCalculator(other);

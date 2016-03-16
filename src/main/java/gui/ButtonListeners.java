@@ -1,14 +1,10 @@
-package main.java.gui;
+package gui;
 
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.ChoiceBox;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.GameClient;
-import main.java.gamelogic.GameController;
-
-import java.util.Map;
+import gamelogic.Decision;
+import gamelogic.GameController;
 
 /**
  * Created by ady on 07/03/16.
@@ -96,7 +92,7 @@ public class ButtonListeners {
      * What happens when the leaveLobbyButton is pushed
      */
     public static void leaveLobbyButtonListener(GameController gameController) {
-        SceneBuilder.showCurrentScene(SceneBuilder.createSceneForInitialScreen("PokerTable", gameController), "Main Screen");
+        MainScreen.createSceneForMainScreen("PokerTable", gameController);
     }
     /**
      * Listener for the button on the enter button on the main screen
@@ -107,7 +103,7 @@ public class ButtonListeners {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
                 gameSettings = gameController.gameSettings;
             }
-            else SceneBuilder.createSceneForInitialScreen("PokerTable",gameController);
+            else MainScreen.createSceneForMainScreen("PokerTable", gameController);
         }catch (NumberFormatException e){
 
         }
@@ -125,6 +121,10 @@ public class ButtonListeners {
      */
     public static void setClient(GUIClient c) {
         client = c;
+    }
+
+    public static void returnToMainMenuButtonListener(){
+        MainScreen.refreshSceneForMainScreen();
     }
 
 

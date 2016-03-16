@@ -1,0 +1,29 @@
+Møte 6 - 15.03.2016 kl 10:52
+Sekretær: Vegar Rørvik
+
+Oppmøte:
+Morten
+Vegar
+Ragnhild
+Kaja
+Simon
+Andrè
+Jostein
+Mariah
+Henrik
+Kristian
+
+Hva er gjort siden sist:
+Bug testing
+Pynta GUI
+Javadoc er skrive
+Testa med ANT istadenfor Maven
+Finjustert gameloopen
+
+Plan til neste møte:
+Fullføre diagram
+Fikse ant/maven
+Rydde
+Lisensa
+
+Tid for neste møte: Onsdag 16.03 kl 14:15

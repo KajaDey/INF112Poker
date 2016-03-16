@@ -1,7 +1,7 @@
-package main.java.gamelogic.rules;
+package gamelogic.rules;
 
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Hand;
+import gamelogic.Card;
+import gamelogic.Hand;
 import org.junit.Before;
 import org.junit.Test;
 
