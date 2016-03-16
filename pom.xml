@@ -48,7 +48,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>src/</classpathPrefix>
-                            <mainClass>main.java.gui.GUIMain</mainClass>
+                            <mainClass>gui.GUIMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
