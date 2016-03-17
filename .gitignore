@@ -13,6 +13,7 @@
 
 //INTELLIJ
 *.iml
+.idea/
 
 target/
 *.log
