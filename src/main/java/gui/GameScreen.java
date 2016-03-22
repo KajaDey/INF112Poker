@@ -1,10 +1,13 @@
 package gui;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -168,6 +171,22 @@ public class GameScreen {
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
+
+        Slider slider = new Slider(currentBigBlind, stackSize, currentSmallBlind);
+        slider.setShowTickMarks(true);
+        slider.setShowTickLabels(true);
+        slider.setMajorTickUnit(1000);
+        slider.setBlockIncrement(0.1f);
+        slider.setMinorTickCount(0);
+        slider.setSnapToTicks(true);
+
+
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            int sliderNumber = (int) slider.getValue();
+            amountTextfield.setText(String.valueOf(sliderNumber));
+        });
+
+
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
         foldButton = ObjectStandards.makeStandardButton("Fold");
@@ -196,7 +215,7 @@ public class GameScreen {
         inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
 
-        twoButtonsLeft.getChildren().addAll(betRaiseButton);
+        twoButtonsLeft.getChildren().addAll(betRaiseButton, slider);
         twoButtonsLeft.setAlignment(Pos.CENTER);
 
         fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsLeft);
