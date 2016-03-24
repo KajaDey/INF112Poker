@@ -12,7 +12,7 @@
 *.DS_STORE
 
 //INTELLIJ
-/.idea/workspace.xml
+.idea/workspace.xml
 *.iml
 /.idea
 
