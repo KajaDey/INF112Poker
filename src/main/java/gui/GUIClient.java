@@ -3,7 +3,6 @@ import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -137,6 +136,9 @@ public class GUIClient implements GameClient {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
         gameScreen.updateStackSizes(stackSizes);
+
+        //Updates the values of the slider
+        gameScreen.updateSliderValues();
     }
 
     @Override

@@ -1,8 +1,6 @@
 package gui;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -48,6 +46,9 @@ public class GameScreen {
 
     //Buttons
     private Button betRaiseButton, checkCallButton, foldButton;
+
+    //Slider
+    private Slider slider = new Slider(0,0,0);
 
     //Textfields
     private TextField amountTextfield;
@@ -151,7 +152,8 @@ public class GameScreen {
         VBox inputAndButtons = new VBox();
         HBox twoButtonsUnderInput = new HBox();
         twoButtonsUnderInput.setMaxWidth(50);
-        VBox twoButtonsLeft = new VBox();
+        VBox twoButtonsRight = new VBox();
+        VBox sliderBox = new VBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
         playerStackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
@@ -171,21 +173,16 @@ public class GameScreen {
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
+        slider.setMin(currentBigBlind);
+        slider.setMax(stackSizes.get(playerID));
+        slider.setValue(currentBigBlind);
 
-        Slider slider = new Slider(currentBigBlind, stackSize, currentSmallBlind);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
-        slider.setMajorTickUnit(1000);
+        slider.setMajorTickUnit(slider.getMax()/2);
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
         slider.setSnapToTicks(true);
-
-
-        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            int sliderNumber = (int) slider.getValue();
-            amountTextfield.setText(String.valueOf(sliderNumber));
-        });
-
 
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
@@ -193,18 +190,43 @@ public class GameScreen {
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         betRaiseButton.setMinHeight(66);
 
+
         //Actions
         betRaiseButton.setOnAction(e -> {
-            if(!amountTextfield.getText().equals(""))
-            ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+            if(!amountTextfield.getText().equals("")) {
+                if (amountTextfield.getText().equals("All in"))
+                    ButtonListeners.betButtonListener(String.valueOf(stackSizes.get(playerID)), betRaiseButton.getText());
+                else
+                    ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+                updateSliderValues();
+            }
         });
 
         amountTextfield.setOnAction(e -> {
-            if (!amountTextfield.getText().equals(""))
-                ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+            if (!amountTextfield.getText().equals("")) {
+                if (amountTextfield.getText().equals("All in"))
+                    ButtonListeners.betButtonListener(String.valueOf(stackSizes.get(playerID)), betRaiseButton.getText());
+                else
+                    ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+                updateSliderValues();
+            }
         });
-        checkCallButton.setOnAction(e -> ButtonListeners.checkButtonListener(checkCallButton.getText()));
+
+        checkCallButton.setOnAction(e -> {
+            ButtonListeners.checkButtonListener(checkCallButton.getText());
+            updateSliderValues();
+        });
+
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
+
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            int sliderNumber = (int) slider.getValue();
+            if (sliderNumber >= slider.getMax())
+                amountTextfield.setText("All in");
+            else
+                amountTextfield.setText(String.valueOf(sliderNumber));
+        });
+
 
         //Add objects to the boxes
         stats.getChildren().addAll(playerNameLabel, playerStackLabel, playerPositionLabel);
@@ -215,10 +237,13 @@ public class GameScreen {
         inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
 
-        twoButtonsLeft.getChildren().addAll(betRaiseButton, slider);
-        twoButtonsLeft.setAlignment(Pos.CENTER);
+        twoButtonsRight.getChildren().addAll(betRaiseButton);
+        twoButtonsRight.setAlignment(Pos.CENTER);
 
-        fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsLeft);
+        sliderBox.getChildren().addAll(slider);
+        sliderBox.setAlignment(Pos.CENTER);
+
+        fullBox.getChildren().addAll(stats, playerLeftCardImage, playerRightCardImage, inputAndButtons, twoButtonsRight, sliderBox);
         fullBox.setAlignment(Pos.CENTER);
 
         fullBoxWithLastMove.getChildren().addAll(playerLastMoveLabel, fullBox);
@@ -402,6 +427,7 @@ public class GameScreen {
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
             amountTextfield.setVisible(visible);
+            slider.setVisible(visible);
         };
         Platform.runLater(task);
     }
@@ -513,6 +539,37 @@ public class GameScreen {
     }
 
     /**
+     * Updates the values of the slider
+     */
+    public void updateSliderValues(){
+        Runnable task;
+
+        task = () -> {
+            long maxValue = stackSizes.get(playerID);
+
+            if (playerPositionLabel.getText().equals("Position: Small blind"))
+                maxValue -= currentSmallBlind;
+            else if (playerPositionLabel.getText().equals("Position: Big blind"))
+                maxValue -= currentBigBlind;
+
+            slider.setValue(currentBigBlind);
+            slider.setMin(currentBigBlind);
+            slider.setMax(maxValue);
+
+            if (slider.getMax() >= 2)
+                slider.setMajorTickUnit(slider.getMax() / 2);
+            else
+                slider.setMajorTickUnit(1);
+
+            slider.setBlockIncrement(0.1f);
+            slider.setMinorTickCount(0);
+
+        };
+        Platform.runLater(task);
+
+    }
+
+    /**
      * Starting a new betting round an resets buttons
      *
      * @param potSize
@@ -542,6 +599,7 @@ public class GameScreen {
             this.setErrorStateOfAmountTextfield(false);
         };
         Platform.runLater(task);
+        updateSliderValues();
     }
 
     /**
