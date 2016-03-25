@@ -179,10 +179,11 @@ public class GameScreen {
 
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
-        slider.setMajorTickUnit(slider.getMax()/2);
+        slider.setMajorTickUnit((slider.getMax()/2)-slider.getMin());
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
-        slider.setSnapToTicks(true);
+        slider.setSnapToTicks(false);
+
 
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
@@ -427,7 +428,7 @@ public class GameScreen {
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
             amountTextfield.setVisible(visible);
-            slider.setVisible(visible);
+            //slider.setVisible(visible);
         };
         Platform.runLater(task);
     }
@@ -555,18 +556,23 @@ public class GameScreen {
             slider.setValue(currentBigBlind);
             slider.setMin(currentBigBlind);
             slider.setMax(maxValue);
-
-            if (slider.getMax() >= 2)
-                slider.setMajorTickUnit(slider.getMax() / 2);
-            else
-                slider.setMajorTickUnit(1);
-
             slider.setBlockIncrement(0.1f);
             slider.setMinorTickCount(0);
 
+            /*if (maxValue < 100)
+                slider.setVisible(false);
+            else
+                slider.setVisible(true);*/
+
+            if (slider.getMax() > 2* slider.getMin())
+                slider.setMajorTickUnit((slider.getMax() / 2)-slider.getMin());
+            else {
+                slider.setMajorTickUnit(1);
+                slider.setVisible(false);
+            }
+
         };
         Platform.runLater(task);
-
     }
 
     /**
