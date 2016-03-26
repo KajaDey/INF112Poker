@@ -179,7 +179,7 @@ public class GameScreen {
 
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
-        slider.setMajorTickUnit((slider.getMax()/2)-slider.getMin());
+        slider.setMajorTickUnit(slider.getMax()/2);
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
         slider.setSnapToTicks(false);
@@ -565,7 +565,7 @@ public class GameScreen {
                 slider.setVisible(true);*/
 
             if (slider.getMax() > 2* slider.getMin())
-                slider.setMajorTickUnit((slider.getMax() / 2)-slider.getMin());
+                slider.setMajorTickUnit(slider.getMax() / 2);
             else {
                 slider.setMajorTickUnit(1);
                 slider.setVisible(false);
