@@ -14,5 +14,6 @@
 # INTELLIJ
 *.iml
 .idea
-target/
+target
+
 *.log
