@@ -13,7 +13,7 @@
 
 # INTELLIJ
 *.iml
-#.idea
+.idea
 .idea/workspace.xml
 target
 
