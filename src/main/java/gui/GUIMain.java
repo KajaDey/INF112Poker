@@ -80,22 +80,30 @@ public class GUIMain extends Application{
     }
 
     /**
+     * Prints a debug message to sysout and/or a lazily initialized log file, and terminates the line
+     * Constants PRINT_DEBUG_TO_STDOUT and PRINT_DEBUG_LOG control where the output is printed
+     */
+    public static void debugPrintln(String message) {
+        debugPrint(message + "\n");
+    }
+
+    /**
      * Prints a debug message to sysout and/or a lazily initialized log file
      * Constants PRINT_DEBUG_TO_STDOUT and PRINT_DEBUG_LOG control where the output is printed
      */
-    public static void printDebugMessage(String message) {
+    public static void debugPrint(String message) {
         if (PRINT_DEBUG_TO_STDOUT) {
-            System.out.println(message);
+            System.out.print(message);
         }
         if (PRINT_DEBUG_LOG) {
             if (logWriter.isPresent()) {
-                logWriter.get().println(message);
+                logWriter.get().print(message);
                 logWriter.get().flush();
             }
             else {
                 try {
                     logWriter = logWriter.of(new PrintWriter("poker" + System.currentTimeMillis() / 1000 + ".log", "UTF-8"));
-                    logWriter.get().println(message);
+                    logWriter.get().print(message);
                     logWriter.get().flush();
                 } catch (FileNotFoundException e) {
                     // If creating the log file fails, do not write to it
@@ -105,5 +113,9 @@ public class GUIMain extends Application{
                 }
             }
         }
+    }
+
+    public static void debugPrintln() {
+        debugPrint("\n");
     }
 }

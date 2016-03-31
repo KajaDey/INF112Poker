@@ -213,7 +213,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-        GUIMain.printDebugMessage("Player " + playerId + " made decision " + decision);
         switch (decision.move) {
             case ALL_IN:
                 betHasBeenPlaced = true;
