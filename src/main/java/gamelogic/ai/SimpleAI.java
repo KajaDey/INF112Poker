@@ -3,6 +3,7 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gui.GUIMain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -212,6 +213,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
+        GUIMain.printDebugMessage("Player " + playerId + " made decision " + decision);
         switch (decision.move) {
             case ALL_IN:
                 betHasBeenPlaced = true;

@@ -4,10 +4,19 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import gamelogic.*;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Optional;
+
 /**
  * Created by ady on 05/03/16.
  */
 public class GUIMain extends Application{
+
+    private static final boolean PRINT_DEBUG_TO_STDOUT = true;
+    private static final boolean PRINT_DEBUG_LOG = true;
+    private static Optional<PrintWriter> logWriter = Optional.empty();
 
     private GameController gamecontroller;
     private GameScreen gameScreen;
@@ -70,4 +79,31 @@ public class GUIMain extends Application{
         return gameScreen.insertPlayer(userID, name, stackSize);
     }
 
+    /**
+     * Prints a debug message to sysout and/or a lazily initialized log file
+     * Constants PRINT_DEBUG_TO_STDOUT and PRINT_DEBUG_LOG control where the output is printed
+     */
+    public static void printDebugMessage(String message) {
+        if (PRINT_DEBUG_TO_STDOUT) {
+            System.out.println(message);
+        }
+        if (PRINT_DEBUG_LOG) {
+            if (logWriter.isPresent()) {
+                logWriter.get().println(message);
+                logWriter.get().flush();
+            }
+            else {
+                try {
+                    logWriter = logWriter.of(new PrintWriter("poker" + System.currentTimeMillis() / 1000 + ".log", "UTF-8"));
+                    logWriter.get().println(message);
+                    logWriter.get().flush();
+                } catch (FileNotFoundException e) {
+                    // If creating the log file fails, do not write to it
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+        }
+    }
 }
