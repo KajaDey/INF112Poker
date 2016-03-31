@@ -206,7 +206,10 @@ public class SimpleAI implements GameClient {
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         assert stackSizes.size() == amountOfPlayers;
-
+        assert stackSizes.get(this.playerId) >= 0 : "AI was sent a stacksize of " + stackSizes.get(this.playerId);
+        for (int playerId : stackSizes.keySet()) {
+            assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);
+        }
         this.stackSize = stackSizes.get(this.playerId);
         this.stackSizes = stackSizes;
     }
