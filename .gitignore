@@ -1,19 +1,20 @@
-//JAVA
+# JAVA
 *.class
 
-//WORD
+# WORD
 *.doc
 *.docx
 
-//YED
+# YED
 *.graphml
 
-//FROM MAC
+# FROM MAC
 *.DS_STORE
 
-//INTELLIJ
+# INTELLIJ
 *.iml
-.idea/
+.idea
+.idea/workspace.xml
+target
 
-target/
 *.log
