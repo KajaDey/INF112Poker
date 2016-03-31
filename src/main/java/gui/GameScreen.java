@@ -564,7 +564,7 @@ public class GameScreen {
             else
                 slider.setVisible(true);*/
 
-            if (slider.getMax() > 2* slider.getMin())
+            if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
                 slider.setMajorTickUnit(slider.getMax() / 2);
             else {
                 slider.setMajorTickUnit(1);
