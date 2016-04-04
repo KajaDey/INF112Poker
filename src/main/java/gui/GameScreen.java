@@ -34,8 +34,9 @@ public class GameScreen {
     BorderPane borderPane;
     Scene scene;
     private int playerID;
-    private int numberOfPlayers = 0;
+    private int numberOfPlayers = 5;
 
+    HBox hBox = new HBox();
     private Label endGameScreen;
 
     //Storagevariables
@@ -78,6 +79,8 @@ public class GameScreen {
 
     public boolean insertPlayer(int userID, String name, long stackSize) {
 
+        System.out.println(userID);
+
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
         playerLayout.setStackSize(stackSize);
@@ -86,9 +89,13 @@ public class GameScreen {
             borderPane.setBottom(playerLayout.updateLayout(userID,name,stackSize));
         } else {
             //insert opponent
-            borderPane.setTop(opponentLayout.updateLayout(userID,name,stackSize));
+            //borderPane.setTop(opponentLayout.updateLayout(userID,name,stackSize));
+            hBox.getChildren().add(opponentLayout.updateLayout(userID,name,stackSize));
+            hBox.setAlignment(Pos.CENTER);
         }
-        this.numberOfPlayers++;
+
+        if(userID == numberOfPlayers-2)
+            borderPane.setTop(hBox);
 
         return true;
     }
