@@ -11,7 +11,7 @@ import java.util.function.Function;
 /**
  * Created by morten on 09.03.16.
  */
-public class MCTS<Pos, Move> {
+public class RawMCTS<Pos, Move> {
 
     public final TreeNode rootNode;
 
@@ -23,8 +23,8 @@ public class MCTS<Pos, Move> {
     public final Function<Pos, Optional<Double>> terminalEvaluation;
     public final Function<Pos, ArrayList<Move>> allLegalMoves;
 
-    public MCTS(Pos startPosition, BiFunction<Pos, Move, Pos> doMove, Function<Pos, ArrayList<Move>> allLegalMoves,
-                Function<Pos, Optional<Double>> getTerminalEvaluation) {
+    public RawMCTS(Pos startPosition, BiFunction<Pos, Move, Pos> doMove, Function<Pos, ArrayList<Move>> allLegalMoves,
+                   Function<Pos, Optional<Double>> getTerminalEvaluation) {
         this.startPosition = startPosition;
         this.totalSearches = 0;
 

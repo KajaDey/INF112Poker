@@ -1,4 +1,4 @@
-package main.java.gamelogic.ai;
+package gamelogic.ai;
 
 import org.junit.Test;
 
@@ -120,7 +120,7 @@ public class MonteCarloTreeNodeTest {
         MCTS.TreeNode rootNode = mcts.rootNode;
 
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 0; i++) {
             mcts.computeNodes(50_000);
             for (int j = 0; j < rootNode.children.size(); j++) {
             Optional<MCTS.TreeNode> child = (Optional<MCTS.TreeNode>)rootNode.children.get(j);
