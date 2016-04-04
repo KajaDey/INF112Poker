@@ -89,8 +89,10 @@ public class GameScreen {
             borderPane.setTop(opponentLayout.updateLayout(userID,name,stackSize));
         }
         this.numberOfPlayers++;
+
         return true;
     }
+
 
     /**
      * Displays the card pictures to the screen
@@ -306,37 +308,6 @@ public class GameScreen {
         }
     }
 
-    /*/**
-     * Updates the values of the slider
-     */
-    /*public void updateSliderValues(){
-        Runnable task;
-
-        task = () -> {
-            long maxValue = stackSizes.get(playerID);
-
-            if(playerLayout.getPositionLabel().equals("Position: Small blind"))
-                maxValue -= currentSmallBlind;
-            else if (playerLayout.getPositionLabel().equals("Position: Big blind"))
-                maxValue -= currentBigBlind;
-
-            slider.setValue(currentBigBlind);
-            slider.setMin(currentBigBlind);
-            slider.setMax(maxValue);
-            slider.setBlockIncrement(0.1f);
-            slider.setMinorTickCount(0);
-
-            if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
-                slider.setMajorTickUnit(slider.getMax() / 2);
-            else {
-                slider.setMajorTickUnit(1);
-                slider.setVisible(false);
-            }
-
-        };
-        Platform.runLater(task);
-    }*/
-
     /**
      * Starting a new betting round an resets buttons
      *
@@ -516,4 +487,8 @@ public class GameScreen {
    public void updateSliderValues(){
        playerLayout.updateSliderValues();
    }
+
+    public void setNumberOfPlayers(int numberOfPlayers){
+        this.numberOfPlayers = numberOfPlayers;
+    }
 }
