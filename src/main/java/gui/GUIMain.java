@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import gamelogic.*;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -102,7 +103,9 @@ public class GUIMain extends Application{
             }
             else {
                 try {
-                    logWriter = logWriter.of(new PrintWriter("poker" + System.currentTimeMillis() / 1000 + ".log", "UTF-8"));
+                    File logFile = new File("logs/poker" + System.currentTimeMillis() / 1000 + ".log");
+                    new File("logs").mkdir();
+                    logWriter = logWriter.of(new PrintWriter(logFile, "UTF-8"));
                     logWriter.get().print(message);
                     logWriter.get().flush();
                 } catch (FileNotFoundException e) {
