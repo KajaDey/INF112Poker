@@ -38,4 +38,35 @@ public class Player {
         position = initialPosition;
         stackSize = initialStackSize;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Player player = (Player) o;
+
+        if (id != player.id) return false;
+        if (position != player.position) return false;
+        if (stackSize != player.stackSize) return false;
+        if (minimumRaise != player.minimumRaise) return false;
+        if (currentBet != player.currentBet) return false;
+        if (isInHand != player.isInHand) return false;
+        if (isAllIn != player.isAllIn) return false;
+        return holeCards.equals(player.holeCards);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + holeCards.hashCode();
+        result = 31 * result + position;
+        result = 31 * result + (int) (stackSize ^ (stackSize >>> 32));
+        result = 31 * result + (int) (minimumRaise ^ (minimumRaise >>> 32));
+        result = 31 * result + (int) (currentBet ^ (currentBet >>> 32));
+        result = 31 * result + (isInHand ? 1 : 0);
+        result = 31 * result + (isAllIn ? 1 : 0);
+        return result;
+    }
 }

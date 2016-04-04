@@ -14,7 +14,7 @@ public class MonteCarloTreeNodeTest {
 
 
     /**
-     * A simple two-player game on a 8x8 board, to test the MCTS implementation.
+     * A simple two-player game on a 8x8 board, to test the RawMCTS implementation.
      * Each player has one king that starts at the bottom of the board,
      * and wins if they can move their king to the other side of the board
      */
@@ -113,27 +113,27 @@ public class MonteCarloTreeNodeTest {
             return "From: " + fromPosition + ", to: " + toPosition;
         }
     }
-
+    /*
     @Test
     public void simpleGameTest() {
-        MCTS<GamePosition, Move> mcts = new MCTS<>(new GamePosition(), GamePosition::do_move, GamePosition::allLegalMoves, GamePosition::getTerminalEvaluation);
-        MCTS.TreeNode rootNode = mcts.rootNode;
+        RawMCTS<GamePosition, Move> mcts = new RawMCTS<>(new GamePosition(), GamePosition::do_move, GamePosition::allLegalMoves, GamePosition::getTerminalEvaluation);
+        RawMCTS.TreeNode rootNode = mcts.rootNode;
 
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 0; i++) {
             mcts.computeNodes(50_000);
             for (int j = 0; j < rootNode.children.size(); j++) {
-            Optional<MCTS.TreeNode> child = (Optional<MCTS.TreeNode>)rootNode.children.get(j);
+            Optional<RawMCTS.TreeNode> child = (Optional<RawMCTS.TreeNode>)rootNode.children.get(j);
                 if (child.isPresent()) {
                     System.out.println(child.get() + ", move: " + mcts.allLegalMoves.apply((GamePosition)rootNode.position).get(j) + ", expl: " + child.get().explorationValue());
 
                     for (int k = 0; k < child.get().children.size(); k++) {
-                        Optional<MCTS.TreeNode> grandChild = (Optional<MCTS.TreeNode>) child.get().children.get(k);
+                        Optional<RawMCTS.TreeNode> grandChild = (Optional<RawMCTS.TreeNode>) child.get().children.get(k);
                         if (grandChild.isPresent()) {
                             System.out.println("\t" + grandChild.get()
                                     + ", move: " + ((ArrayList<Move>)(mcts.allLegalMoves.apply((GamePosition)child.get().position))).get(k) + ", expl: " + grandChild.get().explorationValue());
 
-                            //+ ((Optional<MCTS>) child.get().children.get(k)).get().position);
+                            //+ ((Optional<RawMCTS>) child.get().children.get(k)).get().position);
                         }
                         else {
                             System.out.println("\tNone");
@@ -148,7 +148,7 @@ public class MonteCarloTreeNodeTest {
             System.out.println("\n" + mcts.totalSearches / ((System.currentTimeMillis() - startTime) / 1000.0) + " nps (" + mcts.totalSearches + "/" + ((System.currentTimeMillis() - startTime) / 1000.0) + ")");
 
         }
-        for (Optional<MCTS.TreeNode> child : (ArrayList<Optional<MCTS.TreeNode>>)rootNode.children) {
+        for (Optional<RawMCTS.TreeNode> child : (ArrayList<Optional<RawMCTS.TreeNode>>)rootNode.children) {
             if (child.isPresent()) {
                 System.out.println(child.get());
             }
@@ -157,4 +157,5 @@ public class MonteCarloTreeNodeTest {
             }
         }
     }
+    */
 }

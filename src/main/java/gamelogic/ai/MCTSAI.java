@@ -296,7 +296,7 @@ public class MCTSAI implements GameClient {
     }
 
     public abstract class AbstractNode {
-        public final double[] values = new double[amountOfPlayers]; // The probability
+        public final double[] values = new double[amountOfPlayers]; // The probability of winning for each player
         public final List<Optional<AbstractNode>> children = new ArrayList<>();
         protected int searches = 0;
         protected int numberOfExploredChildren = 0;
