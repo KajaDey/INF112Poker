@@ -1,6 +1,6 @@
-package main.java.gamelogic.ai;
+package gamelogic.ai;
 
-import main.java.gamelogic.Card;
+import gamelogic.Card;
 
 import java.util.ArrayList;
 import java.util.Optional;

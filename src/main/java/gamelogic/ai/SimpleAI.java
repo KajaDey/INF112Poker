@@ -11,8 +11,7 @@ import java.util.Optional;
 
 /**
  An SimpleAI player that works through the GameClient interface.
- It decides its move based solely on the information it gets through GameCLient
- Currently a WIP, may not work correctly
+ It decides its move based solely on the information it gets through GameClient
  */
 public class SimpleAI implements GameClient {
 

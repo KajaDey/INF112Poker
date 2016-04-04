@@ -1,8 +1,8 @@
-package main.java.gamelogic.ai;
+package gamelogic.ai;
 
-import main.java.gamelogic.Card;
-import main.java.gamelogic.Decision;
-import main.java.gamelogic.Deck;
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.Deck;
 
 import java.lang.reflect.Array;
 import java.security.cert.PKIXRevocationChecker;
@@ -14,9 +14,9 @@ import java.util.Optional;
  */
 public class GameState {
     private final int amountOfPlayers;
-    private ArrayList<Player> players;
+    private ArrayList<main.java.gamelogic.ai.Player> players;
 
-    private Player currentPlayer;
+    private main.java.gamelogic.ai.Player currentPlayer;
     private Deck deck;
 
     private int bigBlindAmount;
@@ -32,7 +32,7 @@ public class GameState {
 
         players = new ArrayList<>(amountOfPlayers);
         for (int i = 0; i < amountOfPlayers; i++) {
-            players.add(new Player(i, positions.get(i), stackSizes.get(i)));
+            players.add(new main.java.gamelogic.ai.Player(i, positions.get(i), stackSizes.get(i)));
         }
         currentPlayer = players.get(0);
         deck = new Deck();
