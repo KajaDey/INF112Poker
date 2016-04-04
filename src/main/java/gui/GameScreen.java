@@ -80,6 +80,7 @@ public class GameScreen {
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
+        playerLayout.setStackSize(stackSize);
         if (userID == playerID) {
             //Insert player
             borderPane.setBottom(playerLayout.updateLayout(userID,name,stackSize));
@@ -250,7 +251,8 @@ public class GameScreen {
                 break;
         }
 
-        stackSizes.put(ID, newStackSize);
+        //stackSizes.put(playerID,newStackSize);
+        playerLayout.setStackSize(newStackSize);
 
         //Set button texts depending on the action
         String finalText = checkCallButtonText;

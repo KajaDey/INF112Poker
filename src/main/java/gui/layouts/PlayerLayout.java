@@ -220,9 +220,6 @@ public class PlayerLayout {
 
     public void setStackLabel(String stack) {
         stackLabel.setText(stack);
-        String [] temp = stack.split(": ");
-        stackSize = Long.parseLong(temp[1]);
-
     }
 
     public void setLastMoveLabel(String lastMove) {
@@ -261,5 +258,9 @@ public class PlayerLayout {
 
     public void setSliderVisibility() {
         slider.setVisible(true);
+    }
+
+    public void setStackSize(long stackSize) {
+        this.stackSize = stackSize;
     }
 }
