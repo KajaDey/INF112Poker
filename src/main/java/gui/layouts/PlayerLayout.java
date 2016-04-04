@@ -15,9 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by ady on 04/04/16.
  */
@@ -30,7 +27,7 @@ public class PlayerLayout {
     private TextField amountTextfield;
 
     private long currentSmallBlind, currentBigBlind;
-    private Map<Integer, Long> stackSizes = new HashMap<>();
+    private long stackSize;
 
     private Button betRaiseButton, checkCallButton, foldButton;
 
@@ -72,8 +69,8 @@ public class PlayerLayout {
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
-        /*slider.setMin(currentBigBlind);
-        slider.setMax(stackSizes.get(playerID));
+        slider.setMin(currentBigBlind);
+        slider.setMax(stackSize);
         slider.setValue(currentBigBlind);
 
         slider.setShowTickMarks(true);
@@ -81,7 +78,7 @@ public class PlayerLayout {
         slider.setMajorTickUnit(slider.getMax()/2);
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
-        slider.setSnapToTicks(false);*/
+        slider.setSnapToTicks(false);
 
 
         //Buttons in the VBox
@@ -95,26 +92,26 @@ public class PlayerLayout {
         betRaiseButton.setOnAction(e -> {
             if(!amountTextfield.getText().equals("")) {
                 if (amountTextfield.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSizes.get(playerID)), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(String.valueOf(stackSize), betRaiseButton.getText());
                 else
                     ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
-                //updateSliderValues(playerID);
+                updateSliderValues();
             }
         });
 
         amountTextfield.setOnAction(e -> {
             if (!amountTextfield.getText().equals("")) {
                 if (amountTextfield.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSizes.get(playerID)), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(String.valueOf(stackSize), betRaiseButton.getText());
                 else
                     ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
-                //updateSliderValues(playerID);
+                updateSliderValues();
             }
         });
 
         checkCallButton.setOnAction(e -> {
             ButtonListeners.checkButtonListener(checkCallButton.getText());
-            //updateSliderValues(playerID);
+            updateSliderValues();
         });
 
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
@@ -156,11 +153,11 @@ public class PlayerLayout {
     /**
      * Updates the values of the slider
      */
-    public void updateSliderValues(int playerID){
+    public void updateSliderValues(){
         Runnable task;
 
         task = () -> {
-            long maxValue = stackSizes.get(playerID);
+            long maxValue = stackSize;
 
             if (positionLabel.getText().equals("Position: Small blind"))
                 maxValue -= currentSmallBlind;
@@ -223,6 +220,9 @@ public class PlayerLayout {
 
     public void setStackLabel(String stack) {
         stackLabel.setText(stack);
+        String [] temp = stack.split(": ");
+        stackSize = Long.parseLong(temp[1]);
+
     }
 
     public void setLastMoveLabel(String lastMove) {
@@ -257,5 +257,9 @@ public class PlayerLayout {
 
     public void setNameLabel(String name) {
         nameLabel.setText(name);
+    }
+
+    public void setSliderVisibility() {
+        slider.setVisible(true);
     }
 }

@@ -38,9 +38,6 @@ public class GameScreen {
 
     private Label endGameScreen;
 
-    //Slider
-    private Slider slider = new Slider(0,0,0);
-
     //Storagevariables
     private long highestAmountPutOnTable = 0, pot = 0;
     private long currentSmallBlind, currentBigBlind;
@@ -196,7 +193,7 @@ public class GameScreen {
     public void setActionsVisible(boolean visible) {
         Runnable task = () -> {
             playerLayout.setVisible(visible);
-            //slider.setVisible(visible);
+            playerLayout.setSliderVisibility();
         };
         Platform.runLater(task);
     }
@@ -307,10 +304,10 @@ public class GameScreen {
         }
     }
 
-    /**
+    /*/**
      * Updates the values of the slider
      */
-    public void updateSliderValues(){
+    /*public void updateSliderValues(){
         Runnable task;
 
         task = () -> {
@@ -327,11 +324,6 @@ public class GameScreen {
             slider.setBlockIncrement(0.1f);
             slider.setMinorTickCount(0);
 
-            /*if (maxValue < 100)
-                slider.setVisible(false);
-            else
-                slider.setVisible(true);*/
-
             if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
                 slider.setMajorTickUnit(slider.getMax() / 2);
             else {
@@ -341,7 +333,7 @@ public class GameScreen {
 
         };
         Platform.runLater(task);
-    }
+    }*/
 
     /**
      * Starting a new betting round an resets buttons
@@ -373,7 +365,7 @@ public class GameScreen {
             this.setErrorStateOfAmountTextfield(false);
         };
         Platform.runLater(task);
-        updateSliderValues();
+        playerLayout.updateSliderValues();
     }
 
     /**
@@ -518,4 +510,8 @@ public class GameScreen {
     private String getPositionName(int pos) {
         return (pos == 0 ? "Dealer" : pos == 1 ? "Small blind" : pos == 2 ? "Big blind" : pos == 3 ? "UTG" : "UTG+" + (pos-3));
     }
+
+   public void updateSliderValues(){
+       playerLayout.updateSliderValues();
+   }
 }
