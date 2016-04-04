@@ -10,15 +10,28 @@ import java.util.Optional;
  */
 public class Player {
     public final int id;
-    public final ArrayList<Optional<Card>> holeCards;
+    public final ArrayList<Card> holeCards;
     public int position;
     public long stackSize;
-    public long minimumBetThisBettingRound; // The amount the player needs to put on the table to remain in the hand
+    public long minimumRaise; // If they want to raise, the minimum they need to raise by
+    public long currentBet; // The amount they need to put on the table to remain in the hand
+
+    public boolean isInHand = true;
+    public boolean isAllIn = false;
+
+    public Player(Player oldPlayer) {
+        this.id = oldPlayer.id;
+        this.holeCards = new ArrayList<>(oldPlayer.holeCards);
+        this.position = oldPlayer.position;
+        this.stackSize = oldPlayer.stackSize;
+        this.minimumRaise = oldPlayer.minimumRaise;
+        this.currentBet = oldPlayer.currentBet;
+        this.isInHand = oldPlayer.isInHand;
+        this.isAllIn = oldPlayer.isAllIn;
+    }
 
     public Player(int id, int initialPosition, long initialStackSize) {
         holeCards = new ArrayList<>(2);
-        holeCards.add(Optional.empty());
-        holeCards.add(Optional.empty());
 
         this.id = id;
 
