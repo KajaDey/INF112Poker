@@ -26,21 +26,24 @@ public class PokerMCTS {
     public Decision calculateFor(long milliseconds) {
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() < startTime + milliseconds) {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1; i++) {
                 rootNode.select(totalSearches, initialGameState);
                 totalSearches++;
             }
         }
+        System.out.println("Did " + totalSearches + " searches");
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
         AbstractNode bestNode = rootNode.children.get(0).get();
         Decision bestDecision = ((GameState.PlayerDecision)allDecisions.get(0)).decision;
+        assert rootNode.children.size() == allDecisions.size();
+        assert allDecisions.size() > 4;
         for (int i = 0; i < allDecisions.size(); i++) {
             if (rootNode.children.get(i).get().values[playerId] > bestNode.values[playerId]) {
                 bestNode = rootNode.children.get(i).get();
                 bestDecision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
-                System.out.println(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + rootNode.children.get(i).get().values[playerId]);
             }
+            System.out.println(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + rootNode.children.get(i).get().values[playerId]);
         }
 
         return bestDecision;
