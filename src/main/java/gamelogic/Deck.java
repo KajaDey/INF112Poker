@@ -47,7 +47,6 @@ public class Deck {
         sortedCards.sort(Card::compareTo);
 
         StringJoiner joiner = new StringJoiner("[", ", ", " ]");
-        // StringBuffer buffer = new StringBuffer();
         for (Card card : sortedCards) {
             joiner.add(card.toString());
         }
