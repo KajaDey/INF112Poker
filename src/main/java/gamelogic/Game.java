@@ -200,6 +200,7 @@ public class Game {
             //Get decision for the acting player
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
             playerToAct.act(decision, highestAmountPutOnTable, pot, isPreFlop);
+            gameController.printToLogfield(playerToAct.getName() + " made decision " + decision.move.toString().toLowerCase());
 
             //Tell all the clients about this decision
             gameController.setDecisionForClient(playerToAct.getID(), decision);

@@ -15,6 +15,7 @@ public class GameController {
 
     private Game game;
     private Map<Integer, GameClient> clients;
+    private GUIClient guiClient;
     private GUIMain mainGUI;
     public GameSettings gameSettings;
     private String name;
@@ -62,7 +63,7 @@ public class GameController {
         clients = new HashMap<>();
 
         //Init GUIGameClient
-        GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0);
+        guiClient = mainGUI.displayGameScreen(gamesettings, 0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
@@ -89,6 +90,9 @@ public class GameController {
             }
         };
         gameThread.start();
+
+        //Print to on screen log
+        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
     }
 
     /**
@@ -249,5 +253,13 @@ public class GameController {
             GameClient client = clients.get(clientID);
             client.setPositions(positions);
         }
+    }
+
+    /**
+     * Print a message to the on screen log
+     * @param message
+     */
+    public void printToLogfield(String message) {
+        guiClient.printToLogfield(message);
     }
 }

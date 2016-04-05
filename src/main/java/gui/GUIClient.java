@@ -207,4 +207,7 @@ public class GUIClient implements GameClient {
         return id;
     }
 
+    public void printToLogfield(String message) {
+        gameScreen.printToLogField(message);
+    }
 }

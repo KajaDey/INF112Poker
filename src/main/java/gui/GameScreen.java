@@ -159,7 +159,7 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        logText += printInfo;
+        logText = printInfo + "\n" + logText;
         textArea.setText(logText);
     }
 
