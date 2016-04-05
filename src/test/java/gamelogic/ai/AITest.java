@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  */
 public class AITest {
 
-    static final int N = 100;
+    static final int N = 10;
     static HashMap<Integer, Long> startStack;
 
     @Test
