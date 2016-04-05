@@ -101,7 +101,6 @@ public class GameScreen {
             pane.getChildren().addAll(vbox);
         } else {
 
-
             OpponentLayout oppLayout = opponents.get(userID);
             oppLayout.updateLayout(userID, name, stackSize, userID);
 
@@ -534,9 +533,7 @@ public class GameScreen {
                 task = () -> playerLayout.setPositionLabel(pos);
             } else {
                 task = () -> {
-                    for (Integer i : opponents.keySet()) {
-                        opponents.get(i).setPositionLabel(pos);
-                    }
+                    opponents.get(id).setPositionLabel(pos);
                 };
             }
             Platform.runLater(task);
