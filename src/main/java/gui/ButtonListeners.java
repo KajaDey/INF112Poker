@@ -99,7 +99,7 @@ public class ButtonListeners {
      */
     public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox,GameController gameController){
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
+            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Against AI")) {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
                 gameSettings = gameController.gameSettings;
             }
