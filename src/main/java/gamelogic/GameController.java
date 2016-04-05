@@ -75,7 +75,7 @@ public class GameController {
             GameClient aiClient = new SimpleAI(AI_id, 1.0);
             clients.put(AI_id, aiClient);
             game.addPlayer("SimpleAI-player", AI_id);
-            mainGUI.insertPlayer(1, "SimpleAI-player (" + AI_id + ")", gamesettings.getStartStack());
+            mainGUI.insertPlayer(AI_id, "SimpleAI-player (" + AI_id + ")", gamesettings.getStartStack());
         }
 
         //Set initial values for clients

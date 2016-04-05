@@ -1,5 +1,6 @@
 package gui.layouts;
 
+import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
 import javafx.geometry.Pos;
@@ -13,7 +14,7 @@ import javafx.scene.layout.VBox;
 /**
  * Created by ady on 04/04/16.
  */
-public class OpponentLayout {
+public class OpponentLayout extends VBox{
 
     DropShadow dropShadow = new DropShadow();
 
@@ -22,7 +23,7 @@ public class OpponentLayout {
 
 
     public OpponentLayout(){
-
+        super();
     }
 
     /**
@@ -33,7 +34,7 @@ public class OpponentLayout {
      * @param stackSize
      * @return a layout
      */
-    public VBox updateLayout(int userID, String name, long stackSize) {
+    public void updateLayout(int userID, String name, long stackSize, int position) {
         leftCardImage = ImageViewer.getEmptyImageView("opponent");
         rightCardImage = ImageViewer.getEmptyImageView("opponent");
 
@@ -53,16 +54,26 @@ public class OpponentLayout {
         VBox opponentStats = new VBox();
         VBox fullBox = new VBox();
 
-        opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+        if(position == 1 || position == 2){
+            opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            cardsAndStats.getChildren().addAll(opponentStats,leftCardImage, rightCardImage);
+            this.getChildren().addAll(cardsAndStats, lastMoveLabel);
+        }
+        else if (position > 2 && position < 6){
+            opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            cardsAndStats.getChildren().addAll(leftCardImage, rightCardImage,opponentStats);
+            this.getChildren().addAll(cardsAndStats, lastMoveLabel);
+        }
+        else
+            GUIMain.debugPrint("Invalid position from OpponentLayout");
+
+
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
-        cardsAndStats.getChildren().addAll(leftCardImage, rightCardImage, opponentStats);
         cardsAndStats.setSpacing(10);
         cardsAndStats.setAlignment(Pos.CENTER);
-        fullBox.getChildren().addAll(cardsAndStats, lastMoveLabel);
-        fullBox.setAlignment(Pos.CENTER);
 
-        return fullBox;
+        this.setAlignment(Pos.CENTER);
     }
 
     public void setLastMoveLabel(String s){
