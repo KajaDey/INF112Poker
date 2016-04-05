@@ -45,7 +45,7 @@ public class OpponentLayout extends HBox{
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
 
-        nameLabel = ObjectStandards.makeStandardLabelWhite("Name:", name);
+        nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");

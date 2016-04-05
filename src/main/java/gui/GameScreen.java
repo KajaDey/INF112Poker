@@ -30,7 +30,7 @@ public class GameScreen {
    // BorderPane borderPane;
     Scene scene;
     private int playerID;
-    private int numberOfPlayers = 5;
+    private int numberOfPlayers = 1;
 
     private Label endGameScreen;
 
@@ -87,8 +87,6 @@ public class GameScreen {
      */
 
     public boolean insertPlayer(int userID, String name, long stackSize) {
-
-        System.out.println(userID);
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
