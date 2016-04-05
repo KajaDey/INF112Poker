@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -47,12 +48,16 @@ public class GameScreen {
     PlayerLayout playerLayout = new PlayerLayout();
     BoardLayout boardLayout = new BoardLayout();
 
+    private TextArea textArea = new TextArea();
+    private String logText = "";
+
     public GameScreen(int ID) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
         this.opponents = new HashMap<>();
 
         initializePlayerLayouts();
+        insertLogField();
     }
 
     private void initializePlayerLayouts() {
@@ -95,7 +100,7 @@ public class GameScreen {
         if (userID == playerID) {
             VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
             vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-175);
+            vbox.setLayoutY(scene.getHeight()-160);
             pane.getChildren().addAll(vbox);
         } else {
 
@@ -105,11 +110,11 @@ public class GameScreen {
             switch (userID){
                 case 1:
                     oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(450);
+                    oppLayout.setLayoutY(425);
                     break;
                 case 2:
                     oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(175);
+                    oppLayout.setLayoutY(150);
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
@@ -117,11 +122,11 @@ public class GameScreen {
                     break;
                 case 4:
                     oppLayout.setLayoutX(1000);
-                    oppLayout.setLayoutY(175);
+                    oppLayout.setLayoutY(150);
                     break;
                 case 5:
                     oppLayout.setLayoutX(1000);
-                    oppLayout.setLayoutY(450);
+                    oppLayout.setLayoutY(425);
                     break;
                 default:
                     GUIMain.debugPrintln("Cannot place opponent");
@@ -134,6 +139,28 @@ public class GameScreen {
         return true;
     }
 
+    /**
+     * Inserts a text field for the game log.
+     * It is put in the lower, left corner.
+     */
+    public void insertLogField(){
+        textArea.setMaxWidth(300);
+        textArea.setMaxHeight(100);
+        textArea.setEditable(false);
+        textArea.setLayoutX(5);
+        textArea.setLayoutY(scene.getHeight()-105);
+        textArea.setWrapText(true);
+        pane.getChildren().add(textArea);
+    }
+
+    /**
+     * Adds text to the previously made log field.
+     * @param printInfo The text to add to the field.
+     */
+    public void printToLogField(String printInfo){
+        logText += printInfo;
+        textArea.setText(logText);
+    }
 
     /**
      * Displays the card pictures to the screen
