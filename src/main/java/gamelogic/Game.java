@@ -184,15 +184,17 @@ public class Game {
 
             //Check if player is already all in
             if (playerToAct.getStackSize() == 0) {
-                if (numberOfPlayersWithChipsLeft() == 0)
+                if (numberOfPlayersWithChipsLeft() == 0) {
+                    //TODO: Show hole cards
                     return true;
+                }
                 actingPlayerIndex++;
                 continue;
             }
 
             //Get decision for the acting player
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
-            playerToAct.act(decision, highestAmountPutOnTable, pot);
+            playerToAct.act(decision, highestAmountPutOnTable, pot, isPreFlop);
 
             //Tell all the clients about this decision
             gameController.setDecisionForClient(playerToAct.getID(), decision);
@@ -264,8 +266,8 @@ public class Game {
         gameController.setDecisionForClient(bigBlindPlayer.getID(), postBB);
 
         //Make players act
-        smallBlindPlayer.act(postSB, 0, pot);
-        bigBlindPlayer.act(postBB, 0, pot);
+        smallBlindPlayer.act(postSB, 0, pot, true);
+        bigBlindPlayer.act(postBB, 0, pot, true);
 
         stackSizes.put(smallBlindPlayer.getID(), smallBlindPlayer.getStackSize());
         stackSizes.put(bigBlindPlayer.getID(), bigBlindPlayer.getStackSize());

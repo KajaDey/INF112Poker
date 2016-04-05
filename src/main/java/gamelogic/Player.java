@@ -1,6 +1,5 @@
 package gamelogic;
 
-import java.util.Optional;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -12,11 +11,17 @@ public class Player extends User {
     private Card[] holeCards;
     private boolean folded = false;
 
+    //Statistics
+    private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
+    private int numberOfAgressiveMoves = 0, numberOfPassiveMoves = 0;
+    private long highestStacksize = 0;
+    private Hand bestHand;
+
+
     public Player(String name, long stackSize, int ID) {
         super(name);
         this.stackSize = stackSize;
         this.ID = ID;
-
     }
 
     /**
@@ -32,7 +37,7 @@ public class Player extends User {
      * @param decision Move to execute
      * @param highestAmountPutOnTable
      */
-    public void act(Decision decision, long highestAmountPutOnTable, Pot pot) {
+    public void act(Decision decision, long highestAmountPutOnTable, Pot pot, boolean preflop) {
 
         long amountToCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
@@ -43,13 +48,18 @@ public class Player extends User {
                 break;
 
             case FOLD:
+                numberOfPassiveMoves++;
+                if (preflop)
+                    foldsPreFlop++;
                 this.folded = true;
                 break;
 
             case CHECK:
+                numberOfPassiveMoves++;
                 break;
 
             case CALL:
+                numberOfPassiveMoves++;
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
@@ -58,18 +68,21 @@ public class Player extends User {
 
             case BET:
                 assert putOnTableThisRound == 0;
+                numberOfAgressiveMoves++;
                 this.putOnTableThisRound = decision.size;
                 stackSize -= decision.size;
                 pot.addToPot(ID, decision.size);
                 break;
 
             case RAISE:
+                numberOfAgressiveMoves++;
                 stackSize -= (amountToCall + decision.size);
                 putOnTableThisRound = highestAmountPutOnTable + decision.size;
                 pot.addToPot(ID, amountToCall + decision.size);
                 break;
 
             case ALL_IN:
+                numberOfAgressiveMoves++;
                 pot.addToPot(ID, stackSize);
                 putOnTableThisRound += stackSize;
                 stackSize = 0;
@@ -102,6 +115,7 @@ public class Player extends User {
      * @param card2 Card two in the hand
      */
     public void setHoleCards(Card card1, Card card2) {
+        handsPlayed++;
         this.holeCards = new Card[2];
         holeCards[0] = card1;
         holeCards[1] = card2;
@@ -112,7 +126,7 @@ public class Player extends User {
      * @return Hole cards represented as a Card-array of length 2
      */
     public Card[] getHoleCards() {
-        assert holeCards != null : "Hole cards where null when Game asked for them";
+        assert holeCards != null : "Hole cards were null when Game asked for them";
         return holeCards;
     }
 
@@ -123,7 +137,6 @@ public class Player extends User {
         return !folded;
     }
 
-
     /**
      * Increments the player's stack with given amount
      *
@@ -131,10 +144,29 @@ public class Player extends User {
      */
     public void incrementStack(long size) {
         stackSize += size;
+        if (stackSize > highestStacksize)
+            highestStacksize = stackSize;
     }
 
+    /**
+     * Called when a new betting round starts, to reset the betting limitations for this player
+     */
     public void newBettingRound() {
         this.putOnTableThisRound = 0;
+    }
+
+    public void handWon(Hand winningHand) {
+        handsWon++;
+
+        //Update best hand (for stats)
+        if (bestHand == null)
+            bestHand = winningHand;
+        else if (winningHand.compareTo(bestHand) > 0)
+            bestHand = winningHand;
+    }
+
+    public String getBestHand() {
+        return "Not implemented in HandCalculator";
     }
 }
 
