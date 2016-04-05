@@ -1,6 +1,7 @@
 package gamelogic;
 
 import com.sun.corba.se.impl.logging.IORSystemException;
+import gui.GUIMain;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,23 +16,27 @@ import java.util.Random;
 public class NameGenerator {
 
 
-    private static String filePath = "/home/henrik/inf112/inf112v16-g4/names.txt";
+    private static String filePath = "resources/names.txt";
 
     static ArrayList<String> names = new ArrayList<String>();
 
-    public static String getRandomName() throws IOException {
-
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+    public static String getRandomName(){
         Random random = new Random();
-        if (names.isEmpty()) {
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null)
-                names.add(currentLine);
-        }
+         try {
+             BufferedReader reader = new BufferedReader(new FileReader(filePath));
+             if (names.isEmpty()) {
+                 String currentLine;
+                 while ((currentLine = reader.readLine()) != null)
+                     names.add(currentLine);
+             }
+         } catch (IOException e) {
+             GUIMain.debugPrintln("Error reading names.txt");
+             e.printStackTrace();
+         }
 
-        return names.get(random.nextInt(names.size()));
+        String name = names.get(random.nextInt(names.size()));
 
-
+        return name.substring(0,1).toUpperCase() + name.substring(1, name.length()).toLowerCase();
     }
 
 

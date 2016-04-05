@@ -62,7 +62,7 @@ public class GameController {
         clients = new HashMap<>();
 
         //Init GUIGameClient
-        GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
+        GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
@@ -71,11 +71,12 @@ public class GameController {
         //Init AIClients
         int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
         for (int i = 0; i < numOfAIs; i++) {
+            String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
             GameClient aiClient = new SimpleAI(AI_id, 0.75);
             clients.put(AI_id, aiClient);
-            game.addPlayer("SimpleAI-player", AI_id);
-            mainGUI.insertPlayer(AI_id, "SimpleAI-player (" + AI_id + ")", gamesettings.getStartStack());
+            game.addPlayer(aiName, AI_id);
+            mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
         }
 
         //Set initial values for clients
