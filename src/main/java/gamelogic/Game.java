@@ -1,5 +1,6 @@
 package gamelogic;
 
+import gui.GUIMain;
 import gui.GameSettings;
 
 import java.util.*;
@@ -59,7 +60,7 @@ public class Game {
 
         Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
-            System.out.println("\nNew hand");
+            GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stacksizes
             gameController.startNewHand();
             refreshAllStackSizes();
@@ -77,32 +78,32 @@ public class Game {
             printAllPlayerStacks();
 
             //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
-            System.out.println("\nBLINDS");
+            GUIMain.debugPrintln("\nBLINDS");
             postBlinds();
             printAllPlayerStacks();
 
             //First betting round (preflop)
-            System.out.println("\nPREFLOP:");
+            GUIMain.debugPrintln("\nPREFLOP:");
             boolean handContinues = bettingRound(true);
             if (!handContinues) { determineWinner(false);  continue; }
             printAllPlayerStacks();
 
             //Display flop and new betting round
-            System.out.println("\nFLOP:");
+            GUIMain.debugPrintln("\nFLOP:");
             setFlop();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue; }
             printAllPlayerStacks();
 
             //Display turn and new betting round
-            System.out.println("\nTURN:");
+            GUIMain.debugPrintln("\nTURN:");
             setTurn();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue;}
             printAllPlayerStacks();
 
             //Display river and new betting round
-            System.out.println("\nRIVER:");
+            GUIMain.debugPrintln("\nRIVER:");
             setRiver();
             handContinues = bettingRound(false);
             if (!handContinues) { determineWinner(false); continue;}
@@ -134,7 +135,7 @@ public class Game {
 
         //Double check that there is only one player remaining in the hand
         if (playersStillInCurrentHand.size() != 1)
-            System.out.println("Winner cannot be determined, " + playersStillInCurrentHand.size() + " players left in the hand");
+            GUIMain.debugPrintln("Winner cannot be determined, " + playersStillInCurrentHand.size() + " players left in the hand");
 
         //Hand out the pot to the remaining player in the hand
         Player winner = playersStillInCurrentHand.get(0);
@@ -226,11 +227,11 @@ public class Game {
                 default: numberOfPlayersActedSinceLastAggressor++;
             }
 
-            System.out.println(playerToAct.getName()  + " acted: " + decision + ". Highest amount put on table: " + highestAmountPutOnTable);
+            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision + ". Highest amount put on table: " + highestAmountPutOnTable);
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1) {
-                System.out.println("Only one player left, hand over");
+                GUIMain.debugPrintln("Only one player left, hand over");
                 return false;
             } else if(numberOfPlayersActedSinceLastAggressor == playersStillInCurrentHand.size()) {
                 return true;
@@ -297,7 +298,7 @@ public class Game {
                     if (highestAmountPutOnTable == 0)
                         return decision;
 
-                    System.out.println(playerToAct.getAmountPutOnTableThisBettingRound() + " " + isPreFlop + " " + highestAmountPutOnTable);
+                    GUIMain.debugPrintln(playerToAct.getAmountPutOnTableThisBettingRound() + " " + isPreFlop + " " + highestAmountPutOnTable);
                     if (playerCanCheckBigBlind) {
                         return decision;
                     }
@@ -320,10 +321,10 @@ public class Game {
                     if (decision.size >= currentMinimumRaise)
                         return decision;
                     break;
-                default: System.out.println("Unknown move: " + decision.move);
+                default: GUIMain.debugPrintln("Unknown move: " + decision.move);
             }
 
-            System.out.println("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**");
+            GUIMain.debugPrintln("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**");
 
             //Temp hack for testing
             if (highestAmountPutOnTable > 0)
@@ -409,7 +410,7 @@ public class Game {
         try {
             Thread.sleep(milliseconds);
         } catch (Exception e) {
-            System.out.println("Error when sleeping thread " + Thread.currentThread());
+            GUIMain.debugPrintln("Thread " + Thread.currentThread() + " was interrupted.");
         }
     }
 
@@ -528,12 +529,12 @@ public class Game {
      */
     private void showDown() {
         //Print hole cards and community cards
-        System.out.println("\nShowdown");
+        GUIMain.debugPrintln("\nShowdown");
         for (Player p : playersStillInCurrentHand)
-            System.out.println(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1]);
+            GUIMain.debugPrintln(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1]);
         for (Card communityCard : communityCards)
-            System.out.print(communityCard + " ");
-        System.out.println();
+            GUIMain.debugPrint(communityCard + " ");
+        GUIMain.debugPrintln();
 
         List<Integer> IDStillPlaying = new ArrayList<>();
         for (Player p : playersStillInCurrentHand) {
@@ -554,7 +555,7 @@ public class Game {
             winner = getPlayerFromID(winnerID);
             potShare = pot.getSharePotPlayerCanWin(winnerID);
             winner.incrementStack(potShare);
-            System.out.println(winner.getName() + " got " + potShare);
+            GUIMain.debugPrintln(winner.getName() + " got " + potShare);
             IDStillPlaying.remove(new Integer(winnerID));
         }
 
@@ -570,9 +571,9 @@ public class Game {
 
     public void printAllPlayerStacks() {
         for (Player p : players) {
-            System.out.println(p.getName() + "'s stack: " + p.getStackSize());
+            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize());
         }
-        System.out.println("Pot: " + pot.getPotSize());
+        GUIMain.debugPrintln("Pot: " + pot.getPotSize());
     }
 
     public Player getPlayerFromID(int ID) {

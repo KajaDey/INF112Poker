@@ -55,20 +55,20 @@ public class GUIClient implements GameClient {
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
-            System.out.println("You don't have this much in your stack");
+            GUIMain.debugPrint("You don't have this much in your stack");
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
         if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
-            System.out.println("Raise is too small");
+            GUIMain.debugPrint("Raise is too small");
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
         if (move == Decision.Move.BET && moveSize < bigBlind) {
-            System.out.println("Bet is too small, must be a minimum of " + bigBlind);
+            GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
