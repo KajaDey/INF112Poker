@@ -188,7 +188,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-        //TODO: Update label in GUI
+        //TODO: Set number of players
     }
 
     @Override

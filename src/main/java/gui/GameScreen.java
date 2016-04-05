@@ -222,7 +222,7 @@ public class GameScreen {
         switch (decision.move) {
             case CALL:
                 newStackSize -= Math.min(stackSizes.get(ID), (highestAmountPutOnTable - putOnTable.get(ID)));
-                putOnTable.put(ID, Math.min(stackSizes.get(ID),highestAmountPutOnTable));
+                putOnTable.put(ID,Math.min(stackSizes.get(ID),highestAmountPutOnTable));
                 break;
 
             case BET:
