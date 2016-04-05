@@ -14,6 +14,9 @@ public class ButtonListeners {
     private static GameSettings gameSettings;
     private static GUIClient client;
 
+    private static String savedName, savedNumOfPlayers, savedChoiceBox;
+    private static GameController savedGameController;
+
     /**
      * What happens when the betButton is pushed
      */
@@ -98,6 +101,10 @@ public class ButtonListeners {
      * Listener for the button on the enter button on the main screen
      */
     public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox,GameController gameController){
+        savedName = name;
+        savedChoiceBox = choiceBox;
+        savedNumOfPlayers = numOfPlayers;
+        savedGameController = gameController;
         try {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Against AI")) {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
@@ -114,6 +121,10 @@ public class ButtonListeners {
 
         settingsButtonListener(gameController);
 
+    }
+
+    public static void exitButtonListener(){
+        mainScreenEnterListener(savedName, savedNumOfPlayers, savedChoiceBox, savedGameController);
     }
 
     /**
