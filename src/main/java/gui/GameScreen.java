@@ -8,13 +8,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -31,7 +28,7 @@ import java.util.Map;
  */
 public class GameScreen {
 
-    BorderPane borderPane;
+   // BorderPane borderPane;
     Scene scene;
     private int playerID;
     private int numberOfPlayers = 5;
@@ -46,14 +43,17 @@ public class GameScreen {
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
 
+    private Pane pane = new Pane();
+
     OpponentLayout opponentLayout = new OpponentLayout();
     PlayerLayout playerLayout = new PlayerLayout();
     BoardLayout boardLayout = new BoardLayout();
 
     public GameScreen(int ID) {
         this.playerID = ID;
-        borderPane = new BorderPane();
-        scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
+        //borderPane = new BorderPane();
+        //scene = new Scene(ImageViewer.setBackground("PokerTable", borderPane, 1920, 1080), 1280, 720);
+        scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
     }
 
     /**
@@ -64,7 +64,8 @@ public class GameScreen {
      */
 
     public Scene createSceneForGameScreen(GameSettings settings) {
-        borderPane.setCenter(boardLayout.updateLayout(settings.getSmallBlind(),settings.getBigBlind()));
+        //borderPane.setCenter(boardLayout.updateLayout(settings.getSmallBlind(),settings.getBigBlind()));
+        pane.getChildren().addAll((boardLayout.updateLayout(settings.getSmallBlind(),settings.getBigBlind())));
         return scene;
     }
 
@@ -86,16 +87,34 @@ public class GameScreen {
         playerLayout.setStackSize(stackSize);
         if (userID == playerID) {
             //Insert player
-            borderPane.setBottom(playerLayout.updateLayout(userID,name,stackSize));
+            //borderPane.setBottom(playerLayout.updateLayout(userID,name,stackSize));
+            VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
+            vbox.setLayoutX(scene.getWidth()/4);
+            vbox.setLayoutY(scene.getHeight()-175);
+            pane.getChildren().addAll(vbox);
         } else {
             //insert opponent
             //borderPane.setTop(opponentLayout.updateLayout(userID,name,stackSize));
-            hBox.getChildren().add(opponentLayout.updateLayout(userID,name,stackSize));
-            hBox.setAlignment(Pos.CENTER);
+            //hBox.getChildren().add(opponentLayout.updateLayout(userID,name,stackSize));
+            //hBox.setAlignment(Pos.CENTER);
+            //pane.getChildren().addAll(hBox);
+
+            VBox opponent;
+            switch (userID){
+                case 1:
+                    opponent = opponentLayout.updateLayout(userID,name,stackSize);
+                    opponent.setLayoutX(200);
+                    opponent.setLayoutY(200);
+                    pane.getChildren().addAll(opponent);
+                    break;
+                default:
+                    GUIMain.debugPrintln("Cannot place opponent");
+            }
         }
 
         if(userID == numberOfPlayers-2)
-            borderPane.setTop(hBox);
+            pane.getChildren().addAll(hBox);
+            //borderPane.setTop(hBox);
 
         return true;
     }
