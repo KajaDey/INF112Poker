@@ -1,7 +1,0 @@
-Må gjøres nå: 
-- ... 
-
-Må gjøres senere: 
-
-Ønsker å gjøre senere: 
-- Klient lagrer en ID lokalt på pcen, slik at hvis en spiller forlater bordet og kommer tilbake vil han bli husket som samme spiller.

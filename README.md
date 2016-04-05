@@ -11,10 +11,11 @@
             Simon Halvorsen
             Vegar Rorvik
 
+* This implementation of Texas Hold'em allows the user to play a game of heads-up poker against an AI. The user can set the preferred game settings and the game continues until one of the players are out of chips. Later implementations will allow the user to create a multiplayer game and play against other human players over the internet. This implementation will also allow for a user to spectate a table of players.
+
 
 *[Scrum board](https://scrumy.com/inf112gruppe4)
 
-*[INF112 drive-mappe](https://drive.google.com/open?id=0B8qv1PNNBC0FRWRzaVNESEJuTkk)
 
 *[CardSprites]
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
@@ -29,4 +30,4 @@ Terms of Use:
 
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
 
-*Bakgrunn er laget av Josten
+*Background is made by Jostein

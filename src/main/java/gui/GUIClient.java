@@ -3,7 +3,6 @@ import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,15 +54,21 @@ public class GUIClient implements GameClient {
      * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
-            System.out.println("You don't have this much in your stack");
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
+            GUIMain.debugPrint("You don't have this much in your stack");
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
 
         if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
-            System.out.println("Raise is to small");
+            GUIMain.debugPrint("Raise is too small");
+            gameScreen.setErrorStateOfAmountTextfield(true);
+            return;
+        }
+
+        if (move == Decision.Move.BET && moveSize < bigBlind) {
+            GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
             gameScreen.setErrorStateOfAmountTextfield(true);
             return;
         }
@@ -131,6 +136,9 @@ public class GUIClient implements GameClient {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
         gameScreen.updateStackSizes(stackSizes);
+
+        //Updates the values of the slider
+        gameScreen.updateSliderValues();
     }
 
     @Override
@@ -180,7 +188,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-        //TODO: Update label in GUI
+        //TODO: Set number of players
     }
 
     @Override

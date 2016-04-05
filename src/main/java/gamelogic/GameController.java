@@ -1,6 +1,5 @@
 package gamelogic;
 
-import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
 
@@ -52,9 +51,9 @@ public class GameController {
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
+
         String error;
         if (((error = game.getError()) != null)) {
-            //TODO: Tell GUI to display error-message that settings are not valid
             mainGUI.displayErrorMessageToLobby(error);
             return;
         }
@@ -66,19 +65,20 @@ public class GameController {
         GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
-
-        //AIGameClient
-        //GameClient aiClient = new SimpleAI(1, 1.0);
-        GameClient aiClient = new MCTSAI(1);
-        clients.put(1, aiClient);
-        game.addPlayer("SimpleAI-player", 1);
-
-
-        //TODO: add all players to GUI
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
-        mainGUI.insertPlayer(1, "SimpleAI-player", gamesettings.getStartStack());
+        guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
 
-        //Should maybe be called by game
+        //Init AIClients
+        int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
+        for (int i = 0; i < numOfAIs; i++) {
+            int AI_id = i+1;
+            GameClient aiClient = new SimpleAI(AI_id, 1.0);
+            clients.put(AI_id, aiClient);
+            game.addPlayer("SimpleAI-player", AI_id);
+            mainGUI.insertPlayer(1, "SimpleAI-player (" + AI_id + ")", gamesettings.getStartStack());
+        }
+
+        //Set initial values for clients
         initClients(gamesettings);
 
         Thread gameThread = new Thread("GameThread") {
@@ -87,7 +87,6 @@ public class GameController {
                 game.playGame();
             }
         };
-
         gameThread.start();
     }
 
