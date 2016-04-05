@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by kristianrosland on 07.03.2016.
  */
-public class Hand {
+public class Hand implements Comparable<Hand> {
     private List<Card> holeCards = new ArrayList<Card>(2);
     private List<Card> communityCards;
     private List<Card> allCards = new ArrayList<>();
@@ -68,6 +68,7 @@ public class Hand {
      * @param other Hand to compare to this
      * @return 1 if this hand is better, -1 if other hand is better, 0 if equal
      */
+    @Override
     public int compareTo(Hand other) {
         HandCalculator myCalculator = new HandCalculator(this);
         HandCalculator otherCalculator = new HandCalculator(other);
