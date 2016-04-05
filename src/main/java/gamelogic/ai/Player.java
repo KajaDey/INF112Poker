@@ -19,6 +19,15 @@ public class Player {
     public boolean isInHand = true;
     public boolean isAllIn = false;
 
+    public Player(int id, int initialPosition, long initialStackSize) {
+        holeCards = new ArrayList<>(2);
+
+        this.id = id;
+
+        position = initialPosition;
+        stackSize = initialStackSize;
+    }
+
     public Player(Player oldPlayer) {
         this.id = oldPlayer.id;
         this.holeCards = new ArrayList<>(oldPlayer.holeCards);
@@ -28,15 +37,6 @@ public class Player {
         this.currentBet = oldPlayer.currentBet;
         this.isInHand = oldPlayer.isInHand;
         this.isAllIn = oldPlayer.isAllIn;
-    }
-
-    public Player(int id, int initialPosition, long initialStackSize) {
-        holeCards = new ArrayList<>(2);
-
-        this.id = id;
-
-        position = initialPosition;
-        stackSize = initialStackSize;
     }
 
     @Override

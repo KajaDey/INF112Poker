@@ -3,10 +3,7 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -15,18 +12,18 @@ import java.util.stream.Collectors;
 public class GameState {
     private final ArrayList<Card> deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
-    private final int amountOfPlayers;
+    public final int amountOfPlayers;
     private final List<Player> players;
     private final List<Card> communityCards;
 
-    private Player currentPlayer;
+    public Player currentPlayer;
 
     private final Player dealer;
     private final Player bigBlind;
     private final Player smallBlind;
 
-    private final int bigBlindAmount;
-    private final int smallBlindAmount;
+    private final long bigBlindAmount;
+    private final long smallBlindAmount;
 
     private long pot;
     private final long allChipsOnTable;
@@ -35,8 +32,10 @@ public class GameState {
     private int playersToMakeDecision; // Players left to make decision in this betting round
 
 
-    public GameState(int amountOfPlayers, List<Integer> positions, List<Long> stackSizes,
-                     int smallBlindAmount, int bigBlindAmount) {
+    public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
+                     long smallBlindAmount, long bigBlindAmount) {
+
+        assert amountOfPlayers == positions.size();
 
         this.amountOfPlayers = amountOfPlayers;
         this.smallBlindAmount = bigBlindAmount;
@@ -44,9 +43,16 @@ public class GameState {
         communityCards = new ArrayList<>();
 
         players = new ArrayList<>(amountOfPlayers);
-        allChipsOnTable = stackSizes.stream().reduce(Long::sum).get();
+
+        List<Long> stackSizesArray = new ArrayList<>();
+        stackSizes.forEach((playerId, stackSize) -> {
+            assert playerId == stackSizesArray.size();
+            stackSizesArray.add(stackSize); }
+        );
+        allChipsOnTable = stackSizesArray.stream().reduce(Long::sum).get();
 
         for (int i = 0; i < amountOfPlayers; i++) {
+            assert positions.containsKey(i) : "AI didn't get position for playerId " + i;
             players.add(new Player(i, positions.get(i), stackSizes.get(i)));
             players.get(i).minimumRaise = bigBlindAmount;
             players.get(i).currentBet = bigBlindAmount;
@@ -131,7 +137,7 @@ public class GameState {
     }
 
     public void makeGameStateChange(GameStateChange move) {
-        System.out.println("Doing decision: " + move + ", current player: " + currentPlayer.id);
+        //System.out.println("Doing decision: " + move + ", current player: " + currentPlayer.id);
         if (move instanceof CardDealtToPlayer) {
             CardDealtToPlayer cardDeal = (CardDealtToPlayer)move;
             players.get(cardDeal.playerId).holeCards.add(cardDeal.card);
@@ -141,6 +147,9 @@ public class GameState {
         else if (move instanceof CardDealtToTable) {
             communityCards.add(((CardDealtToTable)(move)).card);
             assert communityCards.size() <= 5;
+            if (communityCards.size() == 3 || communityCards.size() == 4 || communityCards.size() == 5) {
+                playersToMakeDecision = playersLeftInHand;
+            }
         }
 
         else if (move instanceof PlayerDecision) {
@@ -209,8 +218,7 @@ public class GameState {
      */
     public Optional<ArrayList<GameStateChange>> allDecisions() {
         ArrayList<GameStateChange> decisions = new ArrayList<>();
-        System.out.println(playersLeftInHand + " players left in hand, " + playersAllIn + " all in, " + playersToMakeDecision + " players to make decisions");
-
+        //System.out.println(playersLeftInHand + " players left in hand, " + playersAllIn + " all in, " + playersToMakeDecision + " players to make decisions");
 
         long playerChipsSum = players.stream().reduce(0L, (acc, player) -> acc + player.stackSize, Long::sum);
         assert pot + playerChipsSum == allChipsOnTable :
@@ -227,16 +235,15 @@ public class GameState {
             }
             else {
                 decisions.addAll(deck.stream().map(CardDealtToTable::new).collect(Collectors.toList()));
-                if (communityCards.size() == 2 || communityCards.size() == 3 || communityCards.size() == 4) {
-                    playersToMakeDecision = playersLeftInHand;
-                }
+
                 return Optional.of(decisions);
             }
         }
         else {
             assert playersLeftInHand > 0: "Trying to generate possible decisions for player, when there are no players left (" +
                     playersAllIn + " players all in, " + playersToMakeDecision + " players to make decisions)";
-            assert currentPlayer.isInHand && !currentPlayer.isAllIn && currentPlayer.stackSize > 0;
+            assert currentPlayer.isInHand && !currentPlayer.isAllIn;
+            assert currentPlayer.stackSize > 0;
 
             decisions.add(new PlayerDecision(new Decision(Decision.Move.FOLD)));
             decisions.add(new PlayerDecision(new Decision(Decision.Move.ALL_IN)));
@@ -258,39 +265,44 @@ public class GameState {
             }
             return Optional.of(decisions);
         }
-
     }
-/*
-    private void giveRandomHoleCard() {
-        Deck shuffledDeck = new Deck(deck);
-        shuffledDeck.shuffle();
-        Card card = shuffledDeck.draw().get();
 
-        assert !currentPlayer.holeCards.get(1).isPresent();
-        if (currentPlayer.holeCards.get(0).isPresent()) {
-            currentPlayer.holeCards.set(1, Optional.of(card));
+    // Returns the kind of decision that needs to be done in this gamestate
+    public NodeType getNextNodeType() {
+        NodeType nodeType;
+        if (playersLeftInHand + playersAllIn == 1) {
+            nodeType = NodeType.Terminal;
+        }
+        else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
+            if (communityCards.size() == 5) {
+                nodeType = NodeType.Terminal;
+            }
+            else {
+                nodeType = NodeType.DealCard;
+            }
         }
         else {
-            currentPlayer.holeCards.set(0, Optional.of(card));
+            nodeType = NodeType.PlayerDecision;
         }
+        return nodeType;
     }
 
-    private void ungiveHoleCard() {
-        assert currentPlayer.holeCards.get(0).isPresent();
-        if (currentPlayer.holeCards.get(1).isPresent()) {
-            currentPlayer.holeCards.set(1, Optional.empty());
-        }
-        else {
-            currentPlayer.holeCards.set(0, Optional.empty());
-        }
+    public static enum NodeType {DealCard, PlayerDecision, Terminal }
 
-    }
-*/
 
     public static abstract class GameStateChange {
+        public NodeType getStartingNodeType() {
+            if (this instanceof PlayerDecision) {
+                return NodeType.PlayerDecision;
+            }
+            else {
+                return NodeType.DealCard;
+            }
+        }
     }
 
-    private static class CardDealtToPlayer extends GameStateChange {
+
+    public static class CardDealtToPlayer extends GameStateChange {
         public final Card card;
         public final int playerId;
 
@@ -303,7 +315,7 @@ public class GameState {
         }
     }
 
-    private static class CardDealtToTable extends GameStateChange {
+    public static class CardDealtToTable extends GameStateChange {
         public final Card card;
 
         private CardDealtToTable(Card card) {
@@ -314,7 +326,7 @@ public class GameState {
         }
     }
 
-    private static class PlayerDecision extends GameStateChange {
+    public static class PlayerDecision extends GameStateChange {
         public final Decision decision;
 
         private PlayerDecision(Decision decision) {
@@ -360,8 +372,8 @@ public class GameState {
         result = 31 * result + dealer.hashCode();
         result = 31 * result + bigBlind.hashCode();
         result = 31 * result + smallBlind.hashCode();
-        result = 31 * result + bigBlindAmount;
-        result = 31 * result + smallBlindAmount;
+        result = 31 * result + (int)bigBlindAmount;
+        result = 31 * result + (int)smallBlindAmount;
         result = 31 * result + (int) (pot ^ (pot >>> 32));
         result = 31 * result + playersLeftInHand;
         result = 31 * result + playersAllIn;

@@ -1,5 +1,6 @@
 package gamelogic;
 
+import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
 
@@ -67,7 +68,8 @@ public class GameController {
         game.addPlayer(this.name, 0);
 
         //AIGameClient
-        GameClient aiClient = new SimpleAI(1, 1.0);
+        //GameClient aiClient = new SimpleAI(1, 1.0);
+        GameClient aiClient = new MCTSAI(1);
         clients.put(1, aiClient);
         game.addPlayer("SimpleAI-player", 1);
 
