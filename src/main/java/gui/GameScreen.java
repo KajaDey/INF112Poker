@@ -300,6 +300,10 @@ public class GameScreen {
                 putOnTable.put(ID, putOnTable.get(ID) + stackSizes.get(ID));
                 newStackSize = 0;
                 break;
+            case FOLD:
+                Runnable task = () -> opponents.get(ID).removeHolecards();
+                Platform.runLater(task);
+                break;
         }
 
         playerLayout.setStackSize(newStackSize);

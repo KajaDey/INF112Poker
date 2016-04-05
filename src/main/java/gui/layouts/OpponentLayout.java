@@ -110,4 +110,9 @@ public class OpponentLayout extends HBox{
     public void setNameLabel(String name) {
         nameLabel.setText(name);
     }
+
+    public void removeHolecards() {
+        leftCardImage.setVisible(false);
+        rightCardImage.setVisible(false);
+    }
 }
