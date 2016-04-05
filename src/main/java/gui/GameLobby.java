@@ -47,11 +47,11 @@ public class GameLobby {
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         Button leaveLobby = ObjectStandards.makeButtonForLobbyScreen("Leave lobby");
 
-        amountOfChips = ObjectStandards.makeStandardLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
-        numberOfPlayers = ObjectStandards.makeStandardLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
-        bigBlind = ObjectStandards.makeStandardLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
-        smallBlind = ObjectStandards.makeStandardLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
-        levelDuration = ObjectStandards.makeStandardLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
+        amountOfChips = ObjectStandards.makeLobbyLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
+        numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
+        bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
+        smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
+        levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
         headLine = ObjectStandards.makeLabelForHeadLine("Game Lobby");
 
         //ActionListeners

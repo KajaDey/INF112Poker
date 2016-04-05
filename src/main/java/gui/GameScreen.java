@@ -30,7 +30,7 @@ public class GameScreen {
    // BorderPane borderPane;
     Scene scene;
     private int playerID;
-    private int numberOfPlayers = 5;
+    private int numberOfPlayers = 1;
 
     private Label endGameScreen;
 
@@ -88,8 +88,6 @@ public class GameScreen {
 
     public boolean insertPlayer(int userID, String name, long stackSize) {
 
-        System.out.println(userID);
-
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
         playerLayout.setStackSize(stackSize);
@@ -106,16 +104,16 @@ public class GameScreen {
 
             switch (userID){
                 case 1:
-                    oppLayout.setLayoutX(0);
+                    oppLayout.setLayoutX(20);
                     oppLayout.setLayoutY(450);
                     break;
                 case 2:
-                    oppLayout.setLayoutX(0);
+                    oppLayout.setLayoutX(20);
                     oppLayout.setLayoutY(175);
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(0);
+                    oppLayout.setLayoutY(20);
                     break;
                 case 4:
                     oppLayout.setLayoutX(1000);
