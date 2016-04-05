@@ -43,12 +43,12 @@ public class BoardLayout {
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
-        nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
-        nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
+        //nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
+        //nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
         winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
-        statsLayout.getChildren().addAll(currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel);
+        statsLayout.getChildren().addAll(currentBBLabel, currentSBLabel, potLabel);
         statsLayout.setSpacing(10);
         statsLayout.setAlignment(Pos.CENTER);
 

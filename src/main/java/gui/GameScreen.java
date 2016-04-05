@@ -119,11 +119,11 @@ public class GameScreen {
                     oppLayout.setLayoutY(0);
                     break;
                 case 4:
-                    oppLayout.setLayoutX(920);
+                    oppLayout.setLayoutX(1000);
                     oppLayout.setLayoutY(175);
                     break;
                 case 5:
-                    oppLayout.setLayoutX(920);
+                    oppLayout.setLayoutX(1000);
                     oppLayout.setLayoutY(450);
                     break;
                 default:

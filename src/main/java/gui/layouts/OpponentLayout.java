@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 /**
  * Created by ady on 04/04/16.
  */
-public class OpponentLayout extends VBox{
+public class OpponentLayout extends HBox{
 
     DropShadow dropShadow = new DropShadow();
 
@@ -50,28 +50,37 @@ public class OpponentLayout extends VBox{
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
-        HBox cardsAndStats = new HBox();
+        HBox cards = new HBox();
         VBox opponentStats = new VBox();
-        VBox fullBox = new VBox();
 
         if(position == 1 || position == 2){
-            opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
-            cardsAndStats.getChildren().addAll(opponentStats,leftCardImage, rightCardImage);
-            this.getChildren().addAll(cardsAndStats, lastMoveLabel);
+            cards.getChildren().addAll(leftCardImage, rightCardImage);
+            opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
+            this.getChildren().addAll(opponentStats, lastMoveLabel);
         }
-        else if (position > 2 && position < 6){
+        else if (position == 3){
+
             opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
-            cardsAndStats.getChildren().addAll(leftCardImage, rightCardImage,opponentStats);
-            this.getChildren().addAll(cardsAndStats, lastMoveLabel);
+            cards.getChildren().addAll(leftCardImage, rightCardImage, opponentStats);
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(cards, lastMoveLabel);
+            vBox.setAlignment(Pos.CENTER);
+            this.getChildren().add(vBox);
+
+        }
+        else if(position == 4 || position == 5){
+
+            cards.getChildren().addAll(leftCardImage, rightCardImage);
+            opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
+            this.getChildren().addAll(lastMoveLabel, opponentStats);
         }
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
 
-
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
-        cardsAndStats.setSpacing(10);
-        cardsAndStats.setAlignment(Pos.CENTER);
+        cards.setSpacing(10);
+        cards.setAlignment(Pos.CENTER);
 
         this.setAlignment(Pos.CENTER);
     }
