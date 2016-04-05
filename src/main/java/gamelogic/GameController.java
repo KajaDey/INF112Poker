@@ -72,7 +72,7 @@ public class GameController {
         int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
         for (int i = 0; i < numOfAIs; i++) {
             int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 1.0);
+            GameClient aiClient = new SimpleAI(AI_id, 0.75);
             clients.put(AI_id, aiClient);
             game.addPlayer("SimpleAI-player", AI_id);
             mainGUI.insertPlayer(AI_id, "SimpleAI-player (" + AI_id + ")", gamesettings.getStartStack());
