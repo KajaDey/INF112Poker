@@ -3,6 +3,7 @@ package gui.layouts;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -20,7 +21,6 @@ public class OpponentLayout extends HBox{
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage;
-
 
     public OpponentLayout(){
         super();
@@ -48,7 +48,7 @@ public class OpponentLayout extends HBox{
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
-        lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
+        lastMoveLabel = ObjectStandards.makeLobbyLabelWhite("", "");
 
         HBox cards = new HBox();
         VBox opponentStats = new VBox();

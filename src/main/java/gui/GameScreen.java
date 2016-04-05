@@ -104,16 +104,16 @@ public class GameScreen {
 
             switch (userID){
                 case 1:
-                    oppLayout.setLayoutX(0);
+                    oppLayout.setLayoutX(20);
                     oppLayout.setLayoutY(450);
                     break;
                 case 2:
-                    oppLayout.setLayoutX(0);
+                    oppLayout.setLayoutX(20);
                     oppLayout.setLayoutY(175);
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(0);
+                    oppLayout.setLayoutY(20);
                     break;
                 case 4:
                     oppLayout.setLayoutX(1000);
