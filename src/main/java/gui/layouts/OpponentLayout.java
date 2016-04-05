@@ -74,6 +74,7 @@ public class OpponentLayout extends HBox{
             cards.getChildren().addAll(leftCardImage, rightCardImage);
             opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
             this.getChildren().addAll(lastMoveLabel, opponentStats);
+            this.setMinWidth(250);
         }
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
@@ -81,9 +82,9 @@ public class OpponentLayout extends HBox{
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
         cards.setSpacing(10);
-        cards.setAlignment(Pos.CENTER);
+        cards.setAlignment(Pos.CENTER_RIGHT);
 
-        this.setAlignment(Pos.CENTER);
+        this.setAlignment(Pos.CENTER_RIGHT);
     }
 
     public void setLastMoveLabel(String s){
