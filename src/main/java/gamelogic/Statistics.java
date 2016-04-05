@@ -17,7 +17,6 @@ public class Statistics {
     private long highestStack;
 
     public Statistics(int positionFinished, int handsWon, int handsPlayed, int foldsPreflop, int aggressiveMoves, int passiveMoves, String bestHand,long highestStack ){
-
         this.positionFinished = positionFinished;
         this.handsWon = handsWon;
         this.handsPlayed = handsPlayed;
@@ -26,10 +25,9 @@ public class Statistics {
         this.passiveMoves = passiveMoves;
         this.bestHand = bestHand;
         this.highestStack = highestStack;
-
     }
 
-    void printStatisticsToFile(String filepath) throws Exception{
+    public void printStatisticsToFile(String filepath) throws Exception{
 
         FileWriter fw = new FileWriter(filepath);
 
@@ -43,7 +41,6 @@ public class Statistics {
         fw.write("highest stack: " + highestStack + '\n');
 
         fw.close();
-
     }
 
 }
