@@ -304,7 +304,11 @@ public class GameScreen {
                 break;
         }
 
-        playerLayout.setStackSize(newStackSize);
+        if (ID == playerID) {
+            playerLayout.setStackSize(newStackSize);
+        }
+
+        stackSizes.put(ID, newStackSize);
 
         //Set button texts depending on the action
         String finalText = checkCallButtonText;

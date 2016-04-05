@@ -6,6 +6,7 @@ import gui.ObjectStandards;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -112,7 +113,9 @@ public class OpponentLayout extends HBox{
     }
 
     public void removeHolecards() {
-        leftCardImage.setVisible(false);
-        rightCardImage.setVisible(false);
+        ColorAdjust adjust = new ColorAdjust();
+        adjust.setBrightness(-0.5);
+        leftCardImage.setEffect(adjust);
+        rightCardImage.setEffect(adjust);
     }
 }
