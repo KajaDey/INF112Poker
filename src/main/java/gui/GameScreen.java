@@ -151,7 +151,7 @@ public class GameScreen {
         textArea.setLayoutY(scene.getHeight()-105);
         textArea.setWrapText(true);
         pane.getChildren().add(textArea);
-        textArea.setVisible(false);
+        textArea.setOpacity(0.9);
     }
 
     /**
@@ -159,7 +159,6 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        textArea.setVisible(true);
         logText += printInfo;
         textArea.setText(logText);
     }
