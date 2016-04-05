@@ -56,9 +56,9 @@ public class MainScreen {
         VBox verticalButtonAndChoiceBox = new VBox();
 
         //Top-text
-        String title = "Heads Up Poker!";
-        String info = "This is an implementation of heads up Texas hold'em.\n" +
-                "Since the program isn't fully implemented yet, you can only choose \"Single player\" and play against one AI\n" +
+        String title = "Texas Hold'em!";
+        String info = "This is an implementation of Texas hold'em.\n" +
+                "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-6 AIs\n" +
                 "Enter your name, and start playing!";
 
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
@@ -80,8 +80,8 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll("Single Player", "Multi Player");
-        choiceBox.setValue("Single Player");
+        choiceBox.getItems().addAll("Against AI", "Against Players");
+        choiceBox.setValue("Against AI");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 

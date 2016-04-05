@@ -51,6 +51,8 @@ public class GameScreen {
     private TextArea textArea = new TextArea();
     private String logText = "";
 
+    private Button exitButton;
+
     public GameScreen(int ID) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
@@ -58,6 +60,7 @@ public class GameScreen {
 
         initializePlayerLayouts();
         insertLogField();
+        addExitButton();
     }
 
     private void initializePlayerLayouts() {
@@ -161,6 +164,20 @@ public class GameScreen {
     public void printToLogField(String printInfo){
         logText = printInfo + "\n" + logText;
         textArea.setText(logText);
+    }
+
+    /**
+     * Adds a working exit button to the game screen. The button takes you back to the lobby screen
+     */
+    public void addExitButton(){
+        exitButton = ObjectStandards.makeStandardButton("Exit");
+
+        exitButton.setLayoutX(scene.getWidth()- 80);
+        exitButton.setLayoutY(3);
+
+        pane.getChildren().add(exitButton);
+
+        exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
     }
 
     /**
