@@ -12,7 +12,8 @@ import java.util.StringJoiner;
 /**
  * Created by pokki on 10/03/16.
  *
- * Checks if a given hand is a straight flush
+ * Checks if a hand contains a straight flush. (5 succeeding cards in the same suit)
+ *
  */
 public class StraightFlush implements IRule {
 

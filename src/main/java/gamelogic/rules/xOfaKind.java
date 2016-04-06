@@ -8,8 +8,9 @@ import java.util.*;
 
 /**
  * Created by kaja on 08.03.2016.
- * <p/>
- * Checks if a given hand has either 4/3/2 cards of the same rank.
+ *
+ * Checks if a hand contains either quad, trips, or one pair.
+ * (4,3,2 cards of the same rank)
  */
 public class xOfaKind implements IRule {
     private boolean fourOfaKind;

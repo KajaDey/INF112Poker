@@ -9,7 +9,8 @@ import java.util.*;
 /**
  * Created by Vegar on 09/03/16.
  *
- * Checks what high card a given hand contains
+ * Finds the highest ranking cards in the hand.
+ *
  */
 public class HighCard implements IRule {
     private List<Card> returnHand = new ArrayList<Card>();
