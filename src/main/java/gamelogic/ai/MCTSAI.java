@@ -53,7 +53,7 @@ public class MCTSAI implements GameClient {
 
         GameState gameState = new GameState(amountOfPlayers, positions, stackSizes, smallBlindAmount, bigBlindAmount);
 
-        PokerMCTS mcts = new PokerMCTS(gameState, amountOfPlayers, playerId);
+        PokerMCTS mcts = new PokerMCTS(gameState, amountOfPlayers, playerId, holeCards);
         return mcts.calculateFor(2000);
     }
 

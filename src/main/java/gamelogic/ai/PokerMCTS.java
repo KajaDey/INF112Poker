@@ -1,8 +1,12 @@
 package gamelogic.ai;
 
+import gamelogic.Card;
 import gamelogic.Decision;
+import gamelogic.Hand;
+import gamelogic.Pot;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by morten on 04.04.16.
@@ -10,20 +14,27 @@ import java.util.*;
 public class PokerMCTS {
 
     public final int playerId;
+    public final int playerPosition;
     public final int amountOfPlayers;
     public final AbstractNode rootNode;
     private final GameState initialGameState;
     private int totalSearches;
 
-    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId) {
+    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, List<Card> holeCards) {
         this.amountOfPlayers = amountOfPlayers;
         this.playerId = playerId;
+        this.playerPosition = gameState.players.stream()
+                .filter(player -> player.id == playerId)
+                .findFirst()
+                .get().position;
         int amountOfMoves = gameState.allDecisions().get().size();
         this.rootNode = new AINode(amountOfMoves);
         this.initialGameState = gameState;
+        initialGameState.players.get(playerId).holeCards.addAll(holeCards);
     }
 
     public Decision calculateFor(long milliseconds) {
+        System.out.println("Starting MCTS with " + amountOfPlayers + " for player " + playerId);
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() < startTime + milliseconds) {
             for (int i = 0; i < 1; i++) {
@@ -35,18 +46,44 @@ public class PokerMCTS {
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
         AbstractNode bestNode = rootNode.children.get(0).get();
-        Decision bestDecision = ((GameState.PlayerDecision)allDecisions.get(0)).decision;
+        Decision bestDecision = new Decision(Decision.Move.FOLD);
         assert rootNode.children.size() == allDecisions.size();
         assert allDecisions.size() > 4;
         for (int i = 0; i < allDecisions.size(); i++) {
-            if (rootNode.children.get(i).get().values[playerId] > bestNode.values[playerId]) {
+            if (rootNode.children.get(i).get().values[playerPosition] > bestNode.values[playerPosition]) {
                 bestNode = rootNode.children.get(i).get();
                 bestDecision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
             }
-            System.out.println(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + rootNode.children.get(i).get().values[playerId]);
+            System.out.println(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + rootNode.children.get(i).get().values[playerPosition]);
         }
 
         return bestDecision;
+    }
+
+    public static double[] arraySum (double[] array1, double[] array2) {
+        assert array1.length == array2.length;
+        double[] result = new double[array1.length];
+        for (int i = 0; i < array1.length; i++) {
+            result[i] = array1[i] + array2[i];
+        }
+        return result;
+    }
+
+    public static double[] findAIEvals(AbstractNode node, int amountOfPlayers) {
+        if (node instanceof AINode) {
+            return node.values;
+        }
+        else if (node instanceof TerminalNode) {
+            return node.values;
+        }
+        else {
+            return node.children
+                    .stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(child -> findAIEvals(child, amountOfPlayers))
+                    .reduce(new double[amountOfPlayers], PokerMCTS::arraySum);
+        }
     }
 
     public abstract class AbstractNode {
@@ -88,11 +125,11 @@ public class PokerMCTS {
                     childNode = new AINode(allMovesForChild.get().size());
                 }
                 else {
-                    childNode = new OpponentNode(allMovesForChild.get().size(), newGameState.currentPlayer.id);
+                    childNode = new OpponentNode(allMovesForChild.get().size(), newGameState.currentPlayer.position);
                 }
             }
             else {
-                childNode = new TerminalNode(0);
+                childNode = new TerminalNode(0, newGameState);
             }
             children.set(childIndex, Optional.of(childNode));
 
@@ -140,11 +177,11 @@ public class PokerMCTS {
                         childNode = new AINode(numberOfMovesForChild);
                     }
                     else {
-                        childNode = new OpponentNode(numberOfMovesForChild, newGameState.currentPlayer.id);
+                        childNode = new OpponentNode(numberOfMovesForChild, newGameState.currentPlayer.position);
                     }
                     break;
                 case Terminal:
-                    childNode = new TerminalNode(numberOfMovesForChild);
+                    childNode = new TerminalNode(numberOfMovesForChild, newGameState);
                     break;
                 default: throw new IllegalStateException();
             }
@@ -167,17 +204,18 @@ public class PokerMCTS {
     // Node where the AI plays.
     public abstract class PlayerNode extends AbstractNode {
 
-        public final int playerToMove;
-        public PlayerNode(int numberOfMoves, int playerToMove) {
+        public final int positionToMove;
+        public PlayerNode(int numberOfMoves, int positionToMove) {
             super(numberOfMoves);
-            this.playerToMove = playerToMove;
+            this.positionToMove = positionToMove;
         }
 
         @Override
         public double[] select(double totalSearches, GameState gameState) {
 
-            GameState newGameState = new GameState(gameState);
+
             if (numberOfExploredChildren == children.size()) {
+                GameState newGameState = new GameState(gameState);
                 if (children.get(0).get() instanceof PlayerNode) {
                     PlayerNode bestNode;
 
@@ -198,7 +236,7 @@ public class PokerMCTS {
                 }
             }
             else {
-                double[] eval = expand(totalSearches, newGameState);
+                double[] eval = expand(totalSearches, gameState);
                 addValues(values, eval);
                 return eval;
             }
@@ -206,7 +244,7 @@ public class PokerMCTS {
 
         public double explorationValue(double totalSearches) {
             if (searches > 0) {
-                return values[playerToMove] / searches + Math.sqrt(2) * Math.sqrt(Math.log(totalSearches) / searches);
+                return values[positionToMove] / searches + Math.sqrt(2) * Math.sqrt(Math.log(totalSearches) / searches);
             }
             else {
                 return Double.POSITIVE_INFINITY;
@@ -228,13 +266,15 @@ public class PokerMCTS {
 
     public class TerminalNode extends AbstractNode {
 
-        public TerminalNode(int numberOfMoves) {
+        public TerminalNode(int numberOfMoves, GameState gameState) {
             super(numberOfMoves);
             assert numberOfMoves == 0;
+            addValues(values, terminalEval(gameState));
         }
 
         @Override
         public double[] select(double totalSearches, GameState gameState) {
+
             return terminalEval(gameState);
         }
 
@@ -245,6 +285,7 @@ public class PokerMCTS {
 
         @Override
         public double[] simulate(double totalSearches, GameState gameState) {
+            assert values[0] == terminalEval(gameState)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState));
             return terminalEval(gameState);
         }
     }
@@ -258,15 +299,16 @@ public class PokerMCTS {
 
         @Override
         public double[] select(double totalSearches, GameState gameState) {
-            GameState newGameState = new GameState(gameState);
+
             if (numberOfExploredChildren == children.size()) {
+                GameState newGameState = new GameState(gameState);
                 AbstractNode randomNode = children.get((int) (Math.random() * children.size())).get();
                 double[] eval = randomNode.select(totalSearches, newGameState);
                 addValues(values, eval);
                 return eval;
             }
             else {
-                double[] eval = expand(totalSearches, newGameState);
+                double[] eval = expand(totalSearches, gameState);
                 addValues(values, eval);
                 return eval;
             }
@@ -274,12 +316,57 @@ public class PokerMCTS {
     }
 
     public static double[] terminalEval(GameState gameState) {
-        //System.out.println("Getting terminal evaluation");
-        double[] eval = new double[gameState.amountOfPlayers];
-        for (int i = 0; i < gameState.amountOfPlayers; i++) {
-            eval[i] = 0.0;
+
+        class Pair<T, U> {
+            final T v1;
+            final U v2;
+            Pair(T v1, U v2) {
+                this.v1 = v1;
+                this.v2 = v2;
+            }
         }
-        return eval; //TODO: Write properly
+
+        double[] eval = new double[gameState.amountOfPlayers];
+        Pot pot = new Pot();
+        for (Player player : gameState.players) {
+            pot.addToPot(player.id, player.contributedToPot);
+            assert player.holeCards.size() == 2 : "Tried to get terminal eval, but player " + player.id + " has " + player.holeCards.size() + " holecards.";
+        }
+
+        ArrayList<Player> handsList = gameState.players.stream()
+                .filter(p -> p.isInHand)
+                .map(p -> new Pair(p, new Hand(p.holeCards.get(0), p.holeCards.get(1), gameState.communityCards)))
+                .sorted((pair1, pair2) -> ((Hand)pair1.v2).compareTo(((Hand)pair2.v2)))
+                .map(pair -> (Player)pair.v1)
+                .collect(Collectors.toCollection(ArrayList<Player>::new));
+
+        Collections.reverse(handsList);
+        for (Player player : handsList) {
+            player.stackSize += pot.getSharePotPlayerCanWin(player.id);
+            player.contributedToPot = 0;
+        }
+
+        gameState.players.stream()
+                .filter(p -> !handsList.contains(p))
+                .forEach(p -> {
+                    p.stackSize += pot.getSharePotPlayerCanWin(p.id);
+                    p.contributedToPot = 0;
+                });
+
+
+        for (int i = 0; i < gameState.players.size(); i++) {
+            assert gameState.players.get(i).position == i;
+            eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
+        }
+
+        long playerChipsSum = gameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
+        assert playerChipsSum == gameState.allChipsOnTable :
+                "Sum of player chips is " + playerChipsSum + ", but started with " + gameState.allChipsOnTable + " on table.";
+
+        assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001
+                : "Error: winning probs is " + Arrays.toString(eval) + " (sum=" + Arrays.stream(eval).reduce(0.0, Double::sum) + ")";
+
+        return eval;
     }
 
     // Adds each newEval to oldEvals, mutating oldEvals

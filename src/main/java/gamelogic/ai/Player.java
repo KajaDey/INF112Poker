@@ -3,18 +3,19 @@ package gamelogic.ai;
 import gamelogic.Card;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Created by morten on 09.03.16.
  */
 public class Player {
     public final int id;
-    public final ArrayList<Card> holeCards;
+    public final List<Card> holeCards;
     public int position;
     public long stackSize;
     public long minimumRaise; // If they want to raise, the minimum they need to raise by
     public long currentBet; // The amount they need to put on the table to remain in the hand
+    public long contributedToPot = 0;
 
     public boolean isInHand = true;
     public boolean isAllIn = false;
@@ -35,8 +36,16 @@ public class Player {
         this.stackSize = oldPlayer.stackSize;
         this.minimumRaise = oldPlayer.minimumRaise;
         this.currentBet = oldPlayer.currentBet;
+        this.contributedToPot = oldPlayer.contributedToPot;
+
         this.isInHand = oldPlayer.isInHand;
         this.isAllIn = oldPlayer.isAllIn;
+    }
+
+    public void putInPot(long amount) {
+        stackSize -= amount;
+        contributedToPot += amount;
+        assert stackSize >= 0;
     }
 
     @Override
