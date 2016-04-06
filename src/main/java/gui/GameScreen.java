@@ -113,23 +113,23 @@ public class GameScreen {
             switch (userID){
                 case 1:
                     oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(425);
+                    oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 case 2:
                     oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(150);
+                    oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
                     oppLayout.setLayoutY(20);
                     break;
                 case 4:
-                    oppLayout.setLayoutX(1000);
-                    oppLayout.setLayoutY(150);
+                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 5:
-                    oppLayout.setLayoutX(1000);
-                    oppLayout.setLayoutY(425);
+                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 default:
                     GUIMain.debugPrintln("Cannot place opponent");
