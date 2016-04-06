@@ -4,11 +4,11 @@ import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -31,7 +31,9 @@ public class GameScreen {
    // BorderPane borderPane;
     Scene scene;
     private int playerID;
-    private int numberOfPlayers = 1;
+    private int [] positions;
+    private int numberOfOpponentsAddedToTheGame = 0;
+    private int numberOfPlayers = 2;
 
     private Label endGameScreen;
 
@@ -51,7 +53,9 @@ public class GameScreen {
     private TextArea textArea = new TextArea();
     private String logText = "";
 
-    private Button exitButton;
+    private Button exitButton, applyButton;
+
+    private ChoiceBox<String> windowSize;
 
     public GameScreen(int ID, int maxNumberOfPlayers) {
         this.playerID = ID;
@@ -62,6 +66,7 @@ public class GameScreen {
         initializePlayerLayouts(maxNumberOfPlayers);
         insertLogField();
         addExitButton();
+        addWindowSizeChoiceBox();
     }
 
     private void initializePlayerLayouts(int N) {
@@ -109,38 +114,79 @@ public class GameScreen {
         } else {
 
             OpponentLayout oppLayout = opponents.get(userID);
-            oppLayout.updateLayout(userID, name, stackSize, userID);
+            oppLayout.setPosition(positions[numberOfOpponentsAddedToTheGame]);
+            oppLayout.updateLayout(name, stackSize);
 
-            switch (userID){
+            switch (oppLayout.getPosition()){
                 case 1:
                     oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(425);
+                    oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 case 2:
                     oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(150);
+                    oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
                     oppLayout.setLayoutY(20);
                     break;
                 case 4:
-                    oppLayout.setLayoutX(1000);
-                    oppLayout.setLayoutY(150);
+                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 5:
-                    oppLayout.setLayoutX(1000);
-                    oppLayout.setLayoutY(425);
+                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 default:
                     GUIMain.debugPrintln("Cannot place opponent");
             }
 
+            numberOfOpponentsAddedToTheGame++;
             pane.getChildren().add(oppLayout);
             opponents.put(userID, oppLayout);
         }
 
         return true;
+    }
+
+    private int[] giveOpponentPosition() {
+
+        int [] positions = new int[numberOfPlayers-1];
+
+        switch (numberOfPlayers){
+            case 2:
+                positions[0] = 3;
+                break;
+            case 3:
+                positions[0] = 2;
+                positions[1] = 4;
+                break;
+            case 4:
+                positions[0] =2;
+                positions[1] =3;
+                positions[2] =4;
+                break;
+            case 5:
+                positions[0] =1;
+                positions[1] =2;
+                positions[2] =4;
+                positions[3] =5;
+                break;
+            case 6:
+                positions[0] =1;
+                positions[1] =2;
+                positions[2] =3;
+                positions[3] =4;
+                positions[4] =5;
+                break;
+            default:
+                GUIMain.debugPrint("Too many players");
+                break;
+        }
+
+        return positions;
+
     }
 
     /**
@@ -163,8 +209,12 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        logText = printInfo + "\n" + logText;
-        textArea.setText(logText);
+        Runnable task = () -> {
+            logText = printInfo + "\n" + logText;
+            textArea.setText(logText);
+        };
+        Platform.runLater(task);
+
     }
 
     /**
@@ -179,6 +229,39 @@ public class GameScreen {
         pane.getChildren().add(exitButton);
 
         exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
+    }
+
+    public void addWindowSizeChoiceBox(){
+        windowSize = new ChoiceBox<>();
+
+        windowSize.setMinWidth(100);
+        windowSize.setMaxWidth(100);
+        windowSize.getItems().addAll("Windowed", "Fullscreen");
+        windowSize.setValue("Windowed");
+        windowSize.setTooltip(new Tooltip("Choose window size"));
+
+        windowSize.setMaxHeight(15);
+        windowSize.setLayoutY(35);
+        windowSize.setLayoutX(scene.getWidth()-155);
+
+        windowSize.setStyle("-fx-background-color:#090a0c, " +
+                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
+                "linear-gradient(#20262b, #191d22), " +
+                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
+                "-fx-background-radius: 5,4,3,5; " +
+                "-fx-background-insets: 0,1,2,0; " +
+                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
+        windowSize.getStylesheets().addAll("file:src/main/java/gui/choiceBoxStyling.css");
+
+        applyButton = ObjectStandards.makeStandardButton("Apply");
+        applyButton.setMaxWidth(50);
+        applyButton.setMinWidth(50);
+        applyButton.setFont(new Font("Areal", 12));
+        applyButton.setLayoutY(35);
+        applyButton.setLayoutX(scene.getWidth()-55);
+        pane.getChildren().addAll(windowSize, applyButton);
+
+        applyButton.setOnAction(event -> ButtonListeners.windowSizeApplyListener(windowSize.getValue(), scene));
     }
 
     /**
@@ -531,6 +614,7 @@ public class GameScreen {
             endGameScreen.setFont(new Font("Areal", 30));
 
             Stage endGame = new Stage();
+            endGame.setAlwaysOnTop(true);
             endGame.initModality(Modality.APPLICATION_MODAL);
             endGame.setTitle("Congratulation!");
 
@@ -607,5 +691,7 @@ public class GameScreen {
 
     public void setNumberOfPlayers(int numberOfPlayers){
         this.numberOfPlayers = numberOfPlayers;
+        positions = giveOpponentPosition();
+
     }
 }

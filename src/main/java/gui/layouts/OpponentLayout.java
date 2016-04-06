@@ -3,7 +3,7 @@ package gui.layouts;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
-import javafx.geometry.HPos;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
@@ -22,6 +22,7 @@ public class OpponentLayout extends HBox{
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage;
+    private int position;
 
     public OpponentLayout(){
         super();
@@ -30,12 +31,11 @@ public class OpponentLayout extends HBox{
     /**
      * Makes the layout for the opponentScreen
      *
-     * @param userID
      * @param name
      * @param stackSize
      * @return a layout
      */
-    public void updateLayout(int userID, String name, long stackSize, int position) {
+    public void updateLayout(String name, long stackSize) {
         leftCardImage = ImageViewer.getEmptyImageView("opponent");
         rightCardImage = ImageViewer.getEmptyImageView("opponent");
 
@@ -58,6 +58,10 @@ public class OpponentLayout extends HBox{
             cards.getChildren().addAll(leftCardImage, rightCardImage);
             opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
             this.getChildren().addAll(opponentStats, lastMoveLabel);
+
+            cards.setAlignment(Pos.CENTER_LEFT);
+            this.setAlignment(Pos.CENTER_LEFT);
+
         }
         else if (position == 3){
 
@@ -75,6 +79,9 @@ public class OpponentLayout extends HBox{
             opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
             this.getChildren().addAll(lastMoveLabel, opponentStats);
             this.setMinWidth(250);
+
+            cards.setAlignment(Pos.CENTER_RIGHT);
+            this.setAlignment(Pos.CENTER_RIGHT);
         }
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
@@ -82,17 +89,17 @@ public class OpponentLayout extends HBox{
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
         cards.setSpacing(10);
-        cards.setAlignment(Pos.CENTER_RIGHT);
 
-        this.setAlignment(Pos.CENTER_RIGHT);
     }
 
     public void setLastMoveLabel(String s){
-        lastMoveLabel.setText(s);
+        Runnable task = () -> lastMoveLabel.setText(s);
+        Platform.runLater(task);
     }
 
     public void setStackSizeLabel(String s){
-        stackSizeLabel.setText(s);
+        Runnable task = () -> stackSizeLabel.setText(s);
+        Platform.runLater(task);
     }
 
     public void setPositionLabel(String s){
@@ -118,5 +125,13 @@ public class OpponentLayout extends HBox{
         adjust.setBrightness(-0.5);
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position){
+        this.position = position;
     }
 }

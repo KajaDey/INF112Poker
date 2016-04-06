@@ -2,6 +2,7 @@ package gamelogic;
 
 import gamelogic.ai.SimpleAI;
 import gui.*;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +52,10 @@ public class GameController {
      */
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
+        Runnable task = () -> {
+            guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
+        };
+        Platform.runLater(task);
         game = new Game(gamesettings, this);
 
         String error;

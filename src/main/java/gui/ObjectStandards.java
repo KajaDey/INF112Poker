@@ -185,7 +185,7 @@ public class ObjectStandards {
 
         TextField textField = new TextField();
         textField.setFont(new Font("Areal", 15));
-        textField.setMaxWidth(75);
+        textField.setMaxWidth(100);
         textField.setPadding(padding);
 
         return textField;

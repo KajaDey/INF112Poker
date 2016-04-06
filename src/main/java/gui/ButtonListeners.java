@@ -1,6 +1,7 @@
 package gui;
 
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -57,7 +58,7 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,250);
         settings.setScene(scene);
         settings.show();
     }
@@ -138,5 +139,10 @@ public class ButtonListeners {
         MainScreen.refreshSceneForMainScreen();
     }
 
-
+    public static void windowSizeApplyListener(String windowSize, Scene scene){
+        if (windowSize.equals("Fullscreen"))
+            SceneBuilder.setFullscreen(scene, "Game Screen");
+        else
+            SceneBuilder.showCurrentScene(scene, "Game Screen");
+    }
 }

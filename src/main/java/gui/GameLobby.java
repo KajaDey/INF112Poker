@@ -3,9 +3,7 @@ package gui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -103,6 +101,7 @@ public class GameLobby {
         Label bigBlind = ObjectStandards.makeLabelForSettingsScreen("Big blind:");
         Label smallBlind = ObjectStandards.makeLabelForSettingsScreen("Small blind:");
         Label levelDuration = ObjectStandards.makeLabelForSettingsScreen("Level duration:");
+        Label aIDifficulty = ObjectStandards.makeLabelForSettingsScreen("AI difficulty:");
 
         TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();
@@ -116,6 +115,17 @@ public class GameLobby {
         smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
         levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
 
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.setMinWidth(100);
+        choiceBox.setMaxWidth(100);
+        choiceBox.setMinHeight(30);
+        choiceBox.setMaxWidth(30);
+        choiceBox.getItems().addAll("Simple AI", "Advanced AI");
+        choiceBox.setValue("Simple AI");
+        choiceBox.setTooltip(new Tooltip("Pick a difficulty"));
+        choiceBox.setPadding(new Insets(5,5,8,5));
+
+
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
@@ -126,8 +136,8 @@ public class GameLobby {
         levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
                 bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController));
 
-        labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, accept);
-        textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF, cancel);
+        labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration,aIDifficulty ,accept);
+        textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF,choiceBox,cancel);
 
         labelBox.setAlignment(Pos.CENTER);
         textFieldBox.setAlignment(Pos.CENTER);
