@@ -203,6 +203,12 @@ public class PlayerLayout {
         Platform.runLater(task);
     }
 
+    /**
+     * Set button visibility
+     *
+     * @param visible
+     */
+
     public void setVisible(boolean visible){
         betRaiseButton.setVisible(visible);
         checkCallButton.setVisible(visible);
@@ -242,6 +248,14 @@ public class PlayerLayout {
         amountTextfield.setStyle(textfieldStyle);
     }
 
+
+    /**
+     *
+     * Set card image and make them visible
+     *
+     * @param leftImage
+     * @param rightImage
+     */
     public void setCardImage(Image leftImage, Image rightImage) {
         DropShadow dropShadow = new DropShadow();
         leftCardImage.setImage(leftImage);

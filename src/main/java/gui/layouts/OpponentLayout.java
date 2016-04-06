@@ -92,20 +92,45 @@ public class OpponentLayout extends HBox{
 
     }
 
+    /**
+     * Set last move for opponent
+     *
+     * @param s
+     */
     public void setLastMoveLabel(String s){
         Runnable task = () -> lastMoveLabel.setText(s);
         Platform.runLater(task);
     }
+
+    /**
+     * Set stack size for opponent
+     *
+     * @param s
+     */
 
     public void setStackSizeLabel(String s){
         Runnable task = () -> stackSizeLabel.setText(s);
         Platform.runLater(task);
     }
 
+    /**
+     *
+     * Set position for opponent
+     *
+     * @param s
+     */
+
     public void setPositionLabel(String s){
         positionLabel.setText(s);
     }
 
+    /**
+     *
+     * Show cards
+     *
+     * @param leftCard
+     * @param rightCard
+     */
     public void setCardImage(Image leftCard,Image rightCard) {
         leftCardImage.setImage(leftCard);
         rightCardImage.setImage(rightCard);
@@ -116,9 +141,20 @@ public class OpponentLayout extends HBox{
         rightCardImage.setVisible(true);
     }
 
+    /**
+     * Sets name for opponent
+     *
+     * @param name
+     */
+
     public void setNameLabel(String name) {
         nameLabel.setText(name);
     }
+
+
+    /**
+     * Gray out cards
+     */
 
     public void removeHolecards() {
         ColorAdjust adjust = new ColorAdjust();
@@ -127,9 +163,23 @@ public class OpponentLayout extends HBox{
         rightCardImage.setEffect(adjust);
     }
 
+    /**
+     *
+     * Get opponent position
+     *
+     * @return position
+     */
+
     public int getPosition() {
         return position;
     }
+
+    /**
+     *
+     * Set opponent position
+     *
+     * @param position
+     */
 
     public void setPosition(int position){
         this.position = position;

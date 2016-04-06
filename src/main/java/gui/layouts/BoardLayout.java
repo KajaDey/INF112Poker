@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
  */
 public class BoardLayout {
 
-    private Label currentBBLabel, currentSBLabel, nextBBLabel, nextSBLabel, potLabel, winnerLabel;
+    private Label currentBBLabel, currentSBLabel,  potLabel, winnerLabel;
     private long currentSmallBlind, currentBigBlind;
     private ImageView[] communityCards = new ImageView[5];
 
@@ -43,8 +43,6 @@ public class BoardLayout {
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
-        //nextBBLabel = ObjectStandards.makeStandardLabelWhite("Next BB: ", bigBlind * 2 + "$");
-        //nextSBLabel = ObjectStandards.makeStandardLabelWhite("Next SB: ", smallBlind * 2 + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
         winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
@@ -65,18 +63,40 @@ public class BoardLayout {
         return fullLayout;
     }
 
+    /**
+     *
+     * @return list of community cards
+     */
     public ImageView[] getCommunityCards() {
         return communityCards;
     }
 
+    /**
+     *
+     * @param winnerLabel
+     */
     public void setWinnerLabel(String winnerLabel) {
         this.winnerLabel.setText(winnerLabel);
     }
 
+    /**
+     *
+     * Set the pot
+     *
+     * @param pot
+     */
     public void setPotLabel(String pot) {
         potLabel.setText(pot);
     }
 
+    /**
+     *
+     * Sets the flop and make it visible
+     *
+     * @param card1Image
+     * @param card2Image
+     * @param card3Image
+     */
     public void setFlop(Image card1Image, Image card2Image, Image card3Image) {
         communityCards[0].setImage(card1Image);
         communityCards[0].setVisible(true);
@@ -86,11 +106,23 @@ public class BoardLayout {
         communityCards[2].setVisible(true);
     }
 
+    /**
+     *
+     * Set and display turn
+     *
+     * @param turn
+     */
     public void setTurn(Image turn) {
         communityCards[3].setImage(turn);
         communityCards[3].setVisible(true);
     }
 
+    /**
+     *
+     * Set and display river
+     *
+     * @param river
+     */
     public void setRiver(Image river) {
         communityCards[4].setImage(river);
         communityCards[4].setVisible(true);
