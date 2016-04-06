@@ -40,6 +40,7 @@ public class TwoPairsTest {
         twoPairs = new TwoPairs();
 
         assertTrue(twoPairs.match(hand));
+        assertEquals("Two pairs, 8's and 5's",twoPairs.toString());
     }
 
     @Test

@@ -53,9 +53,8 @@ public class GameScreen {
     private TextArea textArea = new TextArea();
     private String logText = "";
 
-    private Button exitButton, applyButton;
+    private Button exitButton;
 
-    private ChoiceBox<String> windowSize;
 
     public GameScreen(int ID, int maxNumberOfPlayers) {
         this.playerID = ID;
@@ -66,7 +65,6 @@ public class GameScreen {
         initializePlayerLayouts(maxNumberOfPlayers);
         insertLogField();
         addExitButton();
-        addWindowSizeChoiceBox();
     }
 
     private void initializePlayerLayouts(int N) {
@@ -236,44 +234,6 @@ public class GameScreen {
         pane.getChildren().add(exitButton);
 
         exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
-    }
-
-    /**
-     *
-     * Adding a choicebox where you can scale the window
-     *
-     */
-    public void addWindowSizeChoiceBox(){
-        windowSize = new ChoiceBox<>();
-
-        windowSize.setMinWidth(100);
-        windowSize.setMaxWidth(100);
-        windowSize.getItems().addAll("Windowed", "Fullscreen");
-        windowSize.setValue("Windowed");
-        windowSize.setTooltip(new Tooltip("Choose window size"));
-
-        windowSize.setMaxHeight(15);
-        windowSize.setLayoutY(35);
-        windowSize.setLayoutX(scene.getWidth()-155);
-
-        windowSize.setStyle("-fx-background-color:#090a0c, " +
-                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
-                "linear-gradient(#20262b, #191d22), " +
-                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
-                "-fx-background-radius: 5,4,3,5; " +
-                "-fx-background-insets: 0,1,2,0; " +
-                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
-        windowSize.getStylesheets().addAll("file:src/main/java/gui/choiceBoxStyling.css");
-
-        applyButton = ObjectStandards.makeStandardButton("Apply");
-        applyButton.setMaxWidth(50);
-        applyButton.setMinWidth(50);
-        applyButton.setFont(new Font("Areal", 12));
-        applyButton.setLayoutY(35);
-        applyButton.setLayoutX(scene.getWidth()-55);
-        pane.getChildren().addAll(windowSize, applyButton);
-
-        applyButton.setOnAction(event -> ButtonListeners.windowSizeApplyListener(windowSize.getValue(), scene));
     }
 
     /**

@@ -2,14 +2,11 @@ package gamelogic.rules;
 
 import gamelogic.Card;
 import gamelogic.Hand;
-import gamelogic.rules.Straight;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +17,7 @@ public class StraightTest {
 
     Hand hand;
     Card card1, card2, card3, card4, card5, card6, card7, card8;
-    Straight straigt;
+    Straight straight;
 
     @Before
     public void setUp() throws Exception {
@@ -37,61 +34,72 @@ public class StraightTest {
     @Test
     public void testMatchWithUniqueRanks() throws Exception {
         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card5, card7, card6));
-        straigt = new Straight();
+        straight = new Straight();
 
-        assertTrue(straigt.match(hand));
+        assertTrue(straight.match(hand));
+    }
+
+    @Test
+    public void testToStringReturnsCorrectHighCard() {
+        hand = new Hand(card1, card2, Arrays.asList(card3, card4, card5, card7, card6));
+        straight = new Straight();
+        straight.match(hand);
+
+        int highCardRank = card7.rank;
+
+        assertEquals(highCardRank + " high straight", straight.toString());
     }
 
     @Test
     public void testMatchWithEqualRanks() throws Exception {
         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card5, card1, card3));
-        straigt = new Straight();
+        straight = new Straight();
 
-        assertTrue(straigt.match(hand));
+        assertTrue(straight.match(hand));
     }
 
     @Test
     public void testAddedLastCardWhenEqualRanks() throws Exception {
         hand = new Hand(card1, card2, Arrays.asList(card2, card2, card5, card3, card4));
-        straigt = new Straight();
-        straigt.match(hand);
+        straight = new Straight();
+        straight.match(hand);
 
-        assertTrue(straigt.getHand().get().contains(card5));
+        assertTrue(straight.getHand().get().contains(card5));
     }
 
     @Test
     public void testNoMatchWhenNoStraight() throws Exception {
         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card7, card7, card7));
-        straigt = new Straight();
+        straight = new Straight();
 
-        assertFalse(straigt.match(hand));
+        assertFalse(straight.match(hand));
     }
 
     @Test
     public void testStraightAceToFive() {
         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card8, card7, card7));
-        straigt = new Straight();
+        straight = new Straight();
 
-        assertTrue(straigt.match(hand));
+        assertTrue(straight.match(hand));
     }
 
     @Test
     public void testGetsBestHandWhenLongStraight() {
         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card8, card7, card5));
-        straigt = new Straight();
-        straigt.match(hand);
+        straight = new Straight();
+        straight.match(hand);
 
-        assertTrue(straigt.getHand().get().contains(card5)); // highest in straight
-        assertFalse(straigt.getHand().get().contains(card8)); // no ace
+        assertTrue(straight.getHand().get().contains(card5)); // highest in straight
+        assertFalse(straight.getHand().get().contains(card8)); // no ace
     }
 
     @Test
     public void testRightCompareValues() {
         hand = new Hand(card1, card2, Arrays.asList(card3, card4, card7, card7, card8));
-        straigt = new Straight();
+        straight = new Straight();
 
-        straigt.match(hand);
-        List<Integer> compareValues = straigt.getCompareValues();
+        straight.match(hand);
+        List<Integer> compareValues = straight.getCompareValues();
 
         assertTrue(compareValues.get(0) == 5);
         assertTrue(compareValues.size() == 1);
