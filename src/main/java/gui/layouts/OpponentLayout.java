@@ -3,7 +3,6 @@ package gui.layouts;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
@@ -22,6 +21,7 @@ public class OpponentLayout extends HBox{
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage;
+    private int position;
 
     public OpponentLayout(){
         super();
@@ -30,12 +30,11 @@ public class OpponentLayout extends HBox{
     /**
      * Makes the layout for the opponentScreen
      *
-     * @param userID
      * @param name
      * @param stackSize
      * @return a layout
      */
-    public void updateLayout(int userID, String name, long stackSize, int position) {
+    public void updateLayout(String name, long stackSize) {
         leftCardImage = ImageViewer.getEmptyImageView("opponent");
         rightCardImage = ImageViewer.getEmptyImageView("opponent");
 
@@ -123,5 +122,13 @@ public class OpponentLayout extends HBox{
         adjust.setBrightness(-0.5);
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position){
+        this.position = position;
     }
 }

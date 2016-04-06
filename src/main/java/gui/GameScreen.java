@@ -31,7 +31,9 @@ public class GameScreen {
    // BorderPane borderPane;
     Scene scene;
     private int playerID;
-    private int numberOfPlayers = 1;
+    private int [] positions;
+    private int numberOfOpponentsAddedToTheGame = 0;
+    private int numberOfPlayers = 2;
 
     private Label endGameScreen;
 
@@ -108,9 +110,10 @@ public class GameScreen {
         } else {
 
             OpponentLayout oppLayout = opponents.get(userID);
-            oppLayout.updateLayout(userID, name, stackSize, userID);
+            oppLayout.setPosition(positions[numberOfOpponentsAddedToTheGame]);
+            oppLayout.updateLayout(name, stackSize);
 
-            switch (userID){
+            switch (oppLayout.getPosition()){
                 case 1:
                     oppLayout.setLayoutX(20);
                     oppLayout.setLayoutY(scene.getHeight() / 2);
@@ -135,11 +138,51 @@ public class GameScreen {
                     GUIMain.debugPrintln("Cannot place opponent");
             }
 
+            numberOfOpponentsAddedToTheGame++;
             pane.getChildren().add(oppLayout);
             opponents.put(userID, oppLayout);
         }
 
         return true;
+    }
+
+    private int[] giveOpponentPosition() {
+
+        int [] positions = new int[numberOfPlayers-1];
+
+        switch (numberOfPlayers){
+            case 2:
+                positions[0] = 3;
+                break;
+            case 3:
+                positions[0] = 2;
+                positions[1] = 4;
+                break;
+            case 4:
+                positions[0] =2;
+                positions[1] =3;
+                positions[2] =4;
+                break;
+            case 5:
+                positions[0] =1;
+                positions[1] =2;
+                positions[2] =4;
+                positions[3] =5;
+                break;
+            case 6:
+                positions[0] =1;
+                positions[1] =2;
+                positions[2] =3;
+                positions[3] =4;
+                positions[4] =5;
+                break;
+            default:
+                GUIMain.debugPrint("Too many players");
+                break;
+        }
+
+        return positions;
+
     }
 
     /**
@@ -605,5 +648,7 @@ public class GameScreen {
 
     public void setNumberOfPlayers(int numberOfPlayers){
         this.numberOfPlayers = numberOfPlayers;
+        positions = giveOpponentPosition();
+
     }
 }
