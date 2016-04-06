@@ -11,6 +11,9 @@ import java.util.Optional;
 
 /**
  * Created by pokki on 08/03/16.
+ *
+ * Checks if a hand contains a straight (5 succeeding cards. Ace can be both 1 and 14).
+ *
  */
 public class Straight implements IRule {
     private int drawCount = 1;
