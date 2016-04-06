@@ -3,6 +3,7 @@ package gui.layouts;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
@@ -92,11 +93,13 @@ public class OpponentLayout extends HBox{
     }
 
     public void setLastMoveLabel(String s){
-        lastMoveLabel.setText(s);
+        Runnable task = () -> lastMoveLabel.setText(s);
+        Platform.runLater(task);
     }
 
     public void setStackSizeLabel(String s){
-        stackSizeLabel.setText(s);
+        Runnable task = () -> stackSizeLabel.setText(s);
+        Platform.runLater(task);
     }
 
     public void setPositionLabel(String s){
