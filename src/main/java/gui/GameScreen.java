@@ -4,11 +4,11 @@ import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -51,7 +51,9 @@ public class GameScreen {
     private TextArea textArea = new TextArea();
     private String logText = "";
 
-    private Button exitButton;
+    private Button exitButton, applyButton;
+
+    private ChoiceBox<String> windowSize;
 
     public GameScreen(int ID) {
         this.playerID = ID;
@@ -61,6 +63,7 @@ public class GameScreen {
         initializePlayerLayouts();
         insertLogField();
         addExitButton();
+        addWindowSizeChoiceBox();
     }
 
     private void initializePlayerLayouts() {
@@ -182,6 +185,39 @@ public class GameScreen {
         pane.getChildren().add(exitButton);
 
         exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
+    }
+
+    public void addWindowSizeChoiceBox(){
+        windowSize = new ChoiceBox<>();
+
+        windowSize.setMinWidth(100);
+        windowSize.setMaxWidth(100);
+        windowSize.getItems().addAll("Windowed", "Fullscreen");
+        windowSize.setValue("Windowed");
+        windowSize.setTooltip(new Tooltip("Choose window size"));
+
+        windowSize.setMaxHeight(15);
+        windowSize.setLayoutY(35);
+        windowSize.setLayoutX(scene.getWidth()-155);
+
+        windowSize.setStyle("-fx-background-color:#090a0c, " +
+                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
+                "linear-gradient(#20262b, #191d22), " +
+                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
+                "-fx-background-radius: 5,4,3,5; " +
+                "-fx-background-insets: 0,1,2,0; " +
+                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
+        windowSize.getStylesheets().addAll("file:src/main/java/gui/choiceBoxStyling.css");
+
+        applyButton = ObjectStandards.makeStandardButton("Apply");
+        applyButton.setMaxWidth(50);
+        applyButton.setMinWidth(50);
+        applyButton.setFont(new Font("Areal", 12));
+        applyButton.setLayoutY(35);
+        applyButton.setLayoutX(scene.getWidth()-55);
+        pane.getChildren().addAll(windowSize, applyButton);
+
+        applyButton.setOnAction(event -> ButtonListeners.windowSizeApplyListener(windowSize.getValue(), scene));
     }
 
     /**
@@ -529,6 +565,7 @@ public class GameScreen {
             endGameScreen.setFont(new Font("Areal", 30));
 
             Stage endGame = new Stage();
+            endGame.setAlwaysOnTop(true);
             endGame.initModality(Modality.APPLICATION_MODAL);
             endGame.setTitle("Congratulation!");
 

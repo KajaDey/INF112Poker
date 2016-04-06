@@ -1,6 +1,7 @@
 package gui;
 
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -138,5 +139,10 @@ public class ButtonListeners {
         MainScreen.refreshSceneForMainScreen();
     }
 
-
+    public static void windowSizeApplyListener(String windowSize, Scene scene){
+        if (windowSize.equals("Fullscreen"))
+            SceneBuilder.setFullscreen(scene, "Game Screen");
+        else
+            SceneBuilder.showCurrentScene(scene, "Game Screen");
+    }
 }
