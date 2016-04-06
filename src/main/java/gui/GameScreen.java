@@ -162,8 +162,12 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        logText = printInfo + "\n" + logText;
-        textArea.setText(logText);
+        Runnable task = () -> {
+            logText = printInfo + "\n" + logText;
+            textArea.setText(logText);
+        };
+        Platform.runLater(task);
+
     }
 
     /**
