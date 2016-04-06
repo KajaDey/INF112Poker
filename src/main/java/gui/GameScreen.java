@@ -53,19 +53,20 @@ public class GameScreen {
 
     private Button exitButton;
 
-    public GameScreen(int ID) {
+    public GameScreen(int ID, int maxNumberOfPlayers) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
         this.opponents = new HashMap<>();
 
-        initializePlayerLayouts();
+        numberOfPlayers = maxNumberOfPlayers;
+        initializePlayerLayouts(maxNumberOfPlayers);
         insertLogField();
         addExitButton();
     }
 
-    private void initializePlayerLayouts() {
+    private void initializePlayerLayouts(int N) {
         playerLayout = new PlayerLayout();
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < N; i++) {
             opponents.put(i, new OpponentLayout());
         }
     }
@@ -344,7 +345,12 @@ public class GameScreen {
                 newStackSize = 0;
                 break;
             case FOLD:
-                Runnable task = () -> opponents.get(ID).removeHolecards();
+                Runnable task;
+                if (ID == playerID)
+                    task = () -> playerLayout.removeHolecards();
+                else
+                    task = () -> opponents.get(ID).removeHolecards();
+
                 Platform.runLater(task);
                 break;
         }
