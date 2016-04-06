@@ -10,7 +10,8 @@ import static org.junit.Assert.*;
 public class GameTest {
 
     @Test
-    public void testStart() throws Exception {
+    public void testPlayGame() throws Exception {
+
 
     }
 
