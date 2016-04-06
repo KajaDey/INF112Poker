@@ -14,13 +14,25 @@ public class GameSettings {
     public long smallBlind;
     public int maxNumberOfPlayers;
     public int levelDuration;
+    public String difficulty;
 
-    public GameSettings(long startStack, int bigBlind, int smallBlind, int maxNumberOfPlayers, int levelDuration) {
+    /**
+     *
+     * @param startStack
+     * @param bigBlind
+     * @param smallBlind
+     * @param maxNumberOfPlayers
+     * @param levelDuration
+     * @param difficulty
+     */
+
+    public GameSettings(long startStack, int bigBlind, int smallBlind, int maxNumberOfPlayers, int levelDuration, String difficulty) {
         this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
+        this.difficulty = difficulty;
     }
 
     /**
@@ -60,4 +72,7 @@ public class GameSettings {
     public int getLevelDuration() {
         return levelDuration;
     }
+
+    public String getDifficulty(){ return difficulty; }
+
 }

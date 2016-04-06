@@ -23,7 +23,7 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(5000, 50, 25, 2, 10);
+        gameSettings = new GameSettings(5000, 50, 25, 2, 10,"Simple AI");
     }
 
     /**

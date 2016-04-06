@@ -69,7 +69,7 @@ public class ButtonListeners {
                                              String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aIChoice) {
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
-                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText));
+                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aIChoice);
 
             GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
