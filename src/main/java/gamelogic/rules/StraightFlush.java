@@ -24,6 +24,10 @@ public class StraightFlush implements IRule {
     @Override
     public boolean match(Hand hand) {
         cards = hand.getAllCards();
+
+        if (cards.size() < 5)
+            return false;
+
         Card.Suit mainSuit = findMainSuit(cards);
         List<Card> mainSuitCards = getMainSuitCards(mainSuit);
 

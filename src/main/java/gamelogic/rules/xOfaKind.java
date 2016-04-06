@@ -38,6 +38,7 @@ public class xOfaKind implements IRule {
     @Override
     public boolean match(Hand hand) {
         allCards = hand.getAllCards();
+
         allCards.sort(Card::compareTo);
 
         for (int i = allCards.size() - 1; i > -1; i--) { //desc

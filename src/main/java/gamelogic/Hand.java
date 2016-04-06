@@ -4,6 +4,7 @@ import gamelogic.rules.IRule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -22,7 +23,8 @@ public class Hand implements Comparable<Hand> {
 
         allCards.add(card1);
         allCards.add(card2);
-        allCards.addAll(communityCards);
+        if (!communityCards.isEmpty())
+            allCards.addAll(communityCards);
     }
 
     /**
@@ -37,14 +39,16 @@ public class Hand implements Comparable<Hand> {
     }
 
     /**
-     * Gets the 3-5 community cards in the hand
-     * @return List of community cards
+     * Gets the 0-5 community cards in the hand
+     * @return List of community cards, or empty
      */
-    public List<Card> getCommunityCards() {
+    public Optional<List<Card>> getCommunityCards() {
+        if (communityCards.isEmpty())
+            return Optional.empty();
         List<Card> communityC = new ArrayList<Card>();
         communityC.addAll(communityCards);
 
-        return communityC;
+        return Optional.of(communityC);
     }
 
     /**

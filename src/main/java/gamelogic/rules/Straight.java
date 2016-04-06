@@ -44,9 +44,11 @@ public class Straight implements IRule {
     @Override
     public boolean match(Hand hand) {
 
-        if (!lookingForStraightFlush) {
+        if (!lookingForStraightFlush)
             cards = hand.getAllCards();
-        }
+
+        if (cards.size() < 5)
+            return false;
 
         lastCardIndex = cards.size() - 1;
 

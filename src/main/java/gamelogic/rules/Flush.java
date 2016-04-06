@@ -21,6 +21,10 @@ public class Flush implements IRule {
     @Override
     public boolean match(Hand hand) {
         List<Card> allCards = hand.getAllCards();
+        
+        if (allCards.size() < 5)
+            return false;
+
         allCards.sort(Card::compareTo);
 
         int nrOfSpades=0;
