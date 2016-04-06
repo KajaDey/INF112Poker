@@ -7,6 +7,7 @@ import gamelogic.HandCalculator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 /**
  * Created by pokki on 10/03/16.
@@ -16,6 +17,7 @@ public class StraightFlush implements IRule {
     private List<Card> returnHand = new ArrayList<>();
     private List<Card> cards;
     private List<Integer> compareValues;
+    private Card highCard;
 
     @Override
     public boolean match(Hand hand) {
@@ -32,7 +34,9 @@ public class StraightFlush implements IRule {
 
         if (straightFlushMatch) {
             returnHand.addAll(straight.getHand().get());
+            returnHand.sort(Card::compareTo);
             compareValues = straight.getCompareValues();
+            highCard=returnHand.get(returnHand.size()-1);
         }
 
         return straightFlushMatch;
@@ -110,5 +114,13 @@ public class StraightFlush implements IRule {
     @Override
     public List<Integer> getCompareValues() {
         return compareValues;
+    }
+
+
+    @Override
+    public String toString(){
+        if(highCard.getRankString()=="Ace")
+            return "Royal flush";
+        return highCard.getRankString()+" high straight flush";
     }
 }

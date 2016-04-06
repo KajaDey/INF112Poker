@@ -42,4 +42,6 @@ public interface IRule {
      */
     public List<Integer> getCompareValues();
 
+    public String toString();
+
 }

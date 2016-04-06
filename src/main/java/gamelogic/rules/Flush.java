@@ -14,6 +14,7 @@ import java.util.Optional;
  */
 public class Flush implements IRule {
     private List<Card> returnHand = new ArrayList<Card>(5);
+    private Card highCard;
 
     @Override
     public boolean match(Hand hand) {
@@ -64,6 +65,10 @@ public class Flush implements IRule {
             }
 
         }
+        if (!returnHand.isEmpty()) {
+            returnHand.sort(Card::compareTo);
+            highCard = returnHand.get(returnHand.size() - 1);
+        }
 
         return (nrOfClubs > 4 || nrOfSpades > 4 || nrOfHearts > 4 || nrOfDiamonds > 4);
     }
@@ -89,5 +94,12 @@ public class Flush implements IRule {
             compareValues.add(returnHand.get(4 - i).rank);
         }
         return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        if(highCard == null)
+            return "No match";
+        return highCard.getRankString()+ " high flush";
     }
 }

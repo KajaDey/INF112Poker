@@ -39,6 +39,7 @@ public class FlushTest {
     @Test
     public void testFlushTrue() throws Exception {
         assertTrue(flush.match(hand1));
+        assertEquals("Ace high flush",flush.toString());
     }
 
     @Test
