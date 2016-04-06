@@ -57,7 +57,7 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,250);
         settings.setScene(scene);
         settings.show();
     }
