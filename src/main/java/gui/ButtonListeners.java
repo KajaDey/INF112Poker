@@ -66,7 +66,7 @@ public class ButtonListeners {
      * What happens when the acceptSettingsButton is pushed
      */
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
-                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController) {
+                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aIChoice) {
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText));
