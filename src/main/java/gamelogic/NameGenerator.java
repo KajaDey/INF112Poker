@@ -75,12 +75,12 @@ public class NameGenerator {
             e.printStackTrace();
         }
 
-            //choose from list and then removerino
-            int randomListIndex = random.nextInt(characterNames.size());
-            String randomCharacter = characterNames.get(randomListIndex).substring(0,1).toUpperCase() + characterNames.get(randomListIndex).substring(1, characterNames.get(randomListIndex).length()).toLowerCase();
-            characterNames.remove(randomListIndex);
+        //choose from list and then removerino
+        int randomListIndex = random.nextInt(characterNames.size());
+        String randomCharacter = characterNames.get(randomListIndex).substring(0,1).toUpperCase() + characterNames.get(randomListIndex).substring(1, characterNames.get(randomListIndex).length()).toLowerCase();
+        characterNames.remove(randomListIndex);
 
-            return randomCharacter;
+        return randomCharacter;
 
     }
 
@@ -89,20 +89,13 @@ public class NameGenerator {
 
     public static void main(String[] args){
 
-
         System.out.println(NameGenerator.getRandomSeriesName());
         System.out.println(NameGenerator.getRandomSeriesName());
         System.out.println(NameGenerator.getRandomSeriesName());
         System.out.println(NameGenerator.getRandomSeriesName());
         System.out.println(NameGenerator.getRandomSeriesName());
-
-
-
-
 
     }
-
-
 
 }
 
