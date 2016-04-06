@@ -20,6 +20,8 @@ public class xOfaKind implements IRule {
     private List<Card> tempHand = new ArrayList<>(5);
     private List<Card> markedCards = new ArrayList<>(5);
 
+    //private Card quadCard, tressCArd, pairCard;
+
     private int nrToCheck;
     private List<Integer> compareValues = new ArrayList<>();
 
@@ -124,5 +126,16 @@ public class xOfaKind implements IRule {
     @Override
     public List<Integer> getCompareValues() {
         return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        if(fourOfaKind)
+            return "Quad "+returnHand.get(0).getRankString()+"'s";
+        else if(threeOfaKind)
+            return "Trip "+returnHand.get(0).getRankString()+"'s";
+        else if (twoOfaKind)
+            return "Pair of "+returnHand.get(0).getRankString()+"'s";
+        return "";
     }
 }

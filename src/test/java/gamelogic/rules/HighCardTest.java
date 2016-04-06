@@ -45,6 +45,7 @@ public class HighCardTest {
     public void testHighCard() throws Exception {
         assertEquals(card2, hc.getHand().get().get(0));
         assertNotEquals(card1, hc.getHand().get().get(0));
+        assertEquals("High card Ace",hc.toString());
     }
 
     @Test

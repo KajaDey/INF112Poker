@@ -19,6 +19,7 @@ public class TwoPairs implements IRule {
     private boolean onePair = false;
     private List<Card> returnHand = new ArrayList<Card>();
     private int firstPairValue, secondPairValue, highCard;
+    private Card pair1, pair2;
 
     @Override
     public boolean match(Hand hand) {
@@ -36,6 +37,7 @@ public class TwoPairs implements IRule {
                     cards.remove(i);
                     cards.remove(i - 1);
                     i--;
+
                 } else {
                     returnHand.add(cards.get(i));
                     returnHand.add(cards.get(i - 1));
@@ -45,6 +47,8 @@ public class TwoPairs implements IRule {
 
                     returnHand.add(cards.get(cards.size() - 1));
                     highCard = cards.get(cards.size() - 1).rank;
+                    pair1 = returnHand.get(0);
+                    pair2 = returnHand.get(2);
 
                     return true;
                 }
@@ -80,6 +84,11 @@ public class TwoPairs implements IRule {
         compareValues.add(highCard);
 
         return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        return "Two pairs, "+pair1.getRankString()+"'s and "+pair2.getRankString()+"'s";
     }
 }
 
