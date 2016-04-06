@@ -11,6 +11,8 @@ import java.util.Optional;
 
 /**
  * Created by pokki on 08/03/16.
+ *
+ * Checks if a given hand is a straight (or straight flush if asked by the straight flush class)
  */
 public class Straight implements IRule {
     private int drawCount = 1;

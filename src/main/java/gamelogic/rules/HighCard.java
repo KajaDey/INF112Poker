@@ -8,6 +8,8 @@ import java.util.*;
 
 /**
  * Created by Vegar on 09/03/16.
+ *
+ * Checks what high card a given hand contains
  */
 public class HighCard implements IRule {
     private List<Card> returnHand = new ArrayList<Card>();

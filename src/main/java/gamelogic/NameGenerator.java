@@ -11,6 +11,8 @@ import java.util.Random;
 
 /**
  * Created by henrik on 05.04.16.
+ *
+ * TODO class information
  */
 public class NameGenerator {
 
@@ -19,6 +21,11 @@ public class NameGenerator {
 
     static ArrayList<String> names = new ArrayList<String>();
 
+    /**
+     * TODO write javadoc
+     * @return A random name
+     * @throws IOException
+     */
     public static String getRandomName() throws IOException {
 
         BufferedReader reader = new BufferedReader(new FileReader(filePath));

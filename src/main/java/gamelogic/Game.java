@@ -126,6 +126,10 @@ public class Game {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param isShowDown
+     */
     private void determineWinner(boolean isShowDown) {
         //If all community cards are out and we have a showdown
         if (isShowDown) {
@@ -564,6 +568,9 @@ public class Game {
         delay(5000);
     }
 
+    /**
+     * TODO write javadoc
+     */
     public void refreshAllStackSizes() {
         for (Player p : players)
             stackSizes.put(p.getID(), p.getStackSize());
@@ -571,6 +578,9 @@ public class Game {
         gameController.setStackSizes(stackSizes);
     }
 
+    /**
+     * TODO write javadoc
+     */
     public void printAllPlayerStacks() {
         for (Player p : players) {
             GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize());
@@ -578,6 +588,11 @@ public class Game {
         GUIMain.debugPrintln("Pot: " + pot.getPotSize());
     }
 
+    /**
+     * TODO write javadoc
+     * @param ID
+     * @return
+     */
     public Player getPlayerFromID(int ID) {
         for (Player p : players) {
             if (p.getID() == ID) return p;

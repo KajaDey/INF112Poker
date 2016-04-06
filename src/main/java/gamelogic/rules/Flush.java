@@ -11,6 +11,8 @@ import java.util.Optional;
 
 /**
  * Created by kaja on 09.03.2016.
+ *
+ * Checks if a given hand is a flush
  */
 public class Flush implements IRule {
     private List<Card> returnHand = new ArrayList<Card>(5);

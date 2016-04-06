@@ -5,6 +5,8 @@ import java.util.Map;
 
 /**
  * Created by kristianrosland on 16.03.2016.
+ *
+ * TODO class information
  */
 public class Pot {
 
@@ -15,8 +17,18 @@ public class Pot {
         this.potSize = 0;
     }
 
+    /**
+     * TODO write javadoc
+     * @return
+     */
     public long getPotSize() { return potSize; }
 
+    /**
+     * TODO write javadoc
+     * @param userID
+     * @param amountToAdd
+     * @return
+     */
     public long addToPot(int userID, long amountToAdd) {
         if (amountEachPlayerCanClaimOfThePot.get(userID) == null)
             amountEachPlayerCanClaimOfThePot.put(userID, 0L);
@@ -27,6 +39,11 @@ public class Pot {
         return potSize;
     }
 
+    /**
+     * TODO write javadoc
+     * @param playerID
+     * @return
+     */
     public long getSharePotPlayerCanWin(int playerID) {
         final long amountPlayerHasPutIn = amountEachPlayerCanClaimOfThePot.get(playerID);
         long total = 0;

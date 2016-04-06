@@ -11,6 +11,8 @@ import java.util.StringJoiner;
 
 /**
  * Created by pokki on 10/03/16.
+ *
+ * Checks if a given hand is a straight flush
  */
 public class StraightFlush implements IRule {
 

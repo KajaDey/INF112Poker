@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * Created by pokki on 08/03/16.
  * <p/>
- * Checks if there are two pairs in the hand. Returns the hand
+ * Checks if a given hand contains two pairs
  */
 public class TwoPairs implements IRule {
 

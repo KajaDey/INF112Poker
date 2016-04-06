@@ -10,8 +10,8 @@ import java.util.Optional;
 
 /**
  * Created by kaja on 08.03.2016.
- * <p/>
- * check for the best possible hand:
+ *
+ * Check for the best possible hand:
  * straight, flush, house, xofakind (four/three/two cards of the same rank), 2par, highcard
  */
 public class HandCalculator {
@@ -66,6 +66,10 @@ public class HandCalculator {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @return
+     */
     public List<IRule> getRules() {
         return rules;
     }

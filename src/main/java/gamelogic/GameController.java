@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * TODO class information
  */
 public class GameController {
 
@@ -243,6 +245,10 @@ public class GameController {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param positions
+     */
     public void setPositions(Map<Integer, Integer> positions) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);

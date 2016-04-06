@@ -4,6 +4,8 @@ import java.io.FileWriter;
 
 /**
  * Created by henrik on 05.04.16.
+ *
+ * TODO: info about the class
  */
 public class Statistics {
 
@@ -27,6 +29,11 @@ public class Statistics {
         this.highestStack = highestStack;
     }
 
+    /**
+     * TODO write javadoc
+     * @param filepath
+     * @throws Exception
+     */
     public void printStatisticsToFile(String filepath) throws Exception{
 
         FileWriter fw = new FileWriter(filepath);

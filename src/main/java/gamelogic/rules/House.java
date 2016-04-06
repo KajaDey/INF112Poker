@@ -8,6 +8,8 @@ import java.util.*;
 
 /**
  * Created by henrik on 09.03.16.
+ *
+ * Checks if a given hand is a full house
  */
 public class House implements IRule {
     private boolean isFullHouse = false;
