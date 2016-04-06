@@ -8,6 +8,8 @@ import java.util.*;
 
 /**
  * Created by henrik on 09.03.16.
+ *
+ * Checks if a hand contains a house. (3 + 2 cards of the same rank).
  */
 public class House implements IRule {
     private boolean isFullHouse = false;
