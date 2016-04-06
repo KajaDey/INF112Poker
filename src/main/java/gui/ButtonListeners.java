@@ -1,6 +1,7 @@
 package gui;
 
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -13,6 +14,9 @@ public class ButtonListeners {
 
     private static GameSettings gameSettings;
     private static GUIClient client;
+
+    private static String savedName, savedNumOfPlayers, savedChoiceBox;
+    private static GameController savedGameController;
 
     /**
      * What happens when the betButton is pushed
@@ -54,7 +58,7 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),260,200);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,250);
         settings.setScene(scene);
         settings.show();
     }
@@ -98,8 +102,12 @@ public class ButtonListeners {
      * Listener for the button on the enter button on the main screen
      */
     public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox,GameController gameController){
+        savedName = name;
+        savedChoiceBox = choiceBox;
+        savedNumOfPlayers = numOfPlayers;
+        savedGameController = gameController;
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Single Player")) {
+            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Against AI")) {
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
                 gameSettings = gameController.gameSettings;
             }
@@ -116,6 +124,10 @@ public class ButtonListeners {
 
     }
 
+    public static void exitButtonListener(){
+        mainScreenEnterListener(savedName, savedNumOfPlayers, savedChoiceBox, savedGameController);
+    }
+
     /**
      * sets the client
      */
@@ -126,6 +138,5 @@ public class ButtonListeners {
     public static void returnToMainMenuButtonListener(){
         MainScreen.refreshSceneForMainScreen();
     }
-
 
 }

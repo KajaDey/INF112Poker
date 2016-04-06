@@ -5,10 +5,7 @@ import gamelogic.Decision;
 import gamelogic.GameClient;
 import gui.GUIMain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  An SimpleAI player that works through the GameClient interface.
@@ -62,6 +59,10 @@ public class SimpleAI implements GameClient {
         assert minimumRaise > 0;
         assert stackSize == stackSizes.get(this.playerId) :
                 "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
+
+        //Sleep for some time to make it more realistic
+        Random rand = new Random();
+        try { Thread.sleep(1000 + rand.nextInt(2000)); } catch (Exception e) { e.printStackTrace(); }
 
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
