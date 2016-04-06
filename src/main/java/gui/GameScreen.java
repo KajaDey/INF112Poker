@@ -149,6 +149,13 @@ public class GameScreen {
         return true;
     }
 
+    /**
+     *
+     * Generates an array of all the opponents positions.
+     * Different amount of players give different positions.
+     *
+     * @return An array of all the positions.
+     */
     private int[] giveOpponentPosition() {
 
         int [] positions = new int[numberOfPlayers-1];
@@ -230,6 +237,11 @@ public class GameScreen {
         exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
     }
 
+    /**
+     *
+     * Adding a choicebox where you can scale the window
+     *
+     */
     public void addWindowSizeChoiceBox(){
         windowSize = new ChoiceBox<>();
 
@@ -660,6 +672,13 @@ public class GameScreen {
         Platform.runLater(task);
     }
 
+    /**
+     *
+     * Set the positions of the players
+     *
+     * @param positions
+     */
+
     public void setPositions(Map<Integer, Integer> positions) {
         Runnable task;
         for (Integer id : positions.keySet()) {
@@ -675,14 +694,29 @@ public class GameScreen {
         }
     }
 
+
+    /**
+     * Get the position of each player
+     *
+     * @param pos
+     * @return position
+     */
     private String getPositionName(int pos) {
         return (pos == 0 ? "Dealer" : pos == 1 ? "Small blind" : pos == 2 ? "Big blind" : pos == 3 ? "UTG" : "UTG+" + (pos-3));
     }
 
+    /**
+     * Updates slider values
+     */
    public void updateSliderValues(){
        playerLayout.updateSliderValues();
    }
 
+    /**
+     * Setter for number of players.
+     *
+     * @param numberOfPlayers
+     */
     public void setNumberOfPlayers(int numberOfPlayers){
         this.numberOfPlayers = numberOfPlayers;
         positions = giveOpponentPosition();
