@@ -18,7 +18,8 @@ public class Straight implements IRule {
     private List<Card> cards, returnCards;
     private boolean lookingForStraightFlush = false;
     private HandCalculator.HandType type = HandCalculator.HandType.STRAIGHT;
-    private int highCard;
+    private int highCardValue;
+    private Card highCard;
 
     /**
      * Regular constructor, used in most cases
@@ -69,6 +70,7 @@ public class Straight implements IRule {
             // Found cards 2-5, plus Ace
             if (drawCount == 4 && nextRank == 2 && cards.get(lastCardIndex).rank == 14) {
                 fillReturnHand(i-1, true);
+                highCardValue = 5;
                 return true;
             }
         }
@@ -120,12 +122,14 @@ public class Straight implements IRule {
         if (addAceLow) {
             for (int i = 0; i < 5; i++) {
                 if (returnCards.get(4 - i).rank != 14) {
-                    highCard = returnCards.get(4-i).rank;
+                    highCardValue = returnCards.get(4-i).rank;
+                    highCard = returnCards.get(4-i);
                     break;
                 }
             }
         } else {
-            highCard = returnCards.get(4).rank;
+            highCardValue = returnCards.get(4).rank;
+            highCard = returnCards.get(4);
         }
     }
 
@@ -136,6 +140,11 @@ public class Straight implements IRule {
 
     @Override
     public List<Integer> getCompareValues() {
-        return Arrays.asList(highCard);
+        return Arrays.asList(highCardValue);
+    }
+
+    @Override
+    public String toString() {
+        return highCard.getRankString() +" high straight";
     }
 }
