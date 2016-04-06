@@ -15,6 +15,7 @@ public class House implements IRule {
     private List<Integer> compareValues = new ArrayList<>();
 
     public Map<Integer, Integer> cardCount = new HashMap<Integer, Integer>();
+    public Card tripsCard, pairCard;
 
     @Override
     public boolean match(Hand hand) {
@@ -37,6 +38,8 @@ public class House implements IRule {
                 for (Card otherCard : cards) {
                     if (!(otherCard.rank == card.rank) && cardCount.get(otherCard.rank) > 2) {
                         isFullHouse = true;
+                        tripsCard=otherCard;
+                        pairCard=card;
                     }
                 }
             }
@@ -83,6 +86,7 @@ public class House implements IRule {
                 bestCards.add(allCards.get(i));
                 bestCards.add(allCards.get(i - 1));
                 compareValues.add(allCards.get(i).rank);
+
                 break;
             }
         }
@@ -97,4 +101,11 @@ public class House implements IRule {
     public List<Integer> getCompareValues() {
         return compareValues;
     }
+
+    @Override
+    public String toString(){
+
+        return tripsCard.getRankString()+"'s full of "+pairCard.getRankString()+"'s";
+    }
+
 }

@@ -121,5 +121,23 @@ public class Card implements Comparable<Card> {
             }
         }
     }
+
+    public String getRankString(){
+
+        String rankString = ""+rank;
+        switch (rank) {
+            case 14 : rankString = "Ace";
+                break;
+            case 13 : rankString = "King";
+                break;
+            case 12 : rankString = "Queen";
+                break;
+            case 11 : rankString = "Knight";
+                break;
+
+        }
+        return rankString;
+    }
+
 }
 
