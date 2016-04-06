@@ -294,7 +294,7 @@ public class GameScreen {
             playerLayout.setCardImage(leftImage,rightImage);
 
             //Set opponent hand
-            for (Integer i : opponents.keySet()) {
+            for (int i=1;i<numberOfPlayers;i++) {
                 opponents.get(i).setCardImage(backImage, backImage);
             }
         };
@@ -503,7 +503,7 @@ public class GameScreen {
                 task = () -> playerLayout.setStackLabel("Amount of chips: " + stackSizeText);
             } else {
                 task = () -> {
-                    for (Integer i : opponents.keySet()) {
+                    for (int i=1;i<numberOfPlayers;i++) {
                         opponents.get(i).setStackSizeLabel("Amount of chips: " + stackSizeText);
                     }
                 };
@@ -540,7 +540,7 @@ public class GameScreen {
             this.setAmountTextfield(currentBigBlind + "");
             this.setErrorStateOfAmountTextfield(false);
 
-            for (Integer i : opponents.keySet()) {
+            for (int i = 1; i < numberOfPlayers; i++ ){
                 opponents.get(i).setLastMoveLabel("");
             }
         };
