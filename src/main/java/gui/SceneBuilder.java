@@ -27,18 +27,6 @@ public class SceneBuilder {
         window.show();
     }
 
-    public static void setFullscreen(Scene scene, String titleIn){
-        window.close();
-        window = new Stage();
-        window.setOnCloseRequest(e -> System.exit(0));
-        window.setTitle(titleIn);
-        window.setScene(scene);
-        window.setResizable(false);
-        window.setFullScreen(true);
-        window.show();
-
-    }
-
     /**
      * Displays a given scene. Only used for GameScreen
      * @param scene The scene to display

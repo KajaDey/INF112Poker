@@ -139,10 +139,4 @@ public class ButtonListeners {
         MainScreen.refreshSceneForMainScreen();
     }
 
-    public static void windowSizeApplyListener(String windowSize, Scene scene){
-        if (windowSize.equals("Fullscreen"))
-            SceneBuilder.setFullscreen(scene, "Game Screen");
-        else
-            SceneBuilder.showCurrentScene(scene, "Game Screen");
-    }
 }
