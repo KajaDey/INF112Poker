@@ -3,7 +3,7 @@ package gamelogic;
 /**
  * Created by kristianrosland on 07.03.2016.
  *
- * TODO: info about the class
+ * A general user in the game, extended by e.g. Player and Spectator.
  */
 public abstract class User {
     private String name;

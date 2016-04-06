@@ -5,7 +5,8 @@ import java.io.FileWriter;
 /**
  * Created by henrik on 05.04.16.
  *
- * TODO: info about the class
+ * Class to represent game statistics, e.g. how many times a player has folded during the game etc. Can be written to
+ * file after a game is finished.
  */
 public class Statistics {
 

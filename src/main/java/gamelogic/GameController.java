@@ -11,7 +11,8 @@ import java.util.Map;
 /**
  * Created by kristianrosland on 07.03.2016.
  *
- * TODO class information
+ * A game controller to connect GUI and back end. GUI informs the controller that something happened, and the controller
+ * asks back end to execute the requested move.
  */
 public class GameController {
 

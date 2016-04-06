@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by kristianrosland on 16.03.2016.
  *
- * TODO class information
+ * Class to represent the pot at all times.
  */
 public class Pot {
 

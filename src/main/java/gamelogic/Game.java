@@ -7,6 +7,8 @@ import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * Class containing the game loop to play through a game of poker and determining a winner.
  */
 public class Game {
 

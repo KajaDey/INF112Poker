@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by kristianrosland on 07.03.2016.
  *
- * TODO class information
+ * A class to represent a hand (2-7 cards).
  */
 public class Hand implements Comparable<Hand> {
     private List<Card> holeCards = new ArrayList<Card>(2);

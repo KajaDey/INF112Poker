@@ -4,7 +4,7 @@ package gamelogic;
 /**
  * Created by kristianrosland on 07.03.2016.
  *
- * TODO class information
+ * Class to represent a player.
  */
 public class Player extends User {
     private int ID;

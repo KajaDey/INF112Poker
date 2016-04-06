@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * Created by henrik on 05.04.16.
  *
- * TODO class information
+ * Class to generate player names.
  */
 public class NameGenerator {
 
