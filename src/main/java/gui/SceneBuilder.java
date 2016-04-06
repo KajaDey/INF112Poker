@@ -23,7 +23,20 @@ public class SceneBuilder {
         window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
         window.setScene(new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080),1280,720));
+        window.setResizable(false);
         window.show();
+    }
+
+    public static void setFullscreen(Scene scene, String titleIn){
+        window.close();
+        window = new Stage();
+        window.setOnCloseRequest(e -> System.exit(0));
+        window.setTitle(titleIn);
+        window.setScene(scene);
+        window.setResizable(false);
+        window.setFullScreen(true);
+        window.show();
+
     }
 
     /**
@@ -38,6 +51,7 @@ public class SceneBuilder {
         window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
         window.setScene(scene);
+        window.setResizable(false);
         window.show();
     }
 }
