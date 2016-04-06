@@ -85,6 +85,22 @@ public class Straight implements IRule {
         return Optional.empty();
     }
 
+
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return Arrays.asList(highCardValue);
+    }
+
+    @Override
+    public String toString() {
+        return highCard.getRankString() +" high straight";
+    }
+
     /**
      * Puts the cards that make up the straight in a list
      *
@@ -131,20 +147,5 @@ public class Straight implements IRule {
             highCardValue = returnCards.get(4).rank;
             highCard = returnCards.get(4);
         }
-    }
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.STRAIGHT;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return Arrays.asList(highCardValue);
-    }
-
-    @Override
-    public String toString() {
-        return highCard.getRankString() +" high straight";
     }
 }

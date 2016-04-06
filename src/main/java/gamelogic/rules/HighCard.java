@@ -45,6 +45,7 @@ public class HighCard implements IRule {
         }
         return compareValues;
     }
+
     @Override
     public String toString(){
         return "High card "+returnHand.get(0).getRankString();

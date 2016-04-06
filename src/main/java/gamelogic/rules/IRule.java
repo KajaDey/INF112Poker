@@ -42,6 +42,11 @@ public interface IRule {
      */
     public List<Integer> getCompareValues();
 
+    /**
+     * Returns the correct string with information about the hand (e.g.: "8 high straight")
+     *
+     * @return hand information String
+     */
     public String toString();
 
 }

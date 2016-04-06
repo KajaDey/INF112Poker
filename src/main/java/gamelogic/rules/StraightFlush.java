@@ -50,6 +50,22 @@ public class StraightFlush implements IRule {
         return Optional.empty();
     }
 
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT_FLUSH;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        if(highCard.getRankString()=="Ace")
+            return "Royal flush";
+        return highCard.getRankString()+" high straight flush";
+    }
 
     /**
      *  Fills and returns an array of all cards of the most common suit.
@@ -104,23 +120,5 @@ public class StraightFlush implements IRule {
             mainSuit = Card.Suit.HEARTS;
         }
         return mainSuit;
-    }
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.STRAIGHT_FLUSH;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return compareValues;
-    }
-
-
-    @Override
-    public String toString(){
-        if(highCard.getRankString()=="Ace")
-            return "Royal flush";
-        return highCard.getRankString()+" high straight flush";
     }
 }

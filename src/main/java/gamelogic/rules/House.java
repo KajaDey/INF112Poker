@@ -56,8 +56,27 @@ public class House implements IRule {
         return Optional.empty();
     }
 
-    public void setHand() {
 
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.HOUSE;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return compareValues;
+    }
+
+    @Override
+    public String toString(){
+
+        return tripsCard.getRankString()+"'s full of "+pairCard.getRankString()+"'s";
+    }
+
+    /**
+     * Fills the hand with the pair and trip included in the full house.
+     */
+    public void setHand() {
         bestCards = new ArrayList<Card>();
 
         //search cards for a triplet
@@ -91,21 +110,4 @@ public class House implements IRule {
             }
         }
     }
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.HOUSE;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return compareValues;
-    }
-
-    @Override
-    public String toString(){
-
-        return tripsCard.getRankString()+"'s full of "+pairCard.getRankString()+"'s";
-    }
-
 }
