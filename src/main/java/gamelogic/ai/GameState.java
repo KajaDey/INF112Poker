@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * Represents the state of a single hand
  */
 public class GameState {
-    private final ArrayList<Card> deck = new ArrayList<>(Arrays.asList(Card.getAllCards())); // TODO: players can get the same card multiple times
+    public final ArrayList<Card> deck; // TODO: players can get the same card multiple times
 
     public final int amountOfPlayers;
     public final List<Player> players;
@@ -27,7 +27,7 @@ public class GameState {
 
     public final long allChipsOnTable;
 
-    private int playersGivenHolecards = 1;
+    public int playersGivenHolecards = 1;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
     private int playersAllIn = 0;
     private int playersToMakeDecision; // Players left to make decision in this betting round
@@ -37,6 +37,8 @@ public class GameState {
                      long smallBlindAmount, long bigBlindAmount) {
 
         assert amountOfPlayers == positions.size();
+
+        deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
         this.amountOfPlayers = amountOfPlayers;
         this.smallBlindAmount = bigBlindAmount;
@@ -105,6 +107,7 @@ public class GameState {
      * @param oldState
      */
     public GameState(GameState oldState) {
+        this.deck = new ArrayList<>(oldState.deck);
         this.amountOfPlayers = oldState.amountOfPlayers;
         this.players = new ArrayList<>();
         for (int i = 0; i < oldState.players.size(); i++) {
@@ -141,15 +144,17 @@ public class GameState {
         if (move instanceof CardDealtToPlayer) {
             CardDealtToPlayer cardDeal = (CardDealtToPlayer)move;
             players.get(cardDeal.playerPosition).holeCards.add(cardDeal.card);
+            deck.remove(cardDeal.card);
             if (players.get(cardDeal.playerPosition).holeCards.size() == 2) {
                 playersGivenHolecards++;
             }
             assert players.get(cardDeal.playerPosition).holeCards.size() <= 2
                     : "Player " + cardDeal.playerPosition + " has " + players.get(cardDeal.playerPosition).holeCards.size() + " hole cards";
-            System.out.println("Giving " + cardDeal.card + " to " + cardDeal.playerPosition);
+            // System.out.println("Giving " + cardDeal.card + " to " + cardDeal.playerPosition);
         }
         else if (move instanceof CardDealtToTable) {
             communityCards.add(((CardDealtToTable)(move)).card);
+            deck.remove(((CardDealtToTable)(move)).card);
             assert communityCards.size() <= 5;
             if (communityCards.size() == 3 || communityCards.size() == 4 || communityCards.size() == 5) {
                 playersToMakeDecision = playersLeftInHand;
@@ -221,6 +226,7 @@ public class GameState {
         ArrayList<GameStateChange> decisions = new ArrayList<>();
         //System.out.println(playersLeftInHand + " players left in hand, " + playersAllIn + " all in, " + playersToMakeDecision + " players to make decisions");
 
+        assert deck.size() + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + communityCards.size() == 52 : "Deck has " + deck.size() + " cards, players have " + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + " holecards and table has " + communityCards.size() + " community cards";
         long playerChipsSum = players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
         assert playerChipsSum == allChipsOnTable :
         "Sum of player chips is " + playerChipsSum + ", but started with " + allChipsOnTable + " on table.";
@@ -230,7 +236,7 @@ public class GameState {
         if (playersGivenHolecards < amountOfPlayers) {
 
             for (int i = 0; i < amountOfPlayers; i++) {
-                System.out.println("Player " + i + " has " + players.get(i).holeCards.size() + " holecards");
+                // System.out.println("Player " + i + " has " + players.get(i).holeCards.size() + " holecards");
                 int icopy = i;
                 assert players.get(i).position == i;
                 if (players.get(i).holeCards.size() < 2) {

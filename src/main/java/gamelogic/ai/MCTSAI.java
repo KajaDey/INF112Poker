@@ -54,7 +54,8 @@ public class MCTSAI implements GameClient {
         GameState gameState = new GameState(amountOfPlayers, positions, stackSizes, smallBlindAmount, bigBlindAmount);
 
         PokerMCTS mcts = new PokerMCTS(gameState, amountOfPlayers, playerId, holeCards);
-        return mcts.calculateFor(2000);
+        assert gameState.players.get(position).holeCards.size() == 2 : "Player has " + gameState.players.get(position).holeCards.size() + " holecards";
+        return mcts.calculateFor(400);
     }
 
     @Override
