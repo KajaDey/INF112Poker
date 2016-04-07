@@ -366,7 +366,7 @@ public class Game {
 
     /**
      * Returns a list of the players who still have chips left (player.getStackSize() > 0).
-     * Order: Dealer button, small blind, big blind, etc...
+     * Order: Small blind, big blind, etc...
      *
      * return Ordered list of players still in the game
      */
@@ -376,12 +376,11 @@ public class Game {
         holeCards = new HashMap<>();
 
         //Set indexes
-        dealerIndex = roundNumber % numberOfPlayers;
-        smallBlindIndex = (numberOfPlayers == 2 ? roundNumber % numberOfPlayers : (roundNumber+1)%numberOfPlayers);
-        bigBlindIndex = (smallBlindIndex+1) % numberOfPlayers;
+        smallBlindIndex = roundNumber % numberOfPlayers;
+        bigBlindIndex = (numberOfPlayers == 2 ? roundNumber % numberOfPlayers : (roundNumber+1)%numberOfPlayers);
 
         List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
-        //Add players to orderedListOfPlayersStillPlaying in order BTN, SB, BB ...
+        //Add players to orderedListOfPlayersStillPlaying in order SB, BB ...
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = players[(smallBlindIndex + i) % numberOfPlayers];
             if (player.getStackSize() > 0) {
