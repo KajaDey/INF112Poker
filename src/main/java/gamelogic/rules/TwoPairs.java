@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * Created by pokki on 08/03/16.
  * <p/>
- * Checks if there are two pairs in the hand. Returns the hand
+ * Checks if a hand contains two pairs.
  */
 public class TwoPairs implements IRule {
 
@@ -24,6 +24,10 @@ public class TwoPairs implements IRule {
     @Override
     public boolean match(Hand hand) {
         List<Card> cards = hand.getAllCards();
+
+        if (cards.size() < 5)
+            return false;
+
         cards.sort(Card::compareTo);
 
         for (int i = cards.size() - 1; i > 0; i--) {

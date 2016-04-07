@@ -9,6 +9,8 @@ import java.util.Optional;
 
 /**
  * Created by Vegar on 08/03/16.
+ *
+ * Interface about the different rules in poker
  */
 public interface IRule {
 
@@ -42,6 +44,11 @@ public interface IRule {
      */
     public List<Integer> getCompareValues();
 
+    /**
+     * Returns the correct string with information about the hand (e.g.: "8 high straight")
+     *
+     * @return hand information String
+     */
     public String toString();
 
 }

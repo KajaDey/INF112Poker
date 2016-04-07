@@ -7,6 +7,8 @@ import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * Class containing the game loop to play through a game of poker and determining a winner.
  */
 public class Game {
 
@@ -57,6 +59,7 @@ public class Game {
      *
      */
     public void playGame() {
+
 
         Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
@@ -126,6 +129,10 @@ public class Game {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param isShowDown
+     */
     private void determineWinner(boolean isShowDown) {
         //If all community cards are out and we have a showdown
         if (isShowDown) {
@@ -162,7 +169,12 @@ public class Game {
      */
     private boolean bettingRound(boolean isPreFlop) {
         //Determine who is acting first (based on the isPreFLop-value)
-        int actingPlayerIndex = (isPreFlop ? 0 : 1);
+        int actingPlayerIndex;
+        if (playersStillInCurrentHand.size() == 2)
+            actingPlayerIndex = (isPreFlop ? 0 : 1);
+        else
+            actingPlayerIndex = (isPreFlop ? 3%maxNumberOfPlayers : 1);
+
         highestAmountPutOnTable = (isPreFlop ? currentBB : 0);
         currentMinimumRaise = currentBB;
 
@@ -174,10 +186,9 @@ public class Game {
         int numberOfPlayersActedSinceLastAggressor = 0;
 
         //Check if all players are all in and betting round should be skipped
-        if (numberOfPlayersWithChipsLeft() <= 1) { return true; }
+        if (numberOfPlayersInHandWithChipsLeft() <= 1) { return true; }
 
         while (true) {
-
             //Determine who's turn it is
             actingPlayerIndex %= playersStillInCurrentHand.size();
             Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
@@ -195,6 +206,7 @@ public class Game {
             //Get decision for the acting player
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
             playerToAct.act(decision, highestAmountPutOnTable, pot, isPreFlop);
+            gameController.printToLogfield(playerToAct.getName() + " made decision " + decision.move.toString().toLowerCase());
 
             //Tell all the clients about this decision
             gameController.setDecisionForClient(playerToAct.getID(), decision);
@@ -239,9 +251,22 @@ public class Game {
                 return true;
             }
 
-            actingPlayerIndex++;
+            if (decision.move != Decision.Move.FOLD)
+                actingPlayerIndex++;
         }
     }
+
+    private int numberOfPlayersInHandWithChipsLeft() {
+        int numberOfPlayersInHandWithChipsLeft = 0;
+        for (Player p : playersStillInCurrentHand) {
+            if (p.getStackSize() > 0) {
+                numberOfPlayersInHandWithChipsLeft++;
+            }
+        }
+
+        return numberOfPlayersInHandWithChipsLeft;
+    }
+
 
     /**
      * Automatically post small and big blind for given players
@@ -564,6 +589,9 @@ public class Game {
         delay(5000);
     }
 
+    /**
+     * TODO write javadoc
+     */
     public void refreshAllStackSizes() {
         for (Player p : players)
             stackSizes.put(p.getID(), p.getStackSize());
@@ -571,6 +599,9 @@ public class Game {
         gameController.setStackSizes(stackSizes);
     }
 
+    /**
+     * TODO write javadoc
+     */
     public void printAllPlayerStacks() {
         for (Player p : players) {
             GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize());
@@ -578,6 +609,11 @@ public class Game {
         GUIMain.debugPrintln("Pot: " + pot.getPotSize());
     }
 
+    /**
+     * TODO write javadoc
+     * @param ID
+     * @return
+     */
     public Player getPlayerFromID(int ID) {
         for (Player p : players) {
             if (p.getID() == ID) return p;
@@ -585,4 +621,7 @@ public class Game {
         return null;
     }
 
+    private boolean headsUpGame() {
+        return maxNumberOfPlayers == 2;
+    }
 }

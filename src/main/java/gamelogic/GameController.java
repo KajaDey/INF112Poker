@@ -2,6 +2,7 @@ package gamelogic;
 
 import gamelogic.ai.SimpleAI;
 import gui.*;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,11 +11,15 @@ import java.util.Map;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * A game controller to connect GUI and back end. GUI informs the controller that something happened, and the controller
+ * asks back end to execute the requested move.
  */
 public class GameController {
 
     private Game game;
     private Map<Integer, GameClient> clients;
+    private GUIClient guiClient;
     private GUIMain mainGUI;
     public GameSettings gameSettings;
     private String name;
@@ -34,7 +39,7 @@ public class GameController {
      */
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //TODO: Validate input
-        assert numPlayers == 2 : "Number of players MUST be 2";
+        //assert numPlayers == 2 : "Number of players MUST be 2";
 
         //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
@@ -50,6 +55,10 @@ public class GameController {
      */
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
+        Runnable task = () -> {
+            guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
+        };
+        Platform.runLater(task);
         game = new Game(gamesettings, this);
 
         String error;
@@ -62,7 +71,7 @@ public class GameController {
         clients = new HashMap<>();
 
         //Init GUIGameClient
-        GameClient guiClient = mainGUI.displayGameScreen(gamesettings, 0); //0 --> playerID
+        guiClient = mainGUI.displayGameScreen(gamesettings, 0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
@@ -71,11 +80,12 @@ public class GameController {
         //Init AIClients
         int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
         for (int i = 0; i < numOfAIs; i++) {
+            String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 1.0);
+            GameClient aiClient = new SimpleAI(AI_id, 0.75);
             clients.put(AI_id, aiClient);
-            game.addPlayer("SimpleAI-player", AI_id);
-            mainGUI.insertPlayer(1, "SimpleAI-player (" + AI_id + ")", gamesettings.getStartStack());
+            game.addPlayer(aiName, AI_id);
+            mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
         }
 
         //Set initial values for clients
@@ -88,6 +98,9 @@ public class GameController {
             }
         };
         gameThread.start();
+
+        //Print to on screen log
+        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
     }
 
     /**
@@ -215,7 +228,7 @@ public class GameController {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            assert stackSizes.size() == 2;
+            //assert stackSizes.size() == 2;
             c.setAmountOfPlayers(stackSizes.size());
             c.setStackSizes(new HashMap<>(stackSizes));
         }
@@ -243,10 +256,22 @@ public class GameController {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param positions
+     */
     public void setPositions(Map<Integer, Integer> positions) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
             client.setPositions(positions);
         }
+    }
+
+    /**
+     * Print a message to the on screen log
+     * @param message
+     */
+    public void printToLogfield(String message) {
+        guiClient.printToLogfield(message);
     }
 }

@@ -17,8 +17,8 @@ public class Deck {
         Collections.shuffle(cards);
     }
 
-    /*
-    Copy constructor. Creates an exact copy of the deck, with the cards in the same order
+    /**
+     * Copy constructor. Creates an exact copy of the deck, with the cards in the same order
      */
     public Deck(Deck deck) {
         cards = (ArrayList<Card>)deck.cards.clone();
@@ -34,8 +34,8 @@ public class Deck {
         return Optional.of(cards.remove(cards.size() - 1));
     }
 
-    /*
-    Shuffles the remaining cards
+    /**
+     * Shuffles the remaining cards
      */
     public void shuffle() {
         Collections.shuffle(cards);

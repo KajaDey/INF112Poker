@@ -8,6 +8,8 @@ import java.util.*;
 
 /**
  * Created by henrik on 09.03.16.
+ *
+ * Checks if a hand contains a house. (3 + 2 cards of the same rank).
  */
 public class House implements IRule {
     private boolean isFullHouse = false;
@@ -19,8 +21,11 @@ public class House implements IRule {
 
     @Override
     public boolean match(Hand hand) {
-
         cards = hand.getAllCards();
+
+        if (cards.size() < 5)
+            return false;
+
         cards.sort(Card::compareTo);
         allCards = cards;
 
@@ -56,8 +61,27 @@ public class House implements IRule {
         return Optional.empty();
     }
 
-    public void setHand() {
 
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.HOUSE;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return compareValues;
+    }
+
+    @Override
+    public String toString(){
+
+        return tripsCard.getRankString()+"'s full of "+pairCard.getRankString()+"'s";
+    }
+
+    /**
+     * Fills the hand with the pair and trip included in the full house.
+     */
+    public void setHand() {
         bestCards = new ArrayList<Card>();
 
         //search cards for a triplet
@@ -91,21 +115,4 @@ public class House implements IRule {
             }
         }
     }
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.HOUSE;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return compareValues;
-    }
-
-    @Override
-    public String toString(){
-
-        return tripsCard.getRankString()+"'s full of "+pairCard.getRankString()+"'s";
-    }
-
 }
