@@ -161,6 +161,14 @@ public class Game {
      * Returns false if there is only one player left in the hand (everyone else folded), else true
      *
      */
+    private boolean bettingRound(boolean isPreflop) {
+
+
+
+
+        return true;
+    }
+    /*
     private boolean bettingRound(boolean isPreFlop) {
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
@@ -261,6 +269,7 @@ public class Game {
         return numberOfPlayersInHandWithChipsLeft;
     }
 
+    */
 
     /**
      * Automatically post small and big blind for given players

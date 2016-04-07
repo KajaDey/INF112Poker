@@ -31,7 +31,7 @@ public class NameGenerator {
 
          try {
              BufferedReader reader = new BufferedReader(new FileReader(filePath));
-             if (names.isEmpty()) {
+             if (names.isEmpty() || names.size() < 5) {
                  String currentLine;
                  while ((currentLine = reader.readLine()) != null)
                      names.add(currentLine);
@@ -56,7 +56,7 @@ public class NameGenerator {
             //and so on
         }
 
-        //get random filepath from a list of paths of series if we havent got one
+        //get random filepath from a list of paths of series if we haven't got one
 
         if(pathOfSeries == "")
             pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
