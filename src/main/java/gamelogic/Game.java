@@ -17,14 +17,13 @@ public class Game {
 
     //Settings
     private int maxNumberOfPlayers;
-    private int numberOfPlayers = 0;
+    private int numberOfPlayers = 0, finishedInPosition;
     private int blindLevelDuration;
     private long startSB, startBB;
     private long currentSB, currentBB;
     private long startStack;
 
     //Indexes
-    private int dealerIndex = 0;
     private int bigBlindIndex = 0;
     private int smallBlindIndex = 0;
 
@@ -42,7 +41,7 @@ public class Game {
         this.gameController = gameController;
         this.gamesettings = gamesettings;
 
-        this.maxNumberOfPlayers = gamesettings.getMaxNumberOfPlayers();
+        this.maxNumberOfPlayers = finishedInPosition =  gamesettings.getMaxNumberOfPlayers();
         this.players = new Player[maxNumberOfPlayers];
 
         this.startStack = gamesettings.startStack;
@@ -68,7 +67,6 @@ public class Game {
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
-            gameController.setPositions(new HashMap<>(positions));
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
@@ -391,6 +389,8 @@ public class Game {
             }
         }
 
+        gameController.setPositions(new HashMap<>(positions));
+
         roundNumber++;
         return orderedListOfPlayersStillPlaying;
     }
@@ -579,14 +579,23 @@ public class Game {
             IDStillPlaying.remove(new Integer(winnerID));
         }
 
+        //If a player that was in this hand now has zero chips, it means he just busted
+        for (Player p : playersStillInCurrentHand) {
+            if (p.getStackSize() == 0)
+                 gameController.bustClient(p.getID(), finishedInPosition--);
+        }
+
         delay(5000);
     }
 
     public void refreshAllStackSizes() {
-        for (Player p : players)
-            stackSizes.put(p.getID(), p.getStackSize());
+        HashMap<Integer, Long> stacks = new HashMap<>();
 
-        gameController.setStackSizes(stackSizes);
+        for (Player p : players)
+            if (p.getStackSize() > 0)
+                stacks.put(p.getID(), p.getStackSize());
+
+        gameController.setStackSizes(stacks);
     }
 
     public void printAllPlayerStacks() {
@@ -603,7 +612,4 @@ public class Game {
         return null;
     }
 
-    private boolean headsUpGame() {
-        return maxNumberOfPlayers == 2;
-    }
 }

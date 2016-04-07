@@ -35,13 +35,9 @@ public class GameController {
      * @param gameType
      */
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
-        //TODO: Validate input
-        //assert numPlayers == 2 : "Number of players MUST be 2";
-
         //Tell GUI to display Lobby
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
         this.name = name;
-
     }
 
     /**
@@ -51,11 +47,8 @@ public class GameController {
      * @param gamesettings Game settings
      */
     public void startTournamentButtonClicked(GameSettings gamesettings) {
+
         //Make a new Game object and validate
-        Runnable task = () -> {
-            guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
-        };
-        Platform.runLater(task);
         game = new Game(gamesettings, this);
 
         String error;
@@ -79,7 +72,7 @@ public class GameController {
         for (int i = 0; i < numOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 0.75);
+            GameClient aiClient = new SimpleAI(AI_id, 0.85);
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
@@ -110,6 +103,7 @@ public class GameController {
             GameClient client = clients.get(clientID);
             client.setBigBlind(gamesettings.getBigBlind());
             client.setSmallBlind(gamesettings.getSmallBlind());
+            client.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
         }
     }
 
@@ -167,7 +161,7 @@ public class GameController {
      * Informs each client about the decision that was made by a specific user
      *
      * @param userID The user who made the decision
-     * @param decision The dicision that was made
+     * @param decision The decision that was made
      */
     public void setDecisionForClient(int userID, Decision decision) {
         for (Integer clientID : clients.keySet()) {
@@ -225,8 +219,6 @@ public class GameController {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            //assert stackSizes.size() == 2;
-            c.setAmountOfPlayers(stackSizes.size());
             c.setStackSizes(new HashMap<>(stackSizes));
         }
     }
@@ -266,5 +258,21 @@ public class GameController {
      */
     public void printToLogfield(String message) {
         guiClient.printToLogfield(message);
+    }
+
+    /**
+     * Called every time a player is bust to inform all clients
+     * @param bustPlayerID
+     * @param rank Place the busted player finished in
+     */
+    public void bustClient(int bustPlayerID, int rank) {
+        for (Integer clientID : clients.keySet())
+            clients.get(clientID).playerBust(bustPlayerID, rank);
+
+        GameClient bustedClient = clients.get(bustPlayerID);
+        if (!(bustedClient instanceof GUIClient)) {
+            System.out.println("Removed client " + bustPlayerID + " from clients");
+            clients.remove(bustPlayerID);
+        }
     }
 }

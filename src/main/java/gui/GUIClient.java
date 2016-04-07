@@ -20,12 +20,15 @@ public class GUIClient implements GameClient {
     private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
+    private int numberOfPlayers;
 
     private int id;
 
-    public GUIClient(int id, GameScreen gameScreen) {
+    public GUIClient(int id, GameScreen gameScreen, int maxNumberOfPlayers) {
         this.id = id;
         this.gameScreen = gameScreen;
+        this.numberOfPlayers = maxNumberOfPlayers;
+        gameScreen.setNumberOfPlayers(numberOfPlayers);
     }
 
 
@@ -128,6 +131,11 @@ public class GUIClient implements GameClient {
     }
 
     @Override
+    public void playerBust(int playerID, int rank) {
+        gameScreen.bustPlayer(playerID, rank);
+    }
+
+    @Override
     public void gameOver(int winnerID) {
         gameScreen.gameOver(winnerID);
     }
@@ -152,7 +160,6 @@ public class GUIClient implements GameClient {
                 highestAmountPutOnTableThisBettingRound += decision.size;
                 break;
             case ALL_IN:
-                //TODO: Implement
                 break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
@@ -188,7 +195,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-        //TODO: Set number of players
         gameScreen.setNumberOfPlayers(amountOfPlayers);
     }
 

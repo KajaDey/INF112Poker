@@ -63,8 +63,7 @@ public class Player extends User {
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
-                if (amountToCall < 0)
-                    System.out.println("I want to breakpoint here");
+                assert amountToCall > 0 : "Negative number added to pot: " + highestAmountPutOnTable + "-" + putOnTableThisRound + "=" + amountToCall;
                 pot.addToPot(ID, amountToCall);
                 break;
 

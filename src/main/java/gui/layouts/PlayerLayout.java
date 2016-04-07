@@ -198,7 +198,7 @@ public class PlayerLayout {
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
             amountTextfield.setVisible(visible);
-            //slider.setVisible(visible);
+            slider.setVisible(visible);
         };
         Platform.runLater(task);
     }
@@ -211,15 +211,11 @@ public class PlayerLayout {
     }
 
     public void setPositionLabel(String pos){
-        positionLabel.setText(pos);
-    }
-
-    public String getPositionLabel() {
-        return positionLabel.getText();
+        Platform.runLater(() -> positionLabel.setText(pos));
     }
 
     public void setStackLabel(String stack) {
-        stackLabel.setText(stack);
+        Platform.runLater(() -> stackLabel.setText(stack));
     }
 
     public void setLastMoveLabel(String lastMove) {
@@ -262,5 +258,11 @@ public class PlayerLayout {
 
     public void setStackSize(long stackSize) {
         this.stackSize = stackSize;
+    }
+
+    public void bustPlayer(String bustedText) {
+        setLastMoveLabel("");
+        setStackLabel(bustedText);
+        setPositionLabel("");
     }
 }
