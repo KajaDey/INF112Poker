@@ -129,12 +129,13 @@ public class GameLobby {
         Button accept = ObjectStandards.makeStandardButton("Accept");
         Button cancel = ObjectStandards.makeStandardButton("Cancel");
 
+
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
         levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration,aIDifficulty ,accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF,choiceBox,cancel);

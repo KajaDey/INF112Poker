@@ -11,6 +11,9 @@ import java.util.StringJoiner;
 
 /**
  * Created by pokki on 10/03/16.
+ *
+ * Checks if a hand contains a straight flush. (5 succeeding cards in the same suit)
+ *
  */
 public class StraightFlush implements IRule {
 
@@ -22,6 +25,10 @@ public class StraightFlush implements IRule {
     @Override
     public boolean match(Hand hand) {
         cards = hand.getAllCards();
+
+        if (cards.size() < 5)
+            return false;
+
         Card.Suit mainSuit = findMainSuit(cards);
         List<Card> mainSuitCards = getMainSuitCards(mainSuit);
 
@@ -50,6 +57,22 @@ public class StraightFlush implements IRule {
         return Optional.empty();
     }
 
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT_FLUSH;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        if(highCard.getRankString()=="Ace")
+            return "Royal flush";
+        return highCard.getRankString()+" high straight flush";
+    }
 
     /**
      *  Fills and returns an array of all cards of the most common suit.
@@ -104,23 +127,5 @@ public class StraightFlush implements IRule {
             mainSuit = Card.Suit.HEARTS;
         }
         return mainSuit;
-    }
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.STRAIGHT_FLUSH;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return compareValues;
-    }
-
-
-    @Override
-    public String toString(){
-        if(highCard.getRankString()=="Ace")
-            return "Royal flush";
-        return highCard.getRankString()+" high straight flush";
     }
 }

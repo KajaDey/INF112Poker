@@ -5,7 +5,7 @@ import java.util.Optional;
 /**
  * Class to represent a single poker card. The class does not have a public constructor, rather,
  * you use Card.of(rank, suit) to get the cards. This way, creating a card doesn't involve
- * an allocation, and performs better
+ * an allocation, and performs better.
  */
 public class Card implements Comparable<Card> {
 
@@ -25,9 +25,12 @@ public class Card implements Comparable<Card> {
     public final int rank;
     public final Suit suit;
 
-    /*
-    Private constructor that should only be called during the class' initialization
-    Use Card.of() to get references to new cards
+    /**
+     * Private constructor that should only be called during the class' initialization
+     * Use Card.of() to get references to new cards
+     *
+     * @param rank the rank of a single card (int: 2-14)
+     * @param suit the suit of a single card (Suit: spades, clubs, hearts, diamonds)
      */
     private Card(int rank, Suit suit) {
         assert rank >= 2 && rank <= 14;
@@ -35,9 +38,11 @@ public class Card implements Comparable<Card> {
         this.suit = suit;
     }
 
-    /*
+    /**
      *  Gets a card object from a rank and a suit.
      *  Two calls with the same arguments will always return the same object
+     *  @param rank the rank of a single card (int: 2-14)
+     *  @param suit the suit of a single card (Suit: spades, clubs, hearts, diamonds)
     */
     public static Optional<Card> of(int rank, Suit suit) {
         if (rank >= 2 && rank <= 14) {
@@ -53,6 +58,7 @@ public class Card implements Comparable<Card> {
     public static Card[] getAllCards() {
         return cards.clone();
     }
+
 
     @Override
     public String toString() {
@@ -76,6 +82,8 @@ public class Card implements Comparable<Card> {
     /**
      * Compares two cards solely based on their rank, with Ace as 14,
      * Two cards of the same rank are equal, i.e., ace of spades compared to ace of hearts returns 0
+     *
+     * @param other a Card to compare against the current card
      */
     public int compareTo(Card other) {
         return Integer.compare(this.rank, other.rank);
@@ -122,6 +130,10 @@ public class Card implements Comparable<Card> {
         }
     }
 
+    /**
+     * Returns the rank as a string, used because of royal cards, e.g. rank 14 returns "Ace".
+     * @return Rank string
+     */
     public String getRankString(){
 
         String rankString = ""+rank;

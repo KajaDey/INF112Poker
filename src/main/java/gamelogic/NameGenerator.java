@@ -12,6 +12,8 @@ import java.util.Random;
 
 /**
  * Created by henrik on 05.04.16.
+ *
+ * Class to generate player names.
  */
 public class NameGenerator {
 
@@ -19,6 +21,12 @@ public class NameGenerator {
     private static String filePath = "resources/names.txt";
     static ArrayList<String> names = new ArrayList<String>();
 
+    /**
+     * TODO write javadoc
+     * @return A random name
+     * @throws IOException
+     */
+    public static String getRandomName() throws IOException {
 
     static ArrayList<String> characterNames = new ArrayList<String>();
     static ArrayList<String> pathsOfSeries = new ArrayList<String>();

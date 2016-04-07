@@ -11,6 +11,9 @@ import java.util.Optional;
 
 /**
  * Created by kaja on 09.03.2016.
+ *
+ * Checks if the hand contains a flush (5 cards of the same suit).
+ *
  */
 public class Flush implements IRule {
     private List<Card> returnHand = new ArrayList<Card>(5);
@@ -19,6 +22,10 @@ public class Flush implements IRule {
     @Override
     public boolean match(Hand hand) {
         List<Card> allCards = hand.getAllCards();
+
+        if (allCards.size() < 5)
+            return false;
+
         allCards.sort(Card::compareTo);
 
         int nrOfSpades=0;
