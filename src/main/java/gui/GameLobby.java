@@ -148,6 +148,13 @@ public class GameLobby {
         return fullBox;
     }
 
+    /**
+     *
+     * Uppdates all the setting in game lobby
+     *
+     * @param gameSettings
+     */
+
     public static void updateLabels(GameSettings gameSettings){
         amountOfChips.setText("Chips:  " + gameSettings.getStartStack() + "$");
         numberOfPlayers.setText("Number of players:  " + gameSettings.getMaxNumberOfPlayers() + "");
@@ -155,6 +162,14 @@ public class GameLobby {
         smallBlind.setText("Small blind:  " + gameSettings.getSmallBlind() + "$");
         levelDuration.setText("Level duration:  " + gameSettings.getLevelDuration() + "min");
     }
+
+    /**
+     *
+     * Displays an error message if the settings are wrong
+     *
+     * @param message
+     * @param gameController
+     */
 
     public static void displayErrorMessage(String message,GameController gameController){
 
