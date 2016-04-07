@@ -94,7 +94,26 @@ public class ObjectStandards {
     public static Label makeStandardLabelWhite(String name, String value){
         Label label = new Label(name + " " + value);
         Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(5,5,5,5);
+        Insets standardPadding = new Insets(0,0,0,0);
+
+        label.setFont(standardFont);
+        label.setPadding(standardPadding);
+        label.setTextFill(Color.web("#ffffff"));
+        label.setEffect(dropShadow);
+
+        return label;
+    }
+
+    /**
+     * Makes a standard label where the text color is white
+     * @param name The name of the label
+     * @param value The value of the label (i.e: $)
+     * @return The created label
+     */
+    public static Label makeLobbyLabelWhite(String name, String value){
+        Label label = new Label(name + " " + value);
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(5,10,5,10);
 
         label.setFont(standardFont);
         label.setPadding(standardPadding);
@@ -166,7 +185,7 @@ public class ObjectStandards {
 
         TextField textField = new TextField();
         textField.setFont(new Font("Areal", 15));
-        textField.setMaxWidth(75);
+        textField.setMaxWidth(100);
         textField.setPadding(padding);
 
         return textField;

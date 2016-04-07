@@ -36,6 +36,7 @@ public class StraightFlushTest {
         straightFlush = new StraightFlush();
 
         assertTrue(straightFlush.match(hand));
+       assertEquals("6 high straight flush",straightFlush.toString() );
     }
 
     @Test

@@ -8,6 +8,9 @@ import java.util.*;
 
 /**
  * Created by Vegar on 09/03/16.
+ *
+ * Finds the highest ranking cards in the hand.
+ *
  */
 public class HighCard implements IRule {
     private List<Card> returnHand = new ArrayList<Card>();
@@ -16,9 +19,13 @@ public class HighCard implements IRule {
     public boolean match(Hand hand) {
         List<Card> allCards = hand.getAllCards();
         Collections.sort(allCards);
-        for(int i= allCards.size()-1; i >1; i--) {
-          returnHand.add(allCards.get(i));
+
+        for(int i= allCards.size()-1; i >=0; i--) {
+            if (returnHand.size() == 5)
+                return true;
+            returnHand.add(allCards.get(i));
         }
+
         return true;
     }
 
@@ -40,5 +47,10 @@ public class HighCard implements IRule {
             compareValues.add(returnHand.get(4 - i).rank);
         }
         return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        return "High card "+returnHand.get(0).getRankString();
     }
 }

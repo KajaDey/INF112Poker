@@ -15,7 +15,7 @@ public class ImageViewer {
      * @return The URL for the card
      */
     public static String returnURLPathForCardSprites(String card){
-        String cardOut = "file:CardSprites/" + card + ".png";
+        String cardOut = "file:resources/CardSprites/" + card + ".png";
         return cardOut;
     }
 
@@ -26,7 +26,7 @@ public class ImageViewer {
      * @return The URL for the image
      */
     public static String returnURLPathForImages(String image){
-        String ImageOut = "file:Images/" + image + ".png";
+        String ImageOut = "file:resources/Images/" + image + ".png";
         return ImageOut;
     }
 

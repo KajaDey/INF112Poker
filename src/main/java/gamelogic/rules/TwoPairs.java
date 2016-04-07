@@ -12,17 +12,22 @@ import java.util.Optional;
 /**
  * Created by pokki on 08/03/16.
  * <p/>
- * Checks if there are two pairs in the hand. Returns the hand
+ * Checks if a hand contains two pairs.
  */
 public class TwoPairs implements IRule {
 
     private boolean onePair = false;
     private List<Card> returnHand = new ArrayList<Card>();
     private int firstPairValue, secondPairValue, highCard;
+    private Card pair1, pair2;
 
     @Override
     public boolean match(Hand hand) {
         List<Card> cards = hand.getAllCards();
+
+        if (cards.size() < 5)
+            return false;
+
         cards.sort(Card::compareTo);
 
         for (int i = cards.size() - 1; i > 0; i--) {
@@ -36,6 +41,7 @@ public class TwoPairs implements IRule {
                     cards.remove(i);
                     cards.remove(i - 1);
                     i--;
+
                 } else {
                     returnHand.add(cards.get(i));
                     returnHand.add(cards.get(i - 1));
@@ -45,6 +51,8 @@ public class TwoPairs implements IRule {
 
                     returnHand.add(cards.get(cards.size() - 1));
                     highCard = cards.get(cards.size() - 1).rank;
+                    pair1 = returnHand.get(0);
+                    pair2 = returnHand.get(2);
 
                     return true;
                 }
@@ -80,6 +88,11 @@ public class TwoPairs implements IRule {
         compareValues.add(highCard);
 
         return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        return "Two pairs, "+pair1.getRankString()+"'s and "+pair2.getRankString()+"'s";
     }
 }
 

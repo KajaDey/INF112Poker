@@ -8,8 +8,9 @@ import java.util.*;
 
 /**
  * Created by kaja on 08.03.2016.
- * <p/>
- * Checks if we have a hand with either 4/3/2 cards of the same rank.
+ *
+ * Checks if a hand contains either quad, trips, or one pair.
+ * (4,3,2 cards of the same rank)
  */
 public class xOfaKind implements IRule {
     private boolean fourOfaKind;
@@ -19,6 +20,8 @@ public class xOfaKind implements IRule {
     private List<Card> returnHand = new ArrayList<>(5);
     private List<Card> tempHand = new ArrayList<>(5);
     private List<Card> markedCards = new ArrayList<>(5);
+
+    //private Card quadCard, tressCArd, pairCard;
 
     private int nrToCheck;
     private List<Integer> compareValues = new ArrayList<>();
@@ -36,6 +39,7 @@ public class xOfaKind implements IRule {
     @Override
     public boolean match(Hand hand) {
         allCards = hand.getAllCards();
+
         allCards.sort(Card::compareTo);
 
         for (int i = allCards.size() - 1; i > -1; i--) { //desc
@@ -101,18 +105,6 @@ public class xOfaKind implements IRule {
         return Optional.empty();
     }
 
-    private void addHighCards(int nrOfCardsToAdd) {
-        int counter = 0;
-        for (int i = allCards.size() - 1; i > -1; i--) { //desc
-            if (!markedCards.contains(allCards.get(i))) {
-                returnHand.add(allCards.get(i));
-                compareValues.add(allCards.get(i).rank);
-                counter++;
-                if (counter == nrOfCardsToAdd)
-                    break;
-            }
-        }
-    }
 
     @Override
     public HandCalculator.HandType getType() {
@@ -124,5 +116,33 @@ public class xOfaKind implements IRule {
     @Override
     public List<Integer> getCompareValues() {
         return compareValues;
+    }
+
+    @Override
+    public String toString(){
+        if(fourOfaKind)
+            return "Quad "+returnHand.get(0).getRankString()+"'s";
+        else if(threeOfaKind)
+            return "Trip "+returnHand.get(0).getRankString()+"'s";
+        else if (twoOfaKind)
+            return "Pair of "+returnHand.get(0).getRankString()+"'s";
+        return "";
+    }
+
+    /**
+     * Fills return hand with high cards after the pair/trip/quad was added.
+     * @param nrOfCardsToAdd Number of high cards to add
+     */
+    private void addHighCards(int nrOfCardsToAdd) {
+        int counter = 0;
+        for (int i = allCards.size() - 1; i > -1; i--) { //desc
+            if (!markedCards.contains(allCards.get(i))) {
+                returnHand.add(allCards.get(i));
+                compareValues.add(allCards.get(i).rank);
+                counter++;
+                if (counter == nrOfCardsToAdd)
+                    break;
+            }
+        }
     }
 }
