@@ -1,6 +1,8 @@
 # README #
 
-..* This is a project in context with a subject at the University in Bergen, Norway.
+# INTRODUCTION
+
+This is a project in context with a subject at the University in Bergen, Norway.
 The subject is "Software Engineering", code INF112 ([info can be found here](http://www.uib.no/en/course/INF112)),
 and this years task is to engineer an implementation of Texas Hold'em poker, over three sprints, using agile methods.
 
