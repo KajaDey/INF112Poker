@@ -117,13 +117,23 @@ public class ButtonListeners {
         }
     }
 
-
+    /**
+     *
+     * When u click the errorButton, you open a new settings window
+     *
+     * @param gameController
+     */
     public static void errorButtonListener(GameController gameController) {
 
         settingsButtonListener(gameController);
 
     }
 
+    /**
+     *
+     * Return to the lobby
+     *
+     */
     public static void exitButtonListener(){
         mainScreenEnterListener(savedName, savedNumOfPlayers, savedChoiceBox, savedGameController);
     }
@@ -135,6 +145,9 @@ public class ButtonListeners {
         client = c;
     }
 
+    /**
+     * Closes the lobby screen and returns to the main screen
+     */
     public static void returnToMainMenuButtonListener(){
         MainScreen.refreshSceneForMainScreen();
     }
