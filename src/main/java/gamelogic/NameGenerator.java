@@ -21,11 +21,6 @@ public class NameGenerator {
     private static String filePath = "resources/names.txt";
     static ArrayList<String> names = new ArrayList<String>();
 
-    /**
-     * TODO write javadoc
-     * @return A random name
-     * @throws IOException
-     */
 
     static ArrayList<String> characterNames = new ArrayList<String>();
     static ArrayList<String> pathsOfSeries = new ArrayList<String>();
@@ -34,8 +29,6 @@ public class NameGenerator {
 
 
     public static String getRandomName() {
-
-
 
          try {
              BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -66,7 +59,7 @@ public class NameGenerator {
 
         //get random filepath from a list of paths of series if we havent got one
 
-        if(pathOfSeries == "")
+
             pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
 
         //add all names of series to a list which we randomly choose from later
@@ -91,8 +84,6 @@ public class NameGenerator {
         return randomCharacter;
 
     }
-
-
 
 
     public static void main(String[] args){
