@@ -393,7 +393,7 @@ public class Game {
         if (orderedListOfPlayersStillPlaying.size() == 2) {
             //Special case if only two players (dealer and small blind is same pos)
             positions.put(orderedListOfPlayersStillPlaying.get(0).getID(), 0);
-            positions.put(orderedListOfPlayersStillPlaying.get(1).getID(), 2);
+            positions.put(orderedListOfPlayersStillPlaying.get(1).getID(), 1);
         } else {
             for (int i = 0; i < orderedListOfPlayersStillPlaying.size(); i++) {
                 positions.put(orderedListOfPlayersStillPlaying.get(i).getID(), i);
