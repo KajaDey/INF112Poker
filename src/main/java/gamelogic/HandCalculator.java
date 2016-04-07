@@ -67,24 +67,34 @@ public class HandCalculator {
     }
 
     /**
-     * TODO write javadoc
+     * Gets the list of rules (straight, flush etc)
      * @return
      */
     public List<IRule> getRules() {
         return rules;
     }
 
-    public Optional<List<Card>> getBestHand() {
+    /**
+     * Gets the winning hand
+     * @return list of cards in best hand
+     */
+    public Optional<List<Card>> getWinningHand() {
         return bestHand;
     }
 
-    public HandType getHandType() {
+    /**
+     * Gets the hand type of the winning hand
+     * @return Enum of winning hand type
+     */
+    public HandType getWinningHandType() {
         return handType;
     }
 
+    /**
+     * Gets the rule of the winning hand
+     * @return found rule
+     */
     public IRule getFoundRule() {
         return rule;
     }
 }
-
-

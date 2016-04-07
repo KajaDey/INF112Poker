@@ -79,8 +79,8 @@ public class Hand implements Comparable<Hand> {
         HandCalculator myCalculator = new HandCalculator(this);
         HandCalculator otherCalculator = new HandCalculator(other);
 
-        HandCalculator.HandType myHandType = myCalculator.getHandType();
-        HandCalculator.HandType otherHandType = otherCalculator.getHandType();
+        HandCalculator.HandType myHandType = myCalculator.getWinningHandType();
+        HandCalculator.HandType otherHandType = otherCalculator.getWinningHandType();
 
         if (myHandType == otherHandType) {
             List<Integer> myCompareValues = myCalculator.getFoundRule().getCompareValues();
