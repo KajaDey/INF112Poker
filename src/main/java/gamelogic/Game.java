@@ -58,11 +58,10 @@ public class Game {
      */
     public void playGame() {
 
-
         Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
             GUIMain.debugPrintln("\nNew hand");
-            //Tell all clients that a new hand has started and update all players stacksizes
+            //Tell all clients that a new hand has started and update all players stack sizes
             gameController.startNewHand();
             refreshAllStackSizes();
             pot = new Pot();
@@ -76,43 +75,7 @@ public class Game {
             communityCards = getCommunityCards(deck);
             dealHoleCards(deck, playersStillInCurrentHand);
 
-            printAllPlayerStacks();
-
-            //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
-            GUIMain.debugPrintln("\nBLINDS");
-            postBlinds();
-            printAllPlayerStacks();
-
-            //First betting round (preflop)
-            GUIMain.debugPrintln("\nPREFLOP:");
-            boolean handContinues = bettingRound(true);
-            if (!handContinues) { determineWinner(false);  continue; }
-            printAllPlayerStacks();
-
-            //Display flop and new betting round
-            GUIMain.debugPrintln("\nFLOP:");
-            setFlop();
-            handContinues = bettingRound(false);
-            if (!handContinues) { determineWinner(false); continue; }
-            printAllPlayerStacks();
-
-            //Display turn and new betting round
-            GUIMain.debugPrintln("\nTURN:");
-            setTurn();
-            handContinues = bettingRound(false);
-            if (!handContinues) { determineWinner(false); continue;}
-            printAllPlayerStacks();
-
-            //Display river and new betting round
-            GUIMain.debugPrintln("\nRIVER:");
-            setRiver();
-            handContinues = bettingRound(false);
-            if (!handContinues) { determineWinner(false); continue;}
-            printAllPlayerStacks();
-
-            //Showdown
-            determineWinner(true);
-            printAllPlayerStacks();
+            playHand();
         }
 
         //Deal with who won the game.. (should be the only player with chips left
@@ -127,13 +90,56 @@ public class Game {
         }
     }
 
-    private void determineWinner(boolean isShowDown) {
-        //If all community cards are out and we have a showdown
-        if (isShowDown) {
-            showDown();
+    private void playHand() {
+        boolean preFlop = true;
+
+        //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
+        GUIMain.debugPrintln("\nBLINDS");
+        postBlinds();
+        printAllPlayerStacks();
+
+        //First betting round (preflop)
+        GUIMain.debugPrintln("\nPREFLOP:");
+
+        boolean handContinues = bettingRound(preFlop);
+        if (!handContinues) { determineWinner();
             return;
         }
+        printAllPlayerStacks();
 
+        //Display flop and new betting round
+        GUIMain.debugPrintln("\nFLOP:");
+        setFlop();
+        handContinues = bettingRound(!preFlop);
+        if (!handContinues) { determineWinner();
+            return;
+        }
+        printAllPlayerStacks();
+
+        //Display turn and new betting round
+        GUIMain.debugPrintln("\nTURN:");
+        setTurn();
+        handContinues = bettingRound(!preFlop);
+        if (!handContinues) { determineWinner();
+            return;
+        }
+        printAllPlayerStacks();
+
+        //Display river and new betting round
+        GUIMain.debugPrintln("\nRIVER:");
+        setRiver();
+        handContinues = bettingRound(!preFlop);
+        if (!handContinues) { determineWinner();
+            return;
+        }
+        printAllPlayerStacks();
+
+        //Showdown
+        showDown();
+        printAllPlayerStacks();
+    }
+
+    private void determineWinner() {
         //Double check that there is only one player remaining in the hand
         if (playersStillInCurrentHand.size() != 1)
             GUIMain.debugPrintln("Winner cannot be determined, " + playersStillInCurrentHand.size() + " players left in the hand");
@@ -156,26 +162,14 @@ public class Game {
         return numberOfPlayersWithChipsLeft;
     }
 
-    /**
-     * Runs one betting round until all players still in the hand have checked, or bet the same amount.
-     * Returns false if there is only one player left in the hand (everyone else folded), else true
-     *
-     */
-    private boolean bettingRound(boolean isPreflop) {
-
-
-
-
-        return true;
-    }
-    /*
     private boolean bettingRound(boolean isPreFlop) {
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
-        if (playersStillInCurrentHand.size() == 2)
-            actingPlayerIndex = (isPreFlop ? 0 : 1);
+
+        if (!isPreFlop && numberOfPlayers == 2)
+            actingPlayerIndex = 1;
         else
-            actingPlayerIndex = (isPreFlop ? 3%maxNumberOfPlayers : 1);
+            actingPlayerIndex = (isPreFlop ? 2 % playersStillInCurrentHand.size() : 0);
 
         highestAmountPutOnTable = (isPreFlop ? currentBB : 0);
         currentMinimumRaise = currentBB;
@@ -269,8 +263,6 @@ public class Game {
         return numberOfPlayersInHandWithChipsLeft;
     }
 
-    */
-
     /**
      * Automatically post small and big blind for given players
      *
@@ -285,8 +277,8 @@ public class Game {
             smallBlindPlayer = playersStillInCurrentHand.get(0);
             bigBlindPlayer = playersStillInCurrentHand.get(1);
         } else {
-            smallBlindPlayer = playersStillInCurrentHand.get(1);
-            bigBlindPlayer = playersStillInCurrentHand.get(2);
+            smallBlindPlayer = playersStillInCurrentHand.get(0);
+            bigBlindPlayer = playersStillInCurrentHand.get(1);
         }
 
         //Notify GUI and AI about the posting
