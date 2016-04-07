@@ -19,10 +19,12 @@ public class Player {
 
     public boolean isInHand = true;
     public boolean isAllIn = false;
+    public final String name;
 
-    public Player(int id, int initialPosition, long initialStackSize) {
+    public Player(int id, int initialPosition, long initialStackSize, String name) {
         holeCards = new ArrayList<>(2);
 
+        this.name = name;
         this.id = id;
 
         position = initialPosition;
@@ -31,6 +33,7 @@ public class Player {
 
     public Player(Player oldPlayer) {
         this.id = oldPlayer.id;
+        this.name = oldPlayer.name;
         this.holeCards = new ArrayList<>(oldPlayer.holeCards);
         this.position = oldPlayer.position;
         this.stackSize = oldPlayer.stackSize;
@@ -45,7 +48,7 @@ public class Player {
     public void putInPot(long amount) {
         stackSize -= amount;
         contributedToPot += amount;
-        assert stackSize >= 0;
+        assert stackSize >= 0 : "Player " + id + " at position " + position + " has a stacksize of " + stackSize;
     }
 
     @Override

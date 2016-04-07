@@ -22,27 +22,26 @@ public class GameState {
     private final Player bigBlind;
     private final Player smallBlind;
 
-    private final long bigBlindAmount;
-    private final long smallBlindAmount;
+    //private final long bigBlindAmount;
+    //private final long smallBlindAmount;
 
     public final long allChipsOnTable;
 
     public int playersGivenHolecards = 1;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
     private int playersAllIn = 0;
-    private int playersToMakeDecision; // Players left to make decision in this betting round
+    public int playersToMakeDecision; // Players left to make decision in this betting round
 
 
-    public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
-                     long smallBlindAmount, long bigBlindAmount) {
-
+    public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes, Map<Integer, String> names) {
         assert amountOfPlayers == positions.size();
 
+        System.out.println("Creating new gameState for " + amountOfPlayers + " players.");
         deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
         this.amountOfPlayers = amountOfPlayers;
-        this.smallBlindAmount = bigBlindAmount;
-        this.bigBlindAmount = bigBlindAmount;
+        //this.smallBlindAmount = bigBlindAmount;
+        //this.bigBlindAmount = bigBlindAmount;
         communityCards = new ArrayList<>();
 
         players = new ArrayList<>(amountOfPlayers);
@@ -56,9 +55,11 @@ public class GameState {
 
         for (int i = 0; i < amountOfPlayers; i++) {
             assert positions.containsKey(i) : "AI didn't get position for playerPosition " + i;
-            players.add(new Player(positions.get(i), positions.get(i), stackSizes.get(i)));
-            players.get(i).minimumRaise = bigBlindAmount;
-            players.get(i).currentBet = bigBlindAmount;
+            assert positions.containsValue(i) : "AI didn't get player at position " + i;
+            assert names.containsValue(i) : "AI didn't get name for player at position " + i;
+            players.add(new Player(i, positions.get(i), stackSizes.get(i), names.get(i)));
+            //players.get(i).minimumRaise = bigBlindAmount;
+            //players.get(i).currentBet = bigBlindAmount;
         }
         players.sort((p1, p2) -> Integer.compare(p1.position, p2.position));
 
@@ -74,9 +75,10 @@ public class GameState {
             smallBlind = players.get(1);
             bigBlind = players.get(2);
         }
-        smallBlind.currentBet = bigBlindAmount - smallBlindAmount;
+        //smallBlind.currentBet = bigBlindAmount - smallBlindAmount;
         bigBlind.currentBet = 0;
 
+        /*
         //Post blinds
         if (smallBlind.stackSize > smallBlindAmount) {
             smallBlind.putInPot(smallBlindAmount);
@@ -97,6 +99,7 @@ public class GameState {
             playersLeftInHand -= 1;
             playersAllIn++;
         }
+        */
 
         playersLeftInHand = amountOfPlayers;
         playersToMakeDecision = amountOfPlayers;
@@ -127,8 +130,8 @@ public class GameState {
             smallBlind = players.get(1);
             bigBlind = players.get(2);
         }
-        this.bigBlindAmount = oldState.bigBlindAmount;
-        this.smallBlindAmount = oldState.smallBlindAmount;
+        //this.bigBlindAmount = oldState.bigBlindAmount;
+        //this.smallBlindAmount = oldState.smallBlindAmount;
         this.allChipsOnTable = oldState.allChipsOnTable;
         this.playersLeftInHand = oldState.playersLeftInHand;
         this.playersAllIn = oldState.playersAllIn;
@@ -200,17 +203,32 @@ public class GameState {
                     playersToMakeDecision = playersLeftInHand; // TODO: Everyone must make a new decision, even if it was just a call. This may not be correct behaviour
                     playersAllIn++;
                     break;
+                case BIG_BLIND: case SMALL_BLIND:
+                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
+                        player.currentBet += decision.size;
+                        player.minimumRaise = decision.size;
+                    });
+
+                    currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
+                    if (currentPlayer.stackSize == 0) {
+                        playersAllIn++;
+                        playersToMakeDecision--;
+                        playersLeftInHand--;
+                    }
+                    break;
 
             }
-            for (int i = currentPlayer.position; i < players.size(); i++) {
+            for (int i = currentPlayer.position + 1; i < players.size(); i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
+                    System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
             for (int i = 0; i < currentPlayer.position; i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
+                    System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
@@ -344,7 +362,7 @@ public class GameState {
     public static class CardDealtToTable extends GameStateChange {
         public final Card card;
 
-        private CardDealtToTable(Card card) {
+        public CardDealtToTable(Card card) {
             this.card = card;
         }
         public String toString() {
@@ -355,7 +373,7 @@ public class GameState {
     public static class PlayerDecision extends GameStateChange {
         public final Decision decision;
 
-        private PlayerDecision(Decision decision) {
+        public PlayerDecision(Decision decision) {
             this.decision = decision;
         }
 
@@ -372,8 +390,8 @@ public class GameState {
         GameState gameState = (GameState) o;
 
         if (amountOfPlayers != gameState.amountOfPlayers) return false;
-        if (bigBlindAmount != gameState.bigBlindAmount) return false;
-        if (smallBlindAmount != gameState.smallBlindAmount) return false;
+        //if (bigBlindAmount != gameState.bigBlindAmount) return false;
+        //if (smallBlindAmount != gameState.smallBlindAmount) return false;
         if (playersLeftInHand != gameState.playersLeftInHand) return false;
         if (playersAllIn != gameState.playersAllIn) return false;
         if (playersToMakeDecision != gameState.playersToMakeDecision) return false;
@@ -397,8 +415,8 @@ public class GameState {
         result = 31 * result + dealer.hashCode();
         result = 31 * result + bigBlind.hashCode();
         result = 31 * result + smallBlind.hashCode();
-        result = 31 * result + (int)bigBlindAmount;
-        result = 31 * result + (int)smallBlindAmount;
+        //result = 31 * result + (int)bigBlindAmount;
+        //result = 31 * result + (int)smallBlindAmount;
         result = 31 * result + playersLeftInHand;
         result = 31 * result + playersAllIn;
         result = 31 * result + playersToMakeDecision;

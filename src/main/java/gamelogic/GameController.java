@@ -1,5 +1,6 @@
 package gamelogic;
 
+import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
 import javafx.application.Platform;
@@ -82,7 +83,7 @@ public class GameController {
         for (int i = 0; i < numOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 0.75);
+            GameClient aiClient = new MCTSAI(AI_id);
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
