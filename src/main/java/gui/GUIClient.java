@@ -208,6 +208,10 @@ public class GUIClient implements GameClient {
         return id;
     }
 
+    /**
+     * Prints the log message to the log field
+     * @param message The message to be printed
+     */
     public void printToLogfield(String message) {
         gameScreen.printToLogField(message);
     }
