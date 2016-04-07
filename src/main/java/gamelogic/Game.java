@@ -579,13 +579,13 @@ public class Game {
             IDStillPlaying.remove(new Integer(winnerID));
         }
 
+        delay(5000);
+
         //If a player that was in this hand now has zero chips, it means he just busted
         for (Player p : playersStillInCurrentHand) {
             if (p.getStackSize() == 0)
                  gameController.bustClient(p.getID(), finishedInPosition--);
         }
-
-        delay(5000);
     }
 
     public void refreshAllStackSizes() {

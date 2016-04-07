@@ -658,7 +658,9 @@ public class GameScreen {
      * @return position
      */
     private String getPositionName(int pos) {
-        return (pos == 0 ? "Small blind" : pos == 1 ? "Big blind" : pos == 2 ? "UTG" : "UTG+" + (pos-2  ));
+        if (numberOfPlayers == 2)
+            return pos == 0 ? "Dealer" : "Big Blind";
+        return (pos == numberOfPlayers-1 ? "Dealer" : pos == 0 ? "Small blind" : pos == 1 ? "Big blind" : pos == 2 ? "UTG" : "UTG+" + (pos-2  ));
     }
 
     /**

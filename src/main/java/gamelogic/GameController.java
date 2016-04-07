@@ -23,7 +23,6 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(5000, 50, 25, 2, 10);
     }
 
     /**
@@ -36,6 +35,7 @@ public class GameController {
      */
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //Tell GUI to display Lobby
+        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10); //Default settings
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
         this.name = name;
     }
@@ -271,7 +271,6 @@ public class GameController {
 
         GameClient bustedClient = clients.get(bustPlayerID);
         if (!(bustedClient instanceof GUIClient)) {
-            System.out.println("Removed client " + bustPlayerID + " from clients");
             clients.remove(bustPlayerID);
         }
     }

@@ -264,5 +264,7 @@ public class PlayerLayout {
         setLastMoveLabel("");
         setStackLabel(bustedText);
         setPositionLabel("");
+
+        setCardImage(null, null);
     }
 }
