@@ -320,7 +320,6 @@ public class Game {
                     if (highestAmountPutOnTable == 0)
                         return decision;
 
-                    GUIMain.debugPrintln(playerToAct.getAmountPutOnTableThisBettingRound() + " " + isPreFlop + " " + highestAmountPutOnTable);
                     if (playerCanCheckBigBlind) {
                         return decision;
                     }

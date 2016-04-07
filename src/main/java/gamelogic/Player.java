@@ -63,6 +63,8 @@ public class Player extends User {
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
+                if (amountToCall < 0)
+                    System.out.println("I want to breakpoint here");
                 pot.addToPot(ID, amountToCall);
                 break;
 
@@ -119,6 +121,7 @@ public class Player extends User {
         this.holeCards = new Card[2];
         holeCards[0] = card1;
         holeCards[1] = card2;
+        this.putOnTableThisRound = 0;
     }
 
     /**
