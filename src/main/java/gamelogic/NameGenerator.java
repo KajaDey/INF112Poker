@@ -26,16 +26,16 @@ public class NameGenerator {
      * @return A random name
      * @throws IOException
      */
-    public static String getRandomName() throws IOException {
 
     static ArrayList<String> characterNames = new ArrayList<String>();
     static ArrayList<String> pathsOfSeries = new ArrayList<String>();
     static String pathOfSeries = "";
-
-
     static Random random = new Random();
 
-    public static String getRandomName(){
+
+    public static String getRandomName() {
+
+
 
          try {
              BufferedReader reader = new BufferedReader(new FileReader(filePath));
