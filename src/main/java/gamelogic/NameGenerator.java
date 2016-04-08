@@ -1,6 +1,5 @@
 package gamelogic;
 
-import com.sun.corba.se.impl.logging.IORSystemException;
 import gui.GUIMain;
 
 import java.io.BufferedReader;
@@ -18,7 +17,7 @@ import java.util.Random;
 public class NameGenerator {
 
 
-    private static String filePath = "resources/names.txt";
+    private static String filePath = "resources/nameList/names.txt";
     static ArrayList<String> names = new ArrayList<String>();
 
 
@@ -52,29 +51,37 @@ public class NameGenerator {
 
         //add all series paths once
         if(pathsOfSeries.isEmpty()) {
-            pathsOfSeries.add("resources/bigBangTheory.txt");
-            pathsOfSeries.add("resources/bms.txt");
-            pathsOfSeries.add("resources/breakingBad.txt");
-            pathsOfSeries.add("resources/cartoonNetwork.txt");
-            pathsOfSeries.add("resources/community.txt");
-            pathsOfSeries.add("resources/dictators.txt");
-            pathsOfSeries.add("resources/disney.txt");
-            pathsOfSeries.add("resources/friends.txt");
-            pathsOfSeries.add("resources/futurama.txt");
-            pathsOfSeries.add("resources/GoT.txt");
-            pathsOfSeries.add("resources/bigBangTheory.txt");
-            pathsOfSeries.add("resources/harryPotter.txt");
-            pathsOfSeries.add("resources/kapteinSabeltann.txt");
-            pathsOfSeries.add("resources/mario.txt");
-            pathsOfSeries.add("resources/paradiseHotel.txt");
-            pathsOfSeries.add("resources/pokemon.txt");
-            pathsOfSeries.add("resources/rickAndMorty.txt");
-            pathsOfSeries.add("resources/siliconValley.txt");
-            pathsOfSeries.add("resources/spiceGirls.txt");
-            pathsOfSeries.add("resources/starWars.txt");
-            pathsOfSeries.add("resources/theLordOfTheRings.txt");
-            pathsOfSeries.add("resources/theSimpsons.txt");
-            pathsOfSeries.add("resources/presidents.txt");
+            pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
+            pathsOfSeries.add("resources/nameList/bms.txt");
+            pathsOfSeries.add("resources/nameList/breakingBad.txt");
+            pathsOfSeries.add("resources/nameList/cartoonNetwork.txt");
+            pathsOfSeries.add("resources/nameList/community.txt");
+            pathsOfSeries.add("resources/nameList/dictators.txt");
+            pathsOfSeries.add("resources/nameList/disney.txt");
+            pathsOfSeries.add("resources/nameList/friends.txt");
+            pathsOfSeries.add("resources/nameList/futurama.txt");
+            pathsOfSeries.add("resources/nameList/gossipGirl");
+            pathsOfSeries.add("resources/nameList/got.txt");
+            pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
+            pathsOfSeries.add("resources/nameList/harryPotter.txt");
+            pathsOfSeries.add("resources/nameList/hotelCeasar");
+            pathsOfSeries.add("resources/nameList/kapteinSabeltann.txt");
+            pathsOfSeries.add("resources/nameList/kardashians");
+            pathsOfSeries.add("resources/nameList/oneTreeHill");
+            pathsOfSeries.add("resources/nameList/orangeIsTheNewBlack");
+            pathsOfSeries.add("resources/nameList/paradiseHotel.txt");
+            pathsOfSeries.add("resources/nameList/presidents.txt");
+            pathsOfSeries.add("resources/nameList/rickAndMorty.txt");
+            pathsOfSeries.add("resources/nameList/siliconValley.txt");
+            pathsOfSeries.add("resources/nameList/spiceGirls.txt");
+            pathsOfSeries.add("resources/nameList/starWars.txt");
+            pathsOfSeries.add("resources/nameList/suits");
+            pathsOfSeries.add("resources/nameList/theLordOfTheRings.txt");
+            pathsOfSeries.add("resources/nameList/theOffice");
+            pathsOfSeries.add("resources/nameList/theSimpsons.txt");
+            pathsOfSeries.add("resources/nameList/videoGames.txt");
+
+
         }
 
         //get random filepath from a list of paths of series if we havent got one

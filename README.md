@@ -34,7 +34,8 @@ players over the internet. This implementation will also allow for a user to spe
 *[Scrum board](https://scrumy.com/inf112gruppe4)
 
 
-*[CardSprites]
+## CardSprites license
+---
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
 
 High quality PNG playing cards - 537x750
@@ -46,5 +47,3 @@ Terms of Use:
 - Personal use only!
 
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
-
-*Background is made by Jostein
