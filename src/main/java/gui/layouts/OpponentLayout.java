@@ -23,6 +23,7 @@ public class OpponentLayout extends HBox{
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage;
     private int position;
+    private boolean isBust = false;
 
     public OpponentLayout(){
         super();
@@ -92,20 +93,43 @@ public class OpponentLayout extends HBox{
 
     }
 
+    /**
+     * Set last move for opponent
+     *
+     * @param s
+     */
     public void setLastMoveLabel(String s){
-        Runnable task = () -> lastMoveLabel.setText(s);
-        Platform.runLater(task);
+        Platform.runLater(() -> lastMoveLabel.setText(s));
     }
+
+    /**
+     * Set stack size for opponent
+     *
+     * @param s
+     */
 
     public void setStackSizeLabel(String s){
-        Runnable task = () -> stackSizeLabel.setText(s);
-        Platform.runLater(task);
+        Platform.runLater(() -> stackSizeLabel.setText(s));
     }
+
+    /**
+     *
+     * Set position for opponent
+     *
+     * @param s
+     */
 
     public void setPositionLabel(String s){
-        positionLabel.setText(s);
+        Platform.runLater(() -> positionLabel.setText(s));
     }
 
+    /**
+     *
+     * Show cards
+     *
+     * @param leftCard
+     * @param rightCard
+     */
     public void setCardImage(Image leftCard,Image rightCard) {
         leftCardImage.setImage(leftCard);
         rightCardImage.setImage(rightCard);
@@ -116,9 +140,20 @@ public class OpponentLayout extends HBox{
         rightCardImage.setVisible(true);
     }
 
+    /**
+     * Sets name for opponent
+     *
+     * @param name
+     */
+
     public void setNameLabel(String name) {
         nameLabel.setText(name);
     }
+
+
+    /**
+     * Gray out cards
+     */
 
     public void removeHolecards() {
         ColorAdjust adjust = new ColorAdjust();
@@ -127,11 +162,38 @@ public class OpponentLayout extends HBox{
         rightCardImage.setEffect(adjust);
     }
 
+    /**
+     *
+     * Get opponent position
+     *
+     * @return position
+     */
+
     public int getPosition() {
         return position;
     }
 
+    /**
+     *
+     * Set opponent position
+     *
+     * @param position
+     */
+
     public void setPosition(int position){
         this.position = position;
+    }
+
+    public void bustPlayer(String bustedText) {
+        isBust = true;
+        setLastMoveLabel("");
+        setStackSizeLabel(bustedText);
+        setPositionLabel("");
+
+        setCardImage(null, null);
+    }
+
+    public boolean isBust() {
+        return isBust;
     }
 }

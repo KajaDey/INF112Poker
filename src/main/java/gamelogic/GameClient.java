@@ -78,14 +78,38 @@ public interface GameClient {
     void setLevelDuration(int levelDuration);
 
 
+    /**
+     *   Called every time a new flop is displayed
+     * @param card1, card2, card3
+     * @param currentPotSize The pot size before the flop betting round starts
+     */
     void setFlop(Card card1, Card card2, Card card3, long currentPotSize);
+
+    /**
+     *   Called every time a the turn is displayed
+     * @param turn
+     * @param currentPotSize The pot size before the turn betting round starts
+     */
     void setTurn(Card turn, long currentPotSize);
+
+    /**
+     *   Called every time a the river is displayed
+     * @param river
+     * @param currentPotSize The pot size before the river betting round starts
+     */
     void setRiver(Card river, long currentPotSize);
 
     /**
      * Sent at the start of each hand, before hole cards etc are sent.
      */
     void startNewHand();
+
+    /**
+     *  Sent every time a player busts
+     * @param playerID
+     * @param rank      The place the busted player finished in
+     */
+    void playerBust(int playerID, int rank);
 
     /**
      *  Called when the game ends (only 1 player has chips left)

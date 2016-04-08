@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,7 +22,7 @@ import javafx.scene.layout.VBox;
 
 public class PlayerLayout {
 
-    private Label stackLabel, positionLabel, lastMoveLabel, nameLabel;
+    private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
     private ImageView leftCardImage, rightCardImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextfield;
@@ -56,6 +57,7 @@ public class PlayerLayout {
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
+        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -126,7 +128,7 @@ public class PlayerLayout {
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
+        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel,bestHand);
         stats.setAlignment(Pos.CENTER);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
@@ -198,10 +200,16 @@ public class PlayerLayout {
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
             amountTextfield.setVisible(visible);
-            //slider.setVisible(visible);
+            slider.setVisible(visible);
         };
         Platform.runLater(task);
     }
+
+    /**
+     * Set button visibility
+     *
+     * @param visible
+     */
 
     public void setVisible(boolean visible){
         betRaiseButton.setVisible(visible);
@@ -211,15 +219,11 @@ public class PlayerLayout {
     }
 
     public void setPositionLabel(String pos){
-        positionLabel.setText(pos);
-    }
-
-    public String getPositionLabel() {
-        return positionLabel.getText();
+        Platform.runLater(() -> positionLabel.setText(pos));
     }
 
     public void setStackLabel(String stack) {
-        stackLabel.setText(stack);
+        Platform.runLater(() -> stackLabel.setText(stack));
     }
 
     public void setLastMoveLabel(String lastMove) {
@@ -242,6 +246,18 @@ public class PlayerLayout {
         amountTextfield.setStyle(textfieldStyle);
     }
 
+    public void setBestHand(String bestHand){
+        Platform.runLater(() -> this.bestHand.setText(bestHand));
+    }
+
+
+    /**
+     *
+     * Set card image and make them visible
+     *
+     * @param leftImage
+     * @param rightImage
+     */
     public void setCardImage(Image leftImage, Image rightImage) {
         DropShadow dropShadow = new DropShadow();
         leftCardImage.setImage(leftImage);
@@ -262,5 +278,20 @@ public class PlayerLayout {
 
     public void setStackSize(long stackSize) {
         this.stackSize = stackSize;
+    }
+
+    public void bustPlayer(String bustedText) {
+        setLastMoveLabel("");
+        setStackLabel(bustedText);
+        setPositionLabel("");
+
+        setCardImage(null, null);
+    }
+
+    public void removeHolecards() {
+        ColorAdjust adjust = new ColorAdjust();
+        adjust.setBrightness(-0.5);
+        leftCardImage.setEffect(adjust);
+        rightCardImage.setEffect(adjust);
     }
 }

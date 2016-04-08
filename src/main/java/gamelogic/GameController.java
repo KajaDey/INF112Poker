@@ -4,10 +4,7 @@ import gamelogic.ai.SimpleAI;
 import gui.*;
 import javafx.application.Platform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -26,7 +23,6 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(5000, 50, 25, 2, 10);
     }
 
     /**
@@ -38,10 +34,8 @@ public class GameController {
      * @param gameType
      */
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
-        //TODO: Validate input
-        //assert numPlayers == 2 : "Number of players MUST be 2";
-
         //Tell GUI to display Lobby
+        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, "Simple AI");
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
         this.name = name;
 
@@ -124,10 +118,20 @@ public class GameController {
      */
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
-        if (client == null) {
-            return null;
-        }
+        if (client instanceof SimpleAI)
+            addDelayTimeForDecision();
         return client.getDecision();
+    }
+
+    /**
+     * Delays the execution 1-3 seconds (to make Simple-AI decision time look more realistic)
+     */
+    private void addDelayTimeForDecision() {
+        Random rand = new Random();
+        try { Thread.sleep(1000 + rand.nextInt(2000)); }
+        catch (Exception e) {
+            System.out.println("Thread " + Thread.currentThread() + " was interrupted");
+        }
     }
 
     /**
@@ -228,7 +232,6 @@ public class GameController {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            //assert stackSizes.size() == 2;
             c.setAmountOfPlayers(stackSizes.size());
             c.setStackSizes(new HashMap<>(stackSizes));
         }
@@ -273,5 +276,20 @@ public class GameController {
      */
     public void printToLogfield(String message) {
         guiClient.printToLogfield(message);
+    }
+
+    /**
+     * Called every time a player is bust to inform all clients
+     * @param bustPlayerID
+     * @param rank Place the busted player finished in
+     */
+    public void bustClient(int bustPlayerID, int rank) {
+        for (Integer clientID : clients.keySet())
+            clients.get(clientID).playerBust(bustPlayerID, rank);
+
+        GameClient bustedClient = clients.get(bustPlayerID);
+        if (!(bustedClient instanceof GUIClient)) {
+            clients.remove(bustPlayerID);
+        }
     }
 }

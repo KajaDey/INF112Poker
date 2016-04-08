@@ -1,6 +1,8 @@
 package gamelogic;
 
 
+import java.util.ArrayList;
+
 /**
  * Created by kristianrosland on 07.03.2016.
  *
@@ -11,7 +13,7 @@ public class Player extends User {
     private long stackSize;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean folded = false;
+    private boolean folded = false, allIn = false;
 
     //Statistics
     private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
@@ -64,6 +66,7 @@ public class Player extends User {
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
+                assert amountToCall > 0 : "Negative number added to pot: " + highestAmountPutOnTable + "-" + putOnTableThisRound + "=" + amountToCall;
                 pot.addToPot(ID, amountToCall);
                 break;
 
@@ -87,6 +90,7 @@ public class Player extends User {
                 pot.addToPot(ID, stackSize);
                 putOnTableThisRound += stackSize;
                 stackSize = 0;
+                allIn = true;
                 break;
         }
     }
@@ -120,6 +124,8 @@ public class Player extends User {
         this.holeCards = new Card[2];
         holeCards[0] = card1;
         holeCards[1] = card2;
+        this.putOnTableThisRound = 0;
+        this.allIn = false;
     }
 
     /**
@@ -171,11 +177,15 @@ public class Player extends User {
     }
 
     /**
-     * TODO write javadoc
-     * @return
+     * @return String of the best hand the player currently has (e.g: "Pair of 2's")
      */
-    public String getBestHand() {
-        return "Not implemented in HandCalculator";
+    public String getBestHand(ArrayList<Card> communityCards) {
+        Hand hand = new Hand(holeCards[0], holeCards[1], communityCards);
+        return hand.toString();
+    }
+
+    public boolean isAllIn() {
+        return allIn;
     }
 }
 
