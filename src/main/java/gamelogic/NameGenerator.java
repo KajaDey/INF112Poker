@@ -1,6 +1,5 @@
 package gamelogic;
 
-import com.sun.corba.se.impl.logging.IORSystemException;
 import gui.GUIMain;
 
 import java.io.BufferedReader;
@@ -18,24 +17,17 @@ import java.util.Random;
 public class NameGenerator {
 
 
-    private static String filePath = "resources/names.txt";
+    private static String filePath = "resources/nameList/names.txt";
     static ArrayList<String> names = new ArrayList<String>();
 
-    /**
-     * TODO write javadoc
-     * @return A random name
-     * @throws IOException
-     */
-    public static String getRandomName() throws IOException {
 
     static ArrayList<String> characterNames = new ArrayList<String>();
     static ArrayList<String> pathsOfSeries = new ArrayList<String>();
     static String pathOfSeries = "";
-
-
     static Random random = new Random();
 
-    public static String getRandomName(){
+
+    public static String getRandomName() {
 
          try {
              BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -59,15 +51,41 @@ public class NameGenerator {
 
         //add all series paths once
         if(pathsOfSeries.isEmpty()) {
-            pathsOfSeries.add("resources/GoT.txt");
-            pathsOfSeries.add("resources/friends.txt");
-            //and so on
+            pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
+            pathsOfSeries.add("resources/nameList/bms.txt");
+            pathsOfSeries.add("resources/nameList/breakingBad.txt");
+            pathsOfSeries.add("resources/nameList/cartoonNetwork.txt");
+            pathsOfSeries.add("resources/nameList/community.txt");
+            pathsOfSeries.add("resources/nameList/dictators.txt");
+            pathsOfSeries.add("resources/nameList/disney.txt");
+            pathsOfSeries.add("resources/nameList/friends.txt");
+            pathsOfSeries.add("resources/nameList/futurama.txt");
+            pathsOfSeries.add("resources/nameList/gossipGirl");
+            pathsOfSeries.add("resources/nameList/got.txt");
+            pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
+            pathsOfSeries.add("resources/nameList/harryPotter.txt");
+            pathsOfSeries.add("resources/nameList/hotelCeasar");
+            pathsOfSeries.add("resources/nameList/kapteinSabeltann.txt");
+            pathsOfSeries.add("resources/nameList/kardashians");
+            pathsOfSeries.add("resources/nameList/oneTreeHill");
+            pathsOfSeries.add("resources/nameList/orangeIsTheNewBlack");
+            pathsOfSeries.add("resources/nameList/paradiseHotel.txt");
+            pathsOfSeries.add("resources/nameList/presidents.txt");
+            pathsOfSeries.add("resources/nameList/rickAndMorty.txt");
+            pathsOfSeries.add("resources/nameList/siliconValley.txt");
+            pathsOfSeries.add("resources/nameList/spiceGirls.txt");
+            pathsOfSeries.add("resources/nameList/starWars.txt");
+            pathsOfSeries.add("resources/nameList/suits");
+            pathsOfSeries.add("resources/nameList/theLordOfTheRings.txt");
+            pathsOfSeries.add("resources/nameList/theOffice");
+            pathsOfSeries.add("resources/nameList/theSimpsons.txt");
+            pathsOfSeries.add("resources/nameList/videoGames.txt");
+
+
         }
 
         //get random filepath from a list of paths of series if we havent got one
-
-        if(pathOfSeries == "")
-            pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
+        pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
 
         //add all names of series to a list which we randomly choose from later
         try {
@@ -91,8 +109,6 @@ public class NameGenerator {
         return randomCharacter;
 
     }
-
-
 
 
     public static void main(String[] args){
