@@ -26,7 +26,7 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(5000, 50, 25, 2, 10,"Simple AI");
+        gameSettings = new GameSettings(5000, 50, 25, 2, 10, "Simple AI");
     }
 
     /**
@@ -273,5 +273,20 @@ public class GameController {
      */
     public void printToLogfield(String message) {
         guiClient.printToLogfield(message);
+    }
+
+    /**
+     * Called every time a player is bust to inform all clients
+     * @param bustPlayerID
+     * @param rank Place the busted player finished in
+     */
+    public void bustClient(int bustPlayerID, int rank) {
+        for (Integer clientID : clients.keySet())
+            clients.get(clientID).playerBust(bustPlayerID, rank);
+
+        GameClient bustedClient = clients.get(bustPlayerID);
+        if (!(bustedClient instanceof GUIClient)) {
+            clients.remove(bustPlayerID);
+        }
     }
 }
