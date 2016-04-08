@@ -148,16 +148,17 @@ public class Game {
     }
 
     /**
-     *  Used to find out if game has ended
-     *  Returns the number of players that have getStackSize() > 0
-     *  @return
+     * Used to check if a betting round should be skipped (all (or all but one) players are all in)
+     *
+     *  @return True if betting round should be skipped, false if not
      */
-    private boolean allPlayersAllIn() {
+    private boolean skipBettingRound() {
+        int count = 0;
         for (Player p : playersStillInCurrentHand)
-            if (!p.isAllIn())
-                return false;
+            if (p.isAllIn())
+                count++;
 
-        return true;
+        return count >= playersStillInCurrentHand.size() - 1;
     }
 
     private boolean bettingRound(boolean isPreFlop) {
@@ -180,7 +181,7 @@ public class Game {
         int numberOfPlayersActedSinceLastAggressor = 0;
 
         //Check if all players are all in and betting round should be skipped
-        if (allPlayersAllIn()) {
+        if (skipBettingRound()) {
             //TODO: Show hole cards
             return true;
         }
@@ -192,6 +193,7 @@ public class Game {
 
             //Check if player is already all in
             if (playerToAct.isAllIn()) {
+                if (skipBettingRound()) return true;
                 actingPlayerIndex++;
                 continue;
             }
@@ -220,7 +222,7 @@ public class Game {
                         numberOfPlayersActedSinceLastAggressor = 1; //If all in is a valid raise
                         currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
-                    } else if (playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable){
+                    } else if (playerToAct.getAmountPutOnTableThisBettingRound() > highestAmountPutOnTable){
                         numberOfPlayersActedSinceLastAggressor = 1; //If all in was not a valid raise but a raise
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
                     } else {
@@ -247,17 +249,6 @@ public class Game {
             if (decision.move != Decision.Move.FOLD)
                 actingPlayerIndex++;
         }
-    }
-
-    private int numberOfPlayersInHandWithChipsLeft() {
-        int numberOfPlayersInHandWithChipsLeft = 0;
-        for (Player p : playersStillInCurrentHand) {
-            if (p.getStackSize() > 0) {
-                numberOfPlayersInHandWithChipsLeft++;
-            }
-        }
-
-        return numberOfPlayersInHandWithChipsLeft;
     }
 
     /**
@@ -363,9 +354,19 @@ public class Game {
         positions = new HashMap<>();
         holeCards = new HashMap<>();
 
+        //SmallBlindIndex skips players who are bust
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (players[(smallBlindIndex + i) % numberOfPlayers].getStackSize() <= 0) {
+                roundNumber++;
+            }
+            else
+                break;
+        }
+
         //Set indexes
         smallBlindIndex = roundNumber % numberOfPlayers;
         bigBlindIndex = (numberOfPlayers == 2 ? roundNumber % numberOfPlayers : (roundNumber+1)%numberOfPlayers);
+
 
         List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
         //Add players to orderedListOfPlayersStillPlaying in order SB, BB ...
@@ -510,7 +511,7 @@ public class Game {
      * @param playersStillPlaying Players still in the hand
      * @return Number of players all in
      */
-    private int allPlayersAllIn(List<Player> playersStillPlaying) {
+    private int skipBettingRound(List<Player> playersStillPlaying) {
         int numberOfPlayersAllIn = 0;
 
         for (Player p : playersStillPlaying) {
