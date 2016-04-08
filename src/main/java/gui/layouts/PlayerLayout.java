@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -266,5 +267,12 @@ public class PlayerLayout {
         setPositionLabel("");
 
         setCardImage(null, null);
+    }
+
+    public void removeHolecards() {
+        ColorAdjust adjust = new ColorAdjust();
+        adjust.setBrightness(-0.5);
+        leftCardImage.setEffect(adjust);
+        rightCardImage.setEffect(adjust);
     }
 }

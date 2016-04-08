@@ -50,9 +50,7 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-
     private Button exitButton;
-
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
@@ -391,8 +389,10 @@ public class GameScreen {
                 newStackSize = 0;
                 break;
             case FOLD:
-                Runnable task = () -> opponents.get(ID).removeHolecards();
-                Platform.runLater(task);
+                if (ID == playerID)
+                    Platform.runLater(() -> playerLayout.removeHolecards());
+                else
+                    Platform.runLater(() -> opponents.get(ID).removeHolecards());
                 break;
         }
 

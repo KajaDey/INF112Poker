@@ -72,7 +72,7 @@ public class GameController {
         for (int i = 0; i < numOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 0.85);
+            GameClient aiClient = new SimpleAI(AI_id, 1.0);
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());

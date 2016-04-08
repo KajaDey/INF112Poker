@@ -152,12 +152,12 @@ public class Game {
      *  Returns the number of players that have getStackSize() > 0
      *  @return
      */
-    private int numberOfPlayersWithChipsLeft() {
-        int numberOfPlayersWithChipsLeft = 0;
-        for (Player p : players) {
-            if (p.getStackSize() > 0) numberOfPlayersWithChipsLeft++;
-        }
-        return numberOfPlayersWithChipsLeft;
+    private boolean allPlayersAllIn() {
+        for (Player p : playersStillInCurrentHand)
+            if (!p.isAllIn())
+                return false;
+
+        return true;
     }
 
     private boolean bettingRound(boolean isPreFlop) {
@@ -180,7 +180,10 @@ public class Game {
         int numberOfPlayersActedSinceLastAggressor = 0;
 
         //Check if all players are all in and betting round should be skipped
-        if (numberOfPlayersInHandWithChipsLeft() <= 1) { return true; }
+        if (allPlayersAllIn()) {
+            //TODO: Show hole cards
+            return true;
+        }
 
         while (true) {
             //Determine who's turn it is
@@ -188,11 +191,7 @@ public class Game {
             Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
 
             //Check if player is already all in
-            if (playerToAct.getStackSize() == 0) {
-                if (numberOfPlayersWithChipsLeft() == 0) {
-                    //TODO: Show hole cards
-                    return true;
-                }
+            if (playerToAct.isAllIn()) {
                 actingPlayerIndex++;
                 continue;
             }
@@ -511,7 +510,7 @@ public class Game {
      * @param playersStillPlaying Players still in the hand
      * @return Number of players all in
      */
-    private int numberOfPlayersAllIn(List<Player> playersStillPlaying) {
+    private int allPlayersAllIn(List<Player> playersStillPlaying) {
         int numberOfPlayersAllIn = 0;
 
         for (Player p : playersStillPlaying) {
@@ -612,4 +611,12 @@ public class Game {
         return null;
     }
 
+    public int numberOfPlayersWithChipsLeft(){
+        int count = 0;
+        for (Player p : players) {
+            if (p.getStackSize() > 0)
+                count++;
+        }
+        return count;
+    }
 }

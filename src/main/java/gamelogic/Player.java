@@ -9,7 +9,7 @@ public class Player extends User {
     private long stackSize;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean folded = false;
+    private boolean folded = false, allIn = false;
 
     //Statistics
     private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
@@ -87,6 +87,7 @@ public class Player extends User {
                 pot.addToPot(ID, stackSize);
                 putOnTableThisRound += stackSize;
                 stackSize = 0;
+                allIn = true;
                 break;
         }
     }
@@ -121,6 +122,7 @@ public class Player extends User {
         holeCards[0] = card1;
         holeCards[1] = card2;
         this.putOnTableThisRound = 0;
+        this.allIn = false;
     }
 
     /**
@@ -169,6 +171,10 @@ public class Player extends User {
 
     public String getBestHand() {
         return "Not implemented in HandCalculator";
+    }
+
+    public boolean isAllIn() {
+        return allIn;
     }
 }
 
