@@ -193,6 +193,7 @@ public class Game {
 
             //Check if player is already all in
             if (playerToAct.isAllIn()) {
+                if (skipBettingRound()) return true;
                 actingPlayerIndex++;
                 continue;
             }
