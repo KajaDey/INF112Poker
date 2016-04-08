@@ -8,6 +8,7 @@ import gui.GUIMain;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by morten on 04.04.16.
@@ -22,6 +23,7 @@ public class PokerMCTS {
 
     private Optional<ArrayList<NodeEval>> criticalEvals = Optional.empty(); // Evaluation and amount of searches done for each possible move at the critical node.
     private int totalSearches;
+    private int terminalNodesSelected;
 
     public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, List<Card> holeCards) {
         this.amountOfPlayers = amountOfPlayers;
@@ -44,12 +46,10 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, false);
                 totalSearches++;
-                if (totalSearches % 10 == 0) {
-                    assert rootNode.sizeOfTree() == totalSearches : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
-                }
                 if (totalSearches % 50000 == 0) {
                     //assert rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) == totalSearches :
                     //"Searches for children: " + rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) + ", total searches: " + totalSearches;
+                    assert !(totalSearches > rootNode.sizeOfTree() * 2) : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
                     assert rootNode.children.size() == 50;
                     assert rootNode.children.get(0).get().children.size() == 49 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 49.";
                     assert rootNode.children.get(0).get().searches > 10;
@@ -94,7 +94,7 @@ public class PokerMCTS {
     }
 
     public void printProgressReport() {
-        System.out.println(totalSearches + " searches so far, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
+        System.out.println(totalSearches + " searches so far, " + terminalNodesSelected + " terminal nodes selected, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
         GameState gameState = new GameState(initialGameState);
         for (Player player : gameState.players) {
             while (player.holeCards.size() < 2) {
@@ -105,8 +105,11 @@ public class PokerMCTS {
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
         for (int i = 0; i < criticalEvals.get().size(); i++) {
+            GameState newGameState = new GameState(gameState);
+            newGameState.makeGameStateChange(allDecisions.get(i));
             System.out.printf("%-25s: %.1f%%, %s", allDecisions.get(i), 100 * criticalEvals.get().get(i).eval / criticalEvals.get().get(i).searches, criticalEvals.get().get(i));
             System.out.println();
+            //System.out.println("\t" + newGameState.allDecisions().map(decisions -> decisions.stream().map(Object::toString).reduce("", (str1, str2) -> str1 + str2 + "\n\t")).orElse("No moves"));
         }
         System.out.println();
     }
@@ -155,32 +158,34 @@ public class PokerMCTS {
             GameState newGameState = new GameState(gameState);
             newGameState.makeGameStateChange(allMoves.get(childIndex));
 
+            GameState.NodeType childNodeType = newGameState.getNextNodeType();
             Optional<ArrayList<GameState.GameStateChange>> allMovesForChild = newGameState.allDecisions();
 
             AbstractNode childNode;
 
-            //TODO: Currently computes all moves for this node AND child node, which is wasteful
+            //TODO: Currently computes all moves for this node AND child node, which may be wasteful
 
-            if (allMovesForChild.isPresent()) {
-                if (allMovesForChild.get().get(0) instanceof GameState.CardDealtToTable
-                        || allMovesForChild.get().get(0) instanceof GameState.CardDealtToPlayer) {
+            switch (childNodeType) {
+                case DealCard:
                     childNode = new RandomNode(allMovesForChild.get().size());
-                }
-                else if (newGameState.currentPlayer.id == playerId) {
-                    //System.out.println("Creating new player node for " + newGameState.currentPlayer.name);
-                    childNode = new AINode(allMovesForChild.get().size());
-                }
-                else {
-                    //System.out.println("Creating new player node for " + newGameState.currentPlayer.name);
-                    childNode = new OpponentNode(allMovesForChild.get().size(), newGameState.currentPlayer.position);
-                }
+                    break;
+                case PlayerDecision:
+                    if (newGameState.currentPlayer.id == playerId) {
+                        childNode = new AINode(allMovesForChild.get().size());
+                    }
+                    else {
+                        childNode = new OpponentNode(allMovesForChild.get().size(), newGameState.currentPlayer.position);
+                    }
+                    break;
+                case Terminal:
+                    childNode = new TerminalNode(0, newGameState);
+                    break;
+                default: throw new IllegalStateException();
             }
-            else {
-                childNode = new TerminalNode(0, newGameState);
-            }
+
             children.set(childIndex, Optional.of(childNode));
 
-            // System.out.println("Creating new " + childNode.getClass().getSimpleName() + ", currentPlayer = " + gameState.currentPlayer + ", new currentPlayer: " + newGameState.currentPlayer);
+            //System.out.println("Creating new " + childNode.getClass().getSimpleName() + " from " + getClass().getSimpleName() + ", currentPlayer = " + gameState.currentPlayer + ", new currentPlayer: " + newGameState.currentPlayer);
             numberOfExploredChildren++;
 
             if (!hasPassedDecisionNode && this instanceof AINode) {
@@ -316,8 +321,9 @@ public class PokerMCTS {
             searches++;
             double[] evals;
             GameState newGameState = new GameState(gameState);
+            //System.out.println("Selecting " + getClass().getSimpleName() + " with " + numberOfExploredChildren + " children explored, " + hasPassedDecisionNode);
             if (numberOfExploredChildren == children.size()) {
-
+                //System.out.println(getClass().getSimpleName() + " has children: " + children.stream().map(Optional::get).map(Object::getClass).map(Class::getSimpleName).reduce(String::concat));
                 AbstractNode bestNode = children.get(0).get();
                 double bestExplorationValue = bestNode.explorationValue(totalSearches, gameState.currentPlayer.position);
                 int childIndex = 0;
@@ -327,11 +333,13 @@ public class PokerMCTS {
                         bestNode = children.get(i).get();
                         bestExplorationValue = explorationValue;
                         childIndex = i;
+                        //System.out.println("Chose new best " + bestNode.getClass().getSimpleName() + " with i " +i + " and exploration value " + explorationValue);
                     }
                 }
+                assert bestNode != this;
                 newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
 
-                if (!hasPassedDecisionNode && bestNode instanceof AINode) {
+                if (!hasPassedDecisionNode && this instanceof AINode) {
                     evals = bestNode.select(totalSearches, newGameState, true);
                     if (!criticalEvals.isPresent()) {
                         criticalEvals = Optional.of(new ArrayList<>());
@@ -339,21 +347,12 @@ public class PokerMCTS {
                             criticalEvals.get().add(new NodeEval(0.0, 0));
                         }
                     }
-                    criticalEvals.get().get(children.indexOf(bestNode)).eval += evals[playerPosition];
-                    criticalEvals.get().get(children.indexOf(bestNode)).searches += 1;
+                    criticalEvals.get().get(childIndex).eval += evals[playerPosition];
+                    criticalEvals.get().get(childIndex).searches += 1;
                 } else {
                     evals = bestNode.select(totalSearches, newGameState, hasPassedDecisionNode);
                 }
-
             }
-            /*else {
-                int randomChildIndex = (int) (Math.random() * children.size());
-                newGameState.makeGameStateChange(gameState.allDecisions().get().get(randomChildIndex));
-                assert children.get(randomChildIndex).getClass() == children.get(0).getClass();
-                assert children.get(randomChildIndex).get() instanceof RandomNode || children.get(randomChildIndex).get() instanceof TerminalNode : "Found " + children.get(0).get().getClass() + " where expected non-player nodes";
-                evals = children.get(randomChildIndex).get().select(totalSearches, newGameState, hasPassedDecisionNode);
-            }*/
-
             else {
                 evals = expand(totalSearches, gameState, hasPassedDecisionNode);
                 // Setting critical values is done in node expansion
@@ -386,18 +385,21 @@ public class PokerMCTS {
 
         @Override
         public double[] select(int totalSearches, GameState gameState, boolean hasPassedDecicionNode) {
-
+            terminalNodesSelected++;
+            this.searches++;
             return terminalEval(gameState);
         }
 
         @Override
         public double[] expand(int totalSearches, GameState gameState, boolean hasPassedDecicionNode) {
-            return terminalEval(gameState);
+            throw new IllegalStateException("Terminal nodes should never be expanded");
+            //return terminalEval(gameState);
         }
 
         @Override
         public double[] simulate(int totalSearches, GameState gameState, boolean hasPassedDecicionNode) {
             assert values[0] == terminalEval(gameState)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState));
+            this.searches++;
             return terminalEval(gameState);
         }
     }
