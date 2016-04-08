@@ -220,7 +220,7 @@ public class Game {
                         numberOfPlayersActedSinceLastAggressor = 1; //If all in is a valid raise
                         currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
-                    } else if (playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable){
+                    } else if (playerToAct.getAmountPutOnTableThisBettingRound() > highestAmountPutOnTable){
                         numberOfPlayersActedSinceLastAggressor = 1; //If all in was not a valid raise but a raise
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
                     } else {
@@ -247,17 +247,6 @@ public class Game {
             if (decision.move != Decision.Move.FOLD)
                 actingPlayerIndex++;
         }
-    }
-
-    private int numberOfPlayersInHandWithChipsLeft() {
-        int numberOfPlayersInHandWithChipsLeft = 0;
-        for (Player p : playersStillInCurrentHand) {
-            if (p.getStackSize() > 0) {
-                numberOfPlayersInHandWithChipsLeft++;
-            }
-        }
-
-        return numberOfPlayersInHandWithChipsLeft;
     }
 
     /**
