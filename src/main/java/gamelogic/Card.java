@@ -130,6 +130,10 @@ public class Card implements Comparable<Card> {
         }
     }
 
+    /**
+     * Returns the rank as a string, used because of royal cards, e.g. rank 14 returns "Ace".
+     * @return Rank string
+     */
     public String getRankString(){
 
         String rankString = ""+rank;

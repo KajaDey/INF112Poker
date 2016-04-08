@@ -1,10 +1,10 @@
-# README #
-
-..* This is a project in context with a subject at the University in Bergen, Norway.
+# INTRODUCTION
+---
+This is a project in context with a subject at the University in Bergen, Norway.
 The subject is "Software Engineering", code INF112 ([info can be found here](http://www.uib.no/en/course/INF112)),
 and this years task is to engineer an implementation of Texas Hold'em poker, over three sprints, using agile methods.
 
-..* The project is using Maven. The code is written in java, gui is written with JavaFX.
+* The project is using Maven. The code is written in java, gui is written with JavaFX.
 
 
 *[Authors]  André Dyrstad
@@ -18,13 +18,18 @@ and this years task is to engineer an implementation of Texas Hold'em poker, ove
             Simon Halvorsen
             Vegar Rorvik
 
-..* To try our software you can clone the project using git. You must have java 1.8 and maven installed.
+* To try our software you can clone the project using git. You must have java 1.8 and maven installed.
 Our team is using Intellij, and by using that, you can easily import this project using Import from Version Control.
 
 * You can run tests using the Maven project, with the lifecycle point called test.
 
-* This implementation of Texas Hold'em allows the user to play a game of heads-up poker against an AI. The user can set the preferred game settings and the game continues until one of the players are out of chips. Later implementations will allow the user to create a multiplayer game and play against other human players over the internet. This implementation will also allow for a user to spectate a table of players.
+* This implementation of Texas Hold'em allows the user to play a game of heads-up poker against an AI.
+The user can set the preferred game settings and the game continues until one of the players are out of chips.
+Later implementations will allow the user to create a multiplayer game and play against other human
+players over the internet. This implementation will also allow for a user to spectate a table of players.
 
+# LICENSE
+---
 
 *[Scrum board](https://scrumy.com/inf112gruppe4)
 

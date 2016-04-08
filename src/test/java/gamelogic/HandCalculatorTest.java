@@ -44,7 +44,7 @@ public class HandCalculatorTest {
         wantedHand = new Hand(holeCard1,holeCard2, Arrays.asList(c1,c3,c4));
         StraightFlush sf = new StraightFlush();
         sf.match(wantedHand);
-        assertEquals(sf.getHand(),hc.getBestHand());
+        assertEquals(sf.getHand(),hc.getWinningHand());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class HandCalculatorTest {
         wantedHand = new Hand(holeCard1,holeCard2,communityCards);
         xOfaKind quad = new xOfaKind(4);
         quad.match(wantedHand);
-        assertEquals(quad.getHand(),hc.getBestHand());
+        assertEquals(quad.getHand(),hc.getWinningHand());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class HandCalculatorTest {
         wantedHand = new Hand(holeCard1,holeCard2,communityCards);
         House house = new House();
         house.match(wantedHand);
-        assertEquals(house.getHand(),hc.getBestHand());
+        assertEquals(house.getHand(),hc.getWinningHand());
     }
     @Test
     public void testFlushReturn() throws Exception{
@@ -82,7 +82,7 @@ public class HandCalculatorTest {
         wantedHand = new Hand(holeCard1,holeCard2,communityCards);
         Flush flush = new Flush();
         flush.match(wantedHand);
-        assertEquals(flush.getHand(),hc.getBestHand());
+        assertEquals(flush.getHand(),hc.getWinningHand());
     }
     @Test
     public void testStraightReturn() throws Exception{
@@ -94,7 +94,7 @@ public class HandCalculatorTest {
 
         Straight straight = new Straight();
         straight.match(wantedHand);
-        assertEquals(straight.getHand(),hc.getBestHand());
+        assertEquals(straight.getHand(),hc.getWinningHand());
     }
     @Test
     public void testTripsReturn() throws Exception{
@@ -106,7 +106,7 @@ public class HandCalculatorTest {
 
         xOfaKind trips = new xOfaKind(3);
         trips.match(wantedHand);
-        assertEquals(trips.getHand(),hc.getBestHand());
+        assertEquals(trips.getHand(),hc.getWinningHand());
 
     }
     @Test
@@ -119,7 +119,7 @@ public class HandCalculatorTest {
 
         TwoPairs twoPair = new TwoPairs();
         twoPair.match(wantedHand);
-        assertEquals(twoPair.getHand(),hc.getBestHand());
+        assertEquals(twoPair.getHand(),hc.getWinningHand());
     }
     @Test
     public void testPairReturn() throws Exception{
@@ -131,7 +131,7 @@ public class HandCalculatorTest {
 
         xOfaKind pair = new xOfaKind(2);
         pair.match(wantedHand);
-        assertEquals(pair.getHand(),hc.getBestHand());
+        assertEquals(pair.getHand(),hc.getWinningHand());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class HandCalculatorTest {
 
         HighCard high = new HighCard();
         high.match(wantedHand);
-        assertEquals(high.getHand(),hc.getBestHand());
+        assertEquals(high.getHand(),hc.getWinningHand());
 
     }
 }

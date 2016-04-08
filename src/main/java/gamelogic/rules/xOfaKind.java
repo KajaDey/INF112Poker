@@ -39,6 +39,7 @@ public class xOfaKind implements IRule {
     @Override
     public boolean match(Hand hand) {
         allCards = hand.getAllCards();
+
         allCards.sort(Card::compareTo);
 
         for (int i = allCards.size() - 1; i > -1; i--) { //desc
@@ -104,18 +105,6 @@ public class xOfaKind implements IRule {
         return Optional.empty();
     }
 
-    private void addHighCards(int nrOfCardsToAdd) {
-        int counter = 0;
-        for (int i = allCards.size() - 1; i > -1; i--) { //desc
-            if (!markedCards.contains(allCards.get(i))) {
-                returnHand.add(allCards.get(i));
-                compareValues.add(allCards.get(i).rank);
-                counter++;
-                if (counter == nrOfCardsToAdd)
-                    break;
-            }
-        }
-    }
 
     @Override
     public HandCalculator.HandType getType() {
@@ -138,5 +127,22 @@ public class xOfaKind implements IRule {
         else if (twoOfaKind)
             return "Pair of "+returnHand.get(0).getRankString()+"'s";
         return "";
+    }
+
+    /**
+     * Fills return hand with high cards after the pair/trip/quad was added.
+     * @param nrOfCardsToAdd Number of high cards to add
+     */
+    private void addHighCards(int nrOfCardsToAdd) {
+        int counter = 0;
+        for (int i = allCards.size() - 1; i > -1; i--) { //desc
+            if (!markedCards.contains(allCards.get(i))) {
+                returnHand.add(allCards.get(i));
+                compareValues.add(allCards.get(i).rank);
+                counter++;
+                if (counter == nrOfCardsToAdd)
+                    break;
+            }
+        }
     }
 }

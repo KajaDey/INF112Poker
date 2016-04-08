@@ -11,6 +11,9 @@ import java.util.Map;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * A game controller to connect GUI and back end. GUI informs the controller that something happened, and the controller
+ * asks back end to execute the requested move.
  */
 public class GameController {
 
@@ -253,6 +256,10 @@ public class GameController {
         }
     }
 
+    /**
+     * TODO write javadoc
+     * @param positions
+     */
     public void setPositions(Map<Integer, Integer> positions) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);

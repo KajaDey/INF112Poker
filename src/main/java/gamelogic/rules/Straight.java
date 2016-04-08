@@ -45,9 +45,11 @@ public class Straight implements IRule {
     @Override
     public boolean match(Hand hand) {
 
-        if (!lookingForStraightFlush) {
+        if (!lookingForStraightFlush)
             cards = hand.getAllCards();
-        }
+
+        if (cards.size() < 5)
+            return false;
 
         lastCardIndex = cards.size() - 1;
 
@@ -86,6 +88,22 @@ public class Straight implements IRule {
             return Optional.of(returnCards);
         }
         return Optional.empty();
+    }
+
+
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT;
+    }
+
+    @Override
+    public List<Integer> getCompareValues() {
+        return Arrays.asList(highCardValue);
+    }
+
+    @Override
+    public String toString() {
+        return highCard.getRankString() +" high straight";
     }
 
     /**
@@ -134,20 +152,5 @@ public class Straight implements IRule {
             highCardValue = returnCards.get(4).rank;
             highCard = returnCards.get(4);
         }
-    }
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.STRAIGHT;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return Arrays.asList(highCardValue);
-    }
-
-    @Override
-    public String toString() {
-        return highCard.getRankString() +" high straight";
     }
 }

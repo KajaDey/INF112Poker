@@ -62,7 +62,10 @@ public class SimpleAI implements GameClient {
 
         //Sleep for some time to make it more realistic
         Random rand = new Random();
-        try { Thread.sleep(1000 + rand.nextInt(2000)); } catch (Exception e) { e.printStackTrace(); }
+        try {
+            // Thread.sleep(1000 + rand.nextInt(2000));
+            // Waiting 600 seconds for AI tests was to realistic
+        } catch (Exception e) { e.printStackTrace(); }
 
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 

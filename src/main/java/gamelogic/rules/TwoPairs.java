@@ -24,6 +24,10 @@ public class TwoPairs implements IRule {
     @Override
     public boolean match(Hand hand) {
         List<Card> cards = hand.getAllCards();
+
+        if (cards.size() < 5)
+            return false;
+
         cards.sort(Card::compareTo);
 
         for (int i = cards.size() - 1; i > 0; i--) {

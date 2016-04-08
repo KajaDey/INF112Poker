@@ -3,6 +3,8 @@ package gamelogic;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * Class to represent a player.
  */
 public class Player extends User {
     private int ID;
@@ -16,7 +18,6 @@ public class Player extends User {
     private int numberOfAgressiveMoves = 0, numberOfPassiveMoves = 0;
     private long highestStacksize = 0;
     private Hand bestHand;
-
 
     public Player(String name, long stackSize, int ID) {
         super(name);
@@ -155,6 +156,10 @@ public class Player extends User {
         this.putOnTableThisRound = 0;
     }
 
+    /**
+     * TODO write javadoc
+     * @param winningHand
+     */
     public void handWon(Hand winningHand) {
         handsWon++;
 
@@ -165,6 +170,10 @@ public class Player extends User {
             bestHand = winningHand;
     }
 
+    /**
+     * TODO write javadoc
+     * @return
+     */
     public String getBestHand() {
         return "Not implemented in HandCalculator";
     }

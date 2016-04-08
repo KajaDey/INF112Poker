@@ -89,7 +89,7 @@ public class HandTest {
     public void testAlCardsEqualsHoleCardsPlusCommunityCards() {
         List<Card> allCards = straightFlushHand.getAllCards();
         List<Card> holeCards = straightFlushHand.getHoleCards();
-        List<Card> communityCards = straightFlushHand.getCommunityCards();
+        List<Card> communityCards = straightFlushHand.getCommunityCards().get();
         assertTrue(allCards.containsAll(holeCards));
         assertTrue(allCards.containsAll(communityCards));
 
