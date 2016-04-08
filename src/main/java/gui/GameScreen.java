@@ -50,23 +50,21 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-
     private Button exitButton;
 
-
-    public GameScreen(int ID) {
+    public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
         this.opponents = new HashMap<>();
 
-        initializePlayerLayouts();
+        initializePlayerLayouts(numberOfPlayers);
         insertLogField();
         addExitButton();
     }
 
-    private void initializePlayerLayouts() {
+    private void initializePlayerLayouts(int numberOfPlayers) {
         playerLayout = new PlayerLayout();
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < numberOfPlayers; i++) {
             opponents.put(i, new OpponentLayout());
         }
     }
@@ -245,15 +243,9 @@ public class GameScreen {
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
-        Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
 
         Runnable task = () -> {
             playerLayout.setCardImage(leftImage,rightImage);
-
-            //Set opponent hand
-            for (int i=1;i<numberOfPlayers;i++) {
-                opponents.get(i).setCardImage(backImage, backImage);
-            }
         };
         Platform.runLater(task);
     }
@@ -272,7 +264,7 @@ public class GameScreen {
             Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
             Runnable task = () -> {
-                if (i != playerID) {
+                if (i != playerID && opponents.get(i) != null) {
                     opponents.get(i).setCardImage(leftImage,rightImage);
                 }
             };
@@ -397,8 +389,10 @@ public class GameScreen {
                 newStackSize = 0;
                 break;
             case FOLD:
-                Runnable task = () -> opponents.get(ID).removeHolecards();
-                Platform.runLater(task);
+                if (ID == playerID)
+                    Platform.runLater(() -> playerLayout.removeHolecards());
+                else
+                    Platform.runLater(() -> opponents.get(ID).removeHolecards());
                 break;
         }
 
@@ -454,11 +448,7 @@ public class GameScreen {
             if (clientID == playerID) {
                 task = () -> playerLayout.setStackLabel("Amount of chips: " + stackSizeText);
             } else {
-                task = () -> {
-                    for (int i=1;i<numberOfPlayers;i++) {
-                        opponents.get(i).setStackSizeLabel("Amount of chips: " + stackSizeText);
-                    }
-                };
+                task = () -> opponents.get(clientID).setStackSizeLabel("Amount of chips: " + stackSizeText);
             }
             Platform.runLater(task);
         }
@@ -492,8 +482,8 @@ public class GameScreen {
             this.setAmountTextfield(currentBigBlind + "");
             this.setErrorStateOfAmountTextfield(false);
 
-            for (int i = 1; i < numberOfPlayers; i++ ){
-                opponents.get(i).setLastMoveLabel("");
+            for (Integer id : opponents.keySet()) {
+                opponents.get(id).setLastMoveLabel("");
             }
         };
         Platform.runLater(task);
@@ -535,13 +525,21 @@ public class GameScreen {
      */
 
     public void startNewHand() {
-        Image image = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
+        Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
         Runnable task = () -> {
             for (ImageView imageview : boardLayout.getCommunityCards()) {
-                imageview.setImage(image);
+                imageview.setImage(backImage);
                 imageview.setVisible(false);
             }
             boardLayout.setWinnerLabel("");
+
+            //Set opponent hand
+            for (Integer id : opponents.keySet()) {
+                OpponentLayout opp = opponents.get(id);
+                if (!opp.isBust())
+                    opp.setCardImage(backImage, backImage);
+            }
+
         };
         Platform.runLater(task);
         setPot(0);
@@ -660,7 +658,9 @@ public class GameScreen {
      * @return position
      */
     private String getPositionName(int pos) {
-        return (pos == 0 ? "Dealer" : pos == 1 ? "Small blind" : pos == 2 ? "Big blind" : pos == 3 ? "UTG" : "UTG+" + (pos-3));
+        if (numberOfPlayers == 2)
+            return pos == 0 ? "Dealer" : "Big Blind";
+        return (pos == numberOfPlayers-1 ? "Dealer" : pos == 0 ? "Small blind" : pos == 1 ? "Big blind" : pos == 2 ? "UTG" : "UTG+" + (pos-2  ));
     }
 
     /**
@@ -679,5 +679,20 @@ public class GameScreen {
         this.numberOfPlayers = numberOfPlayers;
         positions = giveOpponentPosition();
 
+    }
+
+    public void bustPlayer(int playerID, int rank) {
+        numberOfPlayers--;
+        String bustedText = "Busted " + rank + (rank == 1 ? "st" : (rank == 2) ? "nd" : (rank == 3) ? "rd" : "th");
+        if (this.playerID == playerID) {
+            playerLayout.bustPlayer(bustedText);
+        } else {
+            opponents.get(playerID).bustPlayer(bustedText);
+            opponents.remove(playerID);
+        }
+    }
+
+    public void setBigBlind(long bigBlind) {
+        this.currentBigBlind = bigBlind;
     }
 }
