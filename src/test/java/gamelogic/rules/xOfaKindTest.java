@@ -63,7 +63,7 @@ public class xOfaKindTest {
     public void testTwoLikeCards() throws Exception {
         hand1 = new Hand(holeCard3,holeCard4,communityCards);
         assertEquals(true,xOf2.match(hand1));
-        assertEquals("Pair of Knight's",xOf2.toString());
+        assertEquals("Pair of Jack's",xOf2.toString());
     }
 
     @Test

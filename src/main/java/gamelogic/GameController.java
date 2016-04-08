@@ -49,10 +49,6 @@ public class GameController {
      */
     public void startTournamentButtonClicked(GameSettings gamesettings) {
         //Make a new Game object and validate
-        Runnable task = () -> {
-            guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
-        };
-        Platform.runLater(task);
         game = new Game(gamesettings, this);
 
         String error;
@@ -64,26 +60,15 @@ public class GameController {
         //Empty map of clients
         clients = new HashMap<>();
 
-        //Init GUIGameClient
-        guiClient = mainGUI.displayGameScreen(gamesettings, 0);
-        clients.put(0, guiClient);
-        game.addPlayer(this.name, 0);
-        mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
-        guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
+        //Create GUI-GameClient
+        createGUIClient(gamesettings);
 
-        //Init AIClients
-        int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
-        for (int i = 0; i < numOfAIs; i++) {
-            String aiName = NameGenerator.getRandomName();
-            int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 0.75);
-            clients.put(AI_id, aiClient);
-            game.addPlayer(aiName, AI_id);
-            mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
-        }
+        //Create AI-GameClients
+        int numberOfAIClients = gameSettings.getMaxNumberOfPlayers() - 1;
+        createAIClients(numberOfAIClients, gamesettings);
 
-        //Set initial values for clients
-        initClients(gamesettings);
+        //Set initial blind values for clients
+        setBlinds(gamesettings);
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -98,11 +83,41 @@ public class GameController {
     }
 
     /**
+     *  Create a GUI-client with initial values
+     * @param settings
+     */
+    private void createGUIClient(GameSettings settings) {
+        guiClient = mainGUI.displayGameScreen(settings, 0);
+        clients.put(0, guiClient);
+        game.addPlayer(this.name, 0);
+        mainGUI.insertPlayer(0, this.name, settings.getStartStack());
+        guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
+    }
+
+    /**
+     * Create a given number of AI-clients to correspond to Player's in Game
+     * @param numberOfAIs
+     * @param settings
+     */
+    private void createAIClients(int numberOfAIs, GameSettings settings) {
+        NameGenerator.readNewSeries();
+
+        for (int i = 0; i < numberOfAIs; i++) {
+            String aiName = NameGenerator.getRandomSeriesName();
+            int AI_id = i+1;
+            GameClient aiClient = new SimpleAI(AI_id, 0.75);
+            clients.put(AI_id, aiClient);
+            game.addPlayer(aiName, AI_id);
+            mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
+        }
+    }
+
+    /**
      * Informs each client about the small and big blind amount
      *
      * @param gamesettings
      */
-    public void initClients(GameSettings gamesettings) {
+    private void setBlinds(GameSettings gamesettings) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
             client.setBigBlind(gamesettings.getBigBlind());
