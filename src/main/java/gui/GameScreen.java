@@ -99,47 +99,47 @@ public class GameScreen {
         this.stackSizes.put(userID, stackSize);
         playerLayout.setStackSize(stackSize);
 
-        if (userID == playerID) {
-            VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
-            vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-160);
-            pane.getChildren().addAll(vbox);
+          if (userID == playerID) {
+                VBox vbox = playerLayout.updateLayout(userID, name, stackSize);
+
+                vbox.setLayoutX(scene.getWidth() / 4);
+                vbox.setLayoutY(scene.getHeight() - 160);
+                pane.getChildren().addAll(vbox);
         } else {
 
-            OpponentLayout oppLayout = opponents.get(userID);
-            oppLayout.setPosition(positions[numberOfOpponentsAddedToTheGame]);
-            oppLayout.updateLayout(name, stackSize);
+              OpponentLayout oppLayout = opponents.get(userID);
+              oppLayout.setPosition(positions[numberOfOpponentsAddedToTheGame]);
+              oppLayout.updateLayout(name, stackSize);
 
-            switch (oppLayout.getPosition()){
-                case 1:
-                    oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(scene.getHeight() / 2);
-                    break;
-                case 2:
-                    oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(scene.getHeight() / 6);
-                    break;
-                case 3:
-                    oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(20);
-                    break;
-                case 4:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
-                    oppLayout.setLayoutY(scene.getHeight() / 6);
-                    break;
-                case 5:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
-                    oppLayout.setLayoutY(scene.getHeight() / 2);
-                    break;
-                default:
-                    GUIMain.debugPrintln("Cannot place opponent");
-            }
+              switch (oppLayout.getPosition()) {
+                  case 1:
+                      oppLayout.setLayoutX(20);
+                      oppLayout.setLayoutY(scene.getHeight() / 2);
+                      break;
+                  case 2:
+                      oppLayout.setLayoutX(20);
+                      oppLayout.setLayoutY(scene.getHeight() / 6);
+                      break;
+                  case 3:
+                      oppLayout.setLayoutX(scene.getWidth() / 3);
+                      oppLayout.setLayoutY(20);
+                      break;
+                  case 4:
+                      oppLayout.setLayoutX(scene.getWidth() - 280);
+                      oppLayout.setLayoutY(scene.getHeight() / 6);
+                      break;
+                  case 5:
+                      oppLayout.setLayoutX(scene.getWidth() - 280);
+                      oppLayout.setLayoutY(scene.getHeight() / 2);
+                      break;
+                  default:
+                      GUIMain.debugPrintln("Cannot place opponent");
+              }
 
-            numberOfOpponentsAddedToTheGame++;
-            pane.getChildren().add(oppLayout);
-            opponents.put(userID, oppLayout);
-        }
-
+              numberOfOpponentsAddedToTheGame++;
+              pane.getChildren().add(oppLayout);
+              opponents.put(userID, oppLayout);
+          }
         return true;
     }
 

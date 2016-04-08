@@ -60,7 +60,6 @@ public class PlayerLayout {
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
         bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:", "");
 
-
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
 
         leftCardImage = ImageViewer.getEmptyImageView("player");
@@ -69,13 +68,12 @@ public class PlayerLayout {
         rightCardImage.setImage(backOfCards);
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
-        Runnable task = () -> {
-            //chipImage.setVisible(false);
-            chipImage.setImage(ImageViewer.getChipImage("poker1"));
-            chipImage.setFitHeight(40);
-            chipImage.setFitWidth(40);
-        };
-        Platform.runLater(task);
+
+        //chipImage.setVisible(false);
+        chipImage = new ImageView();
+        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setFitHeight(40);
+        chipImage.setFitWidth(40);
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
