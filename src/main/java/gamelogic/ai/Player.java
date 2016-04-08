@@ -46,6 +46,7 @@ public class Player {
     }
 
     public void putInPot(long amount) {
+        assert amount > 0 : "AI tried to put " + amount + " into pot.";
         stackSize -= amount;
         contributedToPot += amount;
         assert stackSize >= 0 : "Player " + id + " at position " + position + " has a stacksize of " + stackSize;
@@ -80,5 +81,10 @@ public class Player {
         result = 31 * result + (isInHand ? 1 : 0);
         result = 31 * result + (isAllIn ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Player " + name + "(id=" + id + ", position=" + position;
     }
 }

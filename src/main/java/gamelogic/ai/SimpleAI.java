@@ -57,8 +57,8 @@ public class SimpleAI implements GameClient {
         assert stackSize > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
 
         assert minimumRaise > 0;
-        assert stackSize == stackSizes.get(this.playerId) :
-                "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
+        //assert stackSize == stackSizes.get(this.playerId) :
+        //        "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
 
         //Sleep for some time to make it more realistic
         Random rand = new Random();
@@ -200,7 +200,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        assert this.getID() == userID;
+        assert this.getID() == userID : "SimpleAI received cards for id " + userID + ", but AI's id is " + this.getID();
 
         holeCards = new ArrayList<Card>(2);
         assert holeCards.size() == 0;

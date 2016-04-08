@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * Represents the state of a single hand
  */
 public class GameState {
-    public final ArrayList<Card> deck; // TODO: players can get the same card multiple times
+    public final ArrayList<Card> deck;
 
     public final int amountOfPlayers;
     public final List<Player> players;
@@ -46,24 +46,20 @@ public class GameState {
 
         players = new ArrayList<>(amountOfPlayers);
 
-        List<Long> stackSizesArray = new ArrayList<>();
-        stackSizes.forEach((playerId, stackSize) -> {
-            assert playerId == stackSizesArray.size();
-            stackSizesArray.add(stackSize); }
-        );
-        allChipsOnTable = stackSizesArray.stream().reduce(Long::sum).get();
 
+        allChipsOnTable = stackSizes.keySet().stream().map(stackSizes::get).reduce(0L, Long::sum);
+        
         for (int i = 0; i < amountOfPlayers; i++) {
             assert positions.containsKey(i) : "AI didn't get position for playerPosition " + i;
             assert positions.containsValue(i) : "AI didn't get player at position " + i;
-            assert names.containsValue(i) : "AI didn't get name for player at position " + i;
+            assert names.containsKey(i) : "AI didn't get name for player at id " + i + ", names: " + names.keySet().stream().map(key -> key + ": " + names.get(key)).map(Object::toString).reduce("", String::concat);
             players.add(new Player(i, positions.get(i), stackSizes.get(i), names.get(i)));
             //players.get(i).minimumRaise = bigBlindAmount;
             //players.get(i).currentBet = bigBlindAmount;
         }
         players.sort((p1, p2) -> Integer.compare(p1.position, p2.position));
 
-        currentPlayer = players.get(1);
+        currentPlayer = players.get(0);
 
         if (amountOfPlayers == 2) {
             dealer = players.get(0);
@@ -180,6 +176,7 @@ public class GameState {
                     break;
                 case BET: case RAISE:
                     assert decision.size >= currentPlayer.minimumRaise;
+                    assert decision.size > 0 : currentPlayer + " tried to bet/raise " + decision.size;
                     playersToMakeDecision = playersLeftInHand - 1;
 
                     currentPlayer.putInPot(currentPlayer.currentBet + decision.size);
@@ -208,7 +205,8 @@ public class GameState {
                         player.currentBet += decision.size;
                         player.minimumRaise = decision.size;
                     });
-
+                    currentPlayer.currentBet = 0;
+                    currentPlayer.minimumRaise = decision.size;
                     currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
                     if (currentPlayer.stackSize == 0) {
                         playersAllIn++;
@@ -221,14 +219,14 @@ public class GameState {
             for (int i = currentPlayer.position + 1; i < players.size(); i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    System.out.println("Gamestate: currentplayer now has position " + i);
+                    //System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
             for (int i = 0; i < currentPlayer.position; i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    System.out.println("Gamestate: currentplayer now has position " + i);
+                    //System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
@@ -285,6 +283,7 @@ public class GameState {
                     playersAllIn + " players all in, " + playersToMakeDecision + " players to make decisions)";
             assert currentPlayer.isInHand && !currentPlayer.isAllIn;
             assert currentPlayer.stackSize > 0;
+            assert currentPlayer.minimumRaise > 0;
 
             decisions.add(new PlayerDecision(new Decision(Decision.Move.FOLD)));
             decisions.add(new PlayerDecision(new Decision(Decision.Move.ALL_IN)));

@@ -38,7 +38,7 @@ public class PokerMCTS {
     }
 
     public Decision calculateFor(long milliseconds) {
-        System.out.println("Starting MCTS with " + amountOfPlayers + " for player " + playerId);
+        System.out.println("Starting MCTS for " + initialGameState.players.get(playerPosition) + " with " + amountOfPlayers + " players");
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() < startTime + milliseconds) {
             for (int i = 0; i < 100; i++) {
@@ -55,7 +55,7 @@ public class PokerMCTS {
                 }
             }
         }
-        System.out.println("Did " + totalSearches + " searches, size of tree: " + rootNode.sizeOfTree());
+        System.out.println("Did " + totalSearches + " searches, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
 
         GameState gameState = new GameState(initialGameState);
         for (Player player : gameState.players) {
@@ -84,8 +84,9 @@ public class PokerMCTS {
                 bestValue = values[i];
                 bestDecision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
             }
-            GUIMain.debugPrintln(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + values[i] + ", " + criticalEvals.get().get(i));
+            //GUIMain.debugPrintln(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + values[i] + ", " + criticalEvals.get().get(i));
         }
+        printProgressReport();
         return bestDecision;
     }
     public void printProgressReport() {
@@ -213,11 +214,11 @@ public class PokerMCTS {
                     childNode = new RandomNode(allMovesForChild.get().size());
                 }
                 else if (newGameState.currentPlayer.id == playerId) {
-                    System.out.println("Creating new player node for " + newGameState.currentPlayer.name);
+                    //System.out.println("Creating new player node for " + newGameState.currentPlayer.name);
                     childNode = new AINode(allMovesForChild.get().size());
                 }
                 else {
-                    System.out.println("Creating new player node for " + newGameState.currentPlayer.name);
+                    //System.out.println("Creating new player node for " + newGameState.currentPlayer.name);
                     childNode = new OpponentNode(allMovesForChild.get().size(), newGameState.currentPlayer.position);
                 }
             }
@@ -226,6 +227,7 @@ public class PokerMCTS {
             }
             children.set(childIndex, Optional.of(childNode));
 
+            // System.out.println("Creating new " + childNode.getClass().getSimpleName() + ", currentPlayer = " + gameState.currentPlayer + ", new currentPlayer: " + newGameState.currentPlayer);
             numberOfExploredChildren++;
 
             if (!hasPassedDecisionNode && this instanceof AINode) {
@@ -295,7 +297,9 @@ public class PokerMCTS {
                     break;
                 default: throw new IllegalStateException();
             }
-            assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node without passing decision node";
+            //System.out.println("Creating new " + childNode.getClass().getSimpleName() + " from " + this.getClass().getSimpleName() + ", currentPlayer = " + gameState.currentPlayer + ", new currentPlayer: " + newGameState.currentPlayer);
+
+            assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node without passing decision node after " + totalSearches + " searches.";
             if (!hasPassedDecisionNode && this instanceof AINode) {
                 assert gameState.communityCards.isEmpty() : "AI decision was at a node with community cards " + gameState.communityCards.stream().map(Object::toString).reduce(String::concat).get();
                 double[] evals = childNode.simulate(totalSearches, newGameState, true);
@@ -316,6 +320,20 @@ public class PokerMCTS {
                 return evals;
             }
             return childNode.simulate(totalSearches, newGameState, hasPassedDecisionNode);
+        }
+
+        /*
+        * Returns the exploration value for a node. Nodes that have been explored little will get higher values
+        * @param totalSearches Total amount of searches done from rootnode
+        * @param playerPosition Position of the player making the move
+         */
+        public double explorationValue(int totalSearches, int playerPosition) {
+            if (searches > 0) {
+                return values[playerPosition] / searches + Math.sqrt(2) * Math.sqrt(Math.log(totalSearches) / searches);
+            }
+            else {
+                return Double.POSITIVE_INFINITY;
+            }
         }
 
         public GameState.NodeType getNodeType() {
@@ -344,46 +362,45 @@ public class PokerMCTS {
         public double[] select(int totalSearches, final GameState gameState, boolean hasPassedDecisionNode) {
             searches++;
             double[] evals;
+            GameState newGameState = new GameState(gameState);
             if (numberOfExploredChildren == children.size()) {
-                GameState newGameState = new GameState(gameState);
-                if (children.get(0).get() instanceof PlayerNode) {
 
-                    PlayerNode bestNode = (PlayerNode)children.get(0).get();
-                    double bestExplorationValue = bestNode.explorationValue(totalSearches);
-                    int childIndex = 0;
-                    for (int i = 1; i < children.size(); i++) {
-                        double explorationValue = ((PlayerNode)children.get(i).get()).explorationValue(totalSearches);
-                        if (((PlayerNode)children.get(i).get()).explorationValue(totalSearches) > bestExplorationValue) {
-                            bestNode = ((PlayerNode)children.get(i).get());
-                            bestExplorationValue = explorationValue;
-                            childIndex = i;
-                        }
-                    }
-                    newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
-
-                    //Comparator<PlayerNode> explorationValueComparator = (node1, node2) -> Double.compare(node1.explorationValue(totalSearches), node2.explorationValue(totalSearches));
-                    if (!hasPassedDecisionNode && bestNode instanceof AINode) {
-                        evals = bestNode.select(totalSearches, newGameState, true);
-                        if (!criticalEvals.isPresent()) {
-                            criticalEvals = Optional.of(new ArrayList<>());
-                            for (int i = 0; i < children.size(); i++) {
-                                criticalEvals.get().add(new NodeEval(0.0, 0));
-                            }
-                        }
-                        criticalEvals.get().get(children.indexOf(bestNode)).eval += evals[playerPosition];
-                        criticalEvals.get().get(children.indexOf(bestNode)).searches += 1;
-                    }
-                    else {
-                        evals = bestNode.select(totalSearches, newGameState, hasPassedDecisionNode);
+                AbstractNode bestNode = children.get(0).get();
+                double bestExplorationValue = bestNode.explorationValue(totalSearches, gameState.currentPlayer.position);
+                int childIndex = 0;
+                for (int i = 1; i < children.size(); i++) {
+                    double explorationValue = children.get(i).get().explorationValue(totalSearches, gameState.currentPlayer.position);
+                    if (explorationValue > bestExplorationValue) {
+                        bestNode = children.get(i).get();
+                        bestExplorationValue = explorationValue;
+                        childIndex = i;
                     }
                 }
-                else {
-                    int randomChildIndex = (int) (Math.random() * children.size());
-                    newGameState.makeGameStateChange(gameState.allDecisions().get().get(randomChildIndex));
+                newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
 
-                    evals = children.get(randomChildIndex).get().select(totalSearches, newGameState, hasPassedDecisionNode);
+                if (!hasPassedDecisionNode && bestNode instanceof AINode) {
+                    evals = bestNode.select(totalSearches, newGameState, true);
+                    if (!criticalEvals.isPresent()) {
+                        criticalEvals = Optional.of(new ArrayList<>());
+                        for (int i = 0; i < children.size(); i++) {
+                            criticalEvals.get().add(new NodeEval(0.0, 0));
+                        }
+                    }
+                    criticalEvals.get().get(children.indexOf(bestNode)).eval += evals[playerPosition];
+                    criticalEvals.get().get(children.indexOf(bestNode)).searches += 1;
+                } else {
+                    evals = bestNode.select(totalSearches, newGameState, hasPassedDecisionNode);
                 }
+
             }
+            /*else {
+                int randomChildIndex = (int) (Math.random() * children.size());
+                newGameState.makeGameStateChange(gameState.allDecisions().get().get(randomChildIndex));
+                assert children.get(randomChildIndex).getClass() == children.get(0).getClass();
+                assert children.get(randomChildIndex).get() instanceof RandomNode || children.get(randomChildIndex).get() instanceof TerminalNode : "Found " + children.get(0).get().getClass() + " where expected non-player nodes";
+                evals = children.get(randomChildIndex).get().select(totalSearches, newGameState, hasPassedDecisionNode);
+            }*/
+
             else {
                 evals = expand(totalSearches, gameState, hasPassedDecisionNode);
                 // Setting critical values is done in node expansion
@@ -391,15 +408,6 @@ public class PokerMCTS {
 
             addValues(values, evals);
             return evals;
-        }
-
-        public double explorationValue(double totalSearches) {
-            if (searches > 0) {
-                return values[positionToMove] / searches + Math.sqrt(2) * Math.sqrt(Math.log(totalSearches) / searches);
-            }
-            else {
-                return Double.POSITIVE_INFINITY;
-            }
         }
     }
 
@@ -485,6 +493,7 @@ public class PokerMCTS {
         double[] eval = new double[gameState.amountOfPlayers];
         Pot pot = new Pot();
         for (Player player : gameState.players) {
+            assert player.contributedToPot >= 0 : player + " tried to contribute " + player.contributedToPot + " to pot.";
             pot.addToPot(player.id, player.contributedToPot);
             assert player.holeCards.size() == 2 : "Tried to get terminal eval, but player " + player.id + " has " + player.holeCards.size() + " holecards.";
         }

@@ -37,12 +37,14 @@ public class MCTSAI implements GameClient {
         assert stackSizes.get().get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
+        if (!gameState.isPresent()) {
+            System.out.println("AI was asked for decision, creating new gameState");
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+        }
 
-        GameState gameState = new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get());
-
-        PokerMCTS mcts = new PokerMCTS(gameState, amountOfPlayers, playerId, holeCards);
+        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, holeCards);
         //assert gameState.players.get(position).holeCards.size() == 2 : "Player has " + gameState.players.get(position).holeCards.size() + " holecards";
-        return mcts.calculateFor(1000);
+        return mcts.calculateFor((int)(Math.random() * 2000) + 200);
     }
 
     @Override
@@ -73,6 +75,7 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
+        assert names.size() == amountOfPlayers : "MCTSAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players.";
         this.names = Optional.of(names);
     }
 
@@ -98,11 +101,11 @@ public class MCTSAI implements GameClient {
         assert positions.isPresent() : "MCTSAI was sent a decision without receiving positions";
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
         if (!gameState.isPresent()) {
+            System.out.println("AI was sent a decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
         }
         assert playerId == gameState.get().currentPlayer.id
                 : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
-        System.out.println("Received decision " + decision + " for player " + playerId);
         gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
     }
 
