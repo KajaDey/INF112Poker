@@ -1,6 +1,5 @@
 package gamelogic;
 
-import com.sun.corba.se.impl.logging.IORSystemException;
 import gui.GUIMain;
 
 import java.io.BufferedReader;

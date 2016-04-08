@@ -16,12 +16,14 @@
         <resources>
             <resource>
                 <directory>/Users/vegar/workspace/inf112v16-g4/resources</directory>
+                <targetPath>../resources</targetPath>
             </resource>
         </resources>
 
         <testResources>
             <testResource>
                 <directory>/Users/vegar/workspace/inf112v16-g4/resources</directory>
+                <targetPath>../resources</targetPath>
             </testResource>
         </testResources>
 
