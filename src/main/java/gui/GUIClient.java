@@ -78,7 +78,10 @@ public class GUIClient implements GameClient {
 
         switch (move) {
             case BET:
-                this.decision = new Decision(move, moveSize);
+                if (moveSize == stackSizes.get(this.id))
+                    this.decision = new Decision(Decision.Move.ALL_IN);
+                else
+                    this.decision = new Decision(move, moveSize);
                 break;
             case RAISE:
                 if (moveSize == stackSizes.get(this.id))

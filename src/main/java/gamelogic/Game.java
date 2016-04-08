@@ -148,16 +148,17 @@ public class Game {
     }
 
     /**
-     *  Used to find out if game has ended
-     *  Returns the number of players that have getStackSize() > 0
-     *  @return
+     * Used to check if a betting round should be skipped (all (or all but one) players are all in)
+     *
+     *  @return True if betting round should be skipped, false if not
      */
-    private boolean allPlayersAllIn() {
+    private boolean skipBettingRound() {
+        int count = 0;
         for (Player p : playersStillInCurrentHand)
-            if (!p.isAllIn())
-                return false;
+            if (p.isAllIn())
+                count++;
 
-        return true;
+        return count >= playersStillInCurrentHand.size() - 1;
     }
 
     private boolean bettingRound(boolean isPreFlop) {
@@ -180,7 +181,7 @@ public class Game {
         int numberOfPlayersActedSinceLastAggressor = 0;
 
         //Check if all players are all in and betting round should be skipped
-        if (allPlayersAllIn()) {
+        if (skipBettingRound()) {
             //TODO: Show hole cards
             return true;
         }
@@ -499,7 +500,7 @@ public class Game {
      * @param playersStillPlaying Players still in the hand
      * @return Number of players all in
      */
-    private int allPlayersAllIn(List<Player> playersStillPlaying) {
+    private int skipBettingRound(List<Player> playersStillPlaying) {
         int numberOfPlayersAllIn = 0;
 
         for (Player p : playersStillPlaying) {
