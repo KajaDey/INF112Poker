@@ -22,9 +22,6 @@ public class GameState {
     private final Player bigBlind;
     private final Player smallBlind;
 
-    //private final long bigBlindAmount;
-    //private final long smallBlindAmount;
-
     public final long allChipsOnTable;
 
     public int playersGivenHolecards = 1;
@@ -40,12 +37,8 @@ public class GameState {
         deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
         this.amountOfPlayers = amountOfPlayers;
-        //this.smallBlindAmount = bigBlindAmount;
-        //this.bigBlindAmount = bigBlindAmount;
         communityCards = new ArrayList<>();
-
         players = new ArrayList<>(amountOfPlayers);
-
 
         allChipsOnTable = stackSizes.keySet().stream().map(stackSizes::get).reduce(0L, Long::sum);
         
@@ -54,8 +47,6 @@ public class GameState {
             assert positions.containsValue(i) : "AI didn't get player at position " + i;
             assert names.containsKey(i) : "AI didn't get name for player at id " + i + ", names: " + names.keySet().stream().map(key -> key + ": " + names.get(key)).map(Object::toString).reduce("", String::concat);
             players.add(new Player(i, positions.get(i), stackSizes.get(i), names.get(i)));
-            //players.get(i).minimumRaise = bigBlindAmount;
-            //players.get(i).currentBet = bigBlindAmount;
         }
         players.sort((p1, p2) -> Integer.compare(p1.position, p2.position));
 
@@ -71,32 +62,6 @@ public class GameState {
             smallBlind = players.get(1);
             bigBlind = players.get(2);
         }
-        //smallBlind.currentBet = bigBlindAmount - smallBlindAmount;
-        bigBlind.currentBet = 0;
-
-        /*
-        //Post blinds
-        if (smallBlind.stackSize > smallBlindAmount) {
-            smallBlind.putInPot(smallBlindAmount);
-        }
-        else {
-            smallBlind.putInPot(smallBlind.stackSize);
-            smallBlind.isAllIn = true;
-            playersLeftInHand -= 1;
-            playersAllIn++;
-        }
-
-        if (bigBlind.stackSize > bigBlindAmount) {
-            bigBlind.putInPot(bigBlindAmount);
-        }
-        else {
-            bigBlind.putInPot(bigBlind.stackSize);
-            bigBlind.isAllIn = true;
-            playersLeftInHand -= 1;
-            playersAllIn++;
-        }
-        */
-
         playersLeftInHand = amountOfPlayers;
         playersToMakeDecision = amountOfPlayers;
     }
@@ -126,8 +91,6 @@ public class GameState {
             smallBlind = players.get(1);
             bigBlind = players.get(2);
         }
-        //this.bigBlindAmount = oldState.bigBlindAmount;
-        //this.smallBlindAmount = oldState.smallBlindAmount;
         this.allChipsOnTable = oldState.allChipsOnTable;
         this.playersLeftInHand = oldState.playersLeftInHand;
         this.playersAllIn = oldState.playersAllIn;
@@ -389,8 +352,6 @@ public class GameState {
         GameState gameState = (GameState) o;
 
         if (amountOfPlayers != gameState.amountOfPlayers) return false;
-        //if (bigBlindAmount != gameState.bigBlindAmount) return false;
-        //if (smallBlindAmount != gameState.smallBlindAmount) return false;
         if (playersLeftInHand != gameState.playersLeftInHand) return false;
         if (playersAllIn != gameState.playersAllIn) return false;
         if (playersToMakeDecision != gameState.playersToMakeDecision) return false;
@@ -414,8 +375,6 @@ public class GameState {
         result = 31 * result + dealer.hashCode();
         result = 31 * result + bigBlind.hashCode();
         result = 31 * result + smallBlind.hashCode();
-        //result = 31 * result + (int)bigBlindAmount;
-        //result = 31 * result + (int)smallBlindAmount;
         result = 31 * result + playersLeftInHand;
         result = 31 * result + playersAllIn;
         result = 31 * result + playersToMakeDecision;

@@ -44,7 +44,10 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, false);
                 totalSearches++;
-                if (totalSearches % 20000 == 0) {
+                if (totalSearches % 10 == 0) {
+                    assert rootNode.sizeOfTree() == totalSearches : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
+                }
+                if (totalSearches % 50000 == 0) {
                     //assert rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) == totalSearches :
                     //"Searches for children: " + rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) + ", total searches: " + totalSearches;
                     assert rootNode.children.size() == 50;
@@ -89,7 +92,9 @@ public class PokerMCTS {
         printProgressReport();
         return bestDecision;
     }
+
     public void printProgressReport() {
+        System.out.println(totalSearches + " searches so far, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
         GameState gameState = new GameState(initialGameState);
         for (Player player : gameState.players) {
             while (player.holeCards.size() < 2) {
@@ -105,23 +110,7 @@ public class PokerMCTS {
         }
         System.out.println();
     }
-    /*
-    public static List<NodeEval<Double, Integer>> mergeEvals (List<NodeEval<Double, Integer>> array1, List<NodeEval<Double, Integer>> array2) {
-        //assert array1.size() + array2.size() > 0;
-        assert array1.size() == array2.size();
-        List<NodeEval> result = new ArrayList<>();
-        for (int i = 0; i < Math.max(array1.size(), array2.size()); i++) {
-            if (array1.size() < i) {
-                array1.add(new NodeEval<>(0.0, 0));
-            }
-            if (array2.size() < i) {
-                array2.add(new NodeEval<>(0.0, 0));
-            }
-            result.add(new NodeEval(array1.get(i).v1 + array2.get(i).v1, array1.get(i).v2 + array2.get(i).v2));
-        }
-        return result;
-    }
-*/
+
     private static class NodeEval {
         public double eval;
         public int searches;
@@ -133,42 +122,6 @@ public class PokerMCTS {
             return "(" + eval + "/" + searches + ")";
         }
     }
-    /*
-    public static List<NodeEval> findAIEvals(AbstractNode node, int amountOfPlayers, int playerPosition) {
-        if (node instanceof AINode) {
-            System.out.println("Found AINode with evals: " + Arrays.toString(node.values));
-            assert node.children.size() < 20 : "Error: AInode has " + node.children.size() + " children, which is way too many";
-            List<NodeEval> values = node.children.stream()
-                    .map((option) -> option.isPresent() ? new NodeEval(option.get().values[playerPosition], option.get().searches) : new NodeEval(0.0, 0))
-                    .reduce(new ArrayList<>(), (acc, pair) -> { acc.add(pair); return acc; }, (list1, list2) -> {
-                        list1.addAll(list2);
-                        return list2; }
-                        );
-            return values;
-        }
-        else if (node instanceof TerminalNode) {
-            // If opponent folds right away, the AI doesn't need to make any decisions
-            System.out.println("Hit terminal node");
-            return new ArrayList<>();
-        }
-        else {
-            System.out.println("Found " + node.getClass().getSimpleName() + " with " + node.numberOfExploredChildren + " children");
-            assert node.numberOfExploredChildren > 0;
-            if (node.numberOfExploredChildren == 0) {
-                return new ArrayList<>();
-            }
-            else {
-
-                return node.children
-                        .stream()
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .map(child -> findAIEvals(child, amountOfPlayers, playerPosition))
-                        .reduce(PokerMCTS::mergeEvals).get();
-            }
-        }
-    }
-    */
 
     public abstract class AbstractNode {
         public final double[] values; // The probability of winning for each player
