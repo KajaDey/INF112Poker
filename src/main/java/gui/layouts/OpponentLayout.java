@@ -69,7 +69,7 @@ public class OpponentLayout extends HBox{
             Platform.runLater(task);
             this.getChildren().addAll(opponentStats, moveInfo);
 
-            moveInfo.setAlignment(Pos.CENTER);
+            moveInfo.setAlignment(Pos.CENTER_LEFT);
             cards.setAlignment(Pos.CENTER_LEFT);
             this.setAlignment(Pos.CENTER_LEFT);
 
@@ -83,6 +83,7 @@ public class OpponentLayout extends HBox{
             VBox vBox = new VBox();
             moveInfoH.getChildren().addAll(lastMoveLabel,chipImage);
             vBox.getChildren().addAll(cards,moveInfoH);
+            moveInfoH.setAlignment(Pos.CENTER_LEFT);
 
             vBox.setAlignment(Pos.CENTER);
             this.getChildren().add(vBox);
@@ -97,7 +98,7 @@ public class OpponentLayout extends HBox{
             this.getChildren().addAll(moveInfo, opponentStats);
             this.setMinWidth(250);
 
-
+            moveInfo.setAlignment(Pos.CENTER_RIGHT);
             cards.setAlignment(Pos.CENTER_RIGHT);
             this.setAlignment(Pos.CENTER_RIGHT);
         }

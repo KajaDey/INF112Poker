@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
 public class PlayerLayout {
 
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
-    private ImageView leftCardImage, rightCardImage;
+    private ImageView leftCardImage, rightCardImage, chipImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextfield;
 
@@ -51,13 +51,14 @@ public class PlayerLayout {
         twoButtonsUnderInput.setMaxWidth(50);
         VBox twoButtonsRight = new VBox();
         VBox sliderBox = new VBox();
+        HBox lastMoveAndChips = new HBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
         stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
+        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:", "");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -68,6 +69,13 @@ public class PlayerLayout {
         rightCardImage.setImage(backOfCards);
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
+        Runnable task = () -> {
+            //chipImage.setVisible(false);
+            chipImage.setImage(ImageViewer.getChipImage("poker1"));
+            chipImage.setFitHeight(40);
+            chipImage.setFitWidth(40);
+        };
+        Platform.runLater(task);
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
@@ -145,7 +153,10 @@ public class PlayerLayout {
         fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderBox);
         fullBox.setAlignment(Pos.CENTER);
 
-        fullBoxWithLastMove.getChildren().addAll(lastMoveLabel, fullBox);
+        lastMoveAndChips.getChildren().addAll(lastMoveLabel,chipImage);
+        lastMoveAndChips.setAlignment(Pos.CENTER);
+
+        fullBoxWithLastMove.getChildren().addAll(lastMoveAndChips, fullBox);
         fullBoxWithLastMove.setAlignment(Pos.CENTER);
 
         this.setActionsVisible(false);
@@ -219,7 +230,14 @@ public class PlayerLayout {
     }
 
     public void setPositionLabel(String pos){
-        Platform.runLater(() -> positionLabel.setText(pos));
+        Runnable task = () -> {
+            lastMoveLabel.setText(pos);
+            if (pos.equals(""))
+                chipImage.setVisible(false);
+            else
+                chipImage.setVisible(true);
+        };
+        Platform.runLater(task);
     }
 
     public void setStackLabel(String stack) {
