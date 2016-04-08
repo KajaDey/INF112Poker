@@ -36,7 +36,7 @@ public class Pot {
 
         amountEachPlayerCanClaimOfThePot.put(userID, amountEachPlayerCanClaimOfThePot.get(userID) + amountToAdd);
 
-        assert amountToAdd > 0 : "A negative number was added to the pot.";
+        assert amountToAdd >= 0 : "A negative number was added to the pot.";
 
         potSize += amountToAdd;
         return potSize;
