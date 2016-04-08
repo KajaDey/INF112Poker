@@ -144,7 +144,7 @@ public class Card implements Comparable<Card> {
                 break;
             case 12 : rankString = "Queen";
                 break;
-            case 11 : rankString = "Knight";
+            case 11 : rankString = "Jack";
                 break;
 
         }

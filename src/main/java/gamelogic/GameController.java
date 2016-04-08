@@ -4,10 +4,7 @@ import gamelogic.ai.SimpleAI;
 import gui.*;
 import javafx.application.Platform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -121,10 +118,20 @@ public class GameController {
      */
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
-        if (client == null) {
-            return null;
-        }
+        if (client instanceof SimpleAI)
+            addDelayTimeForDecision();
         return client.getDecision();
+    }
+
+    /**
+     * Delays the execution 1-3 seconds (to make Simple-AI decision time look more realistic)
+     */
+    private void addDelayTimeForDecision() {
+        Random rand = new Random();
+        try { Thread.sleep(1000 + rand.nextInt(2000)); }
+        catch (Exception e) {
+            System.out.println("Thread " + Thread.currentThread() + " was interrupted");
+        }
     }
 
     /**

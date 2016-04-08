@@ -1,5 +1,7 @@
 package gui;
 
+import gamelogic.Hand;
+import gamelogic.HandCalculator;
 import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
@@ -17,9 +19,7 @@ import javafx.stage.Stage;
 import gamelogic.Card;
 import gamelogic.Decision;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ady on 07/03/16.
@@ -42,6 +42,7 @@ public class GameScreen {
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
     private Map<Integer, OpponentLayout> opponents;
+    private ArrayList<Card> holeCards, communityCards;
 
     private Pane pane = new Pane();
 
@@ -240,6 +241,7 @@ public class GameScreen {
      */
 
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
+        assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
@@ -248,6 +250,12 @@ public class GameScreen {
             playerLayout.setCardImage(leftImage,rightImage);
         };
         Platform.runLater(task);
+
+        holeCards = new ArrayList<>();
+        communityCards = new ArrayList<>();
+        holeCards.add(leftCard);
+        holeCards.add(rightCard);
+        updateBestHandLabel();
     }
 
     /**
@@ -270,7 +278,7 @@ public class GameScreen {
             };
             Platform.runLater(task);
 
-            showWinner(names.get(winnerID), pot);
+            showWinner(names.get(winnerID), pot, holeCards.get(winnerID));
         }
     }
 
@@ -286,37 +294,38 @@ public class GameScreen {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
+        Platform.runLater(() -> boardLayout.setFlop(card1Image,card2Image,card3Image));
 
-        Runnable task = () -> {
-
-            boardLayout.setFlop(card1Image,card2Image,card3Image);
-
-        };
-        Platform.runLater(task);
+        communityCards.add(card1);
+        communityCards.add(card2);
+        communityCards.add(card3);
+        updateBestHandLabel();
     }
 
     /**
      * Displays the fourth card on the board
      *
-     * @param turn
+     * @param turnCard
      */
 
-    public void displayTurn(Card turn) {
-        Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turn.getCardNameForGui()));
-        Runnable task = () -> boardLayout.setTurn(turnImage);
-        Platform.runLater(task);
+    public void displayTurn(Card turnCard) {
+        Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
+        Platform.runLater(() -> boardLayout.setTurn(turnImage));
+        communityCards.add(turnCard);
+        updateBestHandLabel();
     }
 
     /**
      * Displays the fifth card on the board
      *
-     * @param river
+     * @param riverCard
      */
 
-    public void displayRiver(Card river) {
-        Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(river.getCardNameForGui()));
-        Runnable task = () -> boardLayout.setRiver(riverImage);
-        Platform.runLater(task);
+    public void displayRiver(Card riverCard) {
+        Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
+        Platform.runLater(() -> boardLayout.setRiver(riverImage));
+        communityCards.add(riverCard);
+        updateBestHandLabel();
     }
 
     /**
@@ -498,8 +507,7 @@ public class GameScreen {
     public void setPot(long pot) {
         this.pot = pot;
         String potString = Long.toString(pot);
-        Runnable task = () -> boardLayout.setPotLabel("Pot: " + potString);
-        Platform.runLater(task);
+        Platform.runLater(() -> boardLayout.setPotLabel("Pot: " + potString));
     }
 
     /**
@@ -511,8 +519,6 @@ public class GameScreen {
         this.names = names;
         Runnable task = () -> {
             playerLayout.setNameLabel("Name: " + names.get(playerID));
-            //TODO: Fix hardcoding
-
             for (Integer i : opponents.keySet()) {
                 opponents.get(i).setNameLabel("Name: " + names.get(i));
             }
@@ -547,16 +553,15 @@ public class GameScreen {
 
     /**
      * Displays the winner of the round
-     *
-     * @param winnerName The name of the winner
-     * @param pot        The pot that the winner won
+     *  @param winnerName The name of the winner
+     * @param pot         The total pot that the winner is granted
+     * @param holeCards   The winners holeCards
      */
-    public void showWinner(String winnerName, long pot) {
-        String potString = String.valueOf(pot);
+    public void showWinner(String winnerName, long pot, Card[] holeCards) {
+        HandCalculator hc = new HandCalculator(new Hand(holeCards[0], holeCards[1], communityCards));
+        String winnerString = winnerName + " won the pot of " + String.valueOf(pot) + " with " + hc.getBestHandString().toLowerCase();
 
-        Runnable task = () -> boardLayout.setWinnerLabel(winnerName + " won the pot of: " + potString);
-        Platform.runLater(task);
-
+        Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
     }
 
     /**
@@ -686,6 +691,7 @@ public class GameScreen {
         String bustedText = "Busted " + rank + (rank == 1 ? "st" : (rank == 2) ? "nd" : (rank == 3) ? "rd" : "th");
         if (this.playerID == playerID) {
             playerLayout.bustPlayer(bustedText);
+            playerLayout.setBestHand("");
         } else {
             opponents.get(playerID).bustPlayer(bustedText);
             opponents.remove(playerID);
@@ -694,5 +700,16 @@ public class GameScreen {
 
     public void setBigBlind(long bigBlind) {
         this.currentBigBlind = bigBlind;
+    }
+
+    /**
+     *  Set the 'Best hand'-label to the players current best hand (e.g.: "Pair of 2's")
+     */
+    private void updateBestHandLabel() {
+        if (holeCards.isEmpty())
+            playerLayout.setBestHand("Best hand: ");
+
+        HandCalculator hc = new HandCalculator(new Hand(holeCards.get(0), holeCards.get(1), communityCards));
+        playerLayout.setBestHand("Best hand: " + hc.getBestHandString());
     }
 }

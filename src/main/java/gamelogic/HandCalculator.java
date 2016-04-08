@@ -97,4 +97,9 @@ public class HandCalculator {
     public IRule getFoundRule() {
         return rule;
     }
+
+    public String getBestHandString() {
+        return rule.toString();
+    }
+
 }

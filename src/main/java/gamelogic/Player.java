@@ -1,6 +1,8 @@
 package gamelogic;
 
 
+import java.util.ArrayList;
+
 /**
  * Created by kristianrosland on 07.03.2016.
  *
@@ -175,11 +177,11 @@ public class Player extends User {
     }
 
     /**
-     * TODO write javadoc
-     * @return
+     * @return String of the best hand the player currently has (e.g: "Pair of 2's")
      */
-    public String getBestHand() {
-        return "Not implemented in HandCalculator";
+    public String getBestHand(ArrayList<Card> communityCards) {
+        Hand hand = new Hand(holeCards[0], holeCards[1], communityCards);
+        return hand.toString();
     }
 
     public boolean isAllIn() {
