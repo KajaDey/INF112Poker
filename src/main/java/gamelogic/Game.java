@@ -221,7 +221,7 @@ public class Game {
                         currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
                     } else if (playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable){
-                        numberOfPlayersActedSinceLastAggressor++; //If all in was not a valid raise but a raise
+                        numberOfPlayersActedSinceLastAggressor = 1; //If all in was not a valid raise but a raise
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
                     } else {
                         numberOfPlayersActedSinceLastAggressor++;

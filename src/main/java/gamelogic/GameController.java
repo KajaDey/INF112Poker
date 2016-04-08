@@ -21,6 +21,7 @@ public class GameController {
     private GUIMain mainGUI;
     public GameSettings gameSettings;
     private String name;
+    private Map<Integer, String> names = new HashMap<>();
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
@@ -67,6 +68,7 @@ public class GameController {
         game.addPlayer(this.name, 0);
         mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
         guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
+        names.put(0, name);
 
         //Init AIClients
         int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
@@ -77,6 +79,7 @@ public class GameController {
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
+            names.put(AI_id, aiName);
         }
 
         //Set initial values for clients
@@ -105,6 +108,7 @@ public class GameController {
             client.setBigBlind(gamesettings.getBigBlind());
             client.setSmallBlind(gamesettings.getSmallBlind());
             client.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
+            client.setPlayerNames(names);
         }
     }
 
