@@ -1,0 +1,13 @@
+Frodo
+Samwise
+Merry
+Pippin
+Aragorn
+Legolas
+Gimli
+Boromir
+Faramir
+Bilbo
+Arwen
+Eomer
+Eowyn
