@@ -26,7 +26,6 @@ public class GameController {
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
-        gameSettings = new GameSettings(5000, 50, 25, 2, 10, "Simple AI");
     }
 
     /**
@@ -38,10 +37,8 @@ public class GameController {
      * @param gameType
      */
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
-        //TODO: Validate input
-        //assert numPlayers == 2 : "Number of players MUST be 2";
-
         //Tell GUI to display Lobby
+        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, "Simple AI");
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
         this.name = name;
 
@@ -228,7 +225,6 @@ public class GameController {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            //assert stackSizes.size() == 2;
             c.setAmountOfPlayers(stackSizes.size());
             c.setStackSizes(new HashMap<>(stackSizes));
         }
