@@ -60,6 +60,15 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
+    public void playerBust(int playerID, int rank) {
+        amountOfPlayers--;
+        gameState = Optional.empty();
+        stackSizes = Optional.empty();
+        positions = Optional.empty();
+        holeCards.clear();
+    }
+
+    @Override
     public void gameOver(int winnerID) { }
 
     @Override

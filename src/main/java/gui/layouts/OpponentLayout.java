@@ -23,6 +23,7 @@ public class OpponentLayout extends HBox{
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage;
     private int position;
+    private boolean isBust = false;
 
     public OpponentLayout(){
         super();
@@ -93,17 +94,15 @@ public class OpponentLayout extends HBox{
     }
 
     public void setLastMoveLabel(String s){
-        Runnable task = () -> lastMoveLabel.setText(s);
-        Platform.runLater(task);
+        Platform.runLater(() -> lastMoveLabel.setText(s));
     }
 
     public void setStackSizeLabel(String s){
-        Runnable task = () -> stackSizeLabel.setText(s);
-        Platform.runLater(task);
+        Platform.runLater(() -> stackSizeLabel.setText(s));
     }
 
     public void setPositionLabel(String s){
-        positionLabel.setText(s);
+        Platform.runLater(() -> positionLabel.setText(s));
     }
 
     public void setCardImage(Image leftCard,Image rightCard) {
@@ -133,5 +132,18 @@ public class OpponentLayout extends HBox{
 
     public void setPosition(int position){
         this.position = position;
+    }
+
+    public void bustPlayer(String bustedText) {
+        isBust = true;
+        setLastMoveLabel("");
+        setStackSizeLabel(bustedText);
+        setPositionLabel("");
+
+        setCardImage(null, null);
+    }
+
+    public boolean isBust() {
+        return isBust;
     }
 }

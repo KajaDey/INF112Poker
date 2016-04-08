@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -198,7 +199,7 @@ public class PlayerLayout {
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
             amountTextfield.setVisible(visible);
-            //slider.setVisible(visible);
+            slider.setVisible(visible);
         };
         Platform.runLater(task);
     }
@@ -211,15 +212,11 @@ public class PlayerLayout {
     }
 
     public void setPositionLabel(String pos){
-        positionLabel.setText(pos);
-    }
-
-    public String getPositionLabel() {
-        return positionLabel.getText();
+        Platform.runLater(() -> positionLabel.setText(pos));
     }
 
     public void setStackLabel(String stack) {
-        stackLabel.setText(stack);
+        Platform.runLater(() -> stackLabel.setText(stack));
     }
 
     public void setLastMoveLabel(String lastMove) {
@@ -262,5 +259,20 @@ public class PlayerLayout {
 
     public void setStackSize(long stackSize) {
         this.stackSize = stackSize;
+    }
+
+    public void bustPlayer(String bustedText) {
+        setLastMoveLabel("");
+        setStackLabel(bustedText);
+        setPositionLabel("");
+
+        setCardImage(null, null);
+    }
+
+    public void removeHolecards() {
+        ColorAdjust adjust = new ColorAdjust();
+        adjust.setBrightness(-0.5);
+        leftCardImage.setEffect(adjust);
+        rightCardImage.setEffect(adjust);
     }
 }

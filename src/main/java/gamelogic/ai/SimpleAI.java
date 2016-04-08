@@ -9,7 +9,8 @@ import java.util.*;
 
 /**
  An SimpleAI player that works through the GameClient interface.
- It decides its move based solely on the information it gets through GameClient
+ It decides its move based solely on the information it gets through GameCLient
+ Currently a WIP, may not work correctly
  */
 public class SimpleAI implements GameClient {
 
@@ -61,10 +62,7 @@ public class SimpleAI implements GameClient {
 
         //Sleep for some time to make it more realistic
         Random rand = new Random();
-        try {
-            // Thread.sleep(1000 + rand.nextInt(2000));
-            // Waiting 600 seconds for AI tests was to realistic
-        } catch (Exception e) { e.printStackTrace(); }
+        try { Thread.sleep(0 + rand.nextInt(1000)); } catch (Exception e) { e.printStackTrace(); }
 
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
@@ -186,6 +184,11 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
+    public void playerBust(int playerID, int rank) {
+        amountOfPlayers--;
+    }
+
+    @Override
     public void gameOver(int winnerID) { }
 
     @Override
@@ -208,7 +211,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        assert stackSizes.size() == amountOfPlayers;
         assert stackSizes.get(this.playerId) >= 0 : "AI was sent a stacksize of " + stackSizes.get(this.playerId);
         for (int playerId : stackSizes.keySet()) {
             assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);
@@ -286,7 +288,7 @@ public class SimpleAI implements GameClient {
     public void setPositions(Map<Integer, Integer> positions) {
         assert positions.size() == amountOfPlayers :
         "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
-        assert positions.get(playerId) != null : "AI received positions object which didn't contain its own position";
+        assert positions.get(playerId) != null : "AI " + playerId + " received positions object which didn't contain its own position";
 
         position = positions.get(playerId);
     }

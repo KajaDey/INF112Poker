@@ -11,10 +11,11 @@ import java.util.Map;
 public class Pot {
 
     private long potSize;
-    private Map<Integer, Long> amountEachPlayerCanClaimOfThePot = new HashMap<>();
+    private Map<Integer, Long> amountEachPlayerCanClaimOfThePot;
 
     public Pot() {
         this.potSize = 0;
+        this.amountEachPlayerCanClaimOfThePot = new HashMap<>();
     }
 
     /**
@@ -34,6 +35,8 @@ public class Pot {
             amountEachPlayerCanClaimOfThePot.put(userID, 0L);
 
         amountEachPlayerCanClaimOfThePot.put(userID, amountEachPlayerCanClaimOfThePot.get(userID) + amountToAdd);
+
+        assert amountToAdd > 0 : "A negative number was added to the pot.";
 
         potSize += amountToAdd;
         return potSize;
