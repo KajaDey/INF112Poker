@@ -17,7 +17,7 @@ import java.util.Random;
 public class NameGenerator {
 
 
-    private static String filePath = "resources/names.txt";
+    private static String filePath = "resources/nameList/names.txt";
     static ArrayList<String> names = new ArrayList<String>();
 
 
