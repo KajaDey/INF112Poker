@@ -92,7 +92,7 @@ public class MainScreen {
                 "-fx-background-radius: 5,4,3,5; " +
                 "-fx-background-insets: 0,1,2,0; " +
                 "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
-        choiceBox.getStylesheets().addAll("file:src/main/java/gui/choiceBoxStyling.css");
+        choiceBox.getStylesheets().addAll("file:resources/choiceBoxStyling.css");
 
         enter.setOnAction(e ->{
             window.close();
