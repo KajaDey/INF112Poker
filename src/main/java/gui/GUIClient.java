@@ -177,7 +177,7 @@ public class GUIClient implements GameClient {
     @Override
     public void setBigBlind(long bigBlind) {
         this.bigBlind = bigBlind;
-        //TODO: Update label in GUI
+        gameScreen.setBigBlind(bigBlind);
     }
 
     @Override

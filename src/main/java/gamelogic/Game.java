@@ -354,9 +354,19 @@ public class Game {
         positions = new HashMap<>();
         holeCards = new HashMap<>();
 
+        //SmallBlindIndex skips players who are bust
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (players[(smallBlindIndex + i) % numberOfPlayers].getStackSize() <= 0) {
+                roundNumber++;
+            }
+            else
+                break;
+        }
+
         //Set indexes
         smallBlindIndex = roundNumber % numberOfPlayers;
         bigBlindIndex = (numberOfPlayers == 2 ? roundNumber % numberOfPlayers : (roundNumber+1)%numberOfPlayers);
+
 
         List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
         //Add players to orderedListOfPlayersStillPlaying in order SB, BB ...

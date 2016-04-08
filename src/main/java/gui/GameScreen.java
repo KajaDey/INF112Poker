@@ -691,4 +691,8 @@ public class GameScreen {
             opponents.remove(playerID);
         }
     }
+
+    public void setBigBlind(long bigBlind) {
+        this.currentBigBlind = bigBlind;
+    }
 }
