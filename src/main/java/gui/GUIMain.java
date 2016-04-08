@@ -60,7 +60,7 @@ public class GUIMain extends Application{
      */
     public GUIClient displayGameScreen(GameSettings settings, int userID) {
         this.gameScreen = new GameScreen(userID, settings.getMaxNumberOfPlayers());
-        this.client = new GUIClient(userID, gameScreen);
+        this.client = new GUIClient(userID, gameScreen, settings.getMaxNumberOfPlayers());
         ButtonListeners.setClient(client);
 
         //Create initial screen, empty

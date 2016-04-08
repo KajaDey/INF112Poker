@@ -20,12 +20,15 @@ public class GUIClient implements GameClient {
     private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
+    private int numberOfPlayers;
 
     private int id;
 
-    public GUIClient(int id, GameScreen gameScreen) {
+    public GUIClient(int id, GameScreen gameScreen, int maxNumberOfPlayers) {
         this.id = id;
         this.gameScreen = gameScreen;
+        this.numberOfPlayers = maxNumberOfPlayers;
+        gameScreen.setNumberOfPlayers(numberOfPlayers);
     }
 
 
@@ -75,7 +78,10 @@ public class GUIClient implements GameClient {
 
         switch (move) {
             case BET:
-                this.decision = new Decision(move, moveSize);
+                if (moveSize == stackSizes.get(this.id))
+                    this.decision = new Decision(Decision.Move.ALL_IN);
+                else
+                    this.decision = new Decision(move, moveSize);
                 break;
             case RAISE:
                 if (moveSize == stackSizes.get(this.id))
@@ -128,6 +134,11 @@ public class GUIClient implements GameClient {
     }
 
     @Override
+    public void playerBust(int playerID, int rank) {
+        gameScreen.bustPlayer(playerID, rank);
+    }
+
+    @Override
     public void gameOver(int winnerID) {
         gameScreen.gameOver(winnerID);
     }
@@ -152,7 +163,6 @@ public class GUIClient implements GameClient {
                 highestAmountPutOnTableThisBettingRound += decision.size;
                 break;
             case ALL_IN:
-                //TODO: Implement
                 break;
         }
         gameScreen.playerMadeDecision(playerId, decision);
@@ -167,7 +177,7 @@ public class GUIClient implements GameClient {
     @Override
     public void setBigBlind(long bigBlind) {
         this.bigBlind = bigBlind;
-        //TODO: Update label in GUI
+        gameScreen.setBigBlind(bigBlind);
     }
 
     @Override
@@ -188,7 +198,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-        //TODO: Set number of players
         gameScreen.setNumberOfPlayers(amountOfPlayers);
     }
 
