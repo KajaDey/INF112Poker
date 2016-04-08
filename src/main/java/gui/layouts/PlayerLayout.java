@@ -247,7 +247,7 @@ public class PlayerLayout {
     }
 
     public void setBestHand(String bestHand){
-        this.bestHand.setText(bestHand);
+        Platform.runLater(() -> this.bestHand.setText(bestHand));
     }
 
 
