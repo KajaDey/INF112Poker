@@ -15,59 +15,70 @@ import static org.junit.Assert.*;
  */
 public class AITest {
 
-    static final int N = 10;
-    static HashMap<Integer, Long> startStack;
+    static final int N = 1;
+    HashMap<Integer, Integer> positions;
+    HashMap<Integer, Long> stackSizes;
+    HashMap<Integer, String> names;
 
     @Test
     public void doesNotFoldWithGreatHandHeadsUp() {
-        SimpleAI simpleAi = new SimpleAI(1);
-        MCTSAI mctsAi = new MCTSAI(1);
+        SimpleAI simpleAi = new SimpleAI(0);
+        MCTSAI mctsAi = new MCTSAI(0);
         doesNotFoldWithGreatHandHeadsUpProperty(simpleAi);
         doesNotFoldWithGreatHandHeadsUpProperty(mctsAi);
     }
 
     @Test
     public void checksWithShittyHandAsBigBlind() {
-        SimpleAI simpleAi = new SimpleAI(1);
-        MCTSAI mctsAi = new MCTSAI(1);
+        SimpleAI simpleAi = new SimpleAI(0);
+        MCTSAI mctsAi = new MCTSAI(0);
         checksWithShittyHandAsBigBlindProperty(simpleAi);
         checksWithShittyHandAsBigBlindProperty(mctsAi);
     }
 
     @Test
     public void foldsWithShittyHandIfNotBlind() {
-        SimpleAI simpleAi = new SimpleAI(1);
-        MCTSAI mctsAi = new MCTSAI(1);
+        SimpleAI simpleAi = new SimpleAI(0);
+        MCTSAI mctsAi = new MCTSAI(0);
         foldsWithShittyHandIfNotBlindProperty(simpleAi);
         foldsWithShittyHandIfNotBlindProperty(mctsAi);
     }
 
     @Test
     public void doesNotFoldWithGreatHand() {
-        SimpleAI simpleAi = new SimpleAI(1);
-        MCTSAI mctsAi = new MCTSAI(1);
+        SimpleAI simpleAi = new SimpleAI(0);
+        MCTSAI mctsAi = new MCTSAI(0);
         doesNotFoldWithGreatHandProperty(simpleAi);
         doesNotFoldWithGreatHandProperty(mctsAi);
     }
 
     public void checksWithShittyHandAsBigBlindProperty(GameClient ai) {
         for (int i = 0; i < N; i++) {
-            ai.setBigBlind(20);
-            ai.setSmallBlind(10);
-            ai.setAmountOfPlayers(3);
+            ai.setBigBlind(50);
+            ai.setSmallBlind(25);
 
-            HashMap<Integer, Integer> positions = new HashMap<>();
-            positions.put(0, 2);
-            positions.put(1, 0);
-            positions.put(2, 1);
+            int amountOfPlayers = 3;
+            ai.setAmountOfPlayers(amountOfPlayers);
+
+            positions = new HashMap<>();
+            stackSizes = new HashMap<>();
+            names = new HashMap<>();
+
+            for (int j = 0; j < amountOfPlayers; j++) {
+                positions.put(j, (j + 1) % amountOfPlayers);
+                stackSizes.put(j, 5000L);
+                names.put(j, "AI" + j);
+            }
+
             ai.setPositions(positions);
-
-            ai.setHandForClient(1, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
-            HashMap<Integer, Long> stackSizes = new HashMap<>();
-            stackSizes.put(0, 1000L);
-            stackSizes.put(1, 1000L);
-            stackSizes.put(2, 1000L);
             ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
+
+            ai.playerMadeDecision(2, new Decision(Decision.Move.SMALL_BLIND, 25));
+            ai.playerMadeDecision(0, new Decision(Decision.Move.BIG_BLIND, 50));
+            ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
+            ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
 
             Assert.assertEquals(new Decision(Decision.Move.CHECK), ai.getDecision());
         }
@@ -75,26 +86,26 @@ public class AITest {
 
     public void foldsWithShittyHandIfNotBlindProperty(GameClient ai) {
         for (int i = 0; i < N; i++) {
-            ai.setBigBlind(20);
-            ai.setSmallBlind(10);
+            ai.setBigBlind(50);
+            ai.setSmallBlind(25);
             ai.setAmountOfPlayers(3);
 
-            HashMap<Integer, Integer> positions = new HashMap<>();
-            positions.put(0, 0);
-            positions.put(1, 1);
-            positions.put(2, 2);
+            positions = new HashMap<>();
+            stackSizes = new HashMap<>();
+            names = new HashMap<>();
+
+            for (int j = 0; j < 3; j++) {
+                positions.put(j, (j + 2) % 3);
+                stackSizes.put(j, 5000L);
+                names.put(j, "AI" + j);
+            }
             ai.setPositions(positions);
+            ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
 
-            startStack = new HashMap<>();
-            startStack.put(0, 1000L);
-            startStack.put(1, 1000L);
-            startStack.put(2, 1000L);
-            ai.setStackSizes(startStack);
-
-            ai.playerMadeDecision(1, new Decision(Decision.Move.BET, 25));
-            ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 25));
-
-            ai.setHandForClient(1, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
+            ai.playerMadeDecision(1, new Decision(Decision.Move.SMALL_BLIND, 25));
+            ai.playerMadeDecision(2, new Decision(Decision.Move.BIG_BLIND, 50));
 
             assertEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
         }
@@ -102,23 +113,26 @@ public class AITest {
 
     public void doesNotFoldWithGreatHandProperty(GameClient ai) {
         for (int i = 0; i < N; i++) {
-            ai.setBigBlind(20);
-            ai.setSmallBlind(10);
+            ai.setBigBlind(50);
+            ai.setSmallBlind(25);
             ai.setAmountOfPlayers(3);
 
-            ai.setHandForClient(1, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
+            positions = new HashMap<>();
+            stackSizes = new HashMap<>();
+            names = new HashMap<>();
 
-            HashMap<Integer, Integer> positions = new HashMap<>();
-            positions.put(0, 0);
-            positions.put(1, 1);
-            positions.put(2, 2);
+            for (int j = 0; j < 3; j++) {
+                positions.put(j, (j + 2) % 3);
+                stackSizes.put(j, 5000L);
+                names.put(j, "AI" + j);
+            }
             ai.setPositions(positions);
+            ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
 
-            startStack = new HashMap<>();
-            startStack.put(0, 1000L);
-            startStack.put(1, 1000L);
-            startStack.put(2, 1000L);
-            ai.setStackSizes(startStack);
+            ai.playerMadeDecision(1, new Decision(Decision.Move.SMALL_BLIND, 25));
+            ai.playerMadeDecision(2, new Decision(Decision.Move.BIG_BLIND, 50));
 
             assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
         }
@@ -126,21 +140,27 @@ public class AITest {
 
     public void doesNotFoldWithGreatHandHeadsUpProperty(GameClient ai) {
         for (int i = 0; i < N; i++) {
-            ai.setBigBlind(20);
-            ai.setSmallBlind(10);
-            ai.setAmountOfPlayers(2);
+            ai.setSmallBlind(25);
+            ai.setBigBlind(50);
+            int amountOfPlayers = 2;
+            ai.setAmountOfPlayers(amountOfPlayers);
 
-            ai.setHandForClient(1, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
+            positions = new HashMap<>();
+            stackSizes = new HashMap<>();
+            names = new HashMap<>();
 
-            HashMap<Integer, Integer> positions = new HashMap<>();
-            positions.put(0, 0);
-            positions.put(1, 1);
+            for (int j = 0; j < amountOfPlayers; j++) {
+                positions.put(j, j);
+                stackSizes.put(j, 5000L);
+                names.put(j, "AI" + j);
+            }
             ai.setPositions(positions);
+            ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
 
-            startStack = new HashMap<>();
-            startStack.put(0, 1000L);
-            startStack.put(1, 1000L);
-            ai.setStackSizes(startStack);
+            ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND, 25));
+            ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, 50));
 
             assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
         }
