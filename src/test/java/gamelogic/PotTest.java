@@ -50,8 +50,10 @@ public class PotTest {
         //Remove the 'folded' players
         players.remove(4);
 
-        //This is where the magic happens
-        pot.handOutPot(players, communityCards);
+        //Hand out the pot
+        ShowDownStats s = new ShowDownStats(communityCards);
+        pot.handOutPot(players, communityCards, s);
+        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertEquals(players.get(0).getStackSize(), 5000);
@@ -83,7 +85,10 @@ public class PotTest {
         communityCards.add(Card.of(2, Card.Suit.CLUBS).get());
         communityCards.add(Card.of(4, Card.Suit.SPADES).get());
 
-        pot.handOutPot(players, communityCards);
+        //Hand out the pot
+        ShowDownStats s = new ShowDownStats(communityCards);
+        pot.handOutPot(players, communityCards, s);
+        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertTrue(players.get(0).getStackSize() == 50000);
@@ -118,7 +123,9 @@ public class PotTest {
         players.remove(4);
 
         //Hand out the pot
-        pot.handOutPot(players, communityCards);
+        ShowDownStats s = new ShowDownStats(communityCards);
+        pot.handOutPot(players, communityCards, s);
+        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertEquals(players.get(0).getStackSize(), 19000);
@@ -154,7 +161,10 @@ public class PotTest {
         players.remove(2);
 
         //Hand out the pot
-        pot.handOutPot(players, communityCards);
+        ShowDownStats s = new ShowDownStats(communityCards);
+        pot.handOutPot(players, communityCards, s);
+
+        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertEquals(players.get(0).getStackSize(), 20000);

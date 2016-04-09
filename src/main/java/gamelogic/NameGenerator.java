@@ -49,6 +49,28 @@ public class NameGenerator {
 
     public static String getRandomSeriesName(){
 
+        if (pathOfSeries.isEmpty())
+            readNewSeries();
+
+        //get random filepath from a list of paths of series if we havent got one
+        pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
+
+        //add all names of series to a list which we randomly choose from later
+
+        if(characterNames.isEmpty()) {
+            readNewSeries();
+        }
+
+        //choose from list and then removerino
+        int randomListIndex = random.nextInt(characterNames.size());
+        String randomCharacter = characterNames.get(randomListIndex).substring(0,1).toUpperCase() + characterNames.get(randomListIndex).substring(1, characterNames.get(randomListIndex).length()).toLowerCase();
+        characterNames.remove(randomListIndex);
+
+        return randomCharacter;
+
+    }
+
+    public static void readNewSeries(){
         //add all series paths once
         if(pathsOfSeries.isEmpty()) {
             pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
@@ -80,36 +102,15 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/theOffice");
             pathsOfSeries.add("resources/nameList/theSimpsons.txt");
             pathsOfSeries.add("resources/nameList/videoGames.txt");
-
-
         }
 
-        //get random filepath from a list of paths of series if we havent got one
-        pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
-
-        //add all names of series to a list which we randomly choose from later
-
-        if(characterNames.isEmpty()) {
-            readNewSeries();
-        }
-
-        //choose from list and then removerino
-        int randomListIndex = random.nextInt(characterNames.size());
-        String randomCharacter = characterNames.get(randomListIndex).substring(0,1).toUpperCase() + characterNames.get(randomListIndex).substring(1, characterNames.get(randomListIndex).length()).toLowerCase();
-        characterNames.remove(randomListIndex);
-
-        return randomCharacter;
-
-    }
-
-    public static void readNewSeries(){
         try {
             BufferedReader reader = new BufferedReader(new FileReader(pathOfSeries));
             String currentLine;
             while ((currentLine = reader.readLine()) != null)
                 characterNames.add(currentLine);
         } catch (IOException e) {
-            GUIMain.debugPrintln("Error reading " + pathOfSeries);
+            GUIMain.debugPrintln("Error reading file: " + pathOfSeries);
             e.printStackTrace();
         }
     }

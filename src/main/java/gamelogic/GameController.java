@@ -165,17 +165,14 @@ public class GameController {
     }
 
     /**
-     * Tells each client that it is time for show down, and who is the winner of the hand
+     * Tells each client that it is time for show down, and pass the necessary information about the showdown
      *
-     * @param playersStillPlaying Players still in the hand
-     * @param winnerID ID of the winning player
-     * @param holeCards Map of player IDs and their hole cards
-     * @param pot Total amount in the pot
+     * @param showDownStats Information about pot (and side pots) and who won
      */
-    public void showDown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
+    public void showDown(ShowDownStats showDownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(playersStillPlaying, winnerID, holeCards, pot);
+            c.showdown(showDownStats);
         }
     }
 

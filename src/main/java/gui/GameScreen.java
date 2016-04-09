@@ -1,7 +1,6 @@
 package gui;
 
-import gamelogic.Hand;
-import gamelogic.HandCalculator;
+import gamelogic.*;
 import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
@@ -16,8 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import gamelogic.Card;
-import gamelogic.Decision;
 
 import java.util.*;
 
@@ -260,26 +257,31 @@ public class GameScreen {
     /**
      * Shows the cards of the players around the table
      *
-     * @param stillPlaying The players who are still in the game
-     * @param winnerID     The winner of the game
+     * @param showDownStats Information about the showdown
      */
-    public void showDown(List<Integer> stillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
-        printToLogField(stillPlaying.size() + " players to showdown");
+    public void showDown(ShowDownStats showDownStats) {
+        ArrayList<Player> playersToShowdown = showDownStats.getAllPlayers();
+        printToLogField(showDownStats.numberOfPlayers() + " players to showdown");
 
-        for (Integer i : stillPlaying) {
-            Card[] cards = holeCards.get(i);
+        Map<Integer, Card[]> hCards = showDownStats.getHoleCards();
+
+        for (Player p : playersToShowdown) {
+            Card[] cards = hCards.get(p.getID());
             Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
 
             //Print the players hand
-            printToLogField(names.get(i) + ": " + cards[0] + " " + cards[1]);
-            if (i != playerID && opponents.get(i) != null)
-                Platform.runLater(() -> opponents.get(i).setCardImage(leftImage,rightImage));
+            printToLogField(names.get(p.getID()) + ": " + cards[0] + " " + cards[1]);
+            if (p.getID() != playerID && opponents.get(p.getID()) != null)
+                Platform.runLater(() -> opponents.get(p.getID()).setCardImage(leftImage,rightImage));
         }
 
-        printCommunityCardsToLogField();
+        String winnerString = showDownStats.getWinnerText();
+        Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
 
-        showWinner(names.get(winnerID), pot, holeCards.get(winnerID));
+        //Print all community cards to in-game log
+        printCommunityCardsToLogField();
+        printToLogField(winnerString);
     }
 
     /**
@@ -579,20 +581,6 @@ public class GameScreen {
         };
         Platform.runLater(task);
         setPot(0);
-    }
-
-    /**
-     * Displays the winner of the round
-     *  @param winnerName The name of the winner
-     * @param pot         The total pot that the winner is granted
-     * @param holeCards   The winners holeCards
-     */
-    public void showWinner(String winnerName, long pot, Card[] holeCards) {
-        HandCalculator hc = new HandCalculator(new Hand(holeCards[0], holeCards[1], communityCards));
-        String winnerString = winnerName + " won the pot of " + String.valueOf(pot) + " with " + hc.getBestHandString().toLowerCase();
-
-        printToLogField(winnerString);
-        Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
     }
 
     /**

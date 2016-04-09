@@ -2,6 +2,7 @@ package gui;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gamelogic.ShowDownStats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,9 +171,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
-        gameScreen.setPot(pot);
-        gameScreen.showDown(playersStillPlaying, winnerID, holeCards);
+    public void showdown(ShowDownStats showDownStats) {
+        gameScreen.showDown(showDownStats);
     }
 
     @Override

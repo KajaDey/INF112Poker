@@ -180,7 +180,7 @@ public class Player extends User {
     /**
      * @return String of the best hand the player currently has (e.g: "Pair of 2's")
      */
-    public String getBestHand(ArrayList<Card> communityCards) {
+    public String getBestHand(List<Card> communityCards) {
         Hand hand = new Hand(holeCards[0], holeCards[1], communityCards);
         return hand.toString();
     }

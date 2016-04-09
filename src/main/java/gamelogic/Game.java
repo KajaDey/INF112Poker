@@ -597,8 +597,11 @@ public class Game {
         //Print all show down information to debugger
         printToDebugShowdown();
 
-        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards));
+        ShowDownStats showDownStats = new ShowDownStats(Arrays.asList(communityCards));
+        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showDownStats);
         assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
+
+        gameController.showDown(showDownStats);
 
         delay(4000);
 
@@ -617,9 +620,9 @@ public class Game {
 
         int winnerID = findWinnerID(playerIDs);
         Player winner = getPlayerFromID(winnerID);
-        long potShare = pot.getSharePotPlayerCanWin(winnerID);
-        winner.incrementStack(potShare);
-        gameController.showDown(playerIDs, winnerID, holeCards, potShare);
+        //long potShare = pot.getSharePotPlayerCanWin(winnerID);
+        //winner.incrementStack(potShare);
+        //gameController.showDown(playerIDs, winnerID, holeCards, potShare);
         playerIDs.remove(new Integer(winnerID));
         delay(1500);
 
@@ -627,10 +630,10 @@ public class Game {
         while (pot.getPotSize() > 0) {
             winnerID = findWinnerID(playerIDs);
             winner = getPlayerFromID(winnerID);
-            potShare = pot.getSharePotPlayerCanWin(winnerID);
-            winner.incrementStack(potShare);
-            gameController.sidePotWinner(winnerID, potShare);
-            GUIMain.debugPrintln(winner.getName() + " got " + potShare);
+           // potShare = pot.getSharePotPlayerCanWin(winnerID);
+           // winner.incrementStack(potShare);
+           // gameController.sidePotWinner(winnerID, potShare);
+           // GUIMain.debugPrintln(winner.getName() + " got " + potShare);
             playerIDs.remove(new Integer(winnerID));
             delay(1000);
         }

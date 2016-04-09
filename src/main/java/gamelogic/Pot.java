@@ -17,14 +17,11 @@ public class Pot {
         this.amountPlayerCanClaim = new HashMap<>();
     }
 
-    /**
-     * TODO write javadoc
-     * @return
-     */
+    /** @return current potsize */
     public long getPotSize() { return potSize; }
 
     /**
-     * TODO write javadoc
+     *  Increment the pot and update the amount the player can claim if he wins the pot
      * @param userID
      * @param amountToAdd
      * @return
@@ -42,43 +39,33 @@ public class Pot {
     }
 
     /**
-     * TODO write javadoc
-     * @param playerID
-     * @return
+     * Hand out the pot (and side pots) to the winners
+     * @param playersInHand
+     * @param communityCards
      */
-    public long getSharePotPlayerCanWin(int playerID) {
-        final long amountPlayerHasPutIn = amountPlayerCanClaim.get(playerID);
-        long total = 0;
-
-        for (Integer id : amountPlayerCanClaim.keySet()) {
-            long amount = amountPlayerCanClaim.get(id);
-            if (amountPlayerHasPutIn >= amount) { //If player has put >= this player
-                total += amount;
-                amountPlayerCanClaim.put(id, 0L);
-            } else {
-                total += amountPlayerHasPutIn;
-                amountPlayerCanClaim.put(id, amount-amountPlayerHasPutIn);
-            }
-        }
-
-        potSize -= total;
-
-        return total;
-    }
-
-
-    public void handOutPot(List<Player> players, List<Card> communityCards) {
+    public void handOutPot(List<Player> playersInHand, List<Card> communityCards, ShowDownStats showdown) {
         //Create a copy of the players list to avoid messing with GameLogic
         ArrayList<Player> playersCopy = new ArrayList<Player>();
-        players.stream().forEach(p -> playersCopy.add(p));
+        playersInHand.stream().forEach(p -> playersCopy.add(p));
 
         while (potSize > 0) {
-            handOutPotShare(playersCopy, communityCards);
+            handOutPotShare(playersCopy, communityCards, showdown);
         }
     }
 
-    private void handOutPotShare(List<Player> players, List<Card> communityCards) {
-        ArrayList<Player> winners = getMainPotWinners(players, communityCards);
+    /**
+     *  Hand out a part of the pot (or the whole pot if there is only one winner)
+     * @param players
+     * @param communityCards
+     */
+    private void handOutPotShare(List<Player> players, List<Card> communityCards, ShowDownStats showdown) {
+        ArrayList<Player> winners = getPotWinners(players, communityCards);
+
+        //Make a copy of the winners array for use in showdown stats
+        ArrayList<Player> winnersCopy = new ArrayList<>();
+        winners.stream().forEach(p -> winnersCopy.add(p));
+
+        long size = 0;
 
         //Comparator to check which player has put the most in the pot
         final Comparator<Player> comp = (p1, p2) -> Long.compare(amountPlayerCanClaim.get(p1.getID()), amountPlayerCanClaim.get(p2.getID()));
@@ -101,12 +88,21 @@ public class Pot {
             }
 
             potSize -= splitPot;
+            size += splitPot;
             winners.remove(minPlayer);
             players.remove(minPlayer);
         }
+
+        showdown.addSidePot(winnersCopy, size);
     }
 
-    private ArrayList<Player> getMainPotWinners(List<Player> players, List<Card> communityCards) {
+    /**
+     *  Get the winner(s) among the given players
+     * @param players
+     * @param communityCards
+     * @return  A list of the player(s) with the best hand
+     */
+    private ArrayList<Player> getPotWinners(List<Player> players, List<Card> communityCards) {
         assert players.size() > 0 : "Tried to get main pot winner for " + players.size() + " players";
         ArrayList<Hand> hands = new ArrayList<>();
 
