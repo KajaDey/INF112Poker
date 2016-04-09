@@ -1,6 +1,7 @@
 package gamelogic;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Created by henrik on 05.04.16.
@@ -31,24 +32,28 @@ public class Statistics {
     }
 
     /**
-     * TODO write javadoc
-     * @param filepath
-     * @throws Exception
+     * Prints the current statistics to a file
+     * @param filepath Relative filepath for the file
      */
-    public void printStatisticsToFile(String filepath) throws Exception{
+    public void printStatisticsToFile(String filepath){
 
-        FileWriter fw = new FileWriter(filepath);
+        try {
+            FileWriter fw = new FileWriter(filepath);
 
-        fw.write("Position finished: " + positionFinished + '\n');
-        fw.write("Hands won: " + handsWon + '\n');
-        fw.write("Hands played: " + handsPlayed + '\n');
-        fw.write("Folds preflop: " + foldsPreflop + '\n');
-        fw.write("aggressiveMoves: " + aggressiveMoves + '\n');
-        fw.write("passiveMoves: " + passiveMoves + '\n');
-        fw.write("best hand: " + bestHand + '\n');
-        fw.write("highest stack: " + highestStack + '\n');
+            fw.write("Position finished: " + positionFinished + '\n');
+            fw.write("Hands won: " + handsWon + '\n');
+            fw.write("Hands played: " + handsPlayed + '\n');
+            fw.write("Folds preflop: " + foldsPreflop + '\n');
+            fw.write("aggressiveMoves: " + aggressiveMoves + '\n');
+            fw.write("passiveMoves: " + passiveMoves + '\n');
+            fw.write("best hand: " + bestHand + '\n');
+            fw.write("highest stack: " + highestStack + '\n');
+            fw.close();
+        } catch (IOException ioe) {
+            System.out.println("Error when writing to file " + filepath);
+            ioe.printStackTrace();
+        }
 
-        fw.close();
     }
 
 }
