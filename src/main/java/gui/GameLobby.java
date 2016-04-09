@@ -74,10 +74,8 @@ public class GameLobby {
         layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);
         layoutNoHeadline.setAlignment(Pos.CENTER);
 
-        fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
+        fullLayout.getChildren().addAll(ObjectStandards.addMenuBar(), headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
-
-        fullLayout.getChildren().add(ObjectStandards.addMenuBar());
 
         SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
 
