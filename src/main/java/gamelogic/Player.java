@@ -14,7 +14,7 @@ public class Player extends User {
     private long stackSize;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean folded = false, allIn = false;
+    private boolean folded = false, allIn = false, hasActed = false;
 
     //Statistics
     private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
@@ -93,6 +93,10 @@ public class Player extends User {
                 allIn = true;
                 break;
         }
+
+        //If a player has posted blind he should not be marked as if he as acted this betting round
+        if (decision.move != Decision.Move.SMALL_BLIND && decision.move != Decision.Move.BIG_BLIND)
+            hasActed = true;
     }
 
     /**
@@ -126,6 +130,7 @@ public class Player extends User {
         holeCards[1] = card2;
         this.putOnTableThisRound = 0;
         this.allIn = false;
+        this.hasActed = false;
     }
 
     /**
@@ -135,13 +140,6 @@ public class Player extends User {
     public Card[] getHoleCards() {
         assert holeCards != null : "Hole cards were null when Game asked for them";
         return holeCards;
-    }
-
-    /**
-     * @return true if the player is still playing, else false
-     */
-    public boolean stillPlaying() {
-        return !folded;
     }
 
     /**
@@ -160,8 +158,8 @@ public class Player extends User {
      */
     public void newBettingRound() {
         this.putOnTableThisRound = 0;
+        hasActed = false;
     }
-    
 
     public boolean isAllIn() {
         return allIn;
@@ -169,6 +167,10 @@ public class Player extends User {
 
     public Hand getHand(List<Card> communityCards) {
         return new Hand(holeCards[0], holeCards[1], communityCards);
+    }
+
+    public boolean hasActed() {
+        return allIn || hasActed;
     }
 }
 

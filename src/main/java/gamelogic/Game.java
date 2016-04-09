@@ -260,7 +260,7 @@ public class Game {
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1)
                 return false;
-            else if(numberOfPlayersActedSinceLastAggressor == playersStillInCurrentHand.size())
+            else if(allPlayersActed())
                 return true;
 
             //If player folded actingPlayerIndex should not be incremented because playersInHand.size() is decremented
@@ -290,11 +290,11 @@ public class Game {
         for (Player p : playersStillInCurrentHand) {
             if (p.isAllIn())
                 count++;
-            else if (p.getAmountPutOnTableThisBettingRound() == highestAmountPutOnTable)
+            else if (p.hasActed() && p.getAmountPutOnTableThisBettingRound() == highestAmountPutOnTable)
                 count++;
         }
 
-        return count == playersStillInCurrentHand.size() && highestAmountPutOnTable > 0;
+        return count == playersStillInCurrentHand.size();
     }
 
     /**
@@ -302,6 +302,7 @@ public class Game {
      */
     private void postBlinds() {
         assert playersStillInCurrentHand.size() >= 2 : "Not enough players still playing to post blinds";
+
         Decision postSB = new Decision(Decision.Move.SMALL_BLIND, currentSB);
         Decision postBB = new Decision(Decision.Move.BIG_BLIND, currentBB);
 
