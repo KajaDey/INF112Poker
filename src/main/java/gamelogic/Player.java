@@ -161,28 +161,7 @@ public class Player extends User {
     public void newBettingRound() {
         this.putOnTableThisRound = 0;
     }
-
-    /**
-     * TODO write javadoc
-     * @param winningHand
-     */
-    public void handWon(Hand winningHand) {
-        handsWon++;
-
-        //Update best hand (for stats)
-        if (bestHand == null)
-            bestHand = winningHand;
-        else if (winningHand.compareTo(bestHand) > 0)
-            bestHand = winningHand;
-    }
-
-    /**
-     * @return String of the best hand the player currently has (e.g: "Pair of 2's")
-     */
-    public String getBestHand(List<Card> communityCards) {
-        Hand hand = new Hand(holeCards[0], holeCards[1], communityCards);
-        return hand.toString();
-    }
+    
 
     public boolean isAllIn() {
         return allIn;
