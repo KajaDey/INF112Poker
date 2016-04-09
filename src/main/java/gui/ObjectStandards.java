@@ -218,7 +218,7 @@ public class ObjectStandards {
 
         menuBar.getMenus().addAll(about);
 
-        if (os != null && !os.startsWith ("Windows"))
+        //if (os != null && !os.startsWith ("Windows"))
             menuBar.useSystemMenuBarProperty().set(true);
         /*else {
             menuBar.setMinWidth(1280);
