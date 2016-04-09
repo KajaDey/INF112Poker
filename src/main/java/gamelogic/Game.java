@@ -597,7 +597,7 @@ public class Game {
         //Print all show down information to debugger
         printToDebugShowdown();
 
-        ShowDownStats showDownStats = new ShowDownStats(Arrays.asList(communityCards));
+        ShowDownStats showDownStats = new ShowDownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
         pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showDownStats);
         assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
 

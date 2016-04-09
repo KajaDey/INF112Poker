@@ -12,11 +12,15 @@ public class ShowDownStats {
     ArrayList<ArrayList<Player>> sidePots;
     ArrayList<Long> sidePotSizes;
     List<Card> communityCards;
+    ArrayList<Player> allPlayers;
 
-    public ShowDownStats(List<Card> communityCards) {
+    public ShowDownStats(List<Player> players, List<Card> communityCards) {
         sidePots = new ArrayList<>();
         sidePotSizes = new ArrayList<>();
         this.communityCards = communityCards;
+        this.allPlayers = new ArrayList<>();
+
+        players.stream().forEach(p -> allPlayers.add(p));
     }
 
     public void addSidePot(ArrayList<Player> players, long size) {
@@ -25,18 +29,16 @@ public class ShowDownStats {
     }
 
     public int numberOfPlayers() {
-        return getAllPlayers().size();
+        return allPlayers.size();
     }
 
     public Map<Integer, Card[]> getHoleCards() {
         Map<Integer, Card[]> holeCards = new HashMap<>();
-        sidePots.stream().forEach(list -> list.stream().forEach(p -> holeCards.put(p.getID(), p.getHoleCards())));
+        allPlayers.stream().forEach(p -> holeCards.put(p.getID(), p.getHoleCards()));
         return holeCards;
     }
 
     public ArrayList<Player> getAllPlayers() {
-        ArrayList<Player> allPlayers = new ArrayList<Player>();
-        sidePots.stream().forEach(list -> list.stream().forEach(p -> allPlayers.add(p)));
         return allPlayers;
     }
 
