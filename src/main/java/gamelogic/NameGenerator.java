@@ -49,17 +49,8 @@ public class NameGenerator {
 
     public static String getRandomSeriesName(){
 
-        if (pathOfSeries.isEmpty())
+        if (pathOfSeries.isEmpty() || characterNames.isEmpty())
             readNewSeries();
-
-        //get random filepath from a list of paths of series if we havent got one
-        pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
-
-        //add all names of series to a list which we randomly choose from later
-
-        if(characterNames.isEmpty()) {
-            readNewSeries();
-        }
 
         //choose from list and then removerino
         int randomListIndex = random.nextInt(characterNames.size());
@@ -103,6 +94,9 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/theSimpsons.txt");
             pathsOfSeries.add("resources/nameList/videoGames.txt");
         }
+
+        //get random filepath from a list of paths of series if we havent got one
+        pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(pathOfSeries));
