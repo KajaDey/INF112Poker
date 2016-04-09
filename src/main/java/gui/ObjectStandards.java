@@ -218,16 +218,16 @@ public class ObjectStandards {
 
         menuBar.getMenus().addAll(about);
 
-        //if (os != null && !os.startsWith ("Windows"))
+        if (os != null && !os.startsWith ("Windows"))
             menuBar.useSystemMenuBarProperty().set(true);
-        /*else {
+        else {
             menuBar.setMinWidth(1280);
             menuBar.setMinWidth(1280);
-            menuBar.setMinHeight(50);
-            menuBar.setMaxHeight(50);
-            menuBar.setStyle(styling);
-            menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
-        }*/
+            menuBar.setMinHeight(15);
+            menuBar.setMaxHeight(15);
+            //menuBar.setStyle(styling);
+            //menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
+        }
 
         return menuBar;
     }
