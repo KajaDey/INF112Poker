@@ -223,8 +223,8 @@ public class ObjectStandards {
         else {
             menuBar.setMinWidth(1280);
             menuBar.setMinWidth(1280);
-            menuBar.setMinHeight(30);
-            menuBar.setMaxHeight(30);
+            menuBar.setMinHeight(25);
+            menuBar.setMaxHeight(25);
             //menuBar.setStyle(styling);
             menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
         }

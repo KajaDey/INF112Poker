@@ -1,5 +1,5 @@
 .menu-item .label {
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 
 .menu-item:focused {
