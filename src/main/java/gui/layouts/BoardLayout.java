@@ -2,6 +2,7 @@ package gui.layouts;
 
 import gui.ImageViewer;
 import gui.ObjectStandards;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -78,6 +79,11 @@ public class BoardLayout {
     public void setWinnerLabel(String winnerLabel) {
         this.winnerLabel.setText(winnerLabel);
     }
+
+    /**
+     * @return The current text of the winner label
+     */
+    public String getWinnerLabel() { return winnerLabel.getText(); }
 
     /**
      *

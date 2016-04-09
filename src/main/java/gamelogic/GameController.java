@@ -2,7 +2,6 @@ package gamelogic;
 
 import gamelogic.ai.SimpleAI;
 import gui.*;
-import javafx.application.Platform;
 
 import java.util.*;
 
@@ -20,6 +19,7 @@ public class GameController {
     private GUIMain mainGUI;
     public GameSettings gameSettings;
     private String name;
+    private Map<Integer, String> names;
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
@@ -57,8 +57,9 @@ public class GameController {
             return;
         }
 
-        //Empty map of clients
+        //Empty maps of clients/names
         clients = new HashMap<>();
+        names = new HashMap<>();
 
         //Create GUI-GameClient
         createGUIClient(gamesettings);
@@ -68,7 +69,10 @@ public class GameController {
         createAIClients(numberOfAIClients, gamesettings);
 
         //Set initial blind values for clients
-        setBlinds(gamesettings);
+        initClients(gamesettings);
+
+        //Print welcome message to log
+        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -79,7 +83,6 @@ public class GameController {
         gameThread.start();
 
         //Print to on screen log
-        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
     }
 
     /**
@@ -92,6 +95,7 @@ public class GameController {
         game.addPlayer(this.name, 0);
         mainGUI.insertPlayer(0, this.name, settings.getStartStack());
         guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
+        names.put(0, name);
     }
 
     /**
@@ -105,10 +109,11 @@ public class GameController {
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomSeriesName();
             int AI_id = i+1;
-            GameClient aiClient = new SimpleAI(AI_id, 0.75);
+            GameClient aiClient = new SimpleAI(AI_id, 0.9);
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
+            names.put(AI_id, aiName);
         }
     }
 
@@ -117,11 +122,12 @@ public class GameController {
      *
      * @param gamesettings
      */
-    private void setBlinds(GameSettings gamesettings) {
+    private void initClients(GameSettings gamesettings) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
             client.setBigBlind(gamesettings.getBigBlind());
             client.setSmallBlind(gamesettings.getSmallBlind());
+            client.setPlayerNames(names);
         }
     }
 
@@ -275,7 +281,7 @@ public class GameController {
     }
 
     /**
-     * TODO write javadoc
+     * Sends the position of each player to all clients
      * @param positions
      */
     public void setPositions(Map<Integer, Integer> positions) {
@@ -294,6 +300,17 @@ public class GameController {
     }
 
     /**
+     *  Called every time a hand is won before showdown (everyone but 1 player folded)
+     *  Prints a text showing who won the pot and how much it was. Also prints to logfield
+     * @param winnerID
+     * @param potsize
+     */
+    public void preShowdownWinner(int winnerID, long potsize) {
+        guiClient.preShowDownWinner(winnerID, potsize);
+        printToLogfield(names.get(0) + " won the pot of " + potsize);
+    }
+
+    /**
      * Called every time a player is bust to inform all clients
      * @param bustPlayerID
      * @param rank Place the busted player finished in
@@ -306,5 +323,13 @@ public class GameController {
         if (!(bustedClient instanceof GUIClient)) {
             clients.remove(bustPlayerID);
         }
+    }
+
+    public void sidePotWinner(int id, long potSize) {
+        guiClient.sidePotWinner(id, potSize);
+    }
+
+    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
+        guiClient.showHoleCards(playerList, holeCards);
     }
 }

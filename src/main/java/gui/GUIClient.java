@@ -3,6 +3,7 @@ import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -223,5 +224,17 @@ public class GUIClient implements GameClient {
      */
     public void printToLogfield(String message) {
         gameScreen.printToLogField(message);
+    }
+
+    public void preShowDownWinner(int winnerID, long potsize) {
+        gameScreen.preShowDownWinner(winnerID, potsize);
+    }
+
+    public void sidePotWinner(int id, long potSize) {
+        gameScreen.sidePotWinner(id, potSize);
+    }
+
+    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
+        gameScreen.showHoleCards(playerList, holeCards);
     }
 }

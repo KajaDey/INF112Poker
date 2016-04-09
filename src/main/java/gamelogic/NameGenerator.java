@@ -109,7 +109,7 @@ public class NameGenerator {
             while ((currentLine = reader.readLine()) != null)
                 characterNames.add(currentLine);
         } catch (IOException e) {
-            GUIMain.debugPrintln("Error reading names.txt");
+            GUIMain.debugPrintln("Error reading " + pathOfSeries);
             e.printStackTrace();
         }
     }
