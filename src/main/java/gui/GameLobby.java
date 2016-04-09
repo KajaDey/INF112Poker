@@ -77,6 +77,8 @@ public class GameLobby {
         fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
 
+        fullLayout.getChildren().add(ObjectStandards.addMenuBar());
+
         SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
 
     }

@@ -1,9 +1,7 @@
 package gui;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -206,5 +204,31 @@ public class ObjectStandards {
         textField.setPadding(padding);
 
         return textField;
+    }
+
+    public static MenuBar addMenuBar(){
+        MenuBar menuBar = new MenuBar();
+        final String os = System.getProperty("os.name");
+
+        Menu about = new Menu("About");
+        Menu aboutCopyright = new Menu("Copyright");
+        Menu aboutTexasHoldem = new Menu("Texas Hold'em");
+
+        about.getItems().addAll(aboutCopyright, aboutTexasHoldem);
+
+        menuBar.getMenus().addAll(about);
+
+        if (os != null && !os.startsWith ("Windows"))
+            menuBar.useSystemMenuBarProperty().set(true);
+        else {
+            menuBar.setMinWidth(1280);
+            menuBar.setMinWidth(1280);
+            menuBar.setMinHeight(50);
+            menuBar.setMaxHeight(50);
+
+            menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
+        }
+
+        return menuBar;
     }
 }

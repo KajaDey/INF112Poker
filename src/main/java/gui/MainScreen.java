@@ -35,6 +35,7 @@ public class MainScreen {
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
+        mainScreenLayout.setTop(ObjectStandards.addMenuBar());
         SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
     }
 

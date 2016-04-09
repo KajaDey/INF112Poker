@@ -58,6 +58,7 @@ public class GameScreen {
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
         addExitButton();
+        addMenuBarToGameScreen();
     }
 
     /**
@@ -228,6 +229,10 @@ public class GameScreen {
         pane.getChildren().add(exitButton);
 
         exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
+    }
+
+    public void addMenuBarToGameScreen(){
+        pane.getChildren().addAll(ObjectStandards.addMenuBar());
     }
 
     /**
