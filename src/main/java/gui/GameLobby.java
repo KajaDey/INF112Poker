@@ -34,6 +34,7 @@ public class GameLobby {
         Stage window = new Stage();
 
         //Boxes
+        HBox menuBarBox = new HBox();
         VBox gameRules = new VBox();
         VBox players = new VBox();
         VBox buttons = new VBox();
@@ -65,6 +66,9 @@ public class GameLobby {
         });
 
         //Put objects in boxes
+        menuBarBox.getChildren().add(ObjectStandards.addMenuBar());
+        menuBarBox.setAlignment(Pos.TOP_CENTER);
+
         gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
 
@@ -74,7 +78,7 @@ public class GameLobby {
         layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);
         layoutNoHeadline.setAlignment(Pos.CENTER);
 
-        fullLayout.getChildren().addAll(ObjectStandards.addMenuBar(), headLine, layoutNoHeadline);
+        fullLayout.getChildren().addAll(menuBarBox, headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
 
         SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
