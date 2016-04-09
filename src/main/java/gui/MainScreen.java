@@ -14,7 +14,11 @@ import javafx.stage.Stage;
 import gamelogic.GameController;
 
 /**
- * Created by Jostein on 07.03.2016.
+ * This purpose of this class is to create the full screen that is seen when the application is started.
+ * The class will add the welcome text, input field for name and number of players, as well as the button
+ * for entering the lobby screen.
+ *
+ * @author Jostein Kringlen
  */
 public class MainScreen {
 
@@ -35,7 +39,7 @@ public class MainScreen {
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
-        mainScreenLayout.setTop(ObjectStandards.addMenuBar());
+        mainScreenLayout.setTop(ObjectStandards.createMenuBar());
         SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
     }
 

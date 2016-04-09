@@ -19,7 +19,11 @@ import javafx.stage.Stage;
 import java.util.*;
 
 /**
- * Created by ady on 07/03/16.
+ * TODO: Add class description
+ *
+ * @author André Dyrstad
+ * @author Jostein Kringlen
+ * @author Kristian Rosland
  */
 public class GameScreen {
 
@@ -95,6 +99,8 @@ public class GameScreen {
      * @return player objects
      */
     public boolean insertPlayer(int userID, String name, long stackSize) {
+        final String os = System.getProperty("os.version");
+
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
@@ -122,7 +128,12 @@ public class GameScreen {
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(20);
+                    if (!os.isEmpty()) {
+                        if (!os.startsWith("Windows"))
+                            oppLayout.setLayoutY(20);
+                        else
+                            oppLayout.setLayoutY(40);
+                    }
                     break;
                 case 4:
                     oppLayout.setLayoutX(scene.getWidth() - 280);
@@ -221,10 +232,16 @@ public class GameScreen {
      * Adds a working exit button to the game screen. The button takes you back to the lobby screen
      */
     public void addExitButton(){
+        final String os = System.getProperty("os.name");
         exitButton = ObjectStandards.makeStandardButton("Exit");
+        exitButton.setLayoutX(scene.getWidth() - 80);
+        if (!os.isEmpty()){
+            if (!os.startsWith("Windows"))
+                exitButton.setLayoutY(3);
+            else
+                exitButton.setLayoutY(30);
+        }
 
-        exitButton.setLayoutX(scene.getWidth()- 80);
-        exitButton.setLayoutY(3);
 
         pane.getChildren().add(exitButton);
 
@@ -232,7 +249,7 @@ public class GameScreen {
     }
 
     public void addMenuBarToGameScreen(){
-        pane.getChildren().addAll(ObjectStandards.addMenuBar());
+        pane.getChildren().addAll(ObjectStandards.createMenuBar());
     }
 
     /**

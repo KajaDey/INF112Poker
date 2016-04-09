@@ -12,7 +12,9 @@ import javafx.stage.Stage;
 import gamelogic.GameController;
 
 /**
- * Created by ady on 07/03/16.
+ * TODO: Add class description
+ *
+ * @author André Dyrstad
  */
 public class GameLobby {
 
@@ -66,7 +68,7 @@ public class GameLobby {
         });
 
         //Put objects in boxes
-        menuBarBox.getChildren().add(ObjectStandards.addMenuBar());
+        menuBarBox.getChildren().add(ObjectStandards.createMenuBar());
         menuBarBox.setAlignment(Pos.TOP_CENTER);
 
         gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);

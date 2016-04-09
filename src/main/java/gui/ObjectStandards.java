@@ -6,8 +6,20 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.io.IOException;
+
 /**
- * Created by ady on 05/03/16.
+ * This meaning of this class is to create standard gui objects that will be used throughout the
+ * entire application.
+ *
+ * The standard objects made in this class are:
+ *  -buttons
+ *  -labels
+ *  -text fields
+ *  -menu bar
+ *
+ * @author Jostein Kringlen
+ * @author André Dyrstad
  */
 public class ObjectStandards {
 
@@ -206,28 +218,69 @@ public class ObjectStandards {
         return textField;
     }
 
-    public static MenuBar addMenuBar(){
+    /**
+     * Creates a menu bar for the application.
+     * If the user is using Windows, there program will create a menu bar inside the application,
+     * but if he/she is using another OS like OSX or one of the Linux distros, the menu bar
+     * will be integrated into the standard system menu bar (i.e. the top line on OSX)
+     * @return The created menu bar
+     */
+    public static MenuBar createMenuBar(){
         MenuBar menuBar = new MenuBar();
         final String os = System.getProperty("os.name");
 
+        //Parent menus
+        Menu file = new Menu("File");
         Menu about = new Menu("About");
-        Menu aboutCopyright = new Menu("Copyright");
-        Menu aboutTexasHoldem = new Menu("Texas Hold'em");
 
-        about.getItems().addAll(aboutCopyright, aboutTexasHoldem);
+        //Sub menus and menu items
+        Menu licenses = new Menu("Licenses");
+        MenuItem softwareLicense = new MenuItem("Software License");
+        MenuItem cardSpriteLicense = new MenuItem("Card Sprite License");
+        MenuItem aboutTexasHoldem = new MenuItem("Texas Hold'em");
 
-        menuBar.getMenus().addAll(about);
+        MenuItem quit = new MenuItem("Quit");
 
-        if (os != null && !os.startsWith ("Windows"))
-            menuBar.useSystemMenuBarProperty().set(true);
-        else {
-            menuBar.setMinWidth(1280);
-            menuBar.setMinWidth(1280);
-            menuBar.setMinHeight(25);
-            menuBar.setMaxHeight(25);
-            //menuBar.setStyle(styling);
-            menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
+        //Adding sub menus and items to parent menus
+        licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
+        about.getItems().addAll(licenses, aboutTexasHoldem);
+        file.getItems().addAll(quit);
+
+        //Adding all menus to the menu bar
+        menuBar.getMenus().addAll(file,about);
+
+        if (os != null) {
+            if (!os.startsWith("Windows"))
+                menuBar.useSystemMenuBarProperty().set(true);
+            else {
+                menuBar.setMinWidth(1280);
+                menuBar.setMinWidth(1280);
+                menuBar.setMinHeight(25);
+                menuBar.setMaxHeight(25);
+                menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
+            }
         }
+
+        //Event listeners for the menu items
+        quit.setOnAction(event -> System.exit(0));
+
+        MenuBarScreens menuBarScreens = new MenuBarScreens();
+
+        softwareLicense.setOnAction(event -> {
+            try {
+                menuBarScreens.createScreenForLicense(softwareLicense.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        cardSpriteLicense.setOnAction(event -> {
+            try {
+                menuBarScreens.createScreenForLicense(cardSpriteLicense.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
 
         return menuBar;
     }
