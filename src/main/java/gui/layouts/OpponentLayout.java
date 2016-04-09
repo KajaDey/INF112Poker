@@ -131,13 +131,15 @@ public class OpponentLayout extends HBox{
      * @param rightCard
      */
     public void setCardImage(Image leftCard,Image rightCard) {
-        leftCardImage.setImage(leftCard);
-        rightCardImage.setImage(rightCard);
+        Platform.runLater( () -> {
+            leftCardImage.setImage(leftCard);
+            rightCardImage.setImage(rightCard);
 
-        leftCardImage.setEffect(dropShadow);
-        rightCardImage.setEffect(dropShadow);
-        leftCardImage.setVisible(true);
-        rightCardImage.setVisible(true);
+            leftCardImage.setEffect(dropShadow);
+            rightCardImage.setEffect(dropShadow);
+            leftCardImage.setVisible(true);
+            rightCardImage.setVisible(true);
+        });
     }
 
     /**
