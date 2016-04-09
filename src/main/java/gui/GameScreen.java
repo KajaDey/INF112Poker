@@ -252,7 +252,6 @@ public class GameScreen {
         Platform.runLater(task);
 
         holeCards = new ArrayList<>();
-        communityCards = new ArrayList<>();
         holeCards.add(leftCard);
         holeCards.add(rightCard);
         updateYourHandLabel();
@@ -560,6 +559,7 @@ public class GameScreen {
      */
     public void startNewHand() {
         printToLogField(" ------ New hand ------");
+        communityCards = new ArrayList<>();
 
         Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
         Runnable task = () -> {
