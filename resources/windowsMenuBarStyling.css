@@ -1,5 +1,8 @@
 .menu-bar {
     -fx-background-color: black;
+}
+
+.menu-bar .label {
     -fx-text-fill: white;
 }
 
