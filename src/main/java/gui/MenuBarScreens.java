@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -45,7 +46,9 @@ public class MenuBarScreens {
         pane.getChildren().add(label);
 
         window.setResizable(false);
+        window.setAlwaysOnTop(true);
         window.setScene(scene);
+        window.initModality(Modality.APPLICATION_MODAL);
         window.show();
 
     }
