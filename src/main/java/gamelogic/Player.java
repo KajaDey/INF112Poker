@@ -2,6 +2,7 @@ package gamelogic;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -186,6 +187,10 @@ public class Player extends User {
 
     public boolean isAllIn() {
         return allIn;
+    }
+
+    public Hand getHand(List<Card> communityCards) {
+        return new Hand(holeCards[0], holeCards[1], communityCards);
     }
 }
 

@@ -70,7 +70,7 @@ public class Game {
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
-            communityCards = getCommunityCards(deck);
+            communityCards = generateCommunityCards(deck);
             dealHoleCards(deck, playersStillInCurrentHand);
 
             playHand();
@@ -544,7 +544,7 @@ public class Game {
      * @param deck Deck to draw from
      * @return Array of community cards
      */
-    private Card[] getCommunityCards(Deck deck) {
+    private Card[] generateCommunityCards(Deck deck) {
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
@@ -597,12 +597,9 @@ public class Game {
         //Print all show down information to debugger
         printToDebugShowdown();
 
-        //Make an ArrayList with the IDs of the players still playing
-        List<Integer> IDStillPlaying = new ArrayList<>();
-        playersStillInCurrentHand.stream().forEach(player -> IDStillPlaying.add(player.getID()));
+        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards));
+        assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
 
-        //Give the (side)pot to the player(s)
-        handOutPot(IDStillPlaying);
         delay(4000);
 
         //If a player that was in this hand now has zero chips, it means he just busted
@@ -616,7 +613,8 @@ public class Game {
      *  Calculate who should get what from the pot and side pots
      * @param playerIDs Integer list of players competing for the pot
      */
-    private void handOutPot(List<Integer> playerIDs) {
+    private void deprecated(List<Integer> playerIDs) {
+
         int winnerID = findWinnerID(playerIDs);
         Player winner = getPlayerFromID(winnerID);
         long potShare = pot.getSharePotPlayerCanWin(winnerID);
