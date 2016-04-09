@@ -67,7 +67,6 @@ public class Player extends User {
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
-                assert amountToCall > 0 : "Negative number added to pot: " + highestAmountPutOnTable + "-" + putOnTableThisRound + "=" + amountToCall;
                 pot.addToPot(ID, amountToCall);
                 break;
 
