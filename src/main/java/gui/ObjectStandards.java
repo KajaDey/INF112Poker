@@ -220,14 +220,14 @@ public class ObjectStandards {
 
         if (os != null && !os.startsWith ("Windows"))
             menuBar.useSystemMenuBarProperty().set(true);
-        else {
+        /*else {
             menuBar.setMinWidth(1280);
             menuBar.setMinWidth(1280);
             menuBar.setMinHeight(50);
             menuBar.setMaxHeight(50);
             menuBar.setStyle(styling);
             menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
-        }
+        }*/
 
         return menuBar;
     }
