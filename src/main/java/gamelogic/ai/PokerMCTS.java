@@ -256,7 +256,6 @@ public class PokerMCTS {
 
             assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node for " + gameState.currentPlayer + " without passing decision node (AI is " + gameState.players.get(playerPosition) + ") after " + totalSearches + " searches.";
             if (!hasPassedDecisionNode && this instanceof AINode) {
-                assert gameState.communityCards.isEmpty() : "AI decision was at a node with community cards " + gameState.communityCards.stream().map(Object::toString).reduce(String::concat).get();
                 double[] evals = childNode.simulate(totalSearches, newGameState, true);
                 //System.out.println(this.getClass().getSimpleName() + " at search #" + totalSearches + ", has stacksize " + gameState.players.get(playerPosition).stackSize + ", currentBet " + gameState.players.get(playerPosition).currentBet + " and moves " + allMoves.stream().map(Object::toString).reduce(String::concat).get());
                 if (!criticalEvals.isPresent()) {
