@@ -39,7 +39,6 @@ public class GameState {
                      Map<Integer, String> names) {
         assert amountOfPlayers == positions.size();
 
-        System.out.println("Creating new gameState for " + amountOfPlayers + " players.");
         deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
         this.amountOfPlayers = amountOfPlayers;

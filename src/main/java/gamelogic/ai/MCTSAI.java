@@ -39,9 +39,7 @@ public class MCTSAI implements GameClient {
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         if (!gameState.isPresent()) {
-            System.out.println("AI was asked for decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
-            System.out.println("Adding holecards for id " + playerId + " at position " + positions.get().get(playerId));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
@@ -57,7 +55,6 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void startNewHand() {
-        System.out.println("MCTSAI: Starting new hand");
         gameState = Optional.empty();
         stackSizes = Optional.empty();
         positions = Optional.empty();
@@ -66,7 +63,6 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void playerBust(int playerID, int rank) {
-        System.out.println("MCTSAI: Player " + playerID + " is bust");
         amountOfPlayers--;
         gameState = Optional.empty();
         stackSizes = Optional.empty();
@@ -109,9 +105,7 @@ public class MCTSAI implements GameClient {
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
         assert names.get().size() == amountOfPlayers;
         if (!gameState.isPresent()) {
-            System.out.println("AI was sent a decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
-            System.out.println("Adding holecards for id " + this.playerId + " at position " + positions.get().get(this.playerId));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id

@@ -44,10 +44,7 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, false);
                 totalSearches++;
-                if (totalSearches % 25000 == 0) {
-                    //assert rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) == totalSearches :
-                    //"Searches for children: " + rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) + ", total searches: " + totalSearches;
-                    //assert !(totalSearches > rootNode.sizeOfTree() * 2) : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
+                if (totalSearches % 50000 == 0) {
                     assert rootNode.children.size() <= 50 && rootNode.children.size() >= 45  : "Rootnode for MCTS had " + rootNode.children.size() + " children.";
                     assert rootNode.children.get(0).get().children.size() <= 49 && rootNode.children.get(0).get().children.size() >= 44 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 44-49.";
                     assert rootNode.children.get(0).get().searches > 10;
