@@ -62,9 +62,12 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/oneTreeHill");
             pathsOfSeries.add("resources/nameList/orangeIsTheNewBlack");
             pathsOfSeries.add("resources/nameList/paradiseHotel.txt");
+            pathsOfSeries.add("resources/nameList/physicists.txt");
             pathsOfSeries.add("resources/nameList/presidents.txt");
+            pathsOfSeries.add("resources/nameList/programmingLanguageCreators.txt");
             pathsOfSeries.add("resources/nameList/rickAndMorty.txt");
             pathsOfSeries.add("resources/nameList/siliconValley.txt");
+            pathsOfSeries.add("resources/nameList/softwarePeople.txt");
             pathsOfSeries.add("resources/nameList/spiceGirls.txt");
             pathsOfSeries.add("resources/nameList/starWars.txt");
             pathsOfSeries.add("resources/nameList/suits.txt");
