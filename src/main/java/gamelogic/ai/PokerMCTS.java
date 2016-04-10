@@ -458,14 +458,14 @@ public class PokerMCTS {
 
         Collections.reverse(handsList);
         for (Player player : handsList) {
-            player.stackSize += pot.getSharePotPlayerCanWin(player.id);
+            player.stackSize += pot.getSharePlayerCanWin(player.id);
             player.contributedToPot = 0;
         }
 
         gameState.players.stream()
                 .filter(p -> !handsList.contains(p))
                 .forEach(p -> {
-                    p.stackSize += pot.getSharePotPlayerCanWin(p.id);
+                    p.stackSize += pot.getSharePlayerCanWin(p.id);
                     p.contributedToPot = 0;
                 });
 
