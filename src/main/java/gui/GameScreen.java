@@ -61,7 +61,6 @@ public class GameScreen {
 
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
-        addExitButton();
         addMenuBarToGameScreen();
     }
 
@@ -226,26 +225,6 @@ public class GameScreen {
         };
         Platform.runLater(task);
 
-    }
-
-    /**
-     * Adds a working exit button to the game screen. The button takes you back to the lobby screen
-     */
-    public void addExitButton(){
-        final String os = System.getProperty("os.name");
-        exitButton = ObjectStandards.makeStandardButton("Exit");
-        exitButton.setLayoutX(scene.getWidth() - 80);
-        if (!os.isEmpty()){
-            if (!os.startsWith("Windows"))
-                exitButton.setLayoutY(3);
-            else
-                exitButton.setLayoutY(30);
-        }
-
-
-        pane.getChildren().add(exitButton);
-
-        exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
     }
 
     public void addMenuBarToGameScreen(){
