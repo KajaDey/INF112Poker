@@ -181,20 +181,21 @@ public class GameState {
 
             // Small blind moves first post-flop
             if (playersToMakeDecision == 0) {
-                currentPlayer = players.get(0);
+                System.out.println("Everyone has made decisions");
+                currentPlayer = players.get(players.size() - 1);
             }
 
             for (int i = currentPlayer.position + 1; i < players.size(); i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    //System.out.println("Gamestate: currentplayer now has position " + i);
+                    System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
             for (int i = 0; i < currentPlayer.position; i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    //System.out.println("Gamestate: currentplayer now has position " + i);
+                    System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
