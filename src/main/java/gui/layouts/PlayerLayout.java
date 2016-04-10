@@ -72,7 +72,7 @@ public class PlayerLayout {
 
         //chipImage.setVisible(false);
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setImage(ImageViewer.getChipImage(null));
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(30);
 

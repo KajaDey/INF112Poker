@@ -46,13 +46,13 @@ public class OpponentLayout extends HBox{
         leftCardImage.setImage(backOfCards);
         rightCardImage.setImage(backOfCards);
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setImage(ImageViewer.getChipImage(null));
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(30);
 
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
-        chipImage.setVisible(false);
+        chipImage.setVisible(true);
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");

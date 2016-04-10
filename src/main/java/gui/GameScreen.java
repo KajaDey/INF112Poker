@@ -52,13 +52,11 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-    private long totalAmountOfChipsInPlay;
 
-    public GameScreen(int ID, int numberOfPlayers, long totalChipsInPlay) {
+    public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
         this.opponents = new HashMap<>();
-        this.totalAmountOfChipsInPlay = totalChipsInPlay;
 
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
@@ -365,12 +363,12 @@ public class GameScreen {
         Runnable task;
         if (ID == this.playerID) {
             task = () -> {
-                playerLayout.setLastMove(finalDecision, getChipImage(ID, decision));
+                playerLayout.setLastMove(finalDecision, getChipImage(decision));
                 playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
             };
         } else {
             task = () -> {
-                opponents.get(ID).setLastMove(finalDecision, getChipImage(ID, decision));
+                opponents.get(ID).setLastMove(finalDecision, getChipImage(decision));
                 opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
             };
         }
@@ -792,12 +790,12 @@ public class GameScreen {
      * @param id
      * @param decision
      */
-    private Image getChipImage(int id, Decision decision) {
+    private Image getChipImage(Decision decision) {
         switch(decision.move) {
             case CHECK:case FOLD: return null;
             case SMALL_BLIND: return ImageViewer.getChipImage("sb_image");
             case BIG_BLIND: return ImageViewer.getChipImage("bb_image");
-            case BET:case RAISE:case ALL_IN:
+            case BET:case RAISE:case ALL_IN:case CALL:
                 if (highestAmountPutOnTable <= currentBigBlind)
                     return ImageViewer.getChipImage("bb_image.png");
                 else if (highestAmountPutOnTable <= currentBigBlind * 3)
