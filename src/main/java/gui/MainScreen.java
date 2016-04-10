@@ -87,7 +87,7 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI");
+        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI", "Mixed");
         choiceBox.setValue("Simple-AI");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 

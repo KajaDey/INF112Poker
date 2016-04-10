@@ -39,7 +39,7 @@ public class Player extends User {
      * @param decision Move to execute
      * @param highestAmountPutOnTable
      */
-    public void act(Decision decision, long highestAmountPutOnTable, Pot pot, boolean preflop) {
+    public void act(Decision decision, long highestAmountPutOnTable, Pot pot, boolean preFlop) {
 
         long amountToCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
@@ -51,7 +51,7 @@ public class Player extends User {
 
             case FOLD:
                 numberOfPassiveMoves++;
-                if (preflop)
+                if (preFlop)
                     foldsPreFlop++;
                 break;
 

@@ -12,7 +12,7 @@ import java.util.*;
  * A controller to function as a layer between the GUI and the back end.
  */
 public class GameController {
-    public enum AIType { MCTS_AI, SIMPLE_AI }
+    public enum AIType { MCTS_AI, SIMPLE_AI, Mixed}
 
     private Game game;
     private Map<Integer, GameClient> clients;
@@ -108,10 +108,19 @@ public class GameController {
             int AI_id = i+1;
 
             GameClient aiClient;
-            if (gameSettings.getAIType() == AIType.MCTS_AI)
-                aiClient = new MCTSAI(AI_id);
-            else
-                aiClient = new SimpleAI(AI_id, 0.9);
+            double contemptFactor = 0.9;
+            switch (gameSettings.getAIType()) {
+                case MCTS_AI:
+                    aiClient = new MCTSAI(AI_id);
+                    break;
+                case SIMPLE_AI:
+                    aiClient = new SimpleAI(AI_id, contemptFactor);
+                    break;
+                case Mixed:
+                    aiClient = Math.random() > 0.5 ? new MCTSAI(AI_id) : new SimpleAI(AI_id, contemptFactor);
+                    break;
+                default: throw new IllegalStateException(); // Exception to please our java overlords
+            }
 
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
             clients.put(AI_id, aiClient);
@@ -173,7 +182,7 @@ public class GameController {
      *
      * @param showdownStats Information about pot (and side pots) and who won
      */
-    public void showDown(ShowdownStats showdownStats) {
+    public void showdown(ShowdownStats showdownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
             c.showdown(showdownStats);
@@ -309,7 +318,6 @@ public class GameController {
     public void preShowdownWinner(int winnerID, long potSize) {
         guiClient.preShowdownWinner(winnerID, potSize);
     }
-
     /**
      * Called every time a player is bust to inform all clients
      * @param bustPlayerID

@@ -12,7 +12,7 @@ import java.util.Optional;
  * A class to represent a hand (2-7 cards).
  */
 public class Hand implements Comparable<Hand> {
-    private List<Card> holeCards = new ArrayList<Card>(2);
+    private List<Card> holeCards = new ArrayList<>(2);
     private List<Card> communityCards;
     private List<Card> allCards = new ArrayList<>();
 

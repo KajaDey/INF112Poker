@@ -57,20 +57,20 @@ public class GUIClient implements GameClient {
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
             GUIMain.debugPrint("You don't have this much in your stack");
-            gameScreen.setErrorStateOfAmountTextfield(true);
+            gameScreen.setErrorStateOfAmountTextField(true);
             return;
         }
 
         if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
             GUIMain.debugPrint("Raise is too small");
-            gameScreen.setErrorStateOfAmountTextfield(true);
+            gameScreen.setErrorStateOfAmountTextField(true);
             return;
         }
 
         if (move == Decision.Move.BET && moveSize < bigBlind) {
             GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
-            gameScreen.setErrorStateOfAmountTextfield(true);
+            gameScreen.setErrorStateOfAmountTextField(true);
             return;
         }
 
@@ -90,7 +90,7 @@ public class GUIClient implements GameClient {
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
 
-        gameScreen.setErrorStateOfAmountTextfield(false);
+        gameScreen.setErrorStateOfAmountTextField(false);
 
         notifyAll();
     }

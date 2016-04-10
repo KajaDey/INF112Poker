@@ -11,12 +11,12 @@ import gamelogic.GameController;
  */
 public class GameSettings {
 
-    public long startStack;
-    public long bigBlind;
-    public long smallBlind;
-    public int maxNumberOfPlayers;
-    public int levelDuration;
-    public GameController.AIType AIType;
+    private long startStack;
+    private long bigBlind;
+    private long smallBlind;
+    private int maxNumberOfPlayers;
+    private int levelDuration;
+    private GameController.AIType AIType;
 
     /**
      *
@@ -28,7 +28,7 @@ public class GameSettings {
      * @param aiType The type of AI (Simple/MCTS)
      */
 
-    public GameSettings(long startStack, int bigBlind, int smallBlind, int maxNumberOfPlayers, int levelDuration, GameController.AIType aiType) {
+    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, GameController.AIType aiType) {
         this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;

@@ -17,13 +17,16 @@ import java.util.Random;
 public class NameGenerator {
 
 
-    private static String filePath = "resources/nameList/names.txt";
-    static ArrayList<String> names = new ArrayList<String>();
-    static ArrayList<String> characterNames = new ArrayList<String>();
-    static ArrayList<String> pathsOfSeries = new ArrayList<String>();
-    static String pathOfSeries = "";
-    static Random random = new Random();
+    private static String filePath;
+    public static ArrayList<String> names = new ArrayList<>();
+    public static ArrayList<String> characterNames = new ArrayList<>();
+    public static ArrayList<String> pathsOfSeries = new ArrayList<>();
+    public static String pathOfSeries = "";
+    public  static Random random = new Random();
 
+    static {
+        filePath = "resources/nameList/names.txt";
+    }
 
     public static String getRandomName(){
         if (pathOfSeries.isEmpty() || characterNames.isEmpty())
@@ -62,9 +65,12 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/oneTreeHill");
             pathsOfSeries.add("resources/nameList/orangeIsTheNewBlack");
             pathsOfSeries.add("resources/nameList/paradiseHotel.txt");
+            pathsOfSeries.add("resources/nameList/physicists.txt");
             pathsOfSeries.add("resources/nameList/presidents.txt");
+            pathsOfSeries.add("resources/nameList/programmingLanguageCreators.txt");
             pathsOfSeries.add("resources/nameList/rickAndMorty.txt");
             pathsOfSeries.add("resources/nameList/siliconValley.txt");
+            pathsOfSeries.add("resources/nameList/softwarePeople.txt");
             pathsOfSeries.add("resources/nameList/spiceGirls.txt");
             pathsOfSeries.add("resources/nameList/starWars.txt");
             pathsOfSeries.add("resources/nameList/suits.txt");

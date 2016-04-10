@@ -68,8 +68,19 @@ public class ButtonListeners {
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
                                              String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aiChoice) {
 
-        GameController.AIType aiType = (aiChoice.equals("MCTS-AI") ? GameController.AIType.MCTS_AI : GameController.AIType.SIMPLE_AI);
-
+        GameController.AIType aiType;
+        if (aiChoice.equals("Simple-AI")) {
+            aiType = GameController.AIType.SIMPLE_AI;
+        }
+        else if (aiChoice.equals("MCTS-AI")) {
+            aiType = GameController.AIType.MCTS_AI;
+        }
+        else if (aiChoice.equals("Mixed")) {
+            aiType = GameController.AIType.Mixed;
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
@@ -112,10 +123,18 @@ public class ButtonListeners {
         try {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null) {
                 GameController.AIType type;
-                if (choiceBox.equals("Simple-AI"))
+                if (choiceBox.equals("Simple-AI")) {
                     type = GameController.AIType.SIMPLE_AI;
-                else
+                }
+                else if (choiceBox.equals("MCTS-AI")) {
                     type = GameController.AIType.MCTS_AI;
+                }
+                else if (choiceBox.equals("Mixed")) {
+                    type = GameController.AIType.Mixed;
+                }
+                else {
+                    throw new IllegalArgumentException();
+                }
 
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), type);
                 gameSettings = gameController.gameSettings;

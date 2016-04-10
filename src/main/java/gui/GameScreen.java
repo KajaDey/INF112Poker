@@ -363,12 +363,12 @@ public class GameScreen {
         Runnable task;
         if (ID == this.playerID) {
             task = () -> {
-                playerLayout.setLastMoveLabel(finalDecision);
+                playerLayout.setLastMove(finalDecision, getChipImage(ID));
                 playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
             };
         } else {
             task = () -> {
-                opponents.get(ID).setLastMoveLabel(finalDecision);
+                opponents.get(ID).setLastMove(finalDecision, getChipImage(ID));
                 opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
             };
         }
@@ -473,7 +473,7 @@ public class GameScreen {
         }
 
         //Reset the error state of the amountTextField (remove potential red frame)
-        setErrorStateOfAmountTextfield(false);
+        setErrorStateOfAmountTextField(false);
 
         //Update stack size of the player that acted
         stackSizes.put(ID, newStackSize);
@@ -521,18 +521,18 @@ public class GameScreen {
 
         Runnable task = () -> {
             this.highestAmountPutOnTable = 0;
-            playerLayout.setLastMoveLabel("");
+            playerLayout.setLastMove("", null);
             playerLayout.setCheckCallButton("Check");
             playerLayout.setBetRaiseButton("Bet");
             this.setAmountTextfield(currentBigBlind + "");
-            this.setErrorStateOfAmountTextfield(false);
+            this.setErrorStateOfAmountTextField(false);
 
             for (Integer id : opponents.keySet()) {
-                opponents.get(id).setLastMoveLabel("");
+                opponents.get(id).setLastMove("", null);
             }
         };
         Platform.runLater(task);
-        playerLayout.updateSliderValues(stackSizes.get(0));
+        updateSliderValues();
     }
 
     /**
@@ -645,7 +645,7 @@ public class GameScreen {
      * @param message
      */
     public void setAmountTextfield(String message) {
-        Runnable task = () -> playerLayout.setAmountTextfield(message);
+        Runnable task = () -> playerLayout.setAmountTextField(message);
         Platform.runLater(task);
     }
 
@@ -653,7 +653,7 @@ public class GameScreen {
      *  Set the border around the amount textfield to red, indicating an error
      * @param error
      */
-    public void setErrorStateOfAmountTextfield(boolean error) {
+    public void setErrorStateOfAmountTextField(boolean error) {
         Runnable task;
         if (error) {
             task = () -> playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
@@ -783,5 +783,31 @@ public class GameScreen {
             else
                 Platform.runLater(() -> opponents.get(id).setCardImage(leftCard, rightCard));
         }
+    }
+
+    /**
+     *  Get the correct image for this decision (based ont the decision and the amount)
+     */
+    private Image getChipImage(int id) {
+        if (putOnTable.get(id) == 0)
+            return null;
+        else if (putOnTable.get(id) <= currentBigBlind / 2)
+            return ImageViewer.getChipImage("sb_image");
+        if (putOnTable.get(id) <= currentBigBlind)
+            return ImageViewer.getChipImage("bb_image");
+        else if (putOnTable.get(id) <= currentBigBlind * 3)
+            return ImageViewer.getChipImage("poker1");
+        else if (putOnTable.get(id) <= currentBigBlind * 5)
+            return ImageViewer.getChipImage("poker2");
+        else if (putOnTable.get(id) <= currentBigBlind * 8)
+            return ImageViewer.getChipImage("poker3");
+        else if (putOnTable.get(id) <= currentBigBlind * 12)
+            return ImageViewer.getChipImage("poker4");
+        else if (putOnTable.get(id) <= currentBigBlind * 20)
+            return ImageViewer.getChipImage("poker6");
+        else if(putOnTable.get(id) <= currentBigBlind * 50)
+            return ImageViewer.getChipImage("poker7");
+        else
+            return ImageViewer.getChipImage("poker8");
     }
 }
