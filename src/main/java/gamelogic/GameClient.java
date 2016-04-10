@@ -111,7 +111,7 @@ public interface GameClient {
 
     /**
      *  Called when the game ends (only 1 player has chips left)
-     *  @param winnerID ID of winner
+     * @param winnerID ID of winner
      */
-    void gameOver(int winnerID);
+    void gameOver(Statistics winnerID);
 }

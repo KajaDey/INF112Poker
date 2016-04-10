@@ -1,7 +1,6 @@
 package gamelogic;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,12 +13,11 @@ public class Player extends User {
     private long stackSize;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean folded = false, allIn = false, hasActed = false;
+    private boolean allIn = false, hasActed = false;
 
     //Statistics
-    private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
-    private int numberOfAgressiveMoves = 0, numberOfPassiveMoves = 0;
-    private long highestStacksize = 0;
+    private int handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
+    private int numberOfAggressiveMoves = 0, numberOfPassiveMoves = 0;
     private Hand bestHand;
 
     public Player(String name, long stackSize, int ID) {
@@ -55,7 +53,6 @@ public class Player extends User {
                 numberOfPassiveMoves++;
                 if (preflop)
                     foldsPreFlop++;
-                this.folded = true;
                 break;
 
             case CHECK:
@@ -72,21 +69,21 @@ public class Player extends User {
 
             case BET:
                 assert putOnTableThisRound == 0;
-                numberOfAgressiveMoves++;
+                numberOfAggressiveMoves++;
                 this.putOnTableThisRound = decision.size;
                 stackSize -= decision.size;
                 pot.addToPot(ID, decision.size);
                 break;
 
             case RAISE:
-                numberOfAgressiveMoves++;
+                numberOfAggressiveMoves++;
                 stackSize -= (amountToCall + decision.size);
                 putOnTableThisRound = highestAmountPutOnTable + decision.size;
                 pot.addToPot(ID, amountToCall + decision.size);
                 break;
 
             case ALL_IN:
-                numberOfAgressiveMoves++;
+                numberOfAggressiveMoves++;
                 pot.addToPot(ID, stackSize);
                 putOnTableThisRound += stackSize;
                 stackSize = 0;
@@ -149,8 +146,6 @@ public class Player extends User {
      */
     public void incrementStack(long size) {
         stackSize += size;
-        if (stackSize > highestStacksize)
-            highestStacksize = stackSize;
     }
 
     /**
@@ -161,16 +156,53 @@ public class Player extends User {
         hasActed = false;
     }
 
+    /**
+     * @return true if the player is currently all in
+     */
     public boolean isAllIn() {
         return allIn;
     }
 
+    /**
+     *
+     * @param communityCards
+     * @return
+     */
     public Hand getHand(List<Card> communityCards) {
         return new Hand(holeCards[0], holeCards[1], communityCards);
     }
 
+    /**
+     * @return True if the player has acted this round (or is all in)
+     */
     public boolean hasActed() {
         return allIn || hasActed;
     }
+
+    /**
+     *  Notify the player when he wins a hand (or a side pot)
+     * @param hand The hand the player won with
+     * @param pot  The size of the (side)pot he won
+     */
+    public void handWon(Hand hand, long pot) {
+        handsWon++;
+
+        //Update the best hand
+        if (bestHand == null)
+            bestHand = hand;
+        else if (hand.compareTo(bestHand) > 0)
+            bestHand = hand;
+
+        incrementStack(pot);
+    }
+
+    /** Statistics-getters  **/
+    public int handsWon() { return handsWon; }
+    public int handsPlayed() { return handsPlayed; }
+    public int preFlopFolds () { return foldsPreFlop; }
+    public int aggressiveMoves() { return numberOfAggressiveMoves; }
+    public int passiveMoves() { return numberOfPassiveMoves; }
+    public String getBestHand() { return bestHand == null ? "No hands won" : new HandCalculator(bestHand).getBestHandString(); }
+
 }
 

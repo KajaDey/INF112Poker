@@ -80,10 +80,6 @@ public class BoardLayout {
         this.winnerLabel.setText(winnerLabel);
     }
 
-    /**
-     * @return The current text of the winner label
-     */
-    public String getWinnerLabel() { return winnerLabel.getText(); }
 
     /**
      *
@@ -103,7 +99,7 @@ public class BoardLayout {
      * @param card2Image
      * @param card3Image
      */
-    public void setFlop(Image card1Image, Image card2Image, Image card3Image) {
+    public void showFlop(Image card1Image, Image card2Image, Image card3Image) {
         communityCards[0].setImage(card1Image);
         communityCards[0].setVisible(true);
         communityCards[1].setImage(card2Image);
@@ -118,7 +114,7 @@ public class BoardLayout {
      *
      * @param turn
      */
-    public void setTurn(Image turn) {
+    public void showTurn(Image turn) {
         communityCards[3].setImage(turn);
         communityCards[3].setVisible(true);
     }
@@ -129,7 +125,7 @@ public class BoardLayout {
      *
      * @param river
      */
-    public void setRiver(Image river) {
+    public void showRiver(Image river) {
         communityCards[4].setImage(river);
         communityCards[4].setVisible(true);
     }

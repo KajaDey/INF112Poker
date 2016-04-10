@@ -295,7 +295,7 @@ public class GameScreen {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setFlop(card1Image,card2Image,card3Image));
+        Platform.runLater(() -> boardLayout.showFlop(card1Image,card2Image,card3Image));
 
         communityCards.add(card1);
         communityCards.add(card2);
@@ -311,7 +311,7 @@ public class GameScreen {
      */
     public void displayTurn(Card turnCard) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setTurn(turnImage));
+        Platform.runLater(() -> boardLayout.showTurn(turnImage));
         communityCards.add(turnCard);
         updateYourHandLabel();
 
@@ -325,7 +325,7 @@ public class GameScreen {
      */
     public void displayRiver(Card riverCard) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setRiver(riverImage));
+        Platform.runLater(() -> boardLayout.showRiver(riverImage));
         communityCards.add(riverCard);
         updateYourHandLabel();
 
@@ -586,16 +586,22 @@ public class GameScreen {
     /**
      * Called when the game is over. Display a message with who the winner is
      *
-     * @param winnerID
+     * @param stats Statistics of the game just played
      */
-    public void gameOver(int winnerID){
+    public void gameOver(Statistics stats){
+        int winnerID = stats.getWinnerID();
+
         Runnable task = () -> {
             VBox vBox = new VBox();
             Button backToMainScreen = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
             backToMainScreen.setMinWidth(200);
 
-            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " is the winner!","");
+            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
             endGameScreen.setFont(new Font("Areal", 30));
+
+            Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");
+            statsLabel.setWrapText(true);
+            statsLabel.setFont(new Font("Areal", 15));
 
             Stage endGame = new Stage();
             endGame.setAlwaysOnTop(true);
@@ -615,8 +621,8 @@ public class GameScreen {
                 ButtonListeners.returnToMainMenuButtonListener();
             });
 
-            vBox.getChildren().addAll(endGameScreen,backToMainScreen);
-            Scene scene = new Scene(vBox,600,100);
+            vBox.getChildren().addAll(endGameScreen, statsLabel, backToMainScreen);
+            Scene scene = new Scene(vBox,600,350);
             endGame.setScene(scene);
             endGame.show();
         };
@@ -734,7 +740,7 @@ public class GameScreen {
      * @param winnerID  The player that was left in the hand
      * @param potsize   The amount the player won
      */
-    public void preShowDownWinner(int winnerID, long potsize) {
+    public void preShowdownWinner(int winnerID, long potsize) {
         Platform.runLater(() ->  {
             boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
         });
@@ -748,18 +754,6 @@ public class GameScreen {
         for (Card c : communityCards)
             communityCardsText += c.toString() + " ";
         printToLogField(communityCardsText);
-    }
-
-    /**
-     *  Print out who won a side pot (append to GUI, print in logField)
-     * @param id
-     * @param potSize
-     */
-    public void sidePotWinner(int id, long potSize) {
-        String current = boardLayout.getWinnerLabel() + "\n";
-        Platform.runLater(() -> boardLayout.setWinnerLabel(current + names.get(id) + " won a side pot of " + potSize));
-
-        printToLogField(names.get(id) + " got a side pot of " + potSize);
     }
 
     /**
