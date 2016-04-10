@@ -195,7 +195,9 @@ public class SimpleAI implements GameClient {
     public void gameOver(int winnerID) { }
 
     @Override
-    public void setPlayerNames(Map<Integer, String> names) { }
+    public void setPlayerNames(Map<Integer, String> names) {
+        assert names.size() == amountOfPlayers : "SimpleAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players playing.";
+    }
 
     public int getID() {
         return playerId;
@@ -214,6 +216,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
+        assert stackSizes.size() == amountOfPlayers;
         assert stackSizes.get(this.playerId) >= 0 : "AI was sent a stacksize of " + stackSizes.get(this.playerId);
         for (int playerId : stackSizes.keySet()) {
             assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);

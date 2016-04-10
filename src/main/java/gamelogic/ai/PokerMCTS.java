@@ -45,14 +45,14 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, false);
                 totalSearches++;
-                if (totalSearches % 50000 == 0) {
+                if (totalSearches % 15000 == 0) {
                     //assert rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) == totalSearches :
                     //"Searches for children: " + rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) + ", total searches: " + totalSearches;
-                    assert !(totalSearches > rootNode.sizeOfTree() * 2) : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
-                    assert rootNode.children.size() == 50;
-                    assert rootNode.children.get(0).get().children.size() == 49 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 49.";
+                    //assert !(totalSearches > rootNode.sizeOfTree() * 2) : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
+                    assert rootNode.children.size() <= 50 && rootNode.children.size() >= 45  : "Rootnode for MCTS had " + rootNode.children.size() + " children.";
+                    assert rootNode.children.get(0).get().children.size() <= 49 && rootNode.children.get(0).get().children.size() >= 44 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 44-49.";
                     assert rootNode.children.get(0).get().searches > 10;
-                    assert rootNode.children.get(0).get().children.get(0).get().searches >= 2;
+                    assert rootNode.children.get(0).get().children.get(0).isPresent();
                     printProgressReport();
                 }
             }
@@ -68,7 +68,7 @@ public class PokerMCTS {
 
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
-        assert criticalEvals.get().size() == allDecisions.size() : "Has values for " + criticalEvals.get().size() + " moves, but " + allDecisions.size() + " moves";
+        assert criticalEvals.get().size() == allDecisions.size() : "Has values for " + criticalEvals.get().size() + " moves, but " + allDecisions.size() + " moves (" + allDecisions + ")";
         double bestValue = 0.0;
 
         double[] values = new double[criticalEvals.get().size()];
@@ -102,7 +102,7 @@ public class PokerMCTS {
         for (int i = 0; i < criticalEvals.get().size(); i++) {
             GameState newGameState = new GameState(gameState);
             newGameState.makeGameStateChange(allDecisions.get(i));
-            System.out.printf("%-25s: %.1f%%, %s", allDecisions.get(i), 100 * criticalEvals.get().get(i).eval / criticalEvals.get().get(i).searches, criticalEvals.get().get(i));
+            System.out.printf("%-25s: %.2f%%, %s", allDecisions.get(i), 100 * criticalEvals.get().get(i).eval / criticalEvals.get().get(i).searches, criticalEvals.get().get(i));
             System.out.println();
             //System.out.println("\t" + newGameState.allDecisions().map(decisions -> decisions.stream().map(Object::toString).reduce("", (str1, str2) -> str1 + str2 + "\n\t")).orElse("No moves"));
         }
@@ -479,14 +479,14 @@ public class PokerMCTS {
         for (Player player : gameState.players) {
             player.contributedToPot = 0;
         }
-/*
+
         gameState.players.stream()
                 .filter(p -> !handsList.contains(p))
                 .forEach(p -> {
                     p.stackSize += pot.getSharePlayerCanWin(p.id);
                     p.contributedToPot = 0;
                 });
-*/
+
         assert pot.getPotSize() == 0 : "Still " + pot.getPotSize() + " chips left in pot";
 
         for (int i = 0; i < gameState.players.size(); i++) {

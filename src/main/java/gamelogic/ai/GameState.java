@@ -122,6 +122,9 @@ public class GameState {
             deck.remove(((CardDealtToTable)(move)).card);
             assert communityCards.size() <= 5;
             if (communityCards.size() == 3 || communityCards.size() == 4 || communityCards.size() == 5) {
+                for (Player player : players) {
+                    player.currentBet = 0;
+                }
                 playersToMakeDecision = playersLeftInHand;
             }
         }
@@ -138,7 +141,7 @@ public class GameState {
                     break;
                 case CALL:
                     playersToMakeDecision--;
-                    currentPlayer.putInPot(currentPlayer.currentBet);
+                    currentPlayer.putInPot(Math.min(currentPlayer.stackSize, currentPlayer.currentBet));
                     break;
                 case BET: case RAISE:
                     assert decision.size >= currentPlayer.minimumRaise;
@@ -159,12 +162,20 @@ public class GameState {
                         player.currentBet += currentPlayer.stackSize;
                         player.minimumRaise = Math.max(currentPlayer.stackSize, player.minimumRaise); // TODO: Everyone must match the all-in to raise further. May not be correct behaviour
                     });
+                    playersLeftInHand--;
+                    if (currentPlayer.currentBet > currentPlayer.stackSize) {
+                        System.out.println("All in was a call");;
+                        playersToMakeDecision--;
+                    }
+                    else {
+                        System.out.println("All in was a raise");
+                        playersToMakeDecision = playersLeftInHand;
+                    }
+                    playersAllIn++;
 
                     currentPlayer.putInPot(currentPlayer.stackSize);
                     currentPlayer.isAllIn = true;
-                    playersLeftInHand--;
-                    playersToMakeDecision = playersLeftInHand; // TODO: Everyone must make a new decision, even if it was just a call. This may not be correct behaviour
-                    playersAllIn++;
+
                     break;
                 case BIG_BLIND: case SMALL_BLIND:
                     System.out.println("Received " + decision);
@@ -186,25 +197,27 @@ public class GameState {
 
             // Small blind moves first post-flop
             if (playersToMakeDecision == 0) {
-                System.out.println("Everyone has made decisions");
+                //System.out.println("Everyone has made decisions");
                 currentPlayer = players.get(players.size() - 1);
+                for (Player player : players) {
+                    player.currentBet = 0;
+                }
             }
 
             for (int i = currentPlayer.position + 1; i < players.size(); i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    System.out.println("Gamestate: currentplayer now has position " + i);
+                    //System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
             for (int i = 0; i < currentPlayer.position; i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    System.out.println("Gamestate: currentplayer now has position " + i);
+                    //System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
-            //assert playersAllIn > 0 : "MonteCarloAI: Player made decision " + decision + " when it was the only player playing (amountOfPlayers=" + amountOfPlayers + ", playersInHand=" + playersLeftInHand + ", playersAllIn=" + playersAllIn;
         }
     }
 
@@ -256,16 +269,18 @@ public class GameState {
             assert playersLeftInHand > 0: "Trying to generate possible decisions for player, when there are no players left (" +
                     playersAllIn + " players all in, " + playersToMakeDecision + " players to make decisions)";
             assert currentPlayer.isInHand && !currentPlayer.isAllIn : "Asked for decisions for " + currentPlayer + ", but player was not in hand. isAllIn=" + currentPlayer.isAllIn + ", isInHand=" + currentPlayer.isInHand;
-            assert currentPlayer.stackSize > 0;
+            assert currentPlayer.stackSize > 0 : currentPlayer + " has a stacksize of " + currentPlayer.stackSize;
             assert currentPlayer.minimumRaise > 0;
 
-            decisions.add(new PlayerDecision(new Decision(Decision.Move.FOLD)));
             if (currentPlayer.currentBet > getCurrentPot() || currentPlayer.currentBet > currentPlayer.stackSize / 2) {
                 // Only allow the AI to go all in when it needs to
                 decisions.add(new PlayerDecision(new Decision(Decision.Move.ALL_IN)));
             }
             if (currentPlayer.currentBet == 0) {
                 decisions.add(new PlayerDecision(new Decision(Decision.Move.CHECK)));
+            }
+            else {
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.FOLD)));
             }
             if (currentPlayer.currentBet > 0 && currentPlayer.stackSize > currentPlayer.currentBet) {
                 decisions.add(new PlayerDecision(new Decision(Decision.Move.CALL)));

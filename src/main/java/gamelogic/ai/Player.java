@@ -49,7 +49,7 @@ public class Player {
         assert amount > 0 : "AI tried to put " + amount + " into pot.";
         stackSize -= amount;
         contributedToPot += amount;
-        assert stackSize >= 0 : "Player " + id + " at position " + position + " has a stacksize of " + stackSize;
+        assert stackSize >= 0 : "Player " + name + " with id " + id + " at position " + position + " has a stacksize of " + stackSize;
     }
 
     @Override
