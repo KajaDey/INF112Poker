@@ -1,12 +1,20 @@
 package gui;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * This meaning of this class is to create standard gui objects that will be used throughout the
@@ -277,6 +285,14 @@ public class ObjectStandards {
             try {
                 menuBarScreens.createScreenForLicense(cardSpriteLicense.getText());
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        aboutTexasHoldem.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Texas_hold_%27em"));
+            } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
         });
