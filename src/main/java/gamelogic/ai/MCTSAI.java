@@ -3,13 +3,14 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gamelogic.ShowDownStats;
 import gamelogic.ai.SimpleAI;
 import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.*;
 
 /**
- * Created by morten on 11.03.16.
+ * An AI using monte carlo tree search to choose decisions
  */
 public class MCTSAI implements GameClient {
 
@@ -41,8 +42,7 @@ public class MCTSAI implements GameClient {
             System.out.println("AI was asked for decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
             System.out.println("Adding holecards for id " + playerId + " at position " + positions.get().get(playerId));
-            gameState.get().players.get(positions.get().get(playerId)).holeCards.addAll(holeCards);
-            gameState.get().deck.removeAll(holeCards);
+            gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
         PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, holeCards);
@@ -112,8 +112,7 @@ public class MCTSAI implements GameClient {
             System.out.println("AI was sent a decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
             System.out.println("Adding holecards for id " + this.playerId + " at position " + positions.get().get(this.playerId));
-            gameState.get().players.get(positions.get().get(this.playerId)).holeCards.addAll(holeCards);
-            gameState.get().deck.removeAll(holeCards);
+            gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id
                 : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
@@ -121,7 +120,9 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) { }
+    public void showdown(ShowDownStats showDownStats) {
+
+    }
 
     @Override
     public void setBigBlind(long bigBlind) {
@@ -151,11 +152,11 @@ public class MCTSAI implements GameClient {
     @Override
     public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         assert gameState.isPresent();
-        assert gameState.get().communityCards.isEmpty() && gameState.get().playersToMakeDecision == 0;
+        assert gameState.get().communityCards.isEmpty() && gameState.get().getPlayersToMakeDecision() == 0;
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card1));
-        assert gameState.get().playersToMakeDecision == 0;
+        assert gameState.get().getPlayersToMakeDecision() == 0;
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card2));
-        assert gameState.get().playersToMakeDecision == 0;
+        assert gameState.get().getPlayersToMakeDecision() == 0;
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card3));
     }
 
@@ -163,14 +164,14 @@ public class MCTSAI implements GameClient {
     public void setTurn(Card turn, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 3 : "MCTS received turn card when it had " + gameState.get().communityCards.size();
-        assert gameState.get().playersToMakeDecision == 0 : "MCTS received turn card when " + gameState.get().playersToMakeDecision + " players still need to make decisions";
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received turn card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
     }
 
     @Override
     public void setRiver(Card river, long currentPotSize) {
         assert gameState.isPresent();
-        assert gameState.get().communityCards.size() == 4 && gameState.get().playersToMakeDecision == 0;
+        assert gameState.get().communityCards.size() == 4 && gameState.get().getPlayersToMakeDecision() == 0;
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
 
     }

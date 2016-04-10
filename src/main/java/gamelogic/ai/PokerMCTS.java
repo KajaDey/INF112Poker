@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by morten on 04.04.16.
+ * Class to represent a single instance of a monte carlo tree search.
  */
 public class PokerMCTS {
 
     public final int playerId;
     public final int playerPosition;
     public final int amountOfPlayers;
-    public final AbstractNode rootNode;
+    private final AbstractNode rootNode;
     private final GameState initialGameState;
 
     private Optional<ArrayList<NodeEval>> criticalEvals = Optional.empty(); // Evaluation and amount of searches done for each possible move at the critical node.
@@ -66,7 +66,6 @@ public class PokerMCTS {
             }
         }
 
-        gameState.playersGivenHolecards = amountOfPlayers;
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
         assert criticalEvals.get().size() == allDecisions.size() : "Has values for " + criticalEvals.get().size() + " moves, but " + allDecisions.size() + " moves";
@@ -98,7 +97,6 @@ public class PokerMCTS {
                 gameState.giveHoleCards(player.id);
             }
         }
-        gameState.playersGivenHolecards = gameState.amountOfPlayers;
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
         for (int i = 0; i < criticalEvals.get().size(); i++) {

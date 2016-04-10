@@ -24,10 +24,15 @@ public class GameState {
 
     public final long allChipsOnTable;
 
-    public int playersGivenHolecards = 1;
+    private int playersGivenHolecards = 0;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
     private int playersAllIn = 0;
-    public int playersToMakeDecision; // Players left to make decision in this betting round
+
+    public int getPlayersToMakeDecision() {
+        return playersToMakeDecision;
+    }
+
+    private int playersToMakeDecision; // Players left to make decision in this betting round
 
 
     public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
@@ -279,11 +284,23 @@ public class GameState {
         }
     }
 
+    /**
+     * Gives two random hole cards to the given playerId
+     * @param playerId
+     */
     public void giveHoleCards(int playerId) {
+        giveHoleCards(playerId, Arrays.asList(deck.remove((int)(Math.random() * deck.size())), deck.remove((int)(Math.random() * deck.size()))));
+    }
+
+    /*
+     * Gives the holecards to the player
+     */
+    public void giveHoleCards(int playerId, List<Card> holeCards) {
         Player player = players.stream().filter(p -> p.id == playerId).findFirst().get();
         assert player.holeCards.size() == 0;
-        player.holeCards.add(deck.remove(deck.size() - 1));
-        player.holeCards.add(deck.remove(deck.size() - 1));
+        player.holeCards.addAll(holeCards);
+        deck.removeAll(holeCards);
+        playersGivenHolecards++;
     }
 
     // Returns the kind of decision that needs to be done in this gamestate
