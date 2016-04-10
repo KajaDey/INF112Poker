@@ -467,6 +467,7 @@ public class PokerMCTS {
                     p.contributedToPot = 0;
                 });
 
+        assert pot.getPotSize() == 0 : "Still " + pot.getPotSize() + " chips left in pot";
 
         for (int i = 0; i < gameState.players.size(); i++) {
             assert gameState.players.get(i).position == i;

@@ -3,7 +3,7 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
-import gamelogic.ShowDownStats;
+import gamelogic.ShowdownStats;
 import gamelogic.ai.SimpleAI;
 import sun.java2d.pipe.SpanShapeRenderer;
 
@@ -120,7 +120,7 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void showdown(ShowDownStats showDownStats) {
+    public void showdown(ShowdownStats showdownStats) {
 
     }
 
