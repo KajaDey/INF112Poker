@@ -17,13 +17,16 @@ import java.util.Random;
 public class NameGenerator {
 
 
-    private static String filePath = "resources/nameList/names.txt";
-    static ArrayList<String> names = new ArrayList<String>();
-    static ArrayList<String> characterNames = new ArrayList<String>();
-    static ArrayList<String> pathsOfSeries = new ArrayList<String>();
-    static String pathOfSeries = "";
-    static Random random = new Random();
+    private static String filePath;
+    public static ArrayList<String> names = new ArrayList<>();
+    public static ArrayList<String> characterNames = new ArrayList<>();
+    public static ArrayList<String> pathsOfSeries = new ArrayList<>();
+    public static String pathOfSeries = "";
+    public  static Random random = new Random();
 
+    static {
+        filePath = "resources/nameList/names.txt";
+    }
 
     public static String getRandomName(){
         if (pathOfSeries.isEmpty() || characterNames.isEmpty())

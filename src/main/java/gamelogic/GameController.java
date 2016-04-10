@@ -173,7 +173,7 @@ public class GameController {
      *
      * @param showdownStats Information about pot (and side pots) and who won
      */
-    public void showDown(ShowdownStats showdownStats) {
+    public void showdown(ShowdownStats showdownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
             c.showdown(showdownStats);
@@ -309,7 +309,6 @@ public class GameController {
     public void preShowdownWinner(int winnerID, long potSize) {
         guiClient.preShowdownWinner(winnerID, potSize);
     }
-
     /**
      * Called every time a player is bust to inform all clients
      * @param bustPlayerID
