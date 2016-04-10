@@ -62,8 +62,7 @@ public class Pot {
         ArrayList<Player> winners = getPotWinners(players, communityCards);
 
         //Make a copy of the winners array for use in showdown stats
-        ArrayList<Player> winnersCopy = new ArrayList<>();
-        winners.stream().forEach(p -> winnersCopy.add(p));
+        ArrayList<Player> winnersCopy = new ArrayList<>(winners);
 
         long size = 0;
 

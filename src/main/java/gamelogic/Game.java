@@ -606,13 +606,19 @@ public class Game {
     }
 
     public void refreshAllStackSizes() {
+        long totalChipsInPlay = 0;
         HashMap<Integer, Long> stacks = new HashMap<>();
 
         for (Player p : players)
-            if (p.getStackSize() > 0)
+            if (p.getStackSize() > 0) {
                 stacks.put(p.getID(), p.getStackSize());
+                totalChipsInPlay += p.getStackSize();
+            }
 
         gameController.setStackSizes(stacks);
+
+        totalChipsInPlay += pot.getPotSize();
+        assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too much chips in play, " + totalChipsInPlay;
     }
 
     public void printAllPlayerStacks() {
