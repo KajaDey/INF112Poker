@@ -24,7 +24,7 @@ import java.util.*;
 public class GameScreen {
 
    // BorderPane borderPane;
-    Scene scene;
+    private Scene scene;
     private int playerID;
     private int [] positions;
     private int numberOfOpponentsAddedToTheGame = 0;
@@ -34,7 +34,7 @@ public class GameScreen {
 
     //Storagevariables
     private long highestAmountPutOnTable = 0, pot = 0;
-    private long currentSmallBlind, currentBigBlind;
+    private long currentBigBlind;
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
@@ -43,8 +43,8 @@ public class GameScreen {
 
     private Pane pane = new Pane();
 
-    PlayerLayout playerLayout = new PlayerLayout();
-    BoardLayout boardLayout = new BoardLayout();
+    private PlayerLayout playerLayout = new PlayerLayout();
+    private BoardLayout boardLayout = new BoardLayout();
 
     private TextArea textArea = new TextArea();
     private String logText = "";
