@@ -598,8 +598,10 @@ public class GameScreen {
 
         Runnable task = () -> {
             VBox vBox = new VBox();
-            Button backToMainScreen = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
-            backToMainScreen.setMinWidth(200);
+            Button backToMainScreenButton = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
+            Button saveStatisticsButton = ObjectStandards.makeButtonForLobbyScreen("Save statistics to file");
+            backToMainScreenButton.setMinWidth(200);
+            saveStatisticsButton.setMinWidth(200);
 
             endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
             endGameScreen.setFont(new Font("Areal", 30));
@@ -611,7 +613,7 @@ public class GameScreen {
             Stage endGame = new Stage();
             endGame.setAlwaysOnTop(true);
             endGame.initModality(Modality.APPLICATION_MODAL);
-            endGame.setTitle("Congratulation!");
+            endGame.setTitle("Game over!");
 
             vBox.setAlignment(Pos.CENTER);
 
@@ -621,13 +623,17 @@ public class GameScreen {
                     "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
                     "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
 
-            backToMainScreen.setOnAction(e -> {
+            backToMainScreenButton.setOnAction(e -> {
                 endGame.close();
                 ButtonListeners.returnToMainMenuButtonListener();
             });
 
-            vBox.getChildren().addAll(endGameScreen, statsLabel, backToMainScreen);
-            Scene scene = new Scene(vBox,600,350);
+            saveStatisticsButton.setOnAction(e -> {
+                ButtonListeners.saveToFile(stats);
+            });
+
+            vBox.getChildren().addAll(endGameScreen, statsLabel, saveStatisticsButton, backToMainScreenButton);
+            Scene scene = new Scene(vBox,600,450);
             endGame.setScene(scene);
             endGame.show();
         };
@@ -693,7 +699,8 @@ public class GameScreen {
      * Updates slider values
      */
     public void updateSliderValues(){
-       playerLayout.updateSliderValues(stackSizes.get(0));
+        if (stackSizes.get(0) != null)
+            playerLayout.updateSliderValues(stackSizes.get(0));
    }
 
     /** Sent in the start of a game to set the number of players */
@@ -748,6 +755,7 @@ public class GameScreen {
     public void preShowdownWinner(int winnerID, long potsize) {
         Platform.runLater(() ->  {
             boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
+            printToLogField(names.get(winnerID) + " won the pot of " + potsize);
         });
     }
 

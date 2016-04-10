@@ -63,11 +63,10 @@ public class MainScreen {
 
         //Top-text
         String title = "Texas Hold'em!";
-        //String info = "This is an implementation of Texas hold'em.\n" +
-               // "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
-               // "Enter your name, and start playing!";
+        String info = "This is an implementation of Texas hold'em.\n" +
+               "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
+               "Enter your name, and start playing!";
 
-        String info = "";
 
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 

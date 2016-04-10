@@ -50,7 +50,7 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
             pathsOfSeries.add("resources/nameList/bms.txt");
             pathsOfSeries.add("resources/nameList/breakingBad.txt");
-            pathsOfSeries.add("resources/nameList/cartoonNetwork.txt");
+            pathsOfSeries.add("resources/nameList/communists.txt");
             pathsOfSeries.add("resources/nameList/community.txt");
             pathsOfSeries.add("resources/nameList/dictators.txt");
             pathsOfSeries.add("resources/nameList/disney.txt");
@@ -58,7 +58,6 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/futurama.txt");
             pathsOfSeries.add("resources/nameList/gossipGirl");
             pathsOfSeries.add("resources/nameList/got.txt");
-            pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
             pathsOfSeries.add("resources/nameList/harryPotter.txt");
             pathsOfSeries.add("resources/nameList/hotelCeasar");
             pathsOfSeries.add("resources/nameList/kapteinSabeltann.txt");
@@ -71,11 +70,12 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/siliconValley.txt");
             pathsOfSeries.add("resources/nameList/spiceGirls.txt");
             pathsOfSeries.add("resources/nameList/starWars.txt");
-            pathsOfSeries.add("resources/nameList/suits");
+            pathsOfSeries.add("resources/nameList/suits.txt");
             pathsOfSeries.add("resources/nameList/theLordOfTheRings.txt");
-            pathsOfSeries.add("resources/nameList/theOffice");
+            pathsOfSeries.add("resources/nameList/theOffice.txt");
             pathsOfSeries.add("resources/nameList/theSimpsons.txt");
             pathsOfSeries.add("resources/nameList/videoGames.txt");
+            pathsOfSeries.add("resources/nameList/usPresidents.txt");
         }
 
         //get random filepath from a list of paths of series if we haven't got one

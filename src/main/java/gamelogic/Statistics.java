@@ -1,7 +1,6 @@
 package gamelogic;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by henrik on 05.04.16.
@@ -32,16 +31,20 @@ public class Statistics {
     }
 
     /**
-     * Prints the current statistics to a file
-     * @param filepath Relative filepath for the file
+     * Prints the current statistics to a file and stores it in the stats-directory
+     * If the directory is not present, this method will create it
+     *
      */
-    public void printStatisticsToFile(String filepath){
+    public void printStatisticsToFile(){
         try {
-            FileWriter fw = new FileWriter(filepath);
-            fw.write(this.toString());
+            File statsFile = new File("stats/Game" + System.currentTimeMillis() / 100000 + ".txt");
+            new File("stats").mkdir();
+            PrintWriter fw = new PrintWriter(statsFile, "UTF-8");
+            fw.print(this.toString());
+            fw.flush();
             fw.close();
         } catch (IOException ioe) {
-            System.out.println("Error when writing to file " + filepath);
+            System.out.println("Error when writing statistics to file");
             ioe.printStackTrace();
         }
     }
