@@ -309,11 +309,7 @@ public class GameController {
     public void preShowdownWinner(int winnerID, long potSize) {
         guiClient.preShowdownWinner(winnerID, potSize);
         printToLogfield(names.get(0) + " won the pot of " + potSize);
-    public void preShowdownWinner(int winnerID, long potsize) {
-        guiClient.preShowdownWinner(winnerID, potsize);
-        printToLogfield(names.get(0) + " won the pot of " + potsize);
     }
-
     /**
      * Called every time a player is bust to inform all clients
      * @param bustPlayerID

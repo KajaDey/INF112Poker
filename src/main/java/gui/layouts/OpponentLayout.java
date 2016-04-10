@@ -18,16 +18,12 @@ import javafx.scene.layout.VBox;
  */
 public class OpponentLayout extends HBox{
 
-    DropShadow dropShadow = new DropShadow();
+    private DropShadow dropShadow = new DropShadow();
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage;
     private int position;
     private boolean isBust = false;
-
-    public OpponentLayout(){
-        super();
-    }
 
     /**
      * Makes the layout for the opponentScreen

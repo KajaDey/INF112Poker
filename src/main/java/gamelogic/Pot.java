@@ -24,9 +24,8 @@ public class Pot {
      *  Increment the pot and update the amount the player can claim if he wins the pot
      * @param userID
      * @param amountToAdd
-     * @return the updated pot size
      */
-    public long addToPot(int userID, long amountToAdd) {
+    public void addToPot(int userID, long amountToAdd) {
         if (amountPlayerCanClaim.get(userID) == null)
             amountPlayerCanClaim.put(userID, 0L);
 
@@ -35,7 +34,6 @@ public class Pot {
         assert amountToAdd >= 0 : "A negative number was added to the pot.";
 
         potSize += amountToAdd;
-        return potSize;
     }
 
     /**

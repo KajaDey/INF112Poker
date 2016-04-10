@@ -44,10 +44,10 @@ public class Game {
         this.maxNumberOfPlayers = finishedInPosition =  gamesettings.getMaxNumberOfPlayers();
         this.players = new Player[maxNumberOfPlayers];
 
-        this.startStack = gamesettings.startStack;
-        this.currentSB = (this.startSB = gamesettings.smallBlind);
-        this.currentBB = (this.startBB = gamesettings.bigBlind);
-        this.blindLevelDuration = gamesettings.levelDuration;
+        this.startStack = gamesettings.getStartStack();
+        this.currentSB = (this.startSB = gamesettings.getSmallBlind());
+        this.currentBB = (this.startBB = gamesettings.getBigBlind());
+        this.blindLevelDuration = gamesettings.getLevelDuration();
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
     }
