@@ -9,10 +9,10 @@ import java.util.Map;
  * Created by kristianrosland on 09.04.2016.
  */
 public class ShowdownStats {
-    private ArrayList<ArrayList<Player>> sidePots;
-    private ArrayList<Long> sidePotSizes;
+    private List<List<Player>> sidePots;
+    private List<Long> sidePotSizes;
     private List<Card> communityCards;
-    private ArrayList<Player> allPlayers;
+    private List<Player> allPlayers;
 
     public ShowdownStats(List<Player> players, List<Card> communityCards) {
         sidePots = new ArrayList<>();
@@ -23,7 +23,7 @@ public class ShowdownStats {
         players.stream().forEach(p -> allPlayers.add(p));
     }
 
-    public void addSidePot(ArrayList<Player> players, long size) {
+    public void addSidePot(List<Player> players, long size) {
         sidePots.add(players);
         sidePotSizes.add(size);
     }
@@ -38,7 +38,7 @@ public class ShowdownStats {
         return holeCards;
     }
 
-    public ArrayList<Player> getAllPlayers() {
+    public List<Player> getAllPlayers() {
         return allPlayers;
     }
 
