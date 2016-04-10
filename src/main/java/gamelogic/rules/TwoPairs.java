@@ -78,7 +78,7 @@ public class TwoPairs implements IRule {
     public String toString(){
         if (returnHand.isEmpty())
             return "No match";
-        return "Two pairs, " +returnHand.get(0).getRankString() +"'s and " +returnHand.get(2).getRankString() +"'s";
+        return "Two pairs, " +returnHand.get(0).getRankString() +"s and " +returnHand.get(2).getRankString() +"s";
     }
 }
 

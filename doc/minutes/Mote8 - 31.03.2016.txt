@@ -1,0 +1,31 @@
+Møte 8 - 31.03.16, kl 15.00
+Sekretær: Morten Lohne
+
+Oppmøte:
+Vegar
+Kaja
+Kristian
+Jostein
+Andrè
+Simon
+Morten
+Mariah
+Ragnhild
+Fraværende: Henrik
+
+Diskusjon:
+AI - smartere. Morten
+GUI: Hvordan få implementert slik at vi kan ha flere spillere. Jostein, Andrè, Mariah
+Diskuterer hvordan bordet skal se ut i fellesskap.
+Backend: Skal være ganske OK. Kristian ser på dette underveis.
+Regne ut/skrive ut hvilken hånd spilleren har i spillet. Ragnhild, Vegar og Kaja
+Statistikk til fil. Simon og Henrik
+Snakket om oppdatering av diagrammer
+
+
+Plan til neste møte:
+Alle skal ha laget en plan for hvordan de skal gjennomføre sin oppgave, samt startet på gjennomføringen.
+
+Tid for neste møte:
+Tirsdag 05.04, kl. 10.00
+

@@ -110,11 +110,11 @@ public class xOfaKind implements IRule {
     @Override
     public String toString(){
         if(fourOfaKind)
-            return "Quad "+returnHand.get(0).getRankString()+"'s";
+            return "Quad "+returnHand.get(0).getRankString()+"s";
         else if(threeOfaKind)
-            return "Trip "+returnHand.get(0).getRankString()+"'s";
+            return "Trip "+returnHand.get(0).getRankString()+"s";
         else if (twoOfaKind)
-            return "Pair of "+returnHand.get(0).getRankString()+"'s";
+            return "Pair of "+returnHand.get(0).getRankString()+"s";
         return "";
     }
 
