@@ -61,8 +61,8 @@ public class Game {
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
             gameController.startNewHand();
-            refreshAllStackSizes();
             pot = new Pot();
+            refreshAllStackSizes();
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
@@ -618,7 +618,7 @@ public class Game {
         gameController.setStackSizes(stacks);
 
         totalChipsInPlay += pot.getPotSize();
-       // assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too much chips in play, " + totalChipsInPlay;
+        assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too many chips in play, " + totalChipsInPlay;
     }
 
     public void printAllPlayerStacks() {
