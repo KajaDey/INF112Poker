@@ -121,7 +121,12 @@ public class PokerMCTS {
         }
     }
 
-    public abstract class AbstractNode {
+    /**
+     * Represent a node in the monte carlo search tree. The tree only stores its value (winning probability) for each player,
+     * not the gamestate. The children are stored in a list, where children[0] represents the gamestate
+     * reached by making the 0th move from gamestate.allDecisions()
+     */
+    private abstract class AbstractNode {
         public final double[] values; // The probability of winning for each player
         public final List<Optional<AbstractNode>> children;
         public int searches = 0;
@@ -301,8 +306,10 @@ public class PokerMCTS {
         }
     }
 
-    // Node where the AI plays.
-    public abstract class PlayerNode extends AbstractNode {
+    /**
+     * Represents a node where a player makes a decision
+     */
+    private abstract class PlayerNode extends AbstractNode {
 
         public final int positionToMove;
         public PlayerNode(int numberOfMoves, int positionToMove) {
@@ -357,19 +364,22 @@ public class PokerMCTS {
         }
     }
 
-    public class OpponentNode extends PlayerNode {
+    private class OpponentNode extends PlayerNode {
         public OpponentNode(int numberOfMoves, int player_to_move) {
             super(numberOfMoves, player_to_move);
         }
     }
 
-    public class AINode extends PlayerNode {
+    private class AINode extends PlayerNode {
         public AINode(int numberOfMoves) {
             super(numberOfMoves, playerId);
         }
     }
 
-    public class TerminalNode extends AbstractNode {
+    /**
+     * A tree node where there are no more moves to play, i.e., a showdown or a situation where everyone folded
+     */
+    private class TerminalNode extends AbstractNode {
 
         public TerminalNode(int numberOfMoves, GameState gameState) {
             super(numberOfMoves);
@@ -398,7 +408,9 @@ public class PokerMCTS {
         }
     }
 
-    // A random node does not currently minimax. L
+    /**
+     * A node where something random happens. Either a community card being dealed, or a hole card dealt to another player
+     */
     public class RandomNode extends AbstractNode {
 
         public RandomNode(int numberOfMoves) {
@@ -439,6 +451,8 @@ public class PokerMCTS {
             }
         }
 
+
+
         double[] eval = new double[gameState.amountOfPlayers];
         Pot pot = new Pot();
         for (Player player : gameState.players) {
@@ -446,6 +460,9 @@ public class PokerMCTS {
             pot.addToPot(player.id, player.contributedToPot);
             assert player.holeCards.size() == 2 : "Tried to get terminal eval, but player " + player.id + " has " + player.holeCards.size() + " holecards.";
         }
+
+        long playerChipsSum = gameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize, Long::sum);
+        assert playerChipsSum + pot.getPotSize() == gameState.allChipsOnTable;
 
         ArrayList<Player> handsList = gameState.players.stream()
                 .filter(p -> p.isInHand)
@@ -457,16 +474,19 @@ public class PokerMCTS {
         Collections.reverse(handsList);
         for (Player player : handsList) {
             player.stackSize += pot.getSharePlayerCanWin(player.id);
-            player.contributedToPot = 0;
         }
 
+        for (Player player : gameState.players) {
+            player.contributedToPot = 0;
+        }
+/*
         gameState.players.stream()
                 .filter(p -> !handsList.contains(p))
                 .forEach(p -> {
                     p.stackSize += pot.getSharePlayerCanWin(p.id);
                     p.contributedToPot = 0;
                 });
-
+*/
         assert pot.getPotSize() == 0 : "Still " + pot.getPotSize() + " chips left in pot";
 
         for (int i = 0; i < gameState.players.size(); i++) {
@@ -474,7 +494,7 @@ public class PokerMCTS {
             eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
         }
 
-        long playerChipsSum = gameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
+        playerChipsSum = gameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
         assert playerChipsSum == gameState.allChipsOnTable :
                 "Sum of player chips is " + playerChipsSum + ", but started with " + gameState.allChipsOnTable + " on table.";
 
