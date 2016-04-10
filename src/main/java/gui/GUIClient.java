@@ -168,7 +168,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void showdown(ShowdownStats showdownStats) {
-        gameScreen.showDown(showdownStats);
+        gameScreen.showdown(showdownStats);
     }
 
     @Override
