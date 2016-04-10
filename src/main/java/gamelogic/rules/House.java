@@ -72,7 +72,7 @@ public class House implements IRule {
         if (compareValues.isEmpty())
             return "No match";
 
-        return returnHand.get(0).getRankString()+"'s full of "+returnHand.get(3).getRankString()+"'s";
+        return returnHand.get(0).getRankString()+"s full of "+returnHand.get(3).getRankString()+"s";
     }
 
     private void setHand(List<Card> allCards) {
