@@ -4,6 +4,7 @@ import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
@@ -21,7 +22,7 @@ public class OpponentLayout extends HBox{
     DropShadow dropShadow = new DropShadow();
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
-    private ImageView leftCardImage, rightCardImage;
+    private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private int position;
     private boolean isBust = false;
 
@@ -44,8 +45,14 @@ public class OpponentLayout extends HBox{
 
         leftCardImage.setImage(backOfCards);
         rightCardImage.setImage(backOfCards);
+        chipImage = new ImageView();
+        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setPreserveRatio(true);
+        chipImage.setFitWidth(30);
+
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
+        chipImage.setVisible(false);
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
@@ -54,33 +61,62 @@ public class OpponentLayout extends HBox{
 
         HBox cards = new HBox();
         VBox opponentStats = new VBox();
+        HBox moveInfo = new HBox();
 
         if(position == 1 || position == 2){
+            VBox chipBox1 = new VBox();
             cards.getChildren().addAll(leftCardImage, rightCardImage);
-            opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
-            this.getChildren().addAll(opponentStats, lastMoveLabel);
+            opponentStats.getChildren().addAll(cards, nameLabel, stackSizeLabel, positionLabel);
+            chipBox1.getChildren().addAll(chipImage);
+            chipBox1.setPadding(new Insets(0,6,0,6));
+            chipBox1.setAlignment(Pos.CENTER_RIGHT);
 
+            Runnable task = () -> moveInfo.getChildren().addAll(lastMoveLabel, chipBox1);
+            Platform.runLater(task);
+            this.getChildren().addAll(opponentStats, moveInfo);
+
+            moveInfo.setAlignment(Pos.CENTER_LEFT);
             cards.setAlignment(Pos.CENTER_LEFT);
             this.setAlignment(Pos.CENTER_LEFT);
 
         }
         else if (position == 3){
 
+            HBox moveInfoH = new HBox();
+
             opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
             cards.getChildren().addAll(leftCardImage, rightCardImage, opponentStats);
+
             VBox vBox = new VBox();
-            vBox.getChildren().addAll(cards, lastMoveLabel);
+            VBox chipBox2 = new VBox();
+
+            chipBox2.getChildren().addAll(chipImage);
+            chipBox2.setPadding(new Insets(3,3,3,3));
+
+            moveInfoH.getChildren().addAll(lastMoveLabel,chipBox2);
+            vBox.getChildren().addAll(cards,moveInfoH);
+            moveInfoH.setAlignment(Pos.CENTER_LEFT);
+
             vBox.setAlignment(Pos.CENTER);
             this.getChildren().add(vBox);
 
         }
         else if(position == 4 || position == 5){
 
+            VBox chipBox3 = new VBox();
+
             cards.getChildren().addAll(leftCardImage, rightCardImage);
             opponentStats.getChildren().addAll(cards,nameLabel, stackSizeLabel, positionLabel);
-            this.getChildren().addAll(lastMoveLabel, opponentStats);
+            chipBox3.getChildren().addAll(chipImage);
+            chipBox3.setPadding(new Insets(0,6,0,6));
+            chipBox3.setAlignment(Pos.CENTER_LEFT);
+
+            Runnable task = () -> moveInfo.getChildren().addAll(chipBox3,lastMoveLabel);
+            Platform.runLater(task);
+            this.getChildren().addAll(moveInfo, opponentStats);
             this.setMinWidth(250);
 
+            moveInfo.setAlignment(Pos.CENTER_RIGHT);
             cards.setAlignment(Pos.CENTER_RIGHT);
             this.setAlignment(Pos.CENTER_RIGHT);
         }
@@ -99,7 +135,14 @@ public class OpponentLayout extends HBox{
      * @param s
      */
     public void setLastMoveLabel(String s){
-        Platform.runLater(() -> lastMoveLabel.setText(s));
+        Runnable task = () -> {
+            lastMoveLabel.setText(s);
+            if (s.equals(""))
+                chipImage.setVisible(false);
+            else
+                chipImage.setVisible(true);
+        };
+        Platform.runLater(task);
     }
 
     /**

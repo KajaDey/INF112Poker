@@ -4,6 +4,7 @@ import gui.ButtonListeners;
 import gui.ImageViewer;
 import gui.ObjectStandards;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,7 +24,7 @@ import javafx.scene.layout.VBox;
 public class PlayerLayout {
 
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
-    private ImageView leftCardImage, rightCardImage;
+    private ImageView leftCardImage, rightCardImage, chipImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextfield;
 
@@ -49,14 +50,15 @@ public class PlayerLayout {
         HBox twoButtonsUnderInput = new HBox();
         twoButtonsUnderInput.setMaxWidth(50);
         VBox twoButtonsRight = new VBox();
-        VBox sliderBox = new VBox();
+        VBox sliderAndBestHandBox = new VBox();
+        HBox lastMoveAndChips = new HBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
         stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSizeIn + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
+        bestHand = ObjectStandards.makeStandardLabelWhite("Your hand:","");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -67,6 +69,12 @@ public class PlayerLayout {
         rightCardImage.setImage(backOfCards);
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
+
+        //chipImage.setVisible(false);
+        chipImage = new ImageView();
+        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setPreserveRatio(true);
+        chipImage.setFitWidth(30);
 
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
@@ -127,7 +135,7 @@ public class PlayerLayout {
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel,bestHand);
+        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
@@ -138,13 +146,20 @@ public class PlayerLayout {
         twoButtonsRight.getChildren().addAll(betRaiseButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
 
-        sliderBox.getChildren().addAll(slider);
-        sliderBox.setAlignment(Pos.CENTER);
+        sliderAndBestHandBox.getChildren().addAll(bestHand,slider);
+        sliderAndBestHandBox.setAlignment(Pos.CENTER);
 
-        fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderBox);
+        fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderAndBestHandBox);
         fullBox.setAlignment(Pos.CENTER);
 
-        fullBoxWithLastMove.getChildren().addAll(lastMoveLabel, fullBox);
+        VBox chipBox = new VBox();
+        chipBox.getChildren().addAll(chipImage);
+        chipBox.setPadding(new Insets(0,0,0,10));
+
+        lastMoveAndChips.getChildren().addAll(lastMoveLabel,chipBox);
+        lastMoveAndChips.setAlignment(Pos.CENTER);
+
+        fullBoxWithLastMove.getChildren().addAll(lastMoveAndChips, fullBox);
         fullBoxWithLastMove.setAlignment(Pos.CENTER);
 
         this.setActionsVisible(false);
@@ -218,7 +233,14 @@ public class PlayerLayout {
     }
 
     public void setPositionLabel(String pos){
-        Platform.runLater(() -> positionLabel.setText(pos));
+        Runnable task = () -> {
+            lastMoveLabel.setText(pos);
+            if (pos.equals(""))
+                chipImage.setVisible(false);
+            else
+                chipImage.setVisible(true);
+        };
+        Platform.runLater(task);
     }
 
     public void setStackLabel(String stack) {
