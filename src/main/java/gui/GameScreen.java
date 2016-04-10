@@ -360,6 +360,9 @@ public class GameScreen {
         //Set button texts depending on the action
         updateButtonTexts(ID, decision.move);
 
+        //Play sound
+        new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+
         Runnable task;
         if (ID == this.playerID) {
             task = () -> {
