@@ -9,10 +9,10 @@ import java.util.Map;
  * Created by kristianrosland on 09.04.2016.
  */
 public class ShowdownStats {
-    ArrayList<ArrayList<Player>> sidePots;
-    ArrayList<Long> sidePotSizes;
-    List<Card> communityCards;
-    ArrayList<Player> allPlayers;
+    private ArrayList<ArrayList<Player>> sidePots;
+    private ArrayList<Long> sidePotSizes;
+    private List<Card> communityCards;
+    private ArrayList<Player> allPlayers;
 
     public ShowdownStats(List<Player> players, List<Card> communityCards) {
         sidePots = new ArrayList<>();

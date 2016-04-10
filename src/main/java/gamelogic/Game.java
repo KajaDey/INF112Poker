@@ -44,10 +44,10 @@ public class Game {
         this.maxNumberOfPlayers = finishedInPosition =  gamesettings.getMaxNumberOfPlayers();
         this.players = new Player[maxNumberOfPlayers];
 
-        this.startStack = gamesettings.startStack;
-        this.currentSB = (this.startSB = gamesettings.smallBlind);
-        this.currentBB = (this.startBB = gamesettings.bigBlind);
-        this.blindLevelDuration = gamesettings.levelDuration;
+        this.startStack = gamesettings.getStartStack();
+        this.currentSB = (this.startSB = gamesettings.getSmallBlind());
+        this.currentBB = (this.startBB = gamesettings.getBigBlind());
+        this.blindLevelDuration = gamesettings.getLevelDuration();
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
     }
@@ -571,8 +571,8 @@ public class Game {
         pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showdownStats);
         assert pot.getPotSize() == 0 : "The pot was handed out, but there were still chips left";
 
-        gameController.showDown(showdownStats);
-        delay(6000);
+        gameController.showdown(showdownStats);
+        delay(7000);
 
         //If a player that was in this hand now has zero chips, it means he just busted
         for (Player p : playersStillInCurrentHand) {

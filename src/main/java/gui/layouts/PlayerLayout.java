@@ -26,7 +26,7 @@ public class PlayerLayout {
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
     private ImageView leftCardImage, rightCardImage, chipImage;
     private Slider slider = new Slider(0,0,0);
-    private TextField amountTextfield;
+    private TextField amountTextField;
 
     private long currentSmallBlind, currentBigBlind;
 
@@ -76,7 +76,7 @@ public class PlayerLayout {
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(30);
 
-        amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
+        amountTextField = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
         slider.setMin(currentBigBlind);
         slider.setMax(stackSizeIn);
@@ -99,21 +99,21 @@ public class PlayerLayout {
 
         //Actions
         betRaiseButton.setOnAction(e -> {
-            if(!amountTextfield.getText().equals("")) {
-                if (amountTextfield.getText().equals("All in"))
+            if(!amountTextField.getText().equals("")) {
+                if (amountTextField.getText().equals("All in"))
                     ButtonListeners.betButtonListener(String.valueOf(stackSizeIn), betRaiseButton.getText());
                 else
-                    ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
                 updateSliderValues(stackSizeIn);
             }
         });
 
-        amountTextfield.setOnAction(e -> {
-            if (!amountTextfield.getText().equals("")) {
-                if (amountTextfield.getText().equals("All in"))
+        amountTextField.setOnAction(e -> {
+            if (!amountTextField.getText().equals("")) {
+                if (amountTextField.getText().equals("All in"))
                     ButtonListeners.betButtonListener(String.valueOf(stackSizeIn), betRaiseButton.getText());
                 else
-                    ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
                 updateSliderValues(stackSizeIn);
             }
         });
@@ -128,9 +128,9 @@ public class PlayerLayout {
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int sliderNumber = (int) slider.getValue();
             if (sliderNumber >= slider.getMax())
-                amountTextfield.setText("All in");
+                amountTextField.setText("All in");
             else
-                amountTextfield.setText(String.valueOf(sliderNumber));
+                amountTextField.setText(String.valueOf(sliderNumber));
         });
 
 
@@ -140,7 +140,7 @@ public class PlayerLayout {
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
 
-        inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
+        inputAndButtons.getChildren().addAll(amountTextField, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
 
         twoButtonsRight.getChildren().addAll(betRaiseButton);
@@ -213,7 +213,7 @@ public class PlayerLayout {
             betRaiseButton.setVisible(visible);
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
-            amountTextfield.setVisible(visible);
+            amountTextField.setVisible(visible);
             slider.setVisible(visible);
         };
         Platform.runLater(task);
@@ -229,7 +229,7 @@ public class PlayerLayout {
         betRaiseButton.setVisible(visible);
         checkCallButton.setVisible(visible);
         foldButton.setVisible(visible);
-        amountTextfield.setVisible(visible);
+        amountTextField.setVisible(visible);
     }
 
     public void setPositionLabel(String pos){
@@ -257,12 +257,12 @@ public class PlayerLayout {
         betRaiseButton.setText(betRaise);
     }
 
-    public void setAmountTextfield(String amount) {
-        amountTextfield.setText(amount);
+    public void setAmountTextField(String amount) {
+        amountTextField.setText(amount);
     }
 
     public void setTextfieldStyle(String textfieldStyle) {
-        amountTextfield.setStyle(textfieldStyle);
+        amountTextField.setStyle(textfieldStyle);
     }
 
     public void setBestHand(String bestHand){
