@@ -618,7 +618,7 @@ public class Game {
         gameController.setStackSizes(stacks);
 
         totalChipsInPlay += pot.getPotSize();
-        assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too much chips in play, " + totalChipsInPlay;
+       // assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too much chips in play, " + totalChipsInPlay;
     }
 
     public void printAllPlayerStacks() {
