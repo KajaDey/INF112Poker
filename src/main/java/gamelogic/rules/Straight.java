@@ -16,20 +16,15 @@ import java.util.Optional;
  *
  */
 public class Straight implements IRule {
-    private int drawCount = 1;
-    private int lastCardIndex;
-    private List<Card> cards, returnCards;
-    private boolean lookingForStraightFlush = false;
-    private HandCalculator.HandType type = HandCalculator.HandType.STRAIGHT;
-    private int highCardValue;
-    private Card highCard;
+    private List<Card> cards, returnHand;
+    private boolean lookingForSF = false;
 
     /**
      * Regular constructor, used in most cases
      */
     public Straight() {
         cards = new ArrayList<>();
-        returnCards = new ArrayList<>();
+        returnHand = new ArrayList<>();
     }
 
     /**
@@ -38,22 +33,25 @@ public class Straight implements IRule {
      */
     public Straight(List<Card> flushCards){
         cards = flushCards;
-        lookingForStraightFlush = true;
-        returnCards = new ArrayList<>();
+        lookingForSF = true;
+        returnHand = new ArrayList<>();
     }
 
     @Override
     public boolean match(Hand hand) {
 
-        if (!lookingForStraightFlush)
+        if (!lookingForSF) {
             cards = hand.getAllCards();
+        }
 
-        if (cards.size() < 5)
+        if (cards.size() < 5) {
             return false;
+        }
 
-        lastCardIndex = cards.size() - 1;
+        int lastCardIndex = cards.size() - 1;
 
         cards.sort(Card::compareTo);
+        int drawCount = 1;
 
         for (int i = lastCardIndex; i > 0; i--) {
             int thisRank = cards.get(i).rank;
@@ -75,7 +73,6 @@ public class Straight implements IRule {
             // Found cards 2-5, plus Ace
             if (drawCount == 4 && nextRank == 2 && cards.get(lastCardIndex).rank == 14) {
                 fillReturnHand(i-1, true);
-                highCardValue = 5;
                 return true;
             }
         }
@@ -84,26 +81,10 @@ public class Straight implements IRule {
 
     @Override
     public Optional<List<Card>> getHand() {
-        if (returnCards.size() > 0) {
-            return Optional.of(returnCards);
+        if (returnHand.size() > 0) {
+            return Optional.of(returnHand);
         }
         return Optional.empty();
-    }
-
-
-    @Override
-    public HandCalculator.HandType getType() {
-        return HandCalculator.HandType.STRAIGHT;
-    }
-
-    @Override
-    public List<Integer> getCompareValues() {
-        return Arrays.asList(highCardValue);
-    }
-
-    @Override
-    public String toString() {
-        return highCard.getRankString() +" high straight";
     }
 
     /**
@@ -114,16 +95,16 @@ public class Straight implements IRule {
      */
     private void fillReturnHand(int indexToAdd, boolean addAceLow) {
         int numberOfCardsAdded = 0;
-        int maxCardsToAdd = 5;
+        int cardsToAdd = 5;
 
         if (addAceLow) {
-            returnCards.add(cards.get(lastCardIndex));
-            maxCardsToAdd = 4;
+            returnHand.add(cards.get(cards.size() - 1));
+            cardsToAdd = 4;
         }
 
-        while (numberOfCardsAdded < maxCardsToAdd) {
+        while (numberOfCardsAdded < cardsToAdd) {
             if (indexToAdd == cards.size() -1) {
-                returnCards.add(cards.get(indexToAdd));
+                returnHand.add(cards.get(indexToAdd));
                 break;
             }
             int thisRank = cards.get(indexToAdd).rank;
@@ -133,24 +114,26 @@ public class Straight implements IRule {
                 indexToAdd++;
                 continue;
             }
-            returnCards.add(cards.get(indexToAdd));
+            returnHand.add(cards.get(indexToAdd));
             numberOfCardsAdded++;
             indexToAdd++;
         }
+    }
 
-        returnCards.sort(Card::compareTo);
+    @Override
+    public HandCalculator.HandType getType() {
+        return HandCalculator.HandType.STRAIGHT;
+    }
 
-        if (addAceLow) {
-            for (int i = 0; i < 5; i++) {
-                if (returnCards.get(4 - i).rank != 14) {
-                    highCardValue = returnCards.get(4-i).rank;
-                    highCard = returnCards.get(4-i);
-                    break;
-                }
-            }
-        } else {
-            highCardValue = returnCards.get(4).rank;
-            highCard = returnCards.get(4);
-        }
+    @Override
+    public List<Integer> getCompareValues() {
+        return Arrays.asList(returnHand.get(returnHand.size()-1).rank);
+    }
+
+    @Override
+    public String toString() {
+        if (returnHand.isEmpty())
+            return "No match";
+        return returnHand.get(returnHand.size()-1).getRankString() +" high straight";
     }
 }

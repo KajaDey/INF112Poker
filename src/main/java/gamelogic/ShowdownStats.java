@@ -8,13 +8,13 @@ import java.util.Map;
 /**
  * Created by kristianrosland on 09.04.2016.
  */
-public class ShowDownStats {
+public class ShowdownStats {
     ArrayList<ArrayList<Player>> sidePots;
     ArrayList<Long> sidePotSizes;
     List<Card> communityCards;
     ArrayList<Player> allPlayers;
 
-    public ShowDownStats(List<Player> players, List<Card> communityCards) {
+    public ShowdownStats(List<Player> players, List<Card> communityCards) {
         sidePots = new ArrayList<>();
         sidePotSizes = new ArrayList<>();
         this.communityCards = communityCards;

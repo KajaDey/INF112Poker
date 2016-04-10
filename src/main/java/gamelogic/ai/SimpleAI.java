@@ -3,8 +3,7 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
-import gamelogic.ShowDownStats;
-import gui.GUIMain;
+import gamelogic.ShowdownStats;
 
 import java.util.*;
 
@@ -276,7 +275,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void showdown(ShowDownStats showDownStats) { }
+    public void showdown(ShowdownStats showdownStats) { }
 
     @Override
     public void setBigBlind(long bigBlind) {

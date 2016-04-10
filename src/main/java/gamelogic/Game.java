@@ -61,8 +61,8 @@ public class Game {
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
             gameController.startNewHand();
-            refreshAllStackSizes();
             pot = new Pot();
+            refreshAllStackSizes();
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
@@ -77,6 +77,7 @@ public class Game {
 
         //Deal with who won the game.. (should be the only player with chips left
         assert numberOfPlayersWithChipsLeft() == 1 : "Game over but " + numberOfPlayersWithChipsLeft() + " had chips left";
+        pot = new Pot();
         refreshAllStackSizes();
 
         for (Player p : players) {
@@ -203,8 +204,6 @@ public class Game {
      * @return  True if the hand continues past this betting round, false if everyone but 1 folded
      */
     private boolean getDecisions(int actingPlayerIndex, boolean isPreFlop) {
-        int numberOfPlayersActedSinceLastAggressor = 0;
-
         while (true) {
             //Determine who's turn it is
             actingPlayerIndex %= playersStillInCurrentHand.size();
@@ -228,31 +227,23 @@ public class Game {
             String name = playerToAct.getName();
             switch(decision.move) {
                 case BET:
-                    numberOfPlayersActedSinceLastAggressor = 1;
                     highestAmountPutOnTable = decision.size;
                     break;
                 case RAISE:
-                    numberOfPlayersActedSinceLastAggressor = 1;
                     highestAmountPutOnTable += decision.size;
                     currentMinimumRaise = decision.size;
                     break;
                 case ALL_IN:
                     if(playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable+currentMinimumRaise) {
-                        numberOfPlayersActedSinceLastAggressor = 1; //If all in is a valid raise
                         currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
                     } else if (playerToAct.getAmountPutOnTableThisBettingRound() > highestAmountPutOnTable){
-                        numberOfPlayersActedSinceLastAggressor = 1; //If all in was not a valid raise but a raise
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
-                    } else {
-                        numberOfPlayersActedSinceLastAggressor++;
                     }
                     break;
                 case FOLD:
                     playersStillInCurrentHand.remove(playerToAct);
                     break;
-
-                default: numberOfPlayersActedSinceLastAggressor++;
             }
 
             GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision);
@@ -578,11 +569,11 @@ public class Game {
         //Print all show down information to debugger
         printToDebugShowdown();
 
-        ShowDownStats showDownStats = new ShowDownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
-        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showDownStats);
+        ShowdownStats showdownStats = new ShowdownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
+        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showdownStats);
         assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
 
-        gameController.showDown(showDownStats);
+        gameController.showDown(showdownStats);
         delay(7000);
 
         //If a player that was in this hand now has zero chips, it means he just busted
@@ -606,13 +597,19 @@ public class Game {
     }
 
     public void refreshAllStackSizes() {
+        long totalChipsInPlay = 0;
         HashMap<Integer, Long> stacks = new HashMap<>();
 
         for (Player p : players)
-            if (p.getStackSize() > 0)
+            if (p.getStackSize() > 0) {
                 stacks.put(p.getID(), p.getStackSize());
+                totalChipsInPlay += p.getStackSize();
+            }
 
         gameController.setStackSizes(stacks);
+
+        totalChipsInPlay += pot.getPotSize();
+        assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too many chips in play, " + totalChipsInPlay;
     }
 
     public void printAllPlayerStacks() {
@@ -630,4 +627,5 @@ public class Game {
         }
         return count;
     }
+
 }

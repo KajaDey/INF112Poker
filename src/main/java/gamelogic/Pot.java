@@ -17,7 +17,7 @@ public class Pot {
         this.amountPlayerCanClaim = new HashMap<>();
     }
 
-    /** @return current potsize */
+    /** @return current pot size */
     public long getPotSize() { return potSize; }
 
     /**
@@ -43,9 +43,9 @@ public class Pot {
      * @param playersInHand
      * @param communityCards
      */
-    public void handOutPot(List<Player> playersInHand, List<Card> communityCards, ShowDownStats showdown) {
+    public void handOutPot(List<Player> playersInHand, List<Card> communityCards, ShowdownStats showdown) {
         //Create a copy of the players list to avoid messing with GameLogic
-        ArrayList<Player> playersCopy = new ArrayList<Player>();
+        ArrayList<Player> playersCopy = new ArrayList<>();
         playersInHand.stream().forEach(p -> playersCopy.add(p));
 
         while (potSize > 0) {
@@ -58,12 +58,11 @@ public class Pot {
      * @param players
      * @param communityCards
      */
-    private void handOutPotShare(List<Player> players, List<Card> communityCards, ShowDownStats showdown) {
+    private void handOutPotShare(List<Player> players, List<Card> communityCards, ShowdownStats showdown) {
         ArrayList<Player> winners = getPotWinners(players, communityCards);
 
         //Make a copy of the winners array for use in showdown stats
-        ArrayList<Player> winnersCopy = new ArrayList<>();
-        winners.stream().forEach(p -> winnersCopy.add(p));
+        ArrayList<Player> winnersCopy = new ArrayList<>(winners);
 
         long size = 0;
 
@@ -97,6 +96,27 @@ public class Pot {
     }
 
     /**
+     *   Find out how much a player would get from the pot if he won.
+     *   Does not change the pot size
+     * @param playerID
+     * @return The amount the player would get
+     */
+    public long getSharePlayerCanWin(int playerID) {
+        long share = 0;
+        long canClaim = amountPlayerCanClaim.get(playerID) == null ? 0 : amountPlayerCanClaim.get(playerID);
+
+        for (Integer i : amountPlayerCanClaim.keySet()) {
+            long putIn = amountPlayerCanClaim.get(i);
+            long amount = Math.min(canClaim, putIn);
+            share += amount;
+            amountPlayerCanClaim.put(i, putIn - amount);
+        }
+
+        potSize -= share;
+        return share;
+    }
+
+    /**
      *  Get the winner(s) among the given players
      * @param players
      * @param communityCards
@@ -120,6 +140,5 @@ public class Pot {
 
         return mainPotWinners;
     }
-
 
 }

@@ -8,8 +8,7 @@ import java.util.*;
 /**
  * Created by kristianrosland on 07.03.2016.
  *
- * A game controller to connect GUI and back end. GUI informs the controller that something happened, and the controller
- * asks back end to execute the requested move.
+ * A controller to function as a layer between the GUI and the back end.
  */
 public class GameController {
 
@@ -82,7 +81,6 @@ public class GameController {
         };
         gameThread.start();
 
-        //Print to on screen log
     }
 
     /**
@@ -167,12 +165,12 @@ public class GameController {
     /**
      * Tells each client that it is time for show down, and pass the necessary information about the showdown
      *
-     * @param showDownStats Information about pot (and side pots) and who won
+     * @param showdownStats Information about pot (and side pots) and who won
      */
-    public void showDown(ShowDownStats showDownStats) {
+    public void showDown(ShowdownStats showdownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(showDownStats);
+            c.showdown(showdownStats);
         }
     }
 
@@ -192,7 +190,7 @@ public class GameController {
      * Informs each client about the decision that was made by a specific user
      *
      * @param userID The user who made the decision
-     * @param decision The dicision that was made
+     * @param decision The decision that was made
      */
     public void setDecisionForClient(int userID, Decision decision) {
         for (Integer clientID : clients.keySet()) {
@@ -322,10 +320,11 @@ public class GameController {
         }
     }
 
-    public void sidePotWinner(int id, long potSize) {
-        guiClient.sidePotWinner(id, potSize);
-    }
-
+    /**
+     * Tell the GUI to show player cards
+     * @param playerList
+     * @param holeCards
+     */
     public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
         guiClient.showHoleCards(playerList, holeCards);
     }
