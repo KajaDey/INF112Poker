@@ -254,7 +254,10 @@ public class GameState {
             assert currentPlayer.minimumRaise > 0;
 
             decisions.add(new PlayerDecision(new Decision(Decision.Move.FOLD)));
-            decisions.add(new PlayerDecision(new Decision(Decision.Move.ALL_IN)));
+            if (currentPlayer.currentBet > getCurrentPot() || currentPlayer.currentBet > currentPlayer.stackSize / 2) {
+                // Only allow the AI to go all in when it needs to
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.ALL_IN)));
+            }
             if (currentPlayer.currentBet == 0) {
                 decisions.add(new PlayerDecision(new Decision(Decision.Move.CHECK)));
             }
