@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * Represents the state of a single hand
  */
 public class GameState {
-    public final ArrayList<Card> deck;
+    private final ArrayList<Card> deck;
 
     public final int amountOfPlayers;
     public final List<Player> players;
@@ -277,6 +277,13 @@ public class GameState {
             }
             return Optional.of(decisions);
         }
+    }
+
+    public void giveHoleCards(int playerId) {
+        Player player = players.stream().filter(p -> p.id == playerId).findFirst().get();
+        assert player.holeCards.size() == 0;
+        player.holeCards.add(deck.remove(deck.size() - 1));
+        player.holeCards.add(deck.remove(deck.size() - 1));
     }
 
     // Returns the kind of decision that needs to be done in this gamestate

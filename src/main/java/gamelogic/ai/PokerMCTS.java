@@ -61,8 +61,8 @@ public class PokerMCTS {
 
         GameState gameState = new GameState(initialGameState);
         for (Player player : gameState.players) {
-            while (player.holeCards.size() < 2) {
-                player.holeCards.add(gameState.deck.remove(gameState.deck.size() - 1));
+            if (player.holeCards.size() == 0) {
+                gameState.giveHoleCards(player.id);
             }
         }
 
@@ -94,8 +94,8 @@ public class PokerMCTS {
         System.out.println(totalSearches + " searches so far, " + terminalNodesSelected + " terminal nodes selected, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
         GameState gameState = new GameState(initialGameState);
         for (Player player : gameState.players) {
-            while (player.holeCards.size() < 2) {
-                player.holeCards.add(gameState.deck.remove(gameState.deck.size() - 1));
+            if (player.holeCards.size() == 0) {
+                gameState.giveHoleCards(player.id);
             }
         }
         gameState.playersGivenHolecards = gameState.amountOfPlayers;
