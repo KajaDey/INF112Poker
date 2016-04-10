@@ -19,36 +19,13 @@ public class NameGenerator {
 
     private static String filePath = "resources/nameList/names.txt";
     static ArrayList<String> names = new ArrayList<String>();
-
-
     static ArrayList<String> characterNames = new ArrayList<String>();
     static ArrayList<String> pathsOfSeries = new ArrayList<String>();
     static String pathOfSeries = "";
     static Random random = new Random();
 
 
-    public static String getRandomName() {
-
-         try {
-             BufferedReader reader = new BufferedReader(new FileReader(filePath));
-             if (names.isEmpty()) {
-                 String currentLine;
-                 while ((currentLine = reader.readLine()) != null)
-                     names.add(currentLine);
-             }
-         } catch (IOException e) {
-             GUIMain.debugPrintln("Error reading names.txt");
-             e.printStackTrace();
-         }
-
-        String name = names.get(random.nextInt(names.size()));
-
-        return name.substring(0,1).toUpperCase() + name.substring(1, name.length()).toLowerCase();
-    }
-
-
-    public static String getRandomSeriesName(){
-
+    public static String getRandomName(){
         if (pathOfSeries.isEmpty() || characterNames.isEmpty())
             readNewSeries();
 
@@ -62,6 +39,9 @@ public class NameGenerator {
     }
 
     public static void readNewSeries(){
+        characterNames = new ArrayList<>();
+        pathsOfSeries = new ArrayList<>();
+
         //add all series paths once
         if(pathsOfSeries.isEmpty()) {
             pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
@@ -95,7 +75,7 @@ public class NameGenerator {
             pathsOfSeries.add("resources/nameList/videoGames.txt");
         }
 
-        //get random filepath from a list of paths of series if we havent got one
+        //get random filepath from a list of paths of series if we haven't got one
         pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
 
         try {
@@ -108,18 +88,6 @@ public class NameGenerator {
             e.printStackTrace();
         }
     }
-
-
-    public static void main(String[] args){
-
-        System.out.println(NameGenerator.getRandomSeriesName());
-        System.out.println(NameGenerator.getRandomSeriesName());
-        System.out.println(NameGenerator.getRandomSeriesName());
-        System.out.println(NameGenerator.getRandomSeriesName());
-        System.out.println(NameGenerator.getRandomSeriesName());
-
-    }
-
 }
 
 

@@ -45,8 +45,7 @@ public class Pot {
      */
     public void handOutPot(List<Player> playersInHand, List<Card> communityCards, ShowdownStats showdown) {
         //Create a copy of the players list to avoid messing with GameLogic
-        ArrayList<Player> playersCopy = new ArrayList<>();
-        playersInHand.stream().forEach(p -> playersCopy.add(p));
+        ArrayList<Player> playersCopy = new ArrayList<>(playersInHand);
 
         while (potSize > 0) {
             handOutPotShare(playersCopy, communityCards, showdown);
@@ -82,8 +81,9 @@ public class Pot {
                 splitPot += addToPot;
             }
 
+            //Hand out pot-shares and inform the players that they won the pot
             for (Player p : winners) {
-                p.incrementStack(splitPot / winners.size());
+                p.handWon(p.getHand(communityCards), splitPot / winners.size());
             }
 
             potSize -= splitPot;

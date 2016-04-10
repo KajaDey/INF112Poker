@@ -1,9 +1,6 @@
 package gamelogic.ai;
 
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
-import gamelogic.ShowdownStats;
+import gamelogic.*;
 
 import java.util.*;
 
@@ -192,7 +189,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void gameOver(int winnerID) { }
+    public void gameOver(Statistics stats) { }
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {

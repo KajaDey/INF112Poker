@@ -1,8 +1,5 @@
 package gui;
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
-import gamelogic.ShowdownStats;
+import gamelogic.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -140,8 +137,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void gameOver(int winnerID) {
-        gameScreen.gameOver(winnerID);
+    public void gameOver(Statistics stats) {
+        gameScreen.gameOver(stats);
     }
 
     @Override
@@ -223,12 +220,8 @@ public class GUIClient implements GameClient {
         gameScreen.printToLogField(message);
     }
 
-    public void preShowDownWinner(int winnerID, long potsize) {
-        gameScreen.preShowDownWinner(winnerID, potsize);
-    }
-
-    public void sidePotWinner(int id, long potSize) {
-        gameScreen.sidePotWinner(id, potSize);
+    public void preShowdownWinner(int winnerID, long potsize) {
+        gameScreen.preShowdownWinner(winnerID, potsize);
     }
 
     public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {

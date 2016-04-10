@@ -81,7 +81,6 @@ public class GameController {
             }
         };
         gameThread.start();
-
     }
 
     /**
@@ -106,7 +105,7 @@ public class GameController {
         NameGenerator.readNewSeries();
 
         for (int i = 0; i < numberOfAIs; i++) {
-            String aiName = NameGenerator.getRandomSeriesName();
+            String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
             GameClient aiClient = new MCTSAI(AI_id);
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
@@ -243,9 +242,9 @@ public class GameController {
     }
 
     /**
-     * Informs each client about the stacksizes of all players
+     * Informs each client about the stack sizes of all players
      *
-     * @param stackSizes Map of player ID mapped to his stacksize
+     * @param stackSizes Map of player ID mapped to his stack size
      */
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : clients.keySet()) {
@@ -268,12 +267,12 @@ public class GameController {
     /**
      * Tells each client that the game is over.
      *
-     * @param winnerID ID of the winning player
+     * @param stats The statistics of players
      */
-    public void gameOver(int winnerID) {
+    public void gameOver(Statistics stats) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
-            client.gameOver(winnerID);
+            client.gameOver(stats);
         }
     }
 
@@ -303,7 +302,7 @@ public class GameController {
      * @param potsize
      */
     public void preShowdownWinner(int winnerID, long potsize) {
-        guiClient.preShowDownWinner(winnerID, potsize);
+        guiClient.preShowdownWinner(winnerID, potsize);
         printToLogfield(names.get(0) + " won the pot of " + potsize);
     }
 
