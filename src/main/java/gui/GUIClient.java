@@ -2,10 +2,9 @@ package gui;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
-import gamelogic.ShowDownStats;
+import gamelogic.ShowdownStats;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -171,8 +170,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(ShowDownStats showDownStats) {
-        gameScreen.showDown(showDownStats);
+    public void showdown(ShowdownStats showdownStats) {
+        gameScreen.showDown(showdownStats);
     }
 
     @Override
@@ -184,7 +183,6 @@ public class GUIClient implements GameClient {
     @Override
     public void setSmallBlind(long smallBlind) {
         this.smallBlind = smallBlind;
-        //TODO: Update label in GUI
     }
 
     @Override
@@ -204,7 +202,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setLevelDuration(int levelDuration) {
-        //TODO: Update label in GUI
     }
 
     public void newBettingRound(long potSize) {

@@ -1,7 +1,6 @@
 package gui;
 
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -135,6 +134,7 @@ public class ButtonListeners {
      *
      */
     public static void exitButtonListener(){
+        savedGameController.exit();
         mainScreenEnterListener(savedName, savedNumOfPlayers, savedChoiceBox, savedGameController);
     }
 

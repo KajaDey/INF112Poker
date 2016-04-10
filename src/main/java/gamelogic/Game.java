@@ -35,6 +35,7 @@ public class Game {
     private Map<Integer, Card[]> holeCards;
     private Map<Integer, Integer> positions;
     private Card [] communityCards;
+    private boolean gameOver = false;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -58,6 +59,7 @@ public class Game {
 
         Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
+            if (gameOver) return;
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
             gameController.startNewHand();
@@ -77,6 +79,7 @@ public class Game {
 
         //Deal with who won the game.. (should be the only player with chips left
         assert numberOfPlayersWithChipsLeft() == 1 : "Game over but " + numberOfPlayersWithChipsLeft() + " had chips left";
+        pot = new Pot();
         refreshAllStackSizes();
 
         for (Player p : players) {
@@ -100,6 +103,7 @@ public class Game {
 
         boolean handContinues = bettingRound(preFlop);
         if (!handContinues) {
+            if (gameOver) return;
             preShowdownWinner();
             return;
         }
@@ -109,6 +113,7 @@ public class Game {
         setFlop();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
+            if (gameOver) return;
             preShowdownWinner();
             return;
         }
@@ -118,6 +123,7 @@ public class Game {
         setTurn();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
+            if (gameOver) return;
             preShowdownWinner();
             return;
         }
@@ -127,11 +133,13 @@ public class Game {
         setRiver();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
+            if (gameOver) return;
             preShowdownWinner();
             return;
         }
 
         //Showdown
+        if (gameOver) return;
         showDown();
     }
 
@@ -203,9 +211,10 @@ public class Game {
      * @return  True if the hand continues past this betting round, false if everyone but 1 folded
      */
     private boolean getDecisions(int actingPlayerIndex, boolean isPreFlop) {
-        int numberOfPlayersActedSinceLastAggressor = 0;
-
         while (true) {
+            if (gameOver)
+                return false;
+
             //Determine who's turn it is
             actingPlayerIndex %= playersStillInCurrentHand.size();
             Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
@@ -228,31 +237,23 @@ public class Game {
             String name = playerToAct.getName();
             switch(decision.move) {
                 case BET:
-                    numberOfPlayersActedSinceLastAggressor = 1;
                     highestAmountPutOnTable = decision.size;
                     break;
                 case RAISE:
-                    numberOfPlayersActedSinceLastAggressor = 1;
                     highestAmountPutOnTable += decision.size;
                     currentMinimumRaise = decision.size;
                     break;
                 case ALL_IN:
                     if(playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable+currentMinimumRaise) {
-                        numberOfPlayersActedSinceLastAggressor = 1; //If all in is a valid raise
                         currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
                     } else if (playerToAct.getAmountPutOnTableThisBettingRound() > highestAmountPutOnTable){
-                        numberOfPlayersActedSinceLastAggressor = 1; //If all in was not a valid raise but a raise
                         highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
-                    } else {
-                        numberOfPlayersActedSinceLastAggressor++;
                     }
                     break;
                 case FOLD:
                     playersStillInCurrentHand.remove(playerToAct);
                     break;
-
-                default: numberOfPlayersActedSinceLastAggressor++;
             }
 
             GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision);
@@ -578,11 +579,11 @@ public class Game {
         //Print all show down information to debugger
         printToDebugShowdown();
 
-        ShowDownStats showDownStats = new ShowDownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
-        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showDownStats);
+        ShowdownStats showdownStats = new ShowdownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
+        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showdownStats);
         assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
 
-        gameController.showDown(showDownStats);
+        gameController.showDown(showdownStats);
         delay(7000);
 
         //If a player that was in this hand now has zero chips, it means he just busted
@@ -635,5 +636,12 @@ public class Game {
                 count++;
         }
         return count;
+    }
+
+    /**
+     * Set exit to true so that the game thread will be killed
+     */
+    public void exit() {
+        gameOver = true;
     }
 }
