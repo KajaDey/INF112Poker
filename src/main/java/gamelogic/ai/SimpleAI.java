@@ -21,7 +21,6 @@ public class SimpleAI implements GameClient {
     private long smallBlindAmount;
     private int position; // 0 is dealer
 
-    private Optional<Decision> lastDecision = Optional.empty();
 
     // The AI keeps track of its stackSize by changing it in getDecision()
     private long stackSize;
