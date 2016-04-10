@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -88,8 +87,6 @@ public class GameLobby {
         menuBar.setLayoutX(0);
         pane.setCenter(fullLayout);
         pane.setTop(menuBar);
-        //pane.getChildren().addAll(fullLayout, menuBar);
-        //SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
         SceneBuilder.showCurrentScene(pane, "Lobby Screen");
 
     }

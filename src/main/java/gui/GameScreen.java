@@ -127,10 +127,10 @@ public class GameScreen {
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
                     if (!os.isEmpty()) {
-                        if (!os.startsWith("Windows"))
-                            oppLayout.setLayoutY(20);
+                        if (!os.startsWith("Mac"))
+                            oppLayout.setLayoutY(30);
                         else
-                            oppLayout.setLayoutY(40);
+                            oppLayout.setLayoutY(20);
                     }
                     break;
                 case 4:
