@@ -22,7 +22,7 @@ import javafx.scene.layout.VBox;
 
 public class PlayerLayout {
 
-    private Label stackLabel, positionLabel, lastMoveLabel, nameLabel;
+    private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
     private ImageView leftCardImage, rightCardImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextfield;
@@ -57,6 +57,7 @@ public class PlayerLayout {
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
+        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -127,7 +128,7 @@ public class PlayerLayout {
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
+        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel,bestHand);
         stats.setAlignment(Pos.CENTER);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
@@ -204,6 +205,12 @@ public class PlayerLayout {
         Platform.runLater(task);
     }
 
+    /**
+     * Set button visibility
+     *
+     * @param visible
+     */
+
     public void setVisible(boolean visible){
         betRaiseButton.setVisible(visible);
         checkCallButton.setVisible(visible);
@@ -239,6 +246,18 @@ public class PlayerLayout {
         amountTextfield.setStyle(textfieldStyle);
     }
 
+    public void setBestHand(String bestHand){
+        Platform.runLater(() -> this.bestHand.setText(bestHand));
+    }
+
+
+    /**
+     *
+     * Set card image and make them visible
+     *
+     * @param leftImage
+     * @param rightImage
+     */
     public void setCardImage(Image leftImage, Image rightImage) {
         DropShadow dropShadow = new DropShadow();
         leftCardImage.setImage(leftImage);

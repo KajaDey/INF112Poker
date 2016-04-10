@@ -44,7 +44,7 @@ public interface GameClient {
      * After a showdown, the client receives the hole cards of all the players still in the hand,
      * as a map indexed by the players' IDs
      */
-    void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot);
+    void showdown(ShowDownStats showDownStats);
 
     /**
      * Sends the value of big blind

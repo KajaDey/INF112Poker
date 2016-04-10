@@ -6,22 +6,33 @@ and this years task is to engineer an implementation of Texas Hold'em poker, ove
 
 * The project is using Maven. The code is written in java, gui is written with JavaFX.
 
+##Authors
+---
+    André Dyrstad
+    Henrik Nytun
+    Jostein Kringlen
+    Kaja Dey
+    Kristian Rosland
+    Mariah Vaarum
+    Morten Lohne
+    Ragnhild Aalvik
+    Simon Halvorsen
+    Vegar Rorvik
 
-*[Authors]  André Dyrstad
-            Henrik Nytun
-            Jostein Kringlen
-            Kaja Dey
-            Kristian Rosland
-            Mariah Vaarum
-            Morten Lohne
-            Ragnhild Aalvik
-            Simon Halvorsen
-            Vegar Rorvik
+* For this agile project, we have an online Scrum board:
+  * [Scrum board](https://scrumy.com/inf112gruppe4)
+* We also communicate using Slack.
 
-* To try our software you can clone the project using git. You must have java 1.8 and maven installed.
+
+## Usage of software
+---
+* To try our software, either for development reasons and/or to try the program you can clone the project using git. You must have java 1.8 and maven installed.
 Our team is using Intellij, and by using that, you can easily import this project using Import from Version Control.
 
 * You can run tests using the Maven project, with the lifecycle point called test.
+
+* To run the program, either, from IntelliJ, run GUIMain, or run package under Maven, open target folder in Finder/Explorer/Files
+(depends on OS), and run the file inf112v16-g4-Poker.jar
 
 * This implementation of Texas Hold'em allows the user to play a game of heads-up poker against an AI.
 The user can set the preferred game settings and the game continues until one of the players are out of chips.
@@ -30,11 +41,29 @@ players over the internet. This implementation will also allow for a user to spe
 
 # LICENSE
 ---
+This project is free software under GNU General Public License 3, **EXCEPT** for the Card Sprites.
+Look beneath our license to see the license for the **Card Sprites**.
 
-*[Scrum board](https://scrumy.com/inf112gruppe4)
+This implementation of Texas Hold'em is a project in the subject "Software Engineering" at the University in Bergen, Norway.
 
+Copyright (C) 2016
+Kristian Rosland, Morten Lohne, Jostein Kringlen, Mariah Vårum, Simon Halvorsen, Kaja Dey, André Dyrstad, Henrik Nytun, Ragnhild Aalvik, Vegar Rørvik
 
-*[CardSprites]
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/
+
+## CardSprites license
+---
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
 
 High quality PNG playing cards - 537x750
@@ -46,5 +75,3 @@ Terms of Use:
 - Personal use only!
 
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
-
-*Background is made by Jostein

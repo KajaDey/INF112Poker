@@ -24,7 +24,6 @@ public class Game {
     private long startStack;
 
     //Indexes
-    private int bigBlindIndex = 0;
     private int smallBlindIndex = 0;
 
     //Round specific
@@ -70,7 +69,7 @@ public class Game {
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
-            communityCards = getCommunityCards(deck);
+            communityCards = generateCommunityCards(deck);
             dealHoleCards(deck, playersStillInCurrentHand);
 
             playHand();
@@ -100,51 +99,54 @@ public class Game {
         GUIMain.debugPrintln("\nPREFLOP:");
 
         boolean handContinues = bettingRound(preFlop);
-        if (!handContinues) { determineWinner();
+        if (!handContinues) {
+            preShowdownWinner();
             return;
         }
-        printAllPlayerStacks();
 
         //Display flop and new betting round
         GUIMain.debugPrintln("\nFLOP:");
         setFlop();
         handContinues = bettingRound(!preFlop);
-        if (!handContinues) { determineWinner();
+        if (!handContinues) {
+            preShowdownWinner();
             return;
         }
-        printAllPlayerStacks();
 
         //Display turn and new betting round
         GUIMain.debugPrintln("\nTURN:");
         setTurn();
         handContinues = bettingRound(!preFlop);
-        if (!handContinues) { determineWinner();
+        if (!handContinues) {
+            preShowdownWinner();
             return;
         }
-        printAllPlayerStacks();
 
         //Display river and new betting round
         GUIMain.debugPrintln("\nRIVER:");
         setRiver();
         handContinues = bettingRound(!preFlop);
-        if (!handContinues) { determineWinner();
+        if (!handContinues) {
+            preShowdownWinner();
             return;
         }
-        printAllPlayerStacks();
 
         //Showdown
         showDown();
-        printAllPlayerStacks();
     }
 
-    private void determineWinner() {
-        //Double check that there is only one player remaining in the hand
-        if (playersStillInCurrentHand.size() != 1)
-            GUIMain.debugPrintln("Winner cannot be determined, " + playersStillInCurrentHand.size() + " players left in the hand");
+    /**
+     * Called if the hand is over before showdown (means everyone but one player folded).
+     * Increments the stack of the player left in the hand. Sends relevant information to clients
+     */
+    private void preShowdownWinner() {
+        assert playersStillInCurrentHand.size() == 1 : playersStillInCurrentHand.size() + " player left in hand";
 
         //Hand out the pot to the remaining player in the hand
         Player winner = playersStillInCurrentHand.get(0);
+        gameController.preShowdownWinner(winner.getID(), pot.getPotSize());
         winner.incrementStack(pot.getPotSize());
+        delay(3000);
     }
 
     /**
@@ -161,6 +163,11 @@ public class Game {
         return count >= playersStillInCurrentHand.size() - 1;
     }
 
+    /**
+     *   Play one complete betting round (where all players act until everyone agrees (or everyone but 1 folds))
+     * @param isPreFlop  True if this is the pre flop betting round
+     * @return  True if the hand continues, false if the hand is over
+     */
     private boolean bettingRound(boolean isPreFlop) {
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
@@ -178,13 +185,25 @@ public class Game {
                 p.newBettingRound();
         }
 
-        int numberOfPlayersActedSinceLastAggressor = 0;
-
         //Check if all players are all in and betting round should be skipped
         if (skipBettingRound()) {
-            //TODO: Show hole cards
+            displayHoleCards();
+            delay(2000);
             return true;
         }
+
+        //Return true if hand continues, false if hand is over
+        return getDecisions(actingPlayerIndex, isPreFlop);
+    }
+
+    /**
+     *   Get decision from all players until all agressive moves have been responded to
+     * @param actingPlayerIndex  Index of the player who starts the acting
+     * @param isPreFlop  true if the betting round is pre flop, false if not
+     * @return  True if the hand continues past this betting round, false if everyone but 1 folded
+     */
+    private boolean getDecisions(int actingPlayerIndex, boolean isPreFlop) {
+        int numberOfPlayersActedSinceLastAggressor = 0;
 
         while (true) {
             //Determine who's turn it is
@@ -193,7 +212,7 @@ public class Game {
 
             //Check if player is already all in
             if (playerToAct.isAllIn()) {
-                if (skipBettingRound()) return true;
+                if (allPlayersActed()) return true;
                 actingPlayerIndex++;
                 continue;
             }
@@ -201,12 +220,12 @@ public class Game {
             //Get decision for the acting player
             Decision decision = getValidDecisionFromPlayer(playerToAct, isPreFlop);
             playerToAct.act(decision, highestAmountPutOnTable, pot, isPreFlop);
-            gameController.printToLogfield(playerToAct.getName() + " made decision " + decision.move.toString().toLowerCase());
 
             //Tell all the clients about this decision
             gameController.setDecisionForClient(playerToAct.getID(), decision);
 
             //Update players left in hand and number of players that have acted since the last aggressor
+            String name = playerToAct.getName();
             switch(decision.move) {
                 case BET:
                     numberOfPlayersActedSinceLastAggressor = 1;
@@ -236,27 +255,54 @@ public class Game {
                 default: numberOfPlayersActedSinceLastAggressor++;
             }
 
-            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision + ". Highest amount put on table: " + highestAmountPutOnTable);
+            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision);
 
             //Check if the hand is over (only one player left)
-            if (playersStillInCurrentHand.size() <= 1) {
-                GUIMain.debugPrintln("Only one player left, hand over");
+            if (playersStillInCurrentHand.size() <= 1)
                 return false;
-            } else if(numberOfPlayersActedSinceLastAggressor == playersStillInCurrentHand.size()) {
+            else if(allPlayersActed())
                 return true;
-            }
 
+            //If player folded actingPlayerIndex should not be incremented because playersInHand.size() is decremented
             if (decision.move != Decision.Move.FOLD)
                 actingPlayerIndex++;
         }
     }
 
     /**
+     * Display hole cards of remaining players
+     */
+    private void displayHoleCards() {
+        ArrayList<Integer> playerList = new ArrayList<>();
+        for (Player p : playersStillInCurrentHand)
+            playerList.add(p.getID());
+
+        gameController.showHoleCards(playerList, holeCards);
+    }
+
+    /**
+     *   Check if all the players have acted in this betting round
+     *   A player is finished acting if he is all in or he matches the highest amount put on the table
+     * @return
+     */
+    private boolean allPlayersActed() {
+        int count = 0;
+        for (Player p : playersStillInCurrentHand) {
+            if (p.isAllIn())
+                count++;
+            else if (p.hasActed() && p.getAmountPutOnTableThisBettingRound() == highestAmountPutOnTable)
+                count++;
+        }
+
+        return count == playersStillInCurrentHand.size();
+    }
+
+    /**
      * Automatically post small and big blind for given players
-     *
      */
     private void postBlinds() {
         assert playersStillInCurrentHand.size() >= 2 : "Not enough players still playing to post blinds";
+
         Decision postSB = new Decision(Decision.Move.SMALL_BLIND, currentSB);
         Decision postBB = new Decision(Decision.Move.BIG_BLIND, currentBB);
 
@@ -268,6 +314,12 @@ public class Game {
             smallBlindPlayer = playersStillInCurrentHand.get(0);
             bigBlindPlayer = playersStillInCurrentHand.get(1);
         }
+
+        //If one of the players don't have enough to post their blind
+        if (smallBlindPlayer.getStackSize() <= postSB.size)
+            postSB = new Decision(Decision.Move.ALL_IN);
+        if (bigBlindPlayer.getStackSize() <= postBB.size)
+            postBB = new Decision(Decision.Move.ALL_IN);
 
         //Notify GUI and AI about the posting
         gameController.setDecisionForClient(smallBlindPlayer.getID(), postSB);
@@ -350,26 +402,15 @@ public class Game {
      * return Ordered list of players still in the game
      */
     private List<Player> getOrderedListOfPlayersStillPlaying() {
-        //Reset the necessary variables
+        //Reset the necessary maps
         positions = new HashMap<>();
         holeCards = new HashMap<>();
 
-        //SmallBlindIndex skips players who are bust
-        for (int i = 0; i < numberOfPlayers; i++) {
-            if (players[(smallBlindIndex + i) % numberOfPlayers].getStackSize() <= 0) {
-                roundNumber++;
-            }
-            else
-                break;
-        }
+        //Update who is the small/big blind
+        updateBlindIndexes();
 
-        //Set indexes
-        smallBlindIndex = roundNumber % numberOfPlayers;
-        bigBlindIndex = (numberOfPlayers == 2 ? roundNumber % numberOfPlayers : (roundNumber+1)%numberOfPlayers);
-
-
-        List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
         //Add players to orderedListOfPlayersStillPlaying in order SB, BB ...
+        List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = players[(smallBlindIndex + i) % numberOfPlayers];
             if (player.getStackSize() > 0) {
@@ -377,22 +418,47 @@ public class Game {
             }
         }
 
-
-        //Determine positions on the table based on the order of playersStillInCurrentHand
-        if (orderedListOfPlayersStillPlaying.size() == 2) {
-            //Special case if only two players (dealer and small blind is same pos)
-            positions.put(orderedListOfPlayersStillPlaying.get(0).getID(), 0);
-            positions.put(orderedListOfPlayersStillPlaying.get(1).getID(), 1);
-        } else {
-            for (int i = 0; i < orderedListOfPlayersStillPlaying.size(); i++) {
-                positions.put(orderedListOfPlayersStillPlaying.get(i).getID(), i);
-            }
-        }
-
-        gameController.setPositions(new HashMap<>(positions));
+        //Set position for all players and inform clients
+        setNewPositions(orderedListOfPlayersStillPlaying);
 
         roundNumber++;
         return orderedListOfPlayersStillPlaying;
+    }
+
+    /**
+     *  Method to set new positions on the table
+     * @param orderedPlayerList Ordered list of the players still playing (stack > 0)
+     */
+    private void setNewPositions(List<Player> orderedPlayerList) {
+        //Determine positions on the table based on the order of playersStillInCurrentHand
+        if (orderedPlayerList.size() == 2) {
+            //Special case if only two players (dealer and small blind is same pos)
+            positions.put(orderedPlayerList.get(0).getID(), 0);
+            positions.put(orderedPlayerList.get(1).getID(), 1);
+        } else {
+            for (int i = 0; i < orderedPlayerList.size(); i++) {
+                positions.put(orderedPlayerList.get(i).getID(), i);
+            }
+        }
+
+        //Inform all clients about the udpates positions
+        gameController.setPositions(new HashMap<>(positions));
+    }
+
+    /**
+     *  Updates the small/big blind index. Called at the start of every hand
+     */
+    private void updateBlindIndexes() {
+        //SmallBlindIndex skips players who are bust
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (players[(smallBlindIndex + i) % numberOfPlayers].getStackSize() <= 0)
+                roundNumber++;
+            else
+                break;
+        }
+
+        //Set indexes
+        smallBlindIndex = roundNumber % numberOfPlayers;
     }
 
     /**
@@ -498,7 +564,7 @@ public class Game {
      * @param deck Deck to draw from
      * @return Array of community cards
      */
-    private Card[] getCommunityCards(Deck deck) {
+    private Card[] generateCommunityCards(Deck deck) {
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = deck.draw().get();
@@ -506,80 +572,18 @@ public class Game {
     }
 
     /**
-     * Calculates how many players are all in this round.
-     *
-     * @param playersStillPlaying Players still in the hand
-     * @return Number of players all in
-     */
-    private int skipBettingRound(List<Player> playersStillPlaying) {
-        int numberOfPlayersAllIn = 0;
-
-        for (Player p : playersStillPlaying) {
-            assert p.getStackSize() >= 0 : p.getName() + "'s stack was " + p.getStackSize();
-            if (p.getStackSize() - p.getAmountPutOnTableThisBettingRound() <= 0)
-                numberOfPlayersAllIn++;
-        }
-        return numberOfPlayersAllIn;
-    }
-
-    /**
-     * Finds ID of the player who won the hand
-     *
-     * @param playersStillPlaying Players still in the hand
-     * @return Winner-ID
-     */
-    private int findWinnerID(List<Integer> playersStillPlaying) {
-        int bestPlayer = playersStillPlaying.get(0);
-        Hand bestHand = new Hand(holeCards.get(bestPlayer)[0], holeCards.get(bestPlayer)[1], Arrays.asList(communityCards));
-
-        for (Integer i : playersStillPlaying) {
-            Hand currentHand = new Hand(holeCards.get(i)[0], holeCards.get(i)[1], Arrays.asList(communityCards));
-
-            if (currentHand.compareTo(bestHand) > 0) {
-                bestHand = currentHand;
-                bestPlayer = i;
-            }
-        }
-
-        return bestPlayer;
-    }
-
-    /**
      * Displays each player's hole cards after a hand is over, and gives the currentPot to the winning player.
      */
     private void showDown() {
-        //Print hole cards and community cards
-        GUIMain.debugPrintln("\nShowdown");
-        for (Player p : playersStillInCurrentHand)
-            GUIMain.debugPrintln(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1]);
-        for (Card communityCard : communityCards)
-            GUIMain.debugPrint(communityCard + " ");
-        GUIMain.debugPrintln();
+        //Print all show down information to debugger
+        printToDebugShowdown();
 
-        List<Integer> IDStillPlaying = new ArrayList<>();
-        for (Player p : playersStillInCurrentHand) {
-            IDStillPlaying.add(p.getID());
-        }
+        ShowDownStats showDownStats = new ShowDownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
+        pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showDownStats);
+        assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
 
-        //Winner of the main pot
-        int winnerID = findWinnerID(IDStillPlaying);
-        Player winner = getPlayerFromID(winnerID);
-        long potShare = pot.getSharePotPlayerCanWin(winnerID);
-        winner.incrementStack(potShare);
-        gameController.showDown(IDStillPlaying, winnerID, holeCards, potShare);
-        IDStillPlaying.remove(new Integer(winnerID));
-
-        //While there are more side pots
-        while (pot.getPotSize() > 0) {
-            winnerID = findWinnerID(IDStillPlaying);
-            winner = getPlayerFromID(winnerID);
-            potShare = pot.getSharePotPlayerCanWin(winnerID);
-            winner.incrementStack(potShare);
-            GUIMain.debugPrintln(winner.getName() + " got " + potShare);
-            IDStillPlaying.remove(new Integer(winnerID));
-        }
-
-        delay(5000);
+        gameController.showDown(showDownStats);
+        delay(7000);
 
         //If a player that was in this hand now has zero chips, it means he just busted
         for (Player p : playersStillInCurrentHand) {
@@ -588,14 +592,33 @@ public class Game {
         }
     }
 
+    /**
+     * Prints all the information about the showdown to the debugger (and console)
+     */
+    private void printToDebugShowdown() {
+        //Print hole cards and community cards
+        GUIMain.debugPrintln("\nShowdown");
+        for (Player p : playersStillInCurrentHand)
+            GUIMain.debugPrintln(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1]);
+        for (Card communityCard : communityCards)
+            GUIMain.debugPrint(communityCard + " ");
+        GUIMain.debugPrintln();
+    }
+
     public void refreshAllStackSizes() {
+        long totalChipsInPlay = 0;
         HashMap<Integer, Long> stacks = new HashMap<>();
 
         for (Player p : players)
-            if (p.getStackSize() > 0)
+            if (p.getStackSize() > 0) {
                 stacks.put(p.getID(), p.getStackSize());
+                totalChipsInPlay += p.getStackSize();
+            }
 
         gameController.setStackSizes(stacks);
+
+        totalChipsInPlay += pot.getPotSize();
+       // assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too much chips in play, " + totalChipsInPlay;
     }
 
     public void printAllPlayerStacks() {
@@ -603,13 +626,6 @@ public class Game {
             GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize());
         }
         GUIMain.debugPrintln("Pot: " + pot.getPotSize());
-    }
-
-    public Player getPlayerFromID(int ID) {
-        for (Player p : players) {
-            if (p.getID() == ID) return p;
-        }
-        return null;
     }
 
     public int numberOfPlayersWithChipsLeft(){

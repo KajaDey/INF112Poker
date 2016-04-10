@@ -2,7 +2,9 @@ package gui;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gamelogic.ShowDownStats;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -169,9 +171,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
-        gameScreen.setPot(pot);
-        gameScreen.showDown(playersStillPlaying, winnerID, holeCards);
+    public void showdown(ShowDownStats showDownStats) {
+        gameScreen.showDown(showDownStats);
     }
 
     @Override
@@ -217,7 +218,23 @@ public class GUIClient implements GameClient {
         return id;
     }
 
+    /**
+     * Prints the log message to the log field
+     * @param message The message to be printed
+     */
     public void printToLogfield(String message) {
         gameScreen.printToLogField(message);
+    }
+
+    public void preShowDownWinner(int winnerID, long potsize) {
+        gameScreen.preShowDownWinner(winnerID, potsize);
+    }
+
+    public void sidePotWinner(int id, long potSize) {
+        gameScreen.sidePotWinner(id, potSize);
+    }
+
+    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
+        gameScreen.showHoleCards(playerList, holeCards);
     }
 }

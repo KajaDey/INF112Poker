@@ -93,31 +93,69 @@ public class OpponentLayout extends HBox{
 
     }
 
+    /**
+     * Set last move for opponent
+     *
+     * @param s
+     */
     public void setLastMoveLabel(String s){
         Platform.runLater(() -> lastMoveLabel.setText(s));
     }
+
+    /**
+     * Set stack size for opponent
+     *
+     * @param s
+     */
 
     public void setStackSizeLabel(String s){
         Platform.runLater(() -> stackSizeLabel.setText(s));
     }
 
+    /**
+     *
+     * Set position for opponent
+     *
+     * @param s
+     */
+
     public void setPositionLabel(String s){
         Platform.runLater(() -> positionLabel.setText(s));
     }
 
+    /**
+     *
+     * Show cards
+     *
+     * @param leftCard
+     * @param rightCard
+     */
     public void setCardImage(Image leftCard,Image rightCard) {
-        leftCardImage.setImage(leftCard);
-        rightCardImage.setImage(rightCard);
+        Platform.runLater( () -> {
+            leftCardImage.setImage(leftCard);
+            rightCardImage.setImage(rightCard);
 
-        leftCardImage.setEffect(dropShadow);
-        rightCardImage.setEffect(dropShadow);
-        leftCardImage.setVisible(true);
-        rightCardImage.setVisible(true);
+            leftCardImage.setEffect(dropShadow);
+            rightCardImage.setEffect(dropShadow);
+            leftCardImage.setVisible(true);
+            rightCardImage.setVisible(true);
+        });
     }
+
+    /**
+     * Sets name for opponent
+     *
+     * @param name
+     */
 
     public void setNameLabel(String name) {
         nameLabel.setText(name);
     }
+
+
+    /**
+     * Gray out cards
+     */
 
     public void removeHolecards() {
         ColorAdjust adjust = new ColorAdjust();
@@ -126,9 +164,23 @@ public class OpponentLayout extends HBox{
         rightCardImage.setEffect(adjust);
     }
 
+    /**
+     *
+     * Get opponent position
+     *
+     * @return position
+     */
+
     public int getPosition() {
         return position;
     }
+
+    /**
+     *
+     * Set opponent position
+     *
+     * @param position
+     */
 
     public void setPosition(int position){
         this.position = position;

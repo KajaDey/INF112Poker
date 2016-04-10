@@ -1,6 +1,9 @@
 package gamelogic;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by kristianrosland on 07.03.2016.
  *
@@ -11,7 +14,7 @@ public class Player extends User {
     private long stackSize;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean folded = false, allIn = false;
+    private boolean folded = false, allIn = false, hasActed = false;
 
     //Statistics
     private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
@@ -64,7 +67,6 @@ public class Player extends User {
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
-                assert amountToCall > 0 : "Negative number added to pot: " + highestAmountPutOnTable + "-" + putOnTableThisRound + "=" + amountToCall;
                 pot.addToPot(ID, amountToCall);
                 break;
 
@@ -91,6 +93,10 @@ public class Player extends User {
                 allIn = true;
                 break;
         }
+
+        //If a player has posted blind he should not be marked as if he as acted this betting round
+        if (decision.move != Decision.Move.SMALL_BLIND && decision.move != Decision.Move.BIG_BLIND)
+            hasActed = true;
     }
 
     /**
@@ -124,6 +130,7 @@ public class Player extends User {
         holeCards[1] = card2;
         this.putOnTableThisRound = 0;
         this.allIn = false;
+        this.hasActed = false;
     }
 
     /**
@@ -133,13 +140,6 @@ public class Player extends User {
     public Card[] getHoleCards() {
         assert holeCards != null : "Hole cards were null when Game asked for them";
         return holeCards;
-    }
-
-    /**
-     * @return true if the player is still playing, else false
-     */
-    public boolean stillPlaying() {
-        return !folded;
     }
 
     /**
@@ -158,32 +158,19 @@ public class Player extends User {
      */
     public void newBettingRound() {
         this.putOnTableThisRound = 0;
-    }
-
-    /**
-     * TODO write javadoc
-     * @param winningHand
-     */
-    public void handWon(Hand winningHand) {
-        handsWon++;
-
-        //Update best hand (for stats)
-        if (bestHand == null)
-            bestHand = winningHand;
-        else if (winningHand.compareTo(bestHand) > 0)
-            bestHand = winningHand;
-    }
-
-    /**
-     * TODO write javadoc
-     * @return
-     */
-    public String getBestHand() {
-        return "Not implemented in HandCalculator";
+        hasActed = false;
     }
 
     public boolean isAllIn() {
         return allIn;
+    }
+
+    public Hand getHand(List<Card> communityCards) {
+        return new Hand(holeCards[0], holeCards[1], communityCards);
+    }
+
+    public boolean hasActed() {
+        return allIn || hasActed;
     }
 }
 

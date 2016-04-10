@@ -3,6 +3,7 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gamelogic.ShowDownStats;
 import gui.GUIMain;
 
 import java.util.*;
@@ -57,11 +58,15 @@ public class SimpleAI implements GameClient {
         assert stackSize > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
 
         assert minimumRaise > 0;
-        //assert stackSize == stackSizes.get(this.playerId) :
-        //        "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
+        assert stackSize == stackSizes.get(this.playerId) :
+                "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
 
         //Sleep for some time to make it more realistic
         Random rand = new Random();
+        try {
+            // Thread.sleep(1000 + rand.nextInt(2000));
+            // Waiting 600 seconds for AI tests was to realistic
+        } catch (Exception e) { e.printStackTrace(); }
 
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
@@ -271,7 +276,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) { }
+    public void showdown(ShowDownStats showDownStats) { }
 
     @Override
     public void setBigBlind(long bigBlind) {

@@ -1,17 +1,15 @@
 package gamelogic;
 
-import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
-import javafx.application.Platform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by kristianrosland on 07.03.2016.
+ *
+ * A game controller to connect GUI and back end. GUI informs the controller that something happened, and the controller
+ * asks back end to execute the requested move.
  */
 public class GameController {
 
@@ -21,7 +19,7 @@ public class GameController {
     private GUIMain mainGUI;
     public GameSettings gameSettings;
     private String name;
-    private Map<Integer, String> names = new HashMap<>();
+    private Map<Integer, String> names;
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
@@ -37,9 +35,10 @@ public class GameController {
      */
     public void enterButtonClicked(String name, int numPlayers, String gameType) {
         //Tell GUI to display Lobby
-        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10); //Default settings
+        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, "Simple AI");
         mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
         this.name = name;
+
     }
 
     /**
@@ -49,7 +48,6 @@ public class GameController {
      * @param gamesettings Game settings
      */
     public void startTournamentButtonClicked(GameSettings gamesettings) {
-
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
 
@@ -59,31 +57,22 @@ public class GameController {
             return;
         }
 
-        //Empty map of clients
+        //Empty maps of clients/names
         clients = new HashMap<>();
+        names = new HashMap<>();
 
-        //Init GUIGameClient
-        guiClient = mainGUI.displayGameScreen(gamesettings, 0);
-        clients.put(0, guiClient);
-        game.addPlayer(this.name, 0);
-        mainGUI.insertPlayer(0, this.name, gamesettings.getStartStack());
-        guiClient.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
-        names.put(0, name);
+        //Create GUI-GameClient
+        createGUIClient(gamesettings);
 
-        //Init AIClients
-        int numOfAIs = gamesettings.getMaxNumberOfPlayers() - 1;
-        for (int i = 0; i < numOfAIs; i++) {
-            String aiName = NameGenerator.getRandomName();
-            int AI_id = i+1;
-            GameClient aiClient = new MCTSAI(AI_id);
-            clients.put(AI_id, aiClient);
-            game.addPlayer(aiName, AI_id);
-            mainGUI.insertPlayer(AI_id, aiName, gamesettings.getStartStack());
-            names.put(AI_id, aiName);
-        }
+        //Create AI-GameClients
+        int numberOfAIClients = gameSettings.getMaxNumberOfPlayers() - 1;
+        createAIClients(numberOfAIClients, gamesettings);
 
-        //Set initial values for clients
+        //Set initial blind values for clients
         initClients(gamesettings);
+
+        //Print welcome message to log
+        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -94,7 +83,38 @@ public class GameController {
         gameThread.start();
 
         //Print to on screen log
-        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
+    }
+
+    /**
+     *  Create a GUI-client with initial values
+     * @param settings
+     */
+    private void createGUIClient(GameSettings settings) {
+        guiClient = mainGUI.displayGameScreen(settings, 0);
+        clients.put(0, guiClient);
+        game.addPlayer(this.name, 0);
+        mainGUI.insertPlayer(0, this.name, settings.getStartStack());
+        guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
+        names.put(0, name);
+    }
+
+    /**
+     * Create a given number of AI-clients to correspond to Player's in Game
+     * @param numberOfAIs
+     * @param settings
+     */
+    private void createAIClients(int numberOfAIs, GameSettings settings) {
+        NameGenerator.readNewSeries();
+
+        for (int i = 0; i < numberOfAIs; i++) {
+            String aiName = NameGenerator.getRandomSeriesName();
+            int AI_id = i+1;
+            GameClient aiClient = new SimpleAI(AI_id, 0.75);
+            clients.put(AI_id, aiClient);
+            game.addPlayer(aiName, AI_id);
+            mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
+            names.put(AI_id, aiName);
+        }
     }
 
     /**
@@ -102,12 +122,11 @@ public class GameController {
      *
      * @param gamesettings
      */
-    public void initClients(GameSettings gamesettings) {
+    private void initClients(GameSettings gamesettings) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
             client.setBigBlind(gamesettings.getBigBlind());
             client.setSmallBlind(gamesettings.getSmallBlind());
-            client.setAmountOfPlayers(gamesettings.getMaxNumberOfPlayers());
             client.setPlayerNames(names);
         }
     }
@@ -120,10 +139,20 @@ public class GameController {
      */
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
-        if (client == null) {
-            return null;
-        }
+        if (client instanceof SimpleAI)
+            addDelayTimeForDecision();
         return client.getDecision();
+    }
+
+    /**
+     * Delays the execution 1-3 seconds (to make Simple-AI decision time look more realistic)
+     */
+    private void addDelayTimeForDecision() {
+        Random rand = new Random();
+        try { Thread.sleep(1000 + rand.nextInt(2000)); }
+        catch (Exception e) {
+            System.out.println("Thread " + Thread.currentThread() + " was interrupted");
+        }
     }
 
     /**
@@ -136,17 +165,14 @@ public class GameController {
     }
 
     /**
-     * Tells each client that it is time for show down, and who is the winner of the hand
+     * Tells each client that it is time for show down, and pass the necessary information about the showdown
      *
-     * @param playersStillPlaying Players still in the hand
-     * @param winnerID ID of the winning player
-     * @param holeCards Map of player IDs and their hole cards
-     * @param pot Total amount in the pot
+     * @param showDownStats Information about pot (and side pots) and who won
      */
-    public void showDown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
+    public void showDown(ShowDownStats showDownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(playersStillPlaying, winnerID, holeCards, pot);
+            c.showdown(showDownStats);
         }
     }
 
@@ -166,7 +192,7 @@ public class GameController {
      * Informs each client about the decision that was made by a specific user
      *
      * @param userID The user who made the decision
-     * @param decision The decision that was made
+     * @param decision The dicision that was made
      */
     public void setDecisionForClient(int userID, Decision decision) {
         for (Integer clientID : clients.keySet()) {
@@ -224,6 +250,7 @@ public class GameController {
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
+            c.setAmountOfPlayers(stackSizes.size());
             c.setStackSizes(new HashMap<>(stackSizes));
         }
     }
@@ -250,6 +277,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Sends the position of each player to all clients
+     * @param positions
+     */
     public void setPositions(Map<Integer, Integer> positions) {
         for (Integer clientID : clients.keySet()) {
             GameClient client = clients.get(clientID);
@@ -266,6 +297,17 @@ public class GameController {
     }
 
     /**
+     *  Called every time a hand is won before showdown (everyone but 1 player folded)
+     *  Prints a text showing who won the pot and how much it was. Also prints to logfield
+     * @param winnerID
+     * @param potsize
+     */
+    public void preShowdownWinner(int winnerID, long potsize) {
+        guiClient.preShowDownWinner(winnerID, potsize);
+        printToLogfield(names.get(0) + " won the pot of " + potsize);
+    }
+
+    /**
      * Called every time a player is bust to inform all clients
      * @param bustPlayerID
      * @param rank Place the busted player finished in
@@ -278,5 +320,13 @@ public class GameController {
         if (!(bustedClient instanceof GUIClient)) {
             clients.remove(bustPlayerID);
         }
+    }
+
+    public void sidePotWinner(int id, long potSize) {
+        guiClient.sidePotWinner(id, potSize);
+    }
+
+    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
+        guiClient.showHoleCards(playerList, holeCards);
     }
 }
