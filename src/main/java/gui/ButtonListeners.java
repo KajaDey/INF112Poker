@@ -1,5 +1,6 @@
 package gui;
 
+import gamelogic.Statistics;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -158,4 +159,7 @@ public class ButtonListeners {
         MainScreen.refreshSceneForMainScreen();
     }
 
+    public static void saveToFile(Statistics stats) {
+        stats.printStatisticsToFile();
+    }
 }
