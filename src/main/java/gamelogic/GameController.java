@@ -12,7 +12,7 @@ import java.util.*;
  * A controller to function as a layer between the GUI and the back end.
  */
 public class GameController {
-    public enum AIType { MCTS_AI, SIMPLE_AI }
+    public enum AIType { MCTS_AI, SIMPLE_AI, Mixed}
 
     private Game game;
     private Map<Integer, GameClient> clients;
@@ -108,10 +108,19 @@ public class GameController {
             int AI_id = i+1;
 
             GameClient aiClient;
-            if (gameSettings.getAIType() == AIType.MCTS_AI)
-                aiClient = new MCTSAI(AI_id);
-            else
-                aiClient = new SimpleAI(AI_id, 0.9);
+            double contemptFactor = 0.9;
+            switch (gameSettings.getAIType()) {
+                case MCTS_AI:
+                    aiClient = new MCTSAI(AI_id);
+                    break;
+                case SIMPLE_AI:
+                    aiClient = new SimpleAI(AI_id, contemptFactor);
+                    break;
+                case Mixed:
+                    aiClient = Math.random() > 0.5 ? new MCTSAI(AI_id) : new SimpleAI(AI_id, contemptFactor);
+                    break;
+                default: throw new IllegalStateException(); // Exception to please our java overlords
+            }
 
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
             clients.put(AI_id, aiClient);

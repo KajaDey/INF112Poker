@@ -130,7 +130,7 @@ public class GameLobby {
         choiceBox.setMaxWidth(100);
         choiceBox.setMinHeight(30);
         choiceBox.setMaxWidth(30);
-        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI");
+        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI", "Mixed");
         choiceBox.setValue("Simple-AI");
         choiceBox.setTooltip(new Tooltip("Pick a difficulty"));
         choiceBox.setPadding(new Insets(5,5,8,5));
