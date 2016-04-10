@@ -1,0 +1,27 @@
+Møte 9 - 05.04.16, kl 10.00
+Sekretær: Mariah Vårum
+
+Oppmøte:
+Kristian
+Kaja
+Ragnhild
+Jostein
+Andrè
+Simon
+Mariah
+Fraværende: Henrik, Vegar og Morten
+
+Hva er gjort siden sist:
+Jobbet med GUI-kode
+Jobbet med toString i rules. 
+Jobbet med AI.
+
+Diskusjon:
+Hvilke statistics skal man skrive til fil? 
+Ha en lagre-knapp? 
+Plan til neste møte:
+Alle jobber med oppgaver som nevnt over. 
+
+
+Tid for neste møte:
+Gruppemøte: 06.04.16 kl 14.30

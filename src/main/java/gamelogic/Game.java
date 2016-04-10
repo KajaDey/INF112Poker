@@ -367,7 +367,7 @@ public class Game {
                     break;
 
                 case RAISE:
-                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise when highest amount put on table was 0";
+                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.size + " when highest amount put on table was 0";
                     if (decision.size >= currentMinimumRaise)
                         return decision;
                     break;
