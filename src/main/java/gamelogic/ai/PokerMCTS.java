@@ -38,14 +38,13 @@ public class PokerMCTS {
     }
 
     public Decision calculateFor(long milliseconds) {
-        System.out.println("Starting MCTS for " + initialGameState.players.get(playerPosition) + " with " + amountOfPlayers + " players");
         assert initialGameState.currentPlayer.id == playerId : "Started calculating when currentPlayer is " + initialGameState.currentPlayer + ", but AI is " + initialGameState.players.get(playerPosition);
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() < startTime + milliseconds) {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, false);
                 totalSearches++;
-                if (totalSearches % 15000 == 0) {
+                if (totalSearches % 25000 == 0) {
                     //assert rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) == totalSearches :
                     //"Searches for children: " + rootNode.children.stream().map(Optional::get).map(child -> child.searches).reduce(0, Integer::sum) + ", total searches: " + totalSearches;
                     //assert !(totalSearches > rootNode.sizeOfTree() * 2) : "Did " + totalSearches + " searches, but size of tree is " + rootNode.sizeOfTree();
@@ -57,15 +56,12 @@ public class PokerMCTS {
                 }
             }
         }
-        System.out.println("Did " + totalSearches + " searches, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
-
         GameState gameState = new GameState(initialGameState);
         for (Player player : gameState.players) {
             if (player.holeCards.size() == 0) {
                 gameState.giveHoleCards(player.id);
             }
         }
-
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
         assert criticalEvals.get().size() == allDecisions.size() : "Has values for " + criticalEvals.get().size() + " moves, but " + allDecisions.size() + " moves (" + allDecisions + ")";
@@ -83,7 +79,6 @@ public class PokerMCTS {
                 bestValue = values[i];
                 bestDecision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
             }
-            //GUIMain.debugPrintln(((GameState.PlayerDecision)allDecisions.get(i)).decision + ": " + values[i] + ", " + criticalEvals.get().get(i));
         }
         printProgressReport();
         return bestDecision;

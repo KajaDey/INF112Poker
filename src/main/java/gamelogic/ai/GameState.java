@@ -164,11 +164,9 @@ public class GameState {
                     });
                     playersLeftInHand--;
                     if (currentPlayer.currentBet > currentPlayer.stackSize) {
-                        System.out.println("All in was a call");;
                         playersToMakeDecision--;
                     }
                     else {
-                        System.out.println("All in was a raise");
                         playersToMakeDecision = playersLeftInHand;
                     }
                     playersAllIn++;
