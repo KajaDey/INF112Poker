@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -53,7 +54,6 @@ public class PotTest {
         //Hand out the pot
         ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
-        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertEquals(players.get(0).getStackSize(), 5000);
@@ -88,7 +88,6 @@ public class PotTest {
         //Hand out the pot
         ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
-        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertTrue(players.get(0).getStackSize() == 50000);
@@ -125,7 +124,6 @@ public class PotTest {
         //Hand out the pot
         ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
-        System.out.println(s.getWinnerText());
 
         assertTrue(pot.getPotSize() == 0);
         assertEquals(players.get(0).getStackSize(), 19000);
@@ -164,13 +162,56 @@ public class PotTest {
         ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
 
-        System.out.println(s.getWinnerText());
-
         assertTrue(pot.getPotSize() == 0);
         assertEquals(players.get(0).getStackSize(), 20000);
         assertEquals(players.get(1).getStackSize(), 0);
         assertEquals(players.get(2).getStackSize(), 0);
         assertEquals(players.get(3).getStackSize(), 0);
+    }
+
+    @Test
+    public void testThatPotIsEmptyIfAllPlayersGetTheirShare() {
+        pot.addToPot(0, 5000);
+        pot.addToPot(1, 6500);
+        pot.addToPot(2, 400);
+        pot.addToPot(3, 5000);
+        pot.addToPot(4, 10000);
+
+        //Assuming that player 1 won the hand, player 2 came second and so on
+        for (Player p : players) {
+            p.incrementStack(pot.getSharePlayerCanWin(p.getID()));
+            assertEquals(0, pot.getSharePlayerCanWin(p.getID()));
+        }
+
+        assertEquals(0, pot.getPotSize());
+
+        assertEquals(players.get(0).getStackSize(), 20400);
+        assertEquals(players.get(1).getStackSize(), 3000);
+        assertEquals(players.get(2).getStackSize(), 0);
+        assertEquals(players.get(3).getStackSize(), 0);
+        assertEquals(players.get(4).getStackSize(), 3500);
+    }
+
+    @Test
+    public void testThatSumOfPotIsAlwaysZeroAfterAllPlayersGetTheirShare() {
+        Random rand = new Random();
+        for (int i = 0; i < 1000; i++) {
+            pot.addToPot(0, rand.nextInt(10000));
+            pot.addToPot(1, rand.nextInt(10000));
+            pot.addToPot(2, rand.nextInt(10000));
+            pot.addToPot(3, rand.nextInt(10000));
+            pot.addToPot(4, rand.nextInt(10000));
+
+            //Assuming that player 1 won the hand, player 2 came second and so on
+            for (int j = 0; j < 100; j++) {
+                for (Player p : players) {
+                    p.incrementStack(pot.getSharePlayerCanWin(p.getID()));
+                    assertEquals(0, pot.getSharePlayerCanWin(p.getID()));
+                }
+            }
+
+            assertEquals(0, pot.getPotSize());
+        }
     }
 
 
