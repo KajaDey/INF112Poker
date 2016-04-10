@@ -72,7 +72,7 @@ public class PlayerLayout {
 
         //chipImage.setVisible(false);
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setImage(ImageViewer.getChipImage(null));
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(30);
 
@@ -234,11 +234,7 @@ public class PlayerLayout {
 
     public void setPositionLabel(String pos){
         Runnable task = () -> {
-            lastMoveLabel.setText(pos);
-            if (pos.equals(""))
-                chipImage.setVisible(false);
-            else
-                chipImage.setVisible(true);
+            positionLabel.setText(pos);
         };
         Platform.runLater(task);
     }
@@ -247,8 +243,10 @@ public class PlayerLayout {
         Platform.runLater(() -> stackLabel.setText(stack));
     }
 
-    public void setLastMoveLabel(String lastMove) {
+    public void setLastMove(String lastMove, Image chipImage) {
         lastMoveLabel.setText(lastMove);
+
+        this.chipImage.setImage(chipImage);
     }
 
     public void setCheckCallButton(String checkCall) {
@@ -298,7 +296,7 @@ public class PlayerLayout {
     }
 
     public void bustPlayer(String bustedText) {
-        setLastMoveLabel("");
+        setLastMove("", null);
         setStackLabel(bustedText);
         setPositionLabel("");
 

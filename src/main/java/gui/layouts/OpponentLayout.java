@@ -42,13 +42,13 @@ public class OpponentLayout extends HBox{
         leftCardImage.setImage(backOfCards);
         rightCardImage.setImage(backOfCards);
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipImage("poker1"));
+        chipImage.setImage(ImageViewer.getChipImage(null));
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(30);
 
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
-        chipImage.setVisible(false);
+        chipImage.setVisible(true);
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
@@ -128,15 +128,12 @@ public class OpponentLayout extends HBox{
     /**
      * Set last move for opponent
      *
-     * @param s
+     * @param lastMove
      */
-    public void setLastMoveLabel(String s){
+    public void setLastMove(String lastMove, Image chipImage){
         Runnable task = () -> {
-            lastMoveLabel.setText(s);
-            if (s.equals(""))
-                chipImage.setVisible(false);
-            else
-                chipImage.setVisible(true);
+            lastMoveLabel.setText(lastMove);
+            this.chipImage.setImage(chipImage);
         };
         Platform.runLater(task);
     }
@@ -227,7 +224,7 @@ public class OpponentLayout extends HBox{
 
     public void bustPlayer(String bustedText) {
         isBust = true;
-        setLastMoveLabel("");
+        setLastMove("", null);
         setStackSizeLabel(bustedText);
         setPositionLabel("");
 
