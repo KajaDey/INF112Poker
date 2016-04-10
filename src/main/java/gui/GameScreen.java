@@ -104,10 +104,10 @@ public class GameScreen {
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
-        playerLayout.setStackSize(stackSize);
+        //playerLayout.setStackSize(stackSize);
 
         if (userID == playerID) {
-            VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
+            VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
             vbox.setLayoutY(scene.getHeight()-160);
             pane.getChildren().addAll(vbox);
@@ -412,6 +412,8 @@ public class GameScreen {
                     playerLayout.setBetRaiseButton("Raise to");
                     break;
             }
+
+            updateSliderValues();
         };
         Platform.runLater(task);
     }
@@ -549,7 +551,7 @@ public class GameScreen {
             }
         };
         Platform.runLater(task);
-        playerLayout.updateSliderValues();
+        playerLayout.updateSliderValues(stackSizes.get(0));
     }
 
     /**
@@ -707,7 +709,7 @@ public class GameScreen {
      * Updates slider values
      */
     public void updateSliderValues(){
-       playerLayout.updateSliderValues();
+       playerLayout.updateSliderValues(stackSizes.get(0));
    }
 
     /** Sent in the start of a game to set the number of players */
