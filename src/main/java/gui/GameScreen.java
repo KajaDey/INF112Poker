@@ -468,7 +468,7 @@ public class GameScreen {
         }
 
         //Reset the error state of the amountTextField (remove potential red frame)
-        setErrorStateOfAmountTextfield(false);
+        setErrorStateOfAmountTextField(false);
 
         //Update stack size of the player that acted
         stackSizes.put(ID, newStackSize);
@@ -520,7 +520,7 @@ public class GameScreen {
             playerLayout.setCheckCallButton("Check");
             playerLayout.setBetRaiseButton("Bet");
             this.setAmountTextfield(currentBigBlind + "");
-            this.setErrorStateOfAmountTextfield(false);
+            this.setErrorStateOfAmountTextField(false);
 
             for (Integer id : opponents.keySet()) {
                 opponents.get(id).setLastMoveLabel("");
@@ -628,7 +628,7 @@ public class GameScreen {
      * @param message
      */
     public void setAmountTextfield(String message) {
-        Runnable task = () -> playerLayout.setAmountTextfield(message);
+        Runnable task = () -> playerLayout.setAmountTextField(message);
         Platform.runLater(task);
     }
 
@@ -636,7 +636,7 @@ public class GameScreen {
      *  Set the border around the amount textfield to red, indicating an error
      * @param error
      */
-    public void setErrorStateOfAmountTextfield(boolean error) {
+    public void setErrorStateOfAmountTextField(boolean error) {
         Runnable task;
         if (error) {
             task = () -> playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");

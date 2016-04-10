@@ -19,12 +19,12 @@ public class GUIMain extends Application{
     private static final boolean PRINT_DEBUG_LOG = true;
     private static Optional<PrintWriter> logWriter = Optional.empty();
 
-    private GameController gamecontroller;
+    private GameController gameController;
     private GameScreen gameScreen;
     private GUIClient client;
 
     public GUIMain() {
-            this.gamecontroller= new  GameController(this);
+            this.gameController = new  GameController(this);
     }
 
     public static void main(String[] args) {
@@ -32,7 +32,7 @@ public class GUIMain extends Application{
         launch(args);
     }
     public void displayErrorMessageToLobby(String message){
-        GameLobby.displayErrorMessage(message,gamecontroller);
+        GameLobby.displayErrorMessage(message, gameController);
     }
 
     /**
@@ -40,7 +40,7 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displayLobbyScreen(String name, int numberOfPlayers, String gameType, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings, gamecontroller, name);
+        GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
     }
 
     /**
@@ -48,7 +48,7 @@ public class GUIMain extends Application{
      * @param window The window to be displayed
      */
     public void start(Stage window){
-        MainScreen.createSceneForMainScreen("PokerTable", gamecontroller);
+        MainScreen.createSceneForMainScreen("PokerTable", gameController);
 
     }
 

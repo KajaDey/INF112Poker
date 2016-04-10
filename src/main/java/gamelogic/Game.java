@@ -573,7 +573,7 @@ public class Game {
         pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showdownStats);
         assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
 
-        gameController.showDown(showdownStats);
+        gameController.showdown(showdownStats);
         delay(7000);
 
         //If a player that was in this hand now has zero chips, it means he just busted

@@ -24,7 +24,7 @@ public class Pot {
      *  Increment the pot and update the amount the player can claim if he wins the pot
      * @param userID
      * @param amountToAdd
-     * @return
+     * @return the updated pot size
      */
     public long addToPot(int userID, long amountToAdd) {
         if (amountPlayerCanClaim.get(userID) == null)

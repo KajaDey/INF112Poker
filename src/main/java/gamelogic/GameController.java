@@ -167,7 +167,7 @@ public class GameController {
      *
      * @param showdownStats Information about pot (and side pots) and who won
      */
-    public void showDown(ShowdownStats showdownStats) {
+    public void showdown(ShowdownStats showdownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
             c.showdown(showdownStats);
@@ -298,11 +298,11 @@ public class GameController {
      *  Called every time a hand is won before showdown (everyone but 1 player folded)
      *  Prints a text showing who won the pot and how much it was. Also prints to logfield
      * @param winnerID
-     * @param potsize
+     * @param potSize
      */
-    public void preShowdownWinner(int winnerID, long potsize) {
-        guiClient.preShowDownWinner(winnerID, potsize);
-        printToLogfield(names.get(0) + " won the pot of " + potsize);
+    public void preShowdownWinner(int winnerID, long potSize) {
+        guiClient.preShowdownWinner(winnerID, potSize);
+        printToLogfield(names.get(0) + " won the pot of " + potSize);
     }
 
     /**
