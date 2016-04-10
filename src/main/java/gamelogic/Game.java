@@ -35,7 +35,6 @@ public class Game {
     private Map<Integer, Card[]> holeCards;
     private Map<Integer, Integer> positions;
     private Card [] communityCards;
-    private boolean gameOver = false;
 
     public Game(GameSettings gamesettings, GameController gameController) {
         this.gameController = gameController;
@@ -59,7 +58,6 @@ public class Game {
 
         Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
-            if (gameOver) return;
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
             gameController.startNewHand();
@@ -103,7 +101,6 @@ public class Game {
 
         boolean handContinues = bettingRound(preFlop);
         if (!handContinues) {
-            if (gameOver) return;
             preShowdownWinner();
             return;
         }
@@ -113,7 +110,6 @@ public class Game {
         setFlop();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
-            if (gameOver) return;
             preShowdownWinner();
             return;
         }
@@ -123,7 +119,6 @@ public class Game {
         setTurn();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
-            if (gameOver) return;
             preShowdownWinner();
             return;
         }
@@ -133,13 +128,11 @@ public class Game {
         setRiver();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
-            if (gameOver) return;
             preShowdownWinner();
             return;
         }
 
         //Showdown
-        if (gameOver) return;
         showDown();
     }
 
@@ -212,9 +205,6 @@ public class Game {
      */
     private boolean getDecisions(int actingPlayerIndex, boolean isPreFlop) {
         while (true) {
-            if (gameOver)
-                return false;
-
             //Determine who's turn it is
             actingPlayerIndex %= playersStillInCurrentHand.size();
             Player playerToAct = playersStillInCurrentHand.get(actingPlayerIndex);
@@ -638,10 +628,4 @@ public class Game {
         return count;
     }
 
-    /**
-     * Set exit to true so that the game thread will be killed
-     */
-    public void exit() {
-        gameOver = true;
-    }
 }
