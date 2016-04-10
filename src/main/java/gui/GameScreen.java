@@ -52,7 +52,6 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-    private Button exitButton;
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
