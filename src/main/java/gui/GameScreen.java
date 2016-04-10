@@ -262,8 +262,8 @@ public class GameScreen {
      *
      * @param showdownStats Information about the showdown
      */
-    public void showDown(ShowdownStats showdownStats) {
-        ArrayList<Player> playersToShowdown = showdownStats.getAllPlayers();
+    public void showdown(ShowdownStats showdownStats) {
+        List<Player> playersToShowdown = showdownStats.getAllPlayers();
         printToLogField(showdownStats.numberOfPlayers() + " players to showdown");
 
         Map<Integer, Card[]> hCards = showdownStats.getHoleCards();

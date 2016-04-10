@@ -14,16 +14,16 @@ public class Statistics {
     private int positionFinished;
     private int handsWon;
     private int handsPlayed;
-    private int foldsPreflop;
+    private int foldsPreFlop;
     private int aggressiveMoves;
     private int passiveMoves;
     private String bestHand;
 
-    public Statistics(int winnerID, int positionFinished, int handsWon, int handsPlayed, int foldsPreflop, int aggressiveMoves, int passiveMoves, String bestHand){
+    public Statistics(int winnerID, int positionFinished, int handsWon, int handsPlayed, int foldsPreFlop, int aggressiveMoves, int passiveMoves, String bestHand){
         this.positionFinished = positionFinished;
         this.handsWon = handsWon;
         this.handsPlayed = handsPlayed;
-        this.foldsPreflop = foldsPreflop;
+        this.foldsPreFlop = foldsPreFlop;
         this.aggressiveMoves = aggressiveMoves;
         this.passiveMoves = passiveMoves;
         this.bestHand = bestHand;
@@ -55,7 +55,7 @@ public class Statistics {
         String allStats = "";
         allStats += "You finished " + p + (p == 1 ? "st" : p==2 ? "nd" : p==3 ? "rd" : "th") + '\n';
         allStats += "You won " + handsWon + " of the " + handsPlayed + " hands you played\n";
-        allStats += "You folded " + foldsPreflop + " times pre-flop\n";
+        allStats += "You folded " + foldsPreFlop + " times pre-flop\n";
         allStats += "You made " + aggressiveMoves + " aggressive moves, and " + passiveMoves + " passive moves\n";
         allStats += "Your best hand was " + bestHand;
         return allStats;
