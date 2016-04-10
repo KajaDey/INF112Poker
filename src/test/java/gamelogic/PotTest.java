@@ -51,7 +51,7 @@ public class PotTest {
         players.remove(4);
 
         //Hand out the pot
-        ShowDownStats s = new ShowDownStats(players, communityCards);
+        ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
         System.out.println(s.getWinnerText());
 
@@ -86,7 +86,7 @@ public class PotTest {
         communityCards.add(Card.of(4, Card.Suit.SPADES).get());
 
         //Hand out the pot
-        ShowDownStats s = new ShowDownStats(players, communityCards);
+        ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
         System.out.println(s.getWinnerText());
 
@@ -123,7 +123,7 @@ public class PotTest {
         players.remove(4);
 
         //Hand out the pot
-        ShowDownStats s = new ShowDownStats(players, communityCards);
+        ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
         System.out.println(s.getWinnerText());
 
@@ -161,7 +161,7 @@ public class PotTest {
         players.remove(2);
 
         //Hand out the pot
-        ShowDownStats s = new ShowDownStats(players, communityCards);
+        ShowdownStats s = new ShowdownStats(players, communityCards);
         pot.handOutPot(players, communityCards, s);
 
         System.out.println(s.getWinnerText());

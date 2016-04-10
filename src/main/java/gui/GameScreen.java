@@ -257,13 +257,13 @@ public class GameScreen {
     /**
      * Shows the cards of the players around the table
      *
-     * @param showDownStats Information about the showdown
+     * @param showdownStats Information about the showdown
      */
-    public void showDown(ShowDownStats showDownStats) {
-        ArrayList<Player> playersToShowdown = showDownStats.getAllPlayers();
-        printToLogField(showDownStats.numberOfPlayers() + " players to showdown");
+    public void showDown(ShowdownStats showdownStats) {
+        ArrayList<Player> playersToShowdown = showdownStats.getAllPlayers();
+        printToLogField(showdownStats.numberOfPlayers() + " players to showdown");
 
-        Map<Integer, Card[]> hCards = showDownStats.getHoleCards();
+        Map<Integer, Card[]> hCards = showdownStats.getHoleCards();
 
         for (Player p : playersToShowdown) {
             Card[] cards = hCards.get(p.getID());
@@ -276,7 +276,7 @@ public class GameScreen {
                 Platform.runLater(() -> opponents.get(p.getID()).setCardImage(leftImage,rightImage));
         }
 
-        String winnerString = showDownStats.getWinnerText();
+        String winnerString = showdownStats.getWinnerText();
         Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
 
         //Print all community cards to in-game log
@@ -586,17 +586,15 @@ public class GameScreen {
     /**
      * Called when the game is over. Display a message with who the winner is
      *
-     * @param userId
+     * @param winnerID
      */
-    public void gameOver(int userId){
-
+    public void gameOver(int winnerID){
         Runnable task = () -> {
-
             VBox vBox = new VBox();
             Button backToMainScreen = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
             backToMainScreen.setMinWidth(200);
 
-            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(userId) + " is the winner!","");
+            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " is the winner!","");
             endGameScreen.setFont(new Font("Areal", 30));
 
             Stage endGame = new Stage();
@@ -605,7 +603,6 @@ public class GameScreen {
             endGame.setTitle("Congratulation!");
 
             vBox.setAlignment(Pos.CENTER);
-
 
             vBox.setStyle("-fx-background-color:#42b43d, " +
                     "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +

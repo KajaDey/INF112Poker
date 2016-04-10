@@ -43,7 +43,7 @@ public class Pot {
      * @param playersInHand
      * @param communityCards
      */
-    public void handOutPot(List<Player> playersInHand, List<Card> communityCards, ShowDownStats showdown) {
+    public void handOutPot(List<Player> playersInHand, List<Card> communityCards, ShowdownStats showdown) {
         //Create a copy of the players list to avoid messing with GameLogic
         ArrayList<Player> playersCopy = new ArrayList<>();
         playersInHand.stream().forEach(p -> playersCopy.add(p));
@@ -58,7 +58,7 @@ public class Pot {
      * @param players
      * @param communityCards
      */
-    private void handOutPotShare(List<Player> players, List<Card> communityCards, ShowDownStats showdown) {
+    private void handOutPotShare(List<Player> players, List<Card> communityCards, ShowdownStats showdown) {
         ArrayList<Player> winners = getPotWinners(players, communityCards);
 
         //Make a copy of the winners array for use in showdown stats
@@ -97,7 +97,7 @@ public class Pot {
 
     /**
      *   Find out how much a player would get from the pot if he won.
-     *   Does not change the pot size in any way
+     *   Does not change the pot size
      * @param playerID
      * @return The amount the player would get
      */
@@ -107,9 +107,12 @@ public class Pot {
 
         for (Integer i : amountPlayerCanClaim.keySet()) {
             long putIn = amountPlayerCanClaim.get(i);
-            share += Math.min(canClaim, putIn);
+            long amount = Math.min(canClaim, putIn);
+            share += amount;
+            amountPlayerCanClaim.put(playerID, putIn - amount);
         }
 
+        potSize -= share;
         return share;
     }
 

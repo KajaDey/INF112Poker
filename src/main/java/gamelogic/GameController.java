@@ -167,12 +167,12 @@ public class GameController {
     /**
      * Tells each client that it is time for show down, and pass the necessary information about the showdown
      *
-     * @param showDownStats Information about pot (and side pots) and who won
+     * @param showdownStats Information about pot (and side pots) and who won
      */
-    public void showDown(ShowDownStats showDownStats) {
+    public void showDown(ShowdownStats showdownStats) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(showDownStats);
+            c.showdown(showdownStats);
         }
     }
 
@@ -328,5 +328,12 @@ public class GameController {
 
     public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
         guiClient.showHoleCards(playerList, holeCards);
+    }
+
+    /**
+     * Tell the game thread that the client has exited.
+     */
+    public void exit() {
+        game.exit();
     }
 }

@@ -48,8 +48,6 @@ public class xOfaKindTest {
 
     }
 
-
-
     @Test
     public void testThreeLikeCards() throws Exception {
         hand1 = new Hand(holeCard1,holeCard4,communityCards);
