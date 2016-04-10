@@ -15,7 +15,7 @@
         <module name="inf112v16-g4" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="inf112v16-g4" target="1.8" />
     </bytecodeTargetLevel>
   </component>

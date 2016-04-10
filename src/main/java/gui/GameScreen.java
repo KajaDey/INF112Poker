@@ -19,7 +19,11 @@ import javafx.stage.Stage;
 import java.util.*;
 
 /**
- * Created by ady on 07/03/16.
+ * TODO: Add class description
+ *
+ * @author André Dyrstad
+ * @author Jostein Kringlen
+ * @author Kristian Rosland
  */
 public class GameScreen {
 
@@ -48,7 +52,6 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-    private Button exitButton;
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
@@ -57,7 +60,7 @@ public class GameScreen {
 
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
-        addExitButton();
+        addMenuBarToGameScreen();
     }
 
     /**
@@ -94,13 +97,15 @@ public class GameScreen {
      * @return player objects
      */
     public boolean insertPlayer(int userID, String name, long stackSize) {
+        final String os = System.getProperty("os.version");
+
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
-        playerLayout.setStackSize(stackSize);
+        //playerLayout.setStackSize(stackSize);
 
         if (userID == playerID) {
-            VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
+            VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
             vbox.setLayoutY(scene.getHeight()-160);
             pane.getChildren().addAll(vbox);
@@ -121,7 +126,12 @@ public class GameScreen {
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(20);
+                    if (!os.isEmpty()) {
+                        if (!os.startsWith("Mac"))
+                            oppLayout.setLayoutY(30);
+                        else
+                            oppLayout.setLayoutY(20);
+                    }
                     break;
                 case 4:
                     oppLayout.setLayoutX(scene.getWidth() - 280);
@@ -216,18 +226,11 @@ public class GameScreen {
 
     }
 
-    /**
-     * Adds a working exit button to the game screen. The button takes you back to the lobby screen
-     */
-    public void addExitButton(){
-        exitButton = ObjectStandards.makeStandardButton("Exit");
-
-        exitButton.setLayoutX(scene.getWidth()- 80);
-        exitButton.setLayoutY(3);
-
-        pane.getChildren().add(exitButton);
-
-        exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
+    public void addMenuBarToGameScreen(){
+        MenuBar menuBar = ObjectStandards.createMenuBar();
+        menuBar.setLayoutX(0);
+        menuBar.setLayoutY(0);
+        pane.getChildren().add(menuBar);
     }
 
     /**
@@ -390,6 +393,8 @@ public class GameScreen {
                     playerLayout.setBetRaiseButton("Raise to");
                     break;
             }
+
+            updateSliderValues();
         };
         Platform.runLater(task);
     }
@@ -527,7 +532,7 @@ public class GameScreen {
             }
         };
         Platform.runLater(task);
-        playerLayout.updateSliderValues();
+        playerLayout.updateSliderValues(stackSizes.get(0));
     }
 
     /**
@@ -688,7 +693,7 @@ public class GameScreen {
      * Updates slider values
      */
     public void updateSliderValues(){
-       playerLayout.updateSliderValues();
+       playerLayout.updateSliderValues(stackSizes.get(0));
    }
 
     /** Sent in the start of a game to set the number of players */
