@@ -58,7 +58,8 @@ public class GUIMain extends Application{
      * @return The GUIClient to display
      */
     public GUIClient displayGameScreen(GameSettings settings, int userID) {
-        this.gameScreen = new GameScreen(userID, settings.getMaxNumberOfPlayers());
+        long totalChipsInPlay = settings.getMaxNumberOfPlayers() * settings.getStartStack();
+        this.gameScreen = new GameScreen(userID, settings.getMaxNumberOfPlayers(), totalChipsInPlay);
         this.client = new GUIClient(userID, gameScreen, settings.getMaxNumberOfPlayers());
         ButtonListeners.setClient(client);
 

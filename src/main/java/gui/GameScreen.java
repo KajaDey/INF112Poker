@@ -52,11 +52,13 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
+    private long totalAmountOfChipsInPlay;
 
-    public GameScreen(int ID, int numberOfPlayers) {
+    public GameScreen(int ID, int numberOfPlayers, long totalChipsInPlay) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
         this.opponents = new HashMap<>();
+        this.totalAmountOfChipsInPlay = totalChipsInPlay;
 
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
@@ -363,12 +365,12 @@ public class GameScreen {
         Runnable task;
         if (ID == this.playerID) {
             task = () -> {
-                playerLayout.setLastMoveLabel(finalDecision);
+                playerLayout.setLastMove(finalDecision, getChipImage(ID, decision));
                 playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
             };
         } else {
             task = () -> {
-                opponents.get(ID).setLastMoveLabel(finalDecision);
+                opponents.get(ID).setLastMove(finalDecision, getChipImage(ID, decision));
                 opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
             };
         }
@@ -521,14 +523,14 @@ public class GameScreen {
 
         Runnable task = () -> {
             this.highestAmountPutOnTable = 0;
-            playerLayout.setLastMoveLabel("");
+            playerLayout.setLastMove("", null);
             playerLayout.setCheckCallButton("Check");
             playerLayout.setBetRaiseButton("Bet");
             this.setAmountTextfield(currentBigBlind + "");
             this.setErrorStateOfAmountTextfield(false);
 
             for (Integer id : opponents.keySet()) {
-                opponents.get(id).setLastMoveLabel("");
+                opponents.get(id).setLastMove("", null);
             }
         };
         Platform.runLater(task);
@@ -783,5 +785,36 @@ public class GameScreen {
             else
                 Platform.runLater(() -> opponents.get(id).setCardImage(leftCard, rightCard));
         }
+    }
+
+    /**
+     *  Get the correct image for this decision (based ont the decision and the amount)
+     * @param id
+     * @param decision
+     */
+    private Image getChipImage(int id, Decision decision) {
+        switch(decision.move) {
+            case CHECK:case FOLD: return null;
+            case SMALL_BLIND: return ImageViewer.getChipImage("sb_image");
+            case BIG_BLIND: return ImageViewer.getChipImage("bb_image");
+            case BET:case RAISE:case ALL_IN:
+                if (highestAmountPutOnTable <= currentBigBlind)
+                    return ImageViewer.getChipImage("bb_image.png");
+                else if (highestAmountPutOnTable <= currentBigBlind * 3)
+                    return ImageViewer.getChipImage("poker1");
+                else if (highestAmountPutOnTable <= currentBigBlind * 5)
+                    return ImageViewer.getChipImage("poker2");
+                else if (highestAmountPutOnTable <= currentBigBlind * 8)
+                    return ImageViewer.getChipImage("poker3");
+                else if (highestAmountPutOnTable <= currentBigBlind * 12)
+                    return ImageViewer.getChipImage("poker4");
+                else if (highestAmountPutOnTable <= currentBigBlind * 20)
+                    return ImageViewer.getChipImage("poker6");
+                else if(highestAmountPutOnTable <= currentBigBlind * 50)
+                    return ImageViewer.getChipImage("poker7");
+                else
+                    return ImageViewer.getChipImage("poker8");
+        }
+        return null;
     }
 }

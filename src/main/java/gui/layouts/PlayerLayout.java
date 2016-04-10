@@ -247,8 +247,10 @@ public class PlayerLayout {
         Platform.runLater(() -> stackLabel.setText(stack));
     }
 
-    public void setLastMoveLabel(String lastMove) {
+    public void setLastMove(String lastMove, Image chipImage) {
         lastMoveLabel.setText(lastMove);
+
+        this.chipImage.setImage(chipImage);
     }
 
     public void setCheckCallButton(String checkCall) {
@@ -298,7 +300,7 @@ public class PlayerLayout {
     }
 
     public void bustPlayer(String bustedText) {
-        setLastMoveLabel("");
+        setLastMove("", null);
         setStackLabel(bustedText);
         setPositionLabel("");
 
