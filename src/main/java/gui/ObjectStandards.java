@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,10 +10,14 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -248,11 +254,12 @@ public class ObjectStandards {
         MenuItem aboutTexasHoldem = new MenuItem("Texas Hold'em");
 
         MenuItem quit = new MenuItem("Quit");
+        MenuItem restart = new MenuItem("Restart");
 
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);
-        file.getItems().addAll(quit);
+        file.getItems().addAll(quit, restart);
 
         //Adding all menus to the menu bar
         menuBar.getMenus().addAll(file,about);
@@ -282,6 +289,7 @@ public class ObjectStandards {
                 e.printStackTrace();
             }
         });
+
         cardSpriteLicense.setOnAction(event -> {
             try {
                 menuBarScreens.createScreenForLicense(cardSpriteLicense.getText());
@@ -296,6 +304,14 @@ public class ObjectStandards {
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
+        });
+
+        quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
+        restart.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+
+        restart.setOnAction(event -> {
+            MainScreen.getStage().close();
+            MainScreen.createSceneForMainScreen("PokerTable", MainScreen.getGameController());
         });
 
 

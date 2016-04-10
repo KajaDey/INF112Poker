@@ -24,6 +24,7 @@ public class MainScreen {
 
     private static String imgName;
     private static GameController gc;
+    private static Stage window;
 
     /**
      * Creates the sceen for the initial (main) screen
@@ -32,7 +33,7 @@ public class MainScreen {
      * @return The scene to be shown
      */
     public static void createSceneForMainScreen(String imageName, GameController gameController){
-        Stage window = new Stage();
+        window = new Stage();
         imgName = imageName;
         gc = gameController;
 
@@ -112,5 +113,12 @@ public class MainScreen {
         verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, numOfPlayersIn, enter);
 
         return horisontalFull;
+    }
+
+    public static Stage getStage(){
+        return window;
+    }
+    public static GameController getGameController(){
+        return gc;
     }
 }
