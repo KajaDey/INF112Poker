@@ -14,12 +14,17 @@ import javafx.stage.Stage;
 import gamelogic.GameController;
 
 /**
- * Created by Jostein on 07.03.2016.
+ * This purpose of this class is to create the full screen that is seen when the application is started.
+ * The class will add the welcome text, input field for name and number of players, as well as the button
+ * for entering the lobby screen.
+ *
+ * @author Jostein Kringlen
  */
 public class MainScreen {
 
     private static String imgName;
     private static GameController gc;
+    private static Stage window;
 
     /**
      * Creates the sceen for the initial (main) screen
@@ -28,13 +33,14 @@ public class MainScreen {
      * @return The scene to be shown
      */
     public static void createSceneForMainScreen(String imageName, GameController gameController){
-        Stage window = new Stage();
+        window = new Stage();
         imgName = imageName;
         gc = gameController;
 
         BorderPane mainScreenLayout = new BorderPane();
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
+        mainScreenLayout.setTop(ObjectStandards.createMenuBar());
         SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
     }
 
@@ -57,9 +63,11 @@ public class MainScreen {
 
         //Top-text
         String title = "Texas Hold'em!";
-        String info = "This is an implementation of Texas hold'em.\n" +
-                "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
-                "Enter your name, and start playing!";
+        //String info = "This is an implementation of Texas hold'em.\n" +
+               // "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
+               // "Enter your name, and start playing!";
+
+        String info = "";
 
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 
@@ -80,8 +88,8 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll("Against AI", "Against Players");
-        choiceBox.setValue("Against AI");
+        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI");
+        choiceBox.setValue("Simple-AI");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 
@@ -107,5 +115,12 @@ public class MainScreen {
         verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, numOfPlayersIn, enter);
 
         return horisontalFull;
+    }
+
+    public static Stage getStage(){
+        return window;
+    }
+    public static GameController getGameController(){
+        return gc;
     }
 }

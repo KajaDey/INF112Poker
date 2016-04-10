@@ -40,7 +40,7 @@ public class HouseTest {
     public void testMatchWhenFullHouse() throws Exception {
         hand = new Hand(card6, card8, Arrays.asList(card1, card2, card3, card4, card5));
         assertTrue(house.match(hand));
-        assertEquals("3's full of 2's", house.toString());
+        assertEquals("3s full of 2s", house.toString());
     }
 
     @Test

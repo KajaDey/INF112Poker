@@ -34,6 +34,7 @@ public class Game {
     private List<Player> playersStillInCurrentHand;
     private Map<Integer, Card[]> holeCards;
     private Map<Integer, Integer> positions;
+    private Map<Integer, Integer> rankingTable;
     private Card [] communityCards;
 
     public Game(GameSettings gamesettings, GameController gameController) {
@@ -48,6 +49,7 @@ public class Game {
         this.currentBB = (this.startBB = gamesettings.bigBlind);
         this.blindLevelDuration = gamesettings.levelDuration;
         this.stackSizes = new HashMap<>();
+        this.rankingTable = new HashMap<>();
     }
 
     /**
@@ -80,12 +82,8 @@ public class Game {
         pot = new Pot();
         refreshAllStackSizes();
 
-        for (Player p : players) {
-            if (p.getStackSize() > 0) {
-                gameController.gameOver(p.getID());
-                return;
-            }
-        }
+        gameOver();
+        return;
     }
 
     private void playHand() {
@@ -146,7 +144,7 @@ public class Game {
         //Hand out the pot to the remaining player in the hand
         Player winner = playersStillInCurrentHand.get(0);
         gameController.preShowdownWinner(winner.getID(), pot.getPotSize());
-        winner.incrementStack(pot.getPotSize());
+        winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         delay(3000);
     }
 
@@ -369,7 +367,7 @@ public class Game {
                     break;
 
                 case RAISE:
-                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise when highest amount put on table was 0";
+                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.size + " when highest amount put on table was 0";
                     if (decision.size >= currentMinimumRaise)
                         return decision;
                     break;
@@ -571,15 +569,18 @@ public class Game {
 
         ShowdownStats showdownStats = new ShowdownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
         pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showdownStats);
-        assert pot.getPotSize() == 0 : "The pot was handed out, but there was still chips left";
+        assert pot.getPotSize() == 0 : "The pot was handed out, but there were still chips left";
 
         gameController.showdown(showdownStats);
         delay(7000);
 
         //If a player that was in this hand now has zero chips, it means he just busted
         for (Player p : playersStillInCurrentHand) {
-            if (p.getStackSize() == 0)
-                 gameController.bustClient(p.getID(), finishedInPosition--);
+            if (p.getStackSize() == 0) {
+                gameController.bustClient(p.getID(), finishedInPosition);
+                rankingTable.put(p.getID(), finishedInPosition);
+                finishedInPosition--;
+            }
         }
     }
 
@@ -628,4 +629,30 @@ public class Game {
         return count;
     }
 
+    /**
+     * Called when the game has ended (only one player left with chips)
+     * Tells GameController to pass game statistics to GUIClient(s)
+     */
+    private void gameOver() {
+        Player p = players[0]; //Player 0 is the Human-player
+
+        //Find the ID of the winner
+        int winnerID = -1;
+        for (Player player : players) {
+            if (player.getStackSize() > 0) {
+                assert winnerID == -1 : "Two or more players had chips left when the game was over";
+                winnerID = player.getID();
+            }
+        }
+
+        assert winnerID > -1 : "No winner was determined when game was over";
+
+        //Create a new statistics of the object for use in showdown
+        Statistics stats = new Statistics(winnerID, rankingTable.get(p.getID()), p.handsWon(), p.handsPlayed(), p.preFlopFolds(), p.aggressiveMoves(), p.passiveMoves(), p.getBestHand());
+
+        //Tell all clients that the game is over
+        gameController.gameOver(stats);
+
+        return;
+    }
 }

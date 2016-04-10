@@ -19,7 +19,11 @@ import javafx.stage.Stage;
 import java.util.*;
 
 /**
- * Created by ady on 07/03/16.
+ * TODO: Add class description
+ *
+ * @author André Dyrstad
+ * @author Jostein Kringlen
+ * @author Kristian Rosland
  */
 public class GameScreen {
 
@@ -48,7 +52,6 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-    private Button exitButton;
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
@@ -57,7 +60,7 @@ public class GameScreen {
 
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
-        addExitButton();
+        addMenuBarToGameScreen();
     }
 
     /**
@@ -94,13 +97,15 @@ public class GameScreen {
      * @return player objects
      */
     public boolean insertPlayer(int userID, String name, long stackSize) {
+        final String os = System.getProperty("os.version");
+
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
-        playerLayout.setStackSize(stackSize);
+        //playerLayout.setStackSize(stackSize);
 
         if (userID == playerID) {
-            VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
+            VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
             vbox.setLayoutY(scene.getHeight()-160);
             pane.getChildren().addAll(vbox);
@@ -121,7 +126,12 @@ public class GameScreen {
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(20);
+                    if (!os.isEmpty()) {
+                        if (!os.startsWith("Mac"))
+                            oppLayout.setLayoutY(30);
+                        else
+                            oppLayout.setLayoutY(20);
+                    }
                     break;
                 case 4:
                     oppLayout.setLayoutX(scene.getWidth() - 280);
@@ -216,18 +226,11 @@ public class GameScreen {
 
     }
 
-    /**
-     * Adds a working exit button to the game screen. The button takes you back to the lobby screen
-     */
-    public void addExitButton(){
-        exitButton = ObjectStandards.makeStandardButton("Exit");
-
-        exitButton.setLayoutX(scene.getWidth()- 80);
-        exitButton.setLayoutY(3);
-
-        pane.getChildren().add(exitButton);
-
-        exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
+    public void addMenuBarToGameScreen(){
+        MenuBar menuBar = ObjectStandards.createMenuBar();
+        menuBar.setLayoutX(0);
+        menuBar.setLayoutY(0);
+        pane.getChildren().add(menuBar);
     }
 
     /**
@@ -295,7 +298,7 @@ public class GameScreen {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setFlop(card1Image,card2Image,card3Image));
+        Platform.runLater(() -> boardLayout.showFlop(card1Image,card2Image,card3Image));
 
         communityCards.add(card1);
         communityCards.add(card2);
@@ -311,7 +314,7 @@ public class GameScreen {
      */
     public void displayTurn(Card turnCard) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setTurn(turnImage));
+        Platform.runLater(() -> boardLayout.showTurn(turnImage));
         communityCards.add(turnCard);
         updateYourHandLabel();
 
@@ -325,7 +328,7 @@ public class GameScreen {
      */
     public void displayRiver(Card riverCard) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setRiver(riverImage));
+        Platform.runLater(() -> boardLayout.showRiver(riverImage));
         communityCards.add(riverCard);
         updateYourHandLabel();
 
@@ -390,6 +393,8 @@ public class GameScreen {
                     playerLayout.setBetRaiseButton("Raise to");
                     break;
             }
+
+            updateSliderValues();
         };
         Platform.runLater(task);
     }
@@ -527,7 +532,7 @@ public class GameScreen {
             }
         };
         Platform.runLater(task);
-        playerLayout.updateSliderValues();
+        playerLayout.updateSliderValues(stackSizes.get(0));
     }
 
     /**
@@ -586,16 +591,22 @@ public class GameScreen {
     /**
      * Called when the game is over. Display a message with who the winner is
      *
-     * @param winnerID
+     * @param stats Statistics of the game just played
      */
-    public void gameOver(int winnerID){
+    public void gameOver(Statistics stats){
+        int winnerID = stats.getWinnerID();
+
         Runnable task = () -> {
             VBox vBox = new VBox();
             Button backToMainScreen = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
             backToMainScreen.setMinWidth(200);
 
-            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " is the winner!","");
+            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
             endGameScreen.setFont(new Font("Areal", 30));
+
+            Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");
+            statsLabel.setWrapText(true);
+            statsLabel.setFont(new Font("Areal", 15));
 
             Stage endGame = new Stage();
             endGame.setAlwaysOnTop(true);
@@ -615,8 +626,8 @@ public class GameScreen {
                 ButtonListeners.returnToMainMenuButtonListener();
             });
 
-            vBox.getChildren().addAll(endGameScreen,backToMainScreen);
-            Scene scene = new Scene(vBox,600,100);
+            vBox.getChildren().addAll(endGameScreen, statsLabel, backToMainScreen);
+            Scene scene = new Scene(vBox,600,350);
             endGame.setScene(scene);
             endGame.show();
         };
@@ -682,7 +693,7 @@ public class GameScreen {
      * Updates slider values
      */
     public void updateSliderValues(){
-       playerLayout.updateSliderValues();
+       playerLayout.updateSliderValues(stackSizes.get(0));
    }
 
     /** Sent in the start of a game to set the number of players */
@@ -734,7 +745,7 @@ public class GameScreen {
      * @param winnerID  The player that was left in the hand
      * @param potsize   The amount the player won
      */
-    public void preShowDownWinner(int winnerID, long potsize) {
+    public void preShowdownWinner(int winnerID, long potsize) {
         Platform.runLater(() ->  {
             boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
         });
@@ -748,18 +759,6 @@ public class GameScreen {
         for (Card c : communityCards)
             communityCardsText += c.toString() + " ";
         printToLogField(communityCardsText);
-    }
-
-    /**
-     *  Print out who won a side pot (append to GUI, print in logField)
-     * @param id
-     * @param potSize
-     */
-    public void sidePotWinner(int id, long potSize) {
-        String current = boardLayout.getWinnerLabel() + "\n";
-        Platform.runLater(() -> boardLayout.setWinnerLabel(current + names.get(id) + " won a side pot of " + potSize));
-
-        printToLogField(names.get(id) + " got a side pot of " + potSize);
     }
 
     /**

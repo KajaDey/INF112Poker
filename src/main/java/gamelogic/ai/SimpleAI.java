@@ -1,9 +1,6 @@
 package gamelogic.ai;
 
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
-import gamelogic.ShowdownStats;
+import gamelogic.*;
 
 import java.util.*;
 
@@ -192,10 +189,12 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void gameOver(int winnerID) { }
+    public void gameOver(Statistics stats) { }
 
     @Override
-    public void setPlayerNames(Map<Integer, String> names) { }
+    public void setPlayerNames(Map<Integer, String> names) {
+        assert names.size() == amountOfPlayers : "SimpleAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players playing.";
+    }
 
     public int getID() {
         return playerId;
@@ -203,7 +202,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        assert this.getID() == userID;
+        assert this.getID() == userID : "SimpleAI received cards for id " + userID + ", but AI's id is " + this.getID();
 
         holeCards = new ArrayList<Card>(2);
         assert holeCards.size() == 0;
@@ -214,6 +213,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
+        assert stackSizes.size() == amountOfPlayers;
         assert stackSizes.get(this.playerId) >= 0 : "AI was sent a stacksize of " + stackSizes.get(this.playerId);
         for (int playerId : stackSizes.keySet()) {
             assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);
