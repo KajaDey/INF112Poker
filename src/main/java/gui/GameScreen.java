@@ -363,12 +363,12 @@ public class GameScreen {
         Runnable task;
         if (ID == this.playerID) {
             task = () -> {
-                playerLayout.setLastMove(finalDecision, getChipImage(decision));
+                playerLayout.setLastMove(finalDecision, getChipImage(ID));
                 playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
             };
         } else {
             task = () -> {
-                opponents.get(ID).setLastMove(finalDecision, getChipImage(decision));
+                opponents.get(ID).setLastMove(finalDecision, getChipImage(ID));
                 opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
             };
         }
@@ -787,32 +787,27 @@ public class GameScreen {
 
     /**
      *  Get the correct image for this decision (based ont the decision and the amount)
-     * @param id
-     * @param decision
      */
-    private Image getChipImage(Decision decision) {
-        switch(decision.move) {
-            case CHECK:case FOLD: return null;
-            case SMALL_BLIND: return ImageViewer.getChipImage("sb_image");
-            case BIG_BLIND: return ImageViewer.getChipImage("bb_image");
-            case BET:case RAISE:case ALL_IN:case CALL:
-                if (highestAmountPutOnTable <= currentBigBlind)
-                    return ImageViewer.getChipImage("bb_image.png");
-                else if (highestAmountPutOnTable <= currentBigBlind * 3)
-                    return ImageViewer.getChipImage("poker1");
-                else if (highestAmountPutOnTable <= currentBigBlind * 5)
-                    return ImageViewer.getChipImage("poker2");
-                else if (highestAmountPutOnTable <= currentBigBlind * 8)
-                    return ImageViewer.getChipImage("poker3");
-                else if (highestAmountPutOnTable <= currentBigBlind * 12)
-                    return ImageViewer.getChipImage("poker4");
-                else if (highestAmountPutOnTable <= currentBigBlind * 20)
-                    return ImageViewer.getChipImage("poker6");
-                else if(highestAmountPutOnTable <= currentBigBlind * 50)
-                    return ImageViewer.getChipImage("poker7");
-                else
-                    return ImageViewer.getChipImage("poker8");
-        }
-        return null;
+    private Image getChipImage(int id) {
+        if (putOnTable.get(id) == 0)
+            return null;
+        else if (putOnTable.get(id) <= currentBigBlind / 2)
+            return ImageViewer.getChipImage("sb_image");
+        if (putOnTable.get(id) <= currentBigBlind)
+            return ImageViewer.getChipImage("bb_image");
+        else if (putOnTable.get(id) <= currentBigBlind * 3)
+            return ImageViewer.getChipImage("poker1");
+        else if (putOnTable.get(id) <= currentBigBlind * 5)
+            return ImageViewer.getChipImage("poker2");
+        else if (putOnTable.get(id) <= currentBigBlind * 8)
+            return ImageViewer.getChipImage("poker3");
+        else if (putOnTable.get(id) <= currentBigBlind * 12)
+            return ImageViewer.getChipImage("poker4");
+        else if (putOnTable.get(id) <= currentBigBlind * 20)
+            return ImageViewer.getChipImage("poker6");
+        else if(putOnTable.get(id) <= currentBigBlind * 50)
+            return ImageViewer.getChipImage("poker7");
+        else
+            return ImageViewer.getChipImage("poker8");
     }
 }

@@ -234,11 +234,7 @@ public class PlayerLayout {
 
     public void setPositionLabel(String pos){
         Runnable task = () -> {
-            lastMoveLabel.setText(pos);
-            if (pos.equals(""))
-                chipImage.setVisible(false);
-            else
-                chipImage.setVisible(true);
+            positionLabel.setText(pos);
         };
         Platform.runLater(task);
     }
