@@ -46,8 +46,8 @@ Look beneath our license to see the license for the **Card Sprites**.
 
 <This implementation of Texas Hold'em is a project in the subject "Software Engineering" at the University in Bergen, Norway.>
 
-Copyright (C) <2016>
-<Kristian Rosland, Morten Lohne, Jostein Kringlen, Mariah Vårum, Simon Halvorsen, Kaja Dey, André Dyrstad, Henrik Nytun, Ragnhild Aalvik, Vegar Rørvik>
+Copyright (C) 2016
+Kristian Rosland, Morten Lohne, Jostein Kringlen, Mariah Vårum, Simon Halvorsen, Kaja Dey, André Dyrstad, Henrik Nytun, Ragnhild Aalvik, Vegar Rørvik
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ Copyright (C) <2016>
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see http://www.gnu.org/licenses/
 
 ## CardSprites license
 ---
