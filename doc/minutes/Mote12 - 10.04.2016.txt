@@ -1,0 +1,29 @@
+Møte 12 - 10.04.16, kl 12.15
+Sekretær: Kristian Rosland
+
+Oppmøte:
+Kristian
+Kaja
+Ragnhild
+Jostein
+Andrè
+Simon
+Mariah
+Vegar
+Morten
+Fraværende: Henrik
+
+Hva er gjort siden sist:
+Bugtesting
+Jobbet med diagrammer
+MAVEN er ok
+
+Diskusjon:
+Integrering av den nye AIen.
+Legge inn bilder av chips og dealer button. 
+
+Plan til neste møte:
+Ferdigstille alt for iterasjon 2. 
+
+Tid for neste møte:
+Skal eventuelt planlegges over slack. 
