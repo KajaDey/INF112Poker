@@ -28,7 +28,6 @@ public class PlayerLayout {
     private TextField amountTextfield;
 
     private long currentSmallBlind, currentBigBlind;
-    private long stackSize;
 
     private Button betRaiseButton, checkCallButton, foldButton;
 
@@ -41,7 +40,7 @@ public class PlayerLayout {
      *
      * @return A VBox with the player layout
      */
-    public VBox updateLayout(int playerID, String name, long stackSize) {
+    public VBox updateLayout(int playerID, String name, long stackSizeIn) {
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -53,11 +52,11 @@ public class PlayerLayout {
         VBox sliderBox = new VBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
-        stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
+        stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSizeIn + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
+        bestHand = ObjectStandards.makeStandardLabelWhite("Your hand:","");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -72,7 +71,7 @@ public class PlayerLayout {
         amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
         slider.setMin(currentBigBlind);
-        slider.setMax(stackSize);
+        slider.setMax(stackSizeIn);
         slider.setValue(currentBigBlind);
 
         slider.setShowTickMarks(true);
@@ -94,26 +93,26 @@ public class PlayerLayout {
         betRaiseButton.setOnAction(e -> {
             if(!amountTextfield.getText().equals("")) {
                 if (amountTextfield.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSize), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(String.valueOf(stackSizeIn), betRaiseButton.getText());
                 else
                     ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
-                updateSliderValues();
+                updateSliderValues(stackSizeIn);
             }
         });
 
         amountTextfield.setOnAction(e -> {
             if (!amountTextfield.getText().equals("")) {
                 if (amountTextfield.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSize), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(String.valueOf(stackSizeIn), betRaiseButton.getText());
                 else
                     ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
-                updateSliderValues();
+                updateSliderValues(stackSizeIn);
             }
         });
 
         checkCallButton.setOnAction(e -> {
             ButtonListeners.checkButtonListener(checkCallButton.getText());
-            updateSliderValues();
+            updateSliderValues(stackSizeIn);
         });
 
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
@@ -128,7 +127,7 @@ public class PlayerLayout {
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel,bestHand);
+        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
@@ -139,7 +138,7 @@ public class PlayerLayout {
         twoButtonsRight.getChildren().addAll(betRaiseButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
 
-        sliderBox.getChildren().addAll(slider);
+        sliderBox.getChildren().addAll(bestHand,slider);
         sliderBox.setAlignment(Pos.CENTER);
 
         fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderBox);
@@ -155,7 +154,7 @@ public class PlayerLayout {
     /**
      * Updates the values of the slider
      */
-    public void updateSliderValues(){
+    public void updateSliderValues(long stackSize){
         Runnable task;
 
         task = () -> {
@@ -274,10 +273,6 @@ public class PlayerLayout {
 
     public void setSliderVisibility() {
         slider.setVisible(true);
-    }
-
-    public void setStackSize(long stackSize) {
-        this.stackSize = stackSize;
     }
 
     public void bustPlayer(String bustedText) {

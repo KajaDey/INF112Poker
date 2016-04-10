@@ -12,6 +12,7 @@ import java.util.*;
  * A controller to function as a layer between the GUI and the back end.
  */
 public class GameController {
+    public enum AIType { MCTS_AI, SIMPLE_AI }
 
     private Game game;
     private Map<Integer, GameClient> clients;
@@ -28,17 +29,15 @@ public class GameController {
     /**
      * Called when the enter button is clicked.
      * Checks valid number of players, then makes GUI show the lobby screen
-     *
-     * @param name
+     *  @param name
      * @param numPlayers
-     * @param gameType
+     * @param aiType Type of AI (Simple or MCTS)
      */
-    public void enterButtonClicked(String name, int numPlayers, String gameType) {
+    public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
         //Tell GUI to display Lobby
-        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, "Simple AI");
-        mainGUI.displayLobbyScreen(name, numPlayers, gameType, gameSettings);
+        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, aiType);
+        mainGUI.displayLobbyScreen(name, gameSettings);
         this.name = name;
-
     }
 
     /**
@@ -107,7 +106,13 @@ public class GameController {
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
-            GameClient aiClient = new MCTSAI(AI_id);
+
+            GameClient aiClient;
+            if (gameSettings.getAIType() == AIType.MCTS_AI)
+                aiClient = new MCTSAI(AI_id);
+            else
+                aiClient = new SimpleAI(AI_id, 0.9);
+
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);

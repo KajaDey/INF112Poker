@@ -3,13 +3,34 @@ package gui;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
- * Created by ady on 05/03/16.
+ * This meaning of this class is to create standard gui objects that will be used throughout the
+ * entire application.
+ *
+ * The standard objects made in this class are:
+ *  -buttons
+ *  -labels
+ *  -text fields
+ *  -menu bar
+ *
+ * @author Jostein Kringlen
+ * @author André Dyrstad
  */
 public class ObjectStandards {
 
@@ -206,5 +227,91 @@ public class ObjectStandards {
         textField.setPadding(padding);
 
         return textField;
+    }
+
+    /**
+     * Creates a menu bar for the application.
+     * If the user is using Windows, there program will create a menu bar inside the application,
+     * but if he/she is using another OS like OSX or one of the Linux distros, the menu bar
+     * will be integrated into the standard system menu bar (i.e. the top line on OSX)
+     * @return The created menu bar
+     */
+    public static MenuBar createMenuBar(){
+        MenuBar menuBar = new MenuBar();
+        final String os = System.getProperty("os.name");
+
+        //Parent menus
+        Menu file = new Menu("File");
+        Menu about = new Menu("About");
+
+        //Sub menus and menu items
+        Menu licenses = new Menu("Licenses");
+        MenuItem softwareLicense = new MenuItem("Software License");
+        MenuItem cardSpriteLicense = new MenuItem("Card Sprite License");
+        MenuItem aboutTexasHoldem = new MenuItem("Texas Hold'em");
+
+        MenuItem quit = new MenuItem("Quit");
+        MenuItem restart = new MenuItem("Restart");
+
+        //Adding sub menus and items to parent menus
+        licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
+        about.getItems().addAll(licenses, aboutTexasHoldem);
+        file.getItems().addAll(quit, restart);
+
+        //Adding all menus to the menu bar
+        menuBar.getMenus().addAll(file,about);
+
+        if (os != null) {
+            if (!os.startsWith("Mac")) {
+                menuBar.setUseSystemMenuBar(false);
+                menuBar.setMinWidth(1280);
+                menuBar.setMinWidth(1280);
+                menuBar.setMinHeight(25);
+                menuBar.setMaxHeight(25);
+                menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
+            }
+            else
+                menuBar.setUseSystemMenuBar(true);
+        }
+
+        //Event listeners for the menu items
+        quit.setOnAction(event -> System.exit(0));
+
+        MenuBarScreens menuBarScreens = new MenuBarScreens();
+
+        softwareLicense.setOnAction(event -> {
+            try {
+                menuBarScreens.createScreenForLicense(softwareLicense.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        cardSpriteLicense.setOnAction(event -> {
+            try {
+                menuBarScreens.createScreenForLicense(cardSpriteLicense.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        aboutTexasHoldem.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Texas_hold_%27em"));
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        });
+
+        quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
+        restart.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+
+        restart.setOnAction(event -> {
+            MainScreen.getStage().close();
+            MainScreen.createSceneForMainScreen("PokerTable", MainScreen.getGameController());
+        });
+
+
+        return menuBar;
     }
 }
