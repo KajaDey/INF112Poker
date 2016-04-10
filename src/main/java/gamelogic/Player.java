@@ -1,6 +1,8 @@
 package gamelogic;
 
 
+import java.util.List;
+
 /**
  * Created by kristianrosland on 07.03.2016.
  *
@@ -11,12 +13,11 @@ public class Player extends User {
     private long stackSize;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean folded = false, allIn = false;
+    private boolean allIn = false, hasActed = false;
 
     //Statistics
-    private int finishedInPosition = -1, handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
-    private int numberOfAgressiveMoves = 0, numberOfPassiveMoves = 0;
-    private long highestStacksize = 0;
+    private int handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
+    private int numberOfAggressiveMoves = 0, numberOfPassiveMoves = 0;
     private Hand bestHand;
 
     public Player(String name, long stackSize, int ID) {
@@ -52,7 +53,6 @@ public class Player extends User {
                 numberOfPassiveMoves++;
                 if (preflop)
                     foldsPreFlop++;
-                this.folded = true;
                 break;
 
             case CHECK:
@@ -64,33 +64,36 @@ public class Player extends User {
                 amountToCall = Math.min(amountToCall, stackSize);
                 stackSize -= amountToCall;
                 putOnTableThisRound += amountToCall;
-                assert amountToCall > 0 : "Negative number added to pot: " + highestAmountPutOnTable + "-" + putOnTableThisRound + "=" + amountToCall;
                 pot.addToPot(ID, amountToCall);
                 break;
 
             case BET:
                 assert putOnTableThisRound == 0;
-                numberOfAgressiveMoves++;
+                numberOfAggressiveMoves++;
                 this.putOnTableThisRound = decision.size;
                 stackSize -= decision.size;
                 pot.addToPot(ID, decision.size);
                 break;
 
             case RAISE:
-                numberOfAgressiveMoves++;
+                numberOfAggressiveMoves++;
                 stackSize -= (amountToCall + decision.size);
                 putOnTableThisRound = highestAmountPutOnTable + decision.size;
                 pot.addToPot(ID, amountToCall + decision.size);
                 break;
 
             case ALL_IN:
-                numberOfAgressiveMoves++;
+                numberOfAggressiveMoves++;
                 pot.addToPot(ID, stackSize);
                 putOnTableThisRound += stackSize;
                 stackSize = 0;
                 allIn = true;
                 break;
         }
+
+        //If a player has posted blind he should not be marked as if he as acted this betting round
+        if (decision.move != Decision.Move.SMALL_BLIND && decision.move != Decision.Move.BIG_BLIND)
+            hasActed = true;
     }
 
     /**
@@ -124,6 +127,7 @@ public class Player extends User {
         holeCards[1] = card2;
         this.putOnTableThisRound = 0;
         this.allIn = false;
+        this.hasActed = false;
     }
 
     /**
@@ -136,21 +140,12 @@ public class Player extends User {
     }
 
     /**
-     * @return true if the player is still playing, else false
-     */
-    public boolean stillPlaying() {
-        return !folded;
-    }
-
-    /**
      * Increments the player's stack with given amount
      *
      * @param size Amount added to stack
      */
     public void incrementStack(long size) {
         stackSize += size;
-        if (stackSize > highestStacksize)
-            highestStacksize = stackSize;
     }
 
     /**
@@ -158,32 +153,56 @@ public class Player extends User {
      */
     public void newBettingRound() {
         this.putOnTableThisRound = 0;
+        hasActed = false;
     }
 
     /**
-     * TODO write javadoc
-     * @param winningHand
+     * @return true if the player is currently all in
      */
-    public void handWon(Hand winningHand) {
-        handsWon++;
-
-        //Update best hand (for stats)
-        if (bestHand == null)
-            bestHand = winningHand;
-        else if (winningHand.compareTo(bestHand) > 0)
-            bestHand = winningHand;
-    }
-
-    /**
-     * TODO write javadoc
-     * @return
-     */
-    public String getBestHand() {
-        return "Not implemented in HandCalculator";
-    }
-
     public boolean isAllIn() {
         return allIn;
     }
+
+    /**
+     *
+     * @param communityCards
+     * @return
+     */
+    public Hand getHand(List<Card> communityCards) {
+        return new Hand(holeCards[0], holeCards[1], communityCards);
+    }
+
+    /**
+     * @return True if the player has acted this round (or is all in)
+     */
+    public boolean hasActed() {
+        return allIn || hasActed;
+    }
+
+    /**
+     *  Notify the player when he wins a hand (or a side pot)
+     * @param hand The hand the player won with
+     * @param pot  The size of the (side)pot he won
+     */
+    public void handWon(Hand hand, long pot) {
+        handsWon++;
+
+        //Update the best hand
+        if (bestHand == null)
+            bestHand = hand;
+        else if (hand.compareTo(bestHand) > 0)
+            bestHand = hand;
+
+        incrementStack(pot);
+    }
+
+    /** Statistics-getters  **/
+    public int handsWon() { return handsWon; }
+    public int handsPlayed() { return handsPlayed; }
+    public int preFlopFolds () { return foldsPreFlop; }
+    public int aggressiveMoves() { return numberOfAggressiveMoves; }
+    public int passiveMoves() { return numberOfPassiveMoves; }
+    public String getBestHand() { return bestHand == null ? "No hands won" : new HandCalculator(bestHand).getBestHandString(); }
+
 }
 

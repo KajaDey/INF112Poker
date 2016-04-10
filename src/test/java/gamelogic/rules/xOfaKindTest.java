@@ -43,19 +43,17 @@ public class xOfaKindTest {
         hand1 = new Hand(holeCard1,holeCard2,communityCards);
         hand2=new Hand(holeCard3,holeCard4,communityCards);
         assertEquals(true,xOf4.match(hand1));
-        assertEquals("Quad 9's",xOf4.toString());
+        assertEquals("Quad 9s",xOf4.toString());
         assertEquals(false,xOf4.match(hand2));
 
     }
-
-
 
     @Test
     public void testThreeLikeCards() throws Exception {
         hand1 = new Hand(holeCard1,holeCard4,communityCards);
         hand2=new Hand(holeCard3,holeCard4,communityCards);
         assertEquals(true,xOf3.match(hand1));
-        assertEquals("Trip 9's",xOf3.toString());
+        assertEquals("Trip 9s",xOf3.toString());
         assertEquals(false,xOf3.match(hand2));
     }
 
@@ -63,7 +61,7 @@ public class xOfaKindTest {
     public void testTwoLikeCards() throws Exception {
         hand1 = new Hand(holeCard3,holeCard4,communityCards);
         assertEquals(true,xOf2.match(hand1));
-        assertEquals("Pair of Knight's",xOf2.toString());
+        assertEquals("Pair of Jacks",xOf2.toString());
     }
 
     @Test

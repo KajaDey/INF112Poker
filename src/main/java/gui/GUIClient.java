@@ -1,9 +1,7 @@
 package gui;
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
+import gamelogic.*;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -139,8 +137,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void gameOver(int winnerID) {
-        gameScreen.gameOver(winnerID);
+    public void gameOver(Statistics stats) {
+        gameScreen.gameOver(stats);
     }
 
     @Override
@@ -169,9 +167,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
-        gameScreen.setPot(pot);
-        gameScreen.showDown(playersStillPlaying, winnerID, holeCards);
+    public void showdown(ShowdownStats showdownStats) {
+        gameScreen.showDown(showdownStats);
     }
 
     @Override
@@ -183,7 +180,6 @@ public class GUIClient implements GameClient {
     @Override
     public void setSmallBlind(long smallBlind) {
         this.smallBlind = smallBlind;
-        //TODO: Update label in GUI
     }
 
     @Override
@@ -203,7 +199,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setLevelDuration(int levelDuration) {
-        //TODO: Update label in GUI
     }
 
     public void newBettingRound(long potSize) {
@@ -223,5 +218,13 @@ public class GUIClient implements GameClient {
      */
     public void printToLogfield(String message) {
         gameScreen.printToLogField(message);
+    }
+
+    public void preShowdownWinner(int winnerID, long potsize) {
+        gameScreen.preShowdownWinner(winnerID, potsize);
+    }
+
+    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
+        gameScreen.showHoleCards(playerList, holeCards);
     }
 }

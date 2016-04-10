@@ -59,25 +59,6 @@ public class Card implements Comparable<Card> {
         return cards.clone();
     }
 
-
-    @Override
-    public String toString() {
-        String royal = "";
-        if (rank == 14) {
-            royal = "A";
-        }
-        else if (rank == 13) {
-            royal = "K";
-        }
-        else if (rank == 12) {
-            royal = "Q";
-        }
-        else if (rank == 11) {
-            royal = "J";
-        }
-        return suit.toString() + (royal.equals("") ? rank : royal);
-    }
-
     @Override
     /**
      * Compares two cards solely based on their rank, with Ace as 14,
@@ -115,6 +96,23 @@ public class Card implements Comparable<Card> {
 
     }
 
+    public String getRankString(){
+
+        String rankString = ""+rank;
+        switch (rank) {
+            case 14 : rankString = "Ace";
+                break;
+            case 13 : rankString = "King";
+                break;
+            case 12 : rankString = "Queen";
+                break;
+            case 11 : rankString = "Jack";
+                break;
+
+        }
+        return rankString;
+    }
+
     public static enum Suit {
         SPADES, HEARTS, DIAMONDS, CLUBS;
 
@@ -130,26 +128,22 @@ public class Card implements Comparable<Card> {
         }
     }
 
-    /**
-     * Returns the rank as a string, used because of royal cards, e.g. rank 14 returns "Ace".
-     * @return Rank string
-     */
-    public String getRankString(){
-
-        String rankString = ""+rank;
-        switch (rank) {
-            case 14 : rankString = "Ace";
-                break;
-            case 13 : rankString = "King";
-                break;
-            case 12 : rankString = "Queen";
-                break;
-            case 11 : rankString = "Knight";
-                break;
-
+    @Override
+    public String toString() {
+        String royal = "";
+        if (rank == 14) {
+            royal = "A";
         }
-        return rankString;
+        else if (rank == 13) {
+            royal = "K";
+        }
+        else if (rank == 12) {
+            royal = "Q";
+        }
+        else if (rank == 11) {
+            royal = "J";
+        }
+        return suit.toString() + (royal.equals("") ? rank : royal);
     }
-
 }
 

@@ -40,7 +40,7 @@ public class Hand implements Comparable<Hand> {
 
     /**
      * Gets the 0-5 community cards in the hand
-     * @return List of community cards, or empty
+     * @return List of community cards
      */
     public Optional<List<Card>> getCommunityCards() {
         if (communityCards.isEmpty())
@@ -52,7 +52,7 @@ public class Hand implements Comparable<Hand> {
     }
 
     /**
-     * Gets all 5-7 cards in the hand, both hole cards and community cards.
+     * Gets all 2-7 cards in the hand, both hole cards and community cards.
      * @return List of all cards
      */
     public List<Card> getAllCards() {

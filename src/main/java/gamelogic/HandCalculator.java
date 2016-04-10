@@ -20,17 +20,18 @@ public class HandCalculator {
         STRAIGHT_FLUSH, QUAD, HOUSE, FLUSH, STRAIGHT, TRIPS, TWO_PAIRS, PAIR, HIGH_CARD;
     }
 
+    private IRule straightFlush;
+    private IRule quad, trips, pair;
+    private IRule house;
+    private IRule flush;
+    private IRule straight;
+    private IRule twoPairs;
+    private IRule highCard;
+
     private Optional<List<Card>> bestHand;
     private List<IRule> rules;
-    private HandType handType;
-    private StraightFlush straightFlush;
-    private xOfaKind quad, trips, pair;
-    private House house;
-    private Flush flush;
-    private Straight straight;
-    private TwoPairs twoPairs;
-    private HighCard highCard;
     private IRule rule;
+    private HandType handType;
 
     public HandCalculator(Hand hand) {
 
@@ -97,4 +98,9 @@ public class HandCalculator {
     public IRule getFoundRule() {
         return rule;
     }
+
+    public String getBestHandString() {
+        return rule.toString();
+    }
+
 }

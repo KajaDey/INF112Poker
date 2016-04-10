@@ -1,7 +1,6 @@
 package gui;
 
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -66,10 +65,13 @@ public class ButtonListeners {
      * What happens when the acceptSettingsButton is pushed
      */
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
-                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aIChoice) {
+                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aiChoice) {
+
+        GameController.AIType aiType = (aiChoice.equals("MCTS-AI") ? GameController.AIType.MCTS_AI : GameController.AIType.SIMPLE_AI);
+
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
-                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aIChoice);
+                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
 
             GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
@@ -107,8 +109,14 @@ public class ButtonListeners {
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null && choiceBox.equals("Against AI")) {
-                gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), choiceBox);
+            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null) {
+                GameController.AIType type;
+                if (choiceBox.equals("Simple-AI"))
+                    type = GameController.AIType.SIMPLE_AI;
+                else
+                    type = GameController.AIType.MCTS_AI;
+
+                gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), type);
                 gameSettings = gameController.gameSettings;
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
@@ -119,14 +127,12 @@ public class ButtonListeners {
 
     /**
      *
-     * When u click the errorButton, you open a new settings window
+     * When you click the errorButton, you open a new settings window
      *
      * @param gameController
      */
     public static void errorButtonListener(GameController gameController) {
-
         settingsButtonListener(gameController);
-
     }
 
     /**
