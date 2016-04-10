@@ -532,7 +532,7 @@ public class GameScreen {
             }
         };
         Platform.runLater(task);
-        playerLayout.updateSliderValues(stackSizes.get(0));
+        updateSliderValues();
     }
 
     /**
