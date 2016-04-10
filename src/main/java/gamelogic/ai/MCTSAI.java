@@ -41,7 +41,6 @@ public class MCTSAI implements GameClient {
         }
 
         PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, holeCards);
-        //assert gameState.players.get(position).holeCards.size() == 2 : "Player has " + gameState.players.get(position).holeCards.size() + " holecards";
         return mcts.calculateFor(750 + (int)(1500 * Math.random()));
     }
 
