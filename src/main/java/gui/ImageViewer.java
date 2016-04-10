@@ -69,6 +69,9 @@ public class ImageViewer {
 
     public static Image getChipImage(String name){
         String chipOut = "file:resources/Images/" + name + ".png";
+        if (chipOut.isEmpty())
+            return null;
+
         return new Image(chipOut);
     }
 
