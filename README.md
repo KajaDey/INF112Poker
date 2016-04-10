@@ -44,7 +44,7 @@ players over the internet. This implementation will also allow for a user to spe
 This project is free software under GNU General Public License 3, **EXCEPT** for the Card Sprites.
 Look beneath our license to see the license for the **Card Sprites**.
 
-<This implementation of Texas Hold'em is a project in the subject "Software Engineering" at the University in Bergen, Norway.>
+This implementation of Texas Hold'em is a project in the subject "Software Engineering" at the University in Bergen, Norway.
 
 Copyright (C) 2016
 Kristian Rosland, Morten Lohne, Jostein Kringlen, Mariah Vårum, Simon Halvorsen, Kaja Dey, André Dyrstad, Henrik Nytun, Ragnhild Aalvik, Vegar Rørvik
