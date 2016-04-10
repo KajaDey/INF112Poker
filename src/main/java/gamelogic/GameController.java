@@ -81,7 +81,6 @@ public class GameController {
             }
         };
         gameThread.start();
-
     }
 
     /**
@@ -106,7 +105,7 @@ public class GameController {
         NameGenerator.readNewSeries();
 
         for (int i = 0; i < numberOfAIs; i++) {
-            String aiName = NameGenerator.getRandomSeriesName();
+            String aiName = NameGenerator.getRandomName();
             int AI_id = i+1;
             GameClient aiClient = new MCTSAI(AI_id);
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
