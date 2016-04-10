@@ -56,7 +56,7 @@ public class PlayerLayout {
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
+        bestHand = ObjectStandards.makeStandardLabelWhite("Your hand:","");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -127,7 +127,7 @@ public class PlayerLayout {
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel,bestHand);
+        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
@@ -138,7 +138,7 @@ public class PlayerLayout {
         twoButtonsRight.getChildren().addAll(betRaiseButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
 
-        sliderBox.getChildren().addAll(slider);
+        sliderBox.getChildren().addAll(bestHand,slider);
         sliderBox.setAlignment(Pos.CENTER);
 
         fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderBox);
