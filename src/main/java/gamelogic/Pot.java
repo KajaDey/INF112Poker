@@ -1,5 +1,7 @@
 package gamelogic;
 
+import gui.GUIMain;
+
 import java.util.*;
 
 /**
@@ -71,23 +73,31 @@ public class Pot {
         while (winners.size() > 0) {
             Player minPlayer = winners.stream().min(comp).get();
             long minPlayerPutIn = amountPlayerCanClaim.get(minPlayer.getID());
-            long splitPot = 0;
+            long potShare = 0;
 
             //Get amount from each player
             for (Integer id : amountPlayerCanClaim.keySet()) {
                 long putIn = amountPlayerCanClaim.get(id);
                 long addToPot = Math.min(minPlayerPutIn, putIn);
                 amountPlayerCanClaim.put(id, putIn - addToPot);
-                splitPot += addToPot;
+                potShare += addToPot;
             }
 
             //Hand out pot-shares and inform the players that they won the pot
+            long handedOut = 0; //To avoid rounding-errors when pot is split, this tracks what has been handed out
             for (Player p : winners) {
-                p.handWon(p.getHand(communityCards), splitPot / winners.size());
+                handedOut += potShare / winners.size();
+                p.handWon(p.getHand(communityCards), potShare / winners.size());
             }
 
-            potSize -= splitPot;
-            size += splitPot;
+            //If there was a rounding error, the split pot is handed out to a random winner
+            if (potShare - handedOut > 0) {
+                GUIMain.debugPrintln(minPlayer.getName() + " got the spare pot of " + (potShare - handedOut));
+                minPlayer.incrementStack(potShare-handedOut);
+            }
+
+            potSize -= potShare;
+            size += potShare;
             winners.remove(minPlayer);
             players.remove(minPlayer);
         }
