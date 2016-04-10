@@ -39,7 +39,7 @@ public class GUIMain extends Application{
      * Displays the lobby screen
      * @param gameSettings The settings to be displayed
      */
-    public void displayLobbyScreen(String name, int numberOfPlayers, String gameType, GameSettings gameSettings){
+    public void displayLobbyScreen(String name, GameSettings gameSettings){
         GameLobby.createScreenForGameLobby(gameSettings, gamecontroller, name);
     }
 
@@ -49,7 +49,6 @@ public class GUIMain extends Application{
      */
     public void start(Stage window){
         MainScreen.createSceneForMainScreen("PokerTable", gamecontroller);
-
     }
 
     /**

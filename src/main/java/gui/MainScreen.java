@@ -57,9 +57,11 @@ public class MainScreen {
 
         //Top-text
         String title = "Texas Hold'em!";
-        String info = "This is an implementation of Texas hold'em.\n" +
-                "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
-                "Enter your name, and start playing!";
+        //String info = "This is an implementation of Texas hold'em.\n" +
+               // "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
+               // "Enter your name, and start playing!";
+
+        String info = "";
 
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 
@@ -80,8 +82,8 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll("Against AI", "Against Players");
-        choiceBox.setValue("Against AI");
+        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI");
+        choiceBox.setValue("Simple-AI");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 
