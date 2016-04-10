@@ -57,7 +57,7 @@ public class Statistics {
         allStats += "You won " + handsWon + " of the " + handsPlayed + " hands you played\n";
         allStats += "You folded " + foldsPreflop + " times pre-flop\n";
         allStats += "You made " + aggressiveMoves + " aggressive moves, and " + passiveMoves + " passive moves\n";
-        allStats += "You best hand was " + bestHand;
+        allStats += "Your best hand was " + bestHand;
         return allStats;
     }
 
