@@ -40,6 +40,9 @@ public class MCTSAI implements GameClient {
         if (!gameState.isPresent()) {
             System.out.println("AI was asked for decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+            System.out.println("Adding holecards for id " + playerId + " at position " + positions.get().get(playerId));
+            gameState.get().players.get(positions.get().get(playerId)).holeCards.addAll(holeCards);
+            gameState.get().deck.removeAll(holeCards);
         }
 
         PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, holeCards);
@@ -63,10 +66,12 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void playerBust(int playerID, int rank) {
+        System.out.println("MCTSAI: Player " + playerID + " + is bust");
         amountOfPlayers--;
         gameState = Optional.empty();
         stackSizes = Optional.empty();
         positions = Optional.empty();
+        names.get().remove(playerID);
         holeCards.clear();
     }
 
@@ -98,11 +103,17 @@ public class MCTSAI implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         assert stackSizes.isPresent() : " MCTSAI was sent a decicion without first receving stacksizes";
+        assert stackSizes.get().size() == amountOfPlayers;
         assert positions.isPresent() : "MCTSAI was sent a decision without receiving positions";
+        assert positions.get().size() == amountOfPlayers;
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
+        assert names.get().size() == amountOfPlayers;
         if (!gameState.isPresent()) {
             System.out.println("AI was sent a decision, creating new gameState");
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+            System.out.println("Adding holecards for id " + this.playerId + " at position " + positions.get().get(this.playerId));
+            gameState.get().players.get(positions.get().get(this.playerId)).holeCards.addAll(holeCards);
+            gameState.get().deck.removeAll(holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id
                 : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
@@ -151,7 +162,8 @@ public class MCTSAI implements GameClient {
     @Override
     public void setTurn(Card turn, long currentPotSize) {
         assert gameState.isPresent();
-        assert gameState.get().communityCards.size() == 3 && gameState.get().playersToMakeDecision == 0;
+        assert gameState.get().communityCards.size() == 3 : "MCTS received turn card when it had " + gameState.get().communityCards.size();
+        assert gameState.get().playersToMakeDecision == 0 : "MCTS received turn card when " + gameState.get().playersToMakeDecision + " players still need to make decisions";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
     }
 

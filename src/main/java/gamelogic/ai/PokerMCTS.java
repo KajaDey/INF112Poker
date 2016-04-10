@@ -33,14 +33,13 @@ public class PokerMCTS {
                 .findFirst()
                 .get().position;
         this.initialGameState = gameState;
-        initialGameState.players.get(playerPosition).holeCards.addAll(holeCards);
-        initialGameState.deck.removeAll(holeCards);
         int amountOfMoves = initialGameState.allDecisions().get().size();
         this.rootNode = new RandomNode(amountOfMoves);
     }
 
     public Decision calculateFor(long milliseconds) {
         System.out.println("Starting MCTS for " + initialGameState.players.get(playerPosition) + " with " + amountOfPlayers + " players");
+        assert initialGameState.currentPlayer.id == playerId : "Started calculating when currentPlayer is " + initialGameState.currentPlayer + ", but AI is " + initialGameState.players.get(playerPosition);
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() < startTime + milliseconds) {
             for (int i = 0; i < 100; i++) {
@@ -69,8 +68,6 @@ public class PokerMCTS {
 
         gameState.playersGivenHolecards = amountOfPlayers;
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
-
-        //List<NodeEval> evals = findAIEvals(rootNode, amountOfPlayers, playerPosition);
 
         assert criticalEvals.get().size() == allDecisions.size() : "Has values for " + criticalEvals.get().size() + " moves, but " + allDecisions.size() + " moves";
         double bestValue = 0.0;
@@ -257,7 +254,7 @@ public class PokerMCTS {
             }
             //System.out.println("Creating new " + childNode.getClass().getSimpleName() + " from " + this.getClass().getSimpleName() + ", currentPlayer = " + gameState.currentPlayer + ", new currentPlayer: " + newGameState.currentPlayer);
 
-            assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node without passing decision node after " + totalSearches + " searches.";
+            assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node for " + gameState.currentPlayer + " without passing decision node (AI is " + gameState.players.get(playerPosition) + ") after " + totalSearches + " searches.";
             if (!hasPassedDecisionNode && this instanceof AINode) {
                 assert gameState.communityCards.isEmpty() : "AI decision was at a node with community cards " + gameState.communityCards.stream().map(Object::toString).reduce(String::concat).get();
                 double[] evals = childNode.simulate(totalSearches, newGameState, true);

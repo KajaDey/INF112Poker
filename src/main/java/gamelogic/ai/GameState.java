@@ -30,7 +30,8 @@ public class GameState {
     public int playersToMakeDecision; // Players left to make decision in this betting round
 
 
-    public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes, Map<Integer, String> names) {
+    public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
+                     Map<Integer, String> names) {
         assert amountOfPlayers == positions.size();
 
         System.out.println("Creating new gameState for " + amountOfPlayers + " players.");
@@ -42,12 +43,9 @@ public class GameState {
 
         allChipsOnTable = stackSizes.keySet().stream().map(stackSizes::get).reduce(0L, Long::sum);
         
-        for (int i = 0; i < amountOfPlayers; i++) {
-            assert positions.containsKey(i) : "AI didn't get position for playerPosition " + i;
-            assert positions.containsValue(i) : "AI didn't get player at position " + i;
-            assert names.containsKey(i) : "AI didn't get name for player at id " + i + ", names: " + names.keySet().stream().map(key -> key + ": " + names.get(key)).map(Object::toString).reduce("", String::concat);
-            players.add(new Player(i, positions.get(i), stackSizes.get(i), names.get(i)));
-        }
+        positions.forEach((key, value) -> {
+            players.add(new Player(key, value, stackSizes.get(key), names.get(key)));
+        });
         players.sort((p1, p2) -> Integer.compare(p1.position, p2.position));
 
         currentPlayer = players.get(0);
@@ -164,6 +162,7 @@ public class GameState {
                     playersAllIn++;
                     break;
                 case BIG_BLIND: case SMALL_BLIND:
+                    System.out.println("Received " + decision);
                     players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
                         player.currentBet += decision.size;
                         player.minimumRaise = decision.size;
@@ -179,6 +178,12 @@ public class GameState {
                     break;
 
             }
+
+            // Small blind moves first post-flop
+            if (playersToMakeDecision == 0) {
+                currentPlayer = players.get(0);
+            }
+
             for (int i = currentPlayer.position + 1; i < players.size(); i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
@@ -193,7 +198,7 @@ public class GameState {
                     return;
                 }
             }
-            assert playersAllIn > 0 : "MonteCarloAI: Player made a decision when it was the only player playing";
+            //assert playersAllIn > 0 : "MonteCarloAI: Player made decision " + decision + " when it was the only player playing (amountOfPlayers=" + amountOfPlayers + ", playersInHand=" + playersLeftInHand + ", playersAllIn=" + playersAllIn;
         }
     }
 
@@ -205,7 +210,7 @@ public class GameState {
         ArrayList<GameStateChange> decisions = new ArrayList<>();
         //System.out.println(playersLeftInHand + " players left in hand, " + playersAllIn + " all in, " + playersToMakeDecision + " players to make decisions");
 
-        assert deck.size() + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + communityCards.size() == 52 : "Deck has " + deck.size() + " cards, players have " + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + " holecards and table has " + communityCards.size() + " community cards";
+        assert deck.size() + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + communityCards.size() == 52 : "Deck has " + deck.size() + " cards, players have " + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + " holecards [" + players.stream().map(p -> p.name + ": " + p.holeCards).reduce("", String::concat) + "] and table has " + communityCards.size() + " community cards";
         long playerChipsSum = players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
         assert playerChipsSum == allChipsOnTable :
         "Sum of player chips is " + playerChipsSum + ", but started with " + allChipsOnTable + " on table.";
@@ -244,7 +249,7 @@ public class GameState {
         else {
             assert playersLeftInHand > 0: "Trying to generate possible decisions for player, when there are no players left (" +
                     playersAllIn + " players all in, " + playersToMakeDecision + " players to make decisions)";
-            assert currentPlayer.isInHand && !currentPlayer.isAllIn;
+            assert currentPlayer.isInHand && !currentPlayer.isAllIn : "Asked for decisions for " + currentPlayer + ", but player was not in hand. isAllIn=" + currentPlayer.isAllIn + ", isInHand=" + currentPlayer.isInHand;
             assert currentPlayer.stackSize > 0;
             assert currentPlayer.minimumRaise > 0;
 
@@ -256,7 +261,7 @@ public class GameState {
             if (currentPlayer.currentBet > 0 && currentPlayer.stackSize > currentPlayer.currentBet) {
                 decisions.add(new PlayerDecision(new Decision(Decision.Move.CALL)));
             }
-            Decision.Move moneyMove = currentPlayer.currentBet == 0 ? Decision.Move.BET : Decision.Move.RAISE;
+            Decision.Move moneyMove = communityCards.size() > 0 && currentPlayer.currentBet == 0 ? Decision.Move.BET : Decision.Move.RAISE;
             if (currentPlayer.stackSize > currentPlayer.currentBet + currentPlayer.minimumRaise) {
                 decisions.add(new PlayerDecision(new Decision(moneyMove, currentPlayer.minimumRaise)));
             }
