@@ -18,19 +18,17 @@ import java.util.StringJoiner;
 public class StraightFlush implements IRule {
 
     private List<Card> returnHand = new ArrayList<>();
-    private List<Card> cards;
     private List<Integer> compareValues;
-    private Card highCard;
 
     @Override
     public boolean match(Hand hand) {
-        cards = hand.getAllCards();
+        List<Card> cards = hand.getAllCards();
 
         if (cards.size() < 5)
             return false;
 
         Card.Suit mainSuit = findMainSuit(cards);
-        List<Card> mainSuitCards = getMainSuitCards(mainSuit);
+        List<Card> mainSuitCards = getMainSuitCards(mainSuit, cards);
 
         if (mainSuitCards.size() < 5) {
             return false;
@@ -43,7 +41,6 @@ public class StraightFlush implements IRule {
             returnHand.addAll(straight.getHand().get());
             returnHand.sort(Card::compareTo);
             compareValues = straight.getCompareValues();
-            highCard=returnHand.get(returnHand.size()-1);
         }
 
         return straightFlushMatch;
@@ -51,7 +48,7 @@ public class StraightFlush implements IRule {
 
     @Override
     public Optional<List<Card>> getHand() {
-        if (returnHand.size() > 0) {
+        if (!returnHand.isEmpty()) {
             return Optional.of(returnHand);
         }
         return Optional.empty();
@@ -69,24 +66,12 @@ public class StraightFlush implements IRule {
 
     @Override
     public String toString(){
+        if (returnHand.isEmpty())
+            return "No match";
+        Card highCard = returnHand.get(returnHand.size()-1);
         if(highCard.getRankString()=="Ace")
             return "Royal flush";
         return highCard.getRankString()+" high straight flush";
-    }
-
-    /**
-     *  Fills and returns an array of all cards of the most common suit.
-     * @param mainSuit the most common Suit
-     * @return cards of the main suit
-     */
-    private List<Card> getMainSuitCards(Card.Suit mainSuit) {
-        List<Card> mainSuitCards = new ArrayList<>();
-        for (Card c : cards) {
-            if (c.suit == mainSuit) {
-                mainSuitCards.add(c);
-            }
-        }
-        return mainSuitCards;
     }
 
     /**
@@ -123,9 +108,23 @@ public class StraightFlush implements IRule {
             mainSuit = Card.Suit.DIAMONDS;
         }
         if (Math.max(numHearts, mainSuitCount) == numHearts) {
-            mainSuitCount = numHearts;
             mainSuit = Card.Suit.HEARTS;
         }
         return mainSuit;
+    }
+
+    /**
+     *  Fills and returns an array of all cards of the most common suit.
+     * @param mainSuit the most common Suit
+     * @return cards of the main suit
+     */
+    private List<Card> getMainSuitCards(Card.Suit mainSuit, List<Card> cards) {
+        List<Card> mainSuitCards = new ArrayList<>();
+        for (Card c : cards) {
+            if (c.suit == mainSuit) {
+                mainSuitCards.add(c);
+            }
+        }
+        return mainSuitCards;
     }
 }
