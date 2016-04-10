@@ -17,7 +17,7 @@ public class Pot {
         this.amountPlayerCanClaim = new HashMap<>();
     }
 
-    /** @return current potsize */
+    /** @return current pot size */
     public long getPotSize() { return potSize; }
 
     /**
@@ -109,7 +109,7 @@ public class Pot {
             long putIn = amountPlayerCanClaim.get(i);
             long amount = Math.min(canClaim, putIn);
             share += amount;
-            amountPlayerCanClaim.put(playerID, putIn - amount);
+            amountPlayerCanClaim.put(i, putIn - amount);
         }
 
         potSize -= share;

@@ -134,7 +134,6 @@ public class ButtonListeners {
      *
      */
     public static void exitButtonListener(){
-        savedGameController.exit();
         mainScreenEnterListener(savedName, savedNumOfPlayers, savedChoiceBox, savedGameController);
     }
 
