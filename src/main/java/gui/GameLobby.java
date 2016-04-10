@@ -4,7 +4,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -36,7 +38,6 @@ public class GameLobby {
         Stage window = new Stage();
 
         //Boxes
-        HBox menuBarBox = new HBox();
         VBox gameRules = new VBox();
         VBox players = new VBox();
         VBox buttons = new VBox();
@@ -68,8 +69,6 @@ public class GameLobby {
         });
 
         //Put objects in boxes
-        menuBarBox.getChildren().add(ObjectStandards.createMenuBar());
-        menuBarBox.setAlignment(Pos.TOP_CENTER);
 
         gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
@@ -80,10 +79,18 @@ public class GameLobby {
         layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);
         layoutNoHeadline.setAlignment(Pos.CENTER);
 
-        fullLayout.getChildren().addAll(menuBarBox, headLine, layoutNoHeadline);
+        fullLayout.getChildren().addAll(headLine, layoutNoHeadline);
         fullLayout.setAlignment(Pos.CENTER);
 
-        SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
+        BorderPane pane = new BorderPane();
+        MenuBar menuBar = ObjectStandards.createMenuBar();
+        menuBar.setLayoutY(0);
+        menuBar.setLayoutX(0);
+        pane.setCenter(fullLayout);
+        pane.setTop(menuBar);
+        //pane.getChildren().addAll(fullLayout, menuBar);
+        //SceneBuilder.showCurrentScene(fullLayout,"Lobby Screen");
+        SceneBuilder.showCurrentScene(pane, "Lobby Screen");
 
     }
 

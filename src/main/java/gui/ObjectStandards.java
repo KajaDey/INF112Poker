@@ -258,15 +258,16 @@ public class ObjectStandards {
         menuBar.getMenus().addAll(file,about);
 
         if (os != null) {
-            if (!os.startsWith("Windows"))
-                menuBar.useSystemMenuBarProperty().set(true);
-            else {
+            if (!os.startsWith("Mac")) {
+                menuBar.setUseSystemMenuBar(false);
                 menuBar.setMinWidth(1280);
                 menuBar.setMinWidth(1280);
                 menuBar.setMinHeight(25);
                 menuBar.setMaxHeight(25);
                 menuBar.getStylesheets().addAll("file:resources/windowsMenuBarStyling.css");
             }
+            else
+                menuBar.setUseSystemMenuBar(true);
         }
 
         //Event listeners for the menu items

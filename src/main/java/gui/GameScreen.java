@@ -227,7 +227,10 @@ public class GameScreen {
     }
 
     public void addMenuBarToGameScreen(){
-        pane.getChildren().addAll(ObjectStandards.createMenuBar());
+        MenuBar menuBar = ObjectStandards.createMenuBar();
+        menuBar.setLayoutX(0);
+        menuBar.setLayoutY(0);
+        pane.getChildren().add(menuBar);
     }
 
     /**
