@@ -145,7 +145,7 @@ public class GameController {
     }
 
     /**
-     * Asks a client for a decision, if he exists
+     * Asks a client for a decision
      *
      * @param ID Client ID
      * @return Decision made by the client
@@ -166,17 +166,6 @@ public class GameController {
         }
 
     }
-
-    /**
-     * Delays the execution 1-3 seconds (to make Simple-AI decision time look more realistic)
-     */
-    /*private void addDelayTimeForDecision() {
-        Random rand = new Random();
-        try { Thread.sleep(1000 + rand.nextInt(2000)); }
-        catch (Exception e) {
-            System.out.println("Thread " + Thread.currentThread() + " was interrupted");
-        }
-    }*/
 
     /**
      * Sets the game settings
