@@ -71,7 +71,7 @@ public class AITest {
             ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
             ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
 
-            Assert.assertEquals(new Decision(Decision.Move.CHECK), ai.getDecision());
+            Assert.assertEquals(new Decision(Decision.Move.CHECK), ai.getDecision(2000L));
         }
     }
 
@@ -82,7 +82,7 @@ public class AITest {
             setupAi(ai, 2, 1);
             ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
 
-            Assert.assertEquals(new Decision(Decision.Move.CHECK), ai.getDecision());
+            Assert.assertEquals(new Decision(Decision.Move.CHECK), ai.getDecision(2000L));
         }
     }
 
@@ -91,7 +91,7 @@ public class AITest {
             ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
             setupAi(ai, 3, 2);
 
-            assertEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
+            assertEquals(new Decision(Decision.Move.FOLD), ai.getDecision(2000L));
         }
     }
 
@@ -101,7 +101,7 @@ public class AITest {
             ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
             setupAi(ai, 3, 2);
 
-            assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
+            assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(2000L));
         }
     }
 
@@ -111,7 +111,7 @@ public class AITest {
             ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
             setupAi(ai, 2, 0);
 
-            assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
+            assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(2000L));
         }
     }
 

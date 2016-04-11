@@ -41,7 +41,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
+    public Decision getDecision(long timeToThink) {
         assert bigBlindAmount > 0 && smallBlindAmount > 0: "SimpleAI was asked to make a decision without receiving big and small blind";
         assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
         assert stackSizes.get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get(playerId) + ")";

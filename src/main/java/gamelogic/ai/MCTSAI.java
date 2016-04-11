@@ -29,7 +29,7 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
+    public Decision getDecision(long timeToThink) {
         assert stackSizes.isPresent();
         assert holeCards.size() == 2: "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
         assert stackSizes.get().get(playerId) > 0: "AI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
@@ -42,7 +42,7 @@ public class MCTSAI implements GameClient {
         }
 
         PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId);
-        return mcts.calculateFor(750 + (int)(1500 * Math.random()));
+        return mcts.calculateFor(timeToThink);
     }
 
     @Override
