@@ -233,7 +233,7 @@ public class GameState {
      * Returns Empty if the node is a terminal node
      */
     public Optional<ArrayList<GameStateChange>> allDecisions() {
-        ArrayList<GameStateChange> decisions = new ArrayList<>();
+        ArrayList<GameStateChange> decisions = new ArrayList<>(20);
 
         assert deck.size() + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + communityCards.size() == 52 : "Deck has " + deck.size() + " cards, players have " + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + " holecards [" + players.stream().map(p -> p.name + ": " + p.holeCards).reduce("", String::concat) + "] and table has " + communityCards.size() + " community cards";
         assert sumOfChipsInPlay(players) == allChipsOnTable :
@@ -244,13 +244,11 @@ public class GameState {
         if (playersGivenHolecards < amountOfPlayers) {
 
             for (int i = 0; i < amountOfPlayers; i++) {
-                int icopy = i;
                 assert players.get(i).position == i;
                 if (players.get(i).holeCards.size() < 2) {
-                    decisions.addAll(deck.stream()
-                            .map(card -> new CardDealtToPlayer(card, icopy))
-                            .collect(Collectors.toList())
-                    );
+                    for (Card card : deck) {
+                        decisions.add(new CardDealtToPlayer(card, i));
+                    }
                     return Optional.of(decisions);
                 }
             }
