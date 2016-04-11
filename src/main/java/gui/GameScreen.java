@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -634,7 +635,11 @@ public class GameScreen {
             });
 
             saveStatisticsButton.setOnAction(e -> {
-                ButtonListeners.saveToFile(stats);
+                if (saveStatisticsButton.getText().equals("Save statistics to file")) {
+                    ButtonListeners.saveToFile(stats);
+                    saveStatisticsButton.setText("Statistics saved!");
+                    saveStatisticsButton.setEffect(new Bloom(-0.9));
+                }
             });
 
             vBox.getChildren().addAll(endGameScreen, statsLabel, saveStatisticsButton, backToMainScreenButton);
@@ -758,7 +763,7 @@ public class GameScreen {
      * @param potsize   The amount the player won
      */
     public void preShowdownWinner(int winnerID, long potsize) {
-        Platform.runLater(() ->  {
+        Platform.runLater(() -> {
             boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
             printToLogField(names.get(winnerID) + " won the pot of " + potsize);
         });
