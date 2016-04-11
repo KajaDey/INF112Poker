@@ -25,15 +25,21 @@ public class GameState {
     public final long allChipsOnTable;
 
     private int playersGivenHolecards = 0;
+
+
+
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
     private int playersAllIn = 0;
+
+
+    private int playersToMakeDecision; // Players left to make decision in this betting round
 
     public int getPlayersToMakeDecision() {
         return playersToMakeDecision;
     }
-
-    private int playersToMakeDecision; // Players left to make decision in this betting round
-
+    public int getPlayersLeftInHand() {
+        return playersLeftInHand;
+    }
 
     public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
                      Map<Integer, String> names) {
@@ -121,7 +127,9 @@ public class GameState {
                 for (Player player : players) {
                     player.currentBet = 0;
                 }
-                playersToMakeDecision = playersLeftInHand;
+                if (playersLeftInHand > 1) {
+                    playersToMakeDecision = playersLeftInHand;
+                }
             }
         }
         else if (move instanceof PlayerDecision) {
@@ -141,6 +149,7 @@ public class GameState {
                     break;
                 case BET: case RAISE:
                     assert decision.size >= currentPlayer.minimumRaise : currentPlayer + " made " + decision.size + ", but minimum raise was " + currentPlayer.minimumRaise;
+                    assert decision.size + currentPlayer.currentBet <= currentPlayer.stackSize : currentPlayer + " tried " + decision + " on minimumRaise " + currentPlayer.currentBet + ", but had stackSize " + currentPlayer.stackSize;
                     assert decision.size > 0 : currentPlayer + " tried to bet/raise " + decision.size;
                     playersToMakeDecision = playersLeftInHand - 1;
 
@@ -155,8 +164,8 @@ public class GameState {
                     break;
                 case ALL_IN:
                     players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += currentPlayer.stackSize;
-                        player.minimumRaise = Math.max(currentPlayer.stackSize, player.minimumRaise); // TODO: Everyone must match the all-in to raise further. May not be correct behaviour
+                        player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.minimumRaise);
+                        player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise); // TODO: Everyone must match the all-in to raise further. May not be correct behaviour
                     });
                     playersLeftInHand--;
                     if (currentPlayer.currentBet > currentPlayer.stackSize) {
@@ -169,10 +178,8 @@ public class GameState {
 
                     currentPlayer.putInPot(currentPlayer.stackSize);
                     currentPlayer.isAllIn = true;
-
                     break;
                 case BIG_BLIND: case SMALL_BLIND:
-                    System.out.println("Received " + decision);
                     players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
                         player.currentBet += decision.size;
                         player.minimumRaise = decision.size;
