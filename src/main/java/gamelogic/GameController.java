@@ -157,7 +157,7 @@ public class GameController {
             long timeToTake = 500L + (long)(Math.random() * 2000.0);
             Decision decision = client.getDecision(timeToTake);
             long timeTaken = System.currentTimeMillis() - startTime;
-            try { Thread.sleep(timeToTake - timeTaken); }
+            try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
             catch (InterruptedException e) { }
             return decision;
         }
