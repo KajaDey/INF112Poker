@@ -3,10 +3,7 @@ package gamelogic;
 import gamelogic.rules.*;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by kaja on 08.03.2016.
@@ -101,6 +98,52 @@ public class HandCalculator {
 
     public String getBestHandString() {
         return rule.toString();
+    }
+
+    public static Map<Integer, Double> getWinningPercentages(List<Player> playersInHand, List<Card> communityCards) {
+        assert communityCards.size() >= 3 : "Computing percentages before the flop is displayed takes too much time";
+
+        Map<Integer, Double> percentages = new HashMap<>();
+        Map<Integer, Integer> scenariosWon = new HashMap<>();
+        playersInHand.stream().forEach(p -> scenariosWon.put(p.getID(), 0));
+
+        ArrayList<Card> usedCards = new ArrayList<>(communityCards);
+        playersInHand.stream().forEach(p -> usedCards.addAll(Arrays.asList(p.getHoleCards())));
+
+        addMoreCards(playersInHand, new ArrayList<>(communityCards), scenariosWon, new ArrayList<>(usedCards));
+
+        double totalScenarios = 0;
+        for (Integer i : scenariosWon.keySet())
+            totalScenarios += scenariosWon.get(i);
+
+        for (Player p : playersInHand)
+            percentages.put(p.getID(), (double)scenariosWon.get(p.getID()) / totalScenarios);
+
+        return percentages;
+    }
+
+    private static void addMoreCards(List<Player> playersInHand, ArrayList<Card> communityCards, Map<Integer, Integer> scenariosWon, ArrayList<Card> usedCards) {
+        if (communityCards.size() == 5) {
+            Comparator<Player> comp = (p1, p2) -> p1.getHand(communityCards).compareTo(p2.getHand(communityCards));
+            Player winner = playersInHand.stream().max(comp).get();
+            scenariosWon.put(winner.getID(), scenariosWon.get(winner.getID())+1);
+            return;
+        }
+
+        Deck deck = new Deck();
+
+        Optional<Card> c;
+        while((c = deck.draw()).isPresent()) {
+            Card card = c.get();
+            if (usedCards.contains(card)) continue;
+
+            communityCards.add(card);
+            usedCards.add(card);
+            addMoreCards(playersInHand, communityCards, scenariosWon, usedCards);
+            communityCards.remove(card);
+            usedCards.remove(card);
+        }
+
     }
 
 }

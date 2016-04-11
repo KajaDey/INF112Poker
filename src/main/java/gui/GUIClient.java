@@ -31,7 +31,7 @@ public class GUIClient implements GameClient {
 
 
     @Override
-    public synchronized Decision getDecision(){
+    public synchronized Decision getDecision(long timeToThink){
         //Make buttons visible
         gameScreen.setActionsVisible(true);
 

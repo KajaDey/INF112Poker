@@ -108,7 +108,7 @@ public class GameController {
             int AI_id = i+1;
 
             GameClient aiClient;
-            double contemptFactor = 0.9;
+            double contemptFactor = 1.0;
             switch (gameSettings.getAIType()) {
                 case MCTS_AI:
                     aiClient = new MCTSAI(AI_id);
@@ -145,27 +145,26 @@ public class GameController {
     }
 
     /**
-     * Asks a client for a decision, if he exists
+     * Asks a client for a decision
      *
      * @param ID Client ID
      * @return Decision made by the client
      */
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
-        if (client instanceof SimpleAI)
-            addDelayTimeForDecision();
-        return client.getDecision();
-    }
-
-    /**
-     * Delays the execution 1-3 seconds (to make Simple-AI decision time look more realistic)
-     */
-    private void addDelayTimeForDecision() {
-        Random rand = new Random();
-        try { Thread.sleep(1000 + rand.nextInt(2000)); }
-        catch (Exception e) {
-            System.out.println("Thread " + Thread.currentThread() + " was interrupted");
+        if (client instanceof SimpleAI || client instanceof MCTSAI) {
+            long startTime = System.currentTimeMillis();
+            long timeToTake = 500L + (long)(Math.random() * 2000.0);
+            Decision decision = client.getDecision(timeToTake);
+            long timeTaken = System.currentTimeMillis() - startTime;
+            try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
+            catch (InterruptedException e) { }
+            return decision;
         }
+        else {
+            return client.getDecision(10000L);
+        }
+
     }
 
     /**

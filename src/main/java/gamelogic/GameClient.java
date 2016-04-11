@@ -10,8 +10,9 @@ public interface GameClient {
 
     /**
      * Tells the client to make a decision, and blocks until the decision is made and the client returns
+     * @param timeToThink Maximum amount of time the client has to think, in milliseconds.
      */
-    Decision getDecision();
+    Decision getDecision(long timeToThink);
 
     int getID();
 

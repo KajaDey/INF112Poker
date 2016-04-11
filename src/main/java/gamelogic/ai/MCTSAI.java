@@ -29,19 +29,20 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
+    public Decision getDecision(long timeToThink) {
         assert stackSizes.isPresent();
-        assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
-        assert stackSizes.get().get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
+        assert holeCards.size() == 2: "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
+        assert stackSizes.get().get(playerId) > 0: "AI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         if (!gameState.isPresent()) {
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
             gameState.get().giveHoleCards(this.playerId, holeCards);
+            System.out.println("Giving holecards to id " + this.playerId);
         }
 
-        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, holeCards);
-        return mcts.calculateFor(750 + (int)(1500 * Math.random()));
+        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId);
+        return mcts.calculateFor(timeToThink);
     }
 
     @Override
@@ -100,9 +101,11 @@ public class MCTSAI implements GameClient {
         assert positions.get().size() == amountOfPlayers;
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
         assert names.get().size() == amountOfPlayers;
+        assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
         if (!gameState.isPresent()) {
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
             gameState.get().giveHoleCards(this.playerId, holeCards);
+            System.out.println("Giving holecards to id " + this.playerId);
         }
         assert playerId == gameState.get().currentPlayer.id
                 : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;

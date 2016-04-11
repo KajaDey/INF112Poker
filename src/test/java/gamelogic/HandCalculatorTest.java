@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -152,6 +153,28 @@ public class HandCalculatorTest {
         HighCard high = new HighCard();
         high.match(wantedHand);
         assertEquals(high.getHand(),hc.getWinningHand());
+    }
 
+    @Test
+    public void testThatPercentagesCalculationsWorkCorrectly() {
+        ArrayList<Player> players = new ArrayList<>();
+        players.add(new Player("Bob", 5000, 0));
+        players.add(new Player("Alice", 5000, 1));
+        players.add(new Player("Kate", 5000, 2));
+
+        ArrayList<Card> communityCards = new ArrayList<>();
+        communityCards.add(Card.of(10, Card.Suit.HEARTS).get());
+        communityCards.add(Card.of(11, Card.Suit.SPADES).get());
+        communityCards.add(Card.of(12, Card.Suit.HEARTS).get());
+
+        players.get(0).setHoleCards(Card.of(2, Card.Suit.HEARTS).get(), Card.of(3, Card.Suit.HEARTS).get()); // ~38%
+        players.get(1).setHoleCards(Card.of(13, Card.Suit.SPADES).get(), Card.of(14, Card.Suit.CLUBS).get()); // ~62%
+        players.get(2).setHoleCards(Card.of(4, Card.Suit.CLUBS).get(), Card.of(5, Card.Suit.DIAMONDS).get()); // 0%
+
+        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(players, communityCards);
+
+        assertEquals(0.38, percentages.get(0), 0.03);
+        assertEquals(0.62, percentages.get(1), 0.03);
+        assertEquals(0.0, percentages.get(2), 0.0);
     }
 }
