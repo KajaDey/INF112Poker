@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents the state of a single hand
+ * Represents the state of a single hand, for use by the MCTSAI
  */
 public class GameState {
     private final ArrayList<Card> deck;
@@ -23,14 +23,9 @@ public class GameState {
     private final Player smallBlind;
 
     public final long allChipsOnTable;
-
     private int playersGivenHolecards = 0;
-
-
-
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
     private int playersAllIn = 0;
-
 
     private int playersToMakeDecision; // Players left to make decision in this betting round
 
@@ -107,6 +102,10 @@ public class GameState {
         return players.stream().reduce(0L, (acc, p) -> acc + p.contributedToPot, Long::sum);
     }
 
+    /**
+     * Applies a gameStateChange to the gameState, modifying the object and its players
+     * The gameState should only change through this method, except for giving holecards to the AI player
+     */
     public void makeGameStateChange(GameStateChange move) {
         if (move instanceof CardDealtToPlayer) {
             CardDealtToPlayer cardDeal = (CardDealtToPlayer)move;
@@ -117,7 +116,6 @@ public class GameState {
             }
             assert players.get(cardDeal.playerPosition).holeCards.size() <= 2
                     : "Player " + cardDeal.playerPosition + " has " + players.get(cardDeal.playerPosition).holeCards.size() + " hole cards";
-            // System.out.println("Giving " + cardDeal.card + " to " + cardDeal.playerPosition);
         }
         else if (move instanceof CardDealtToTable) {
             communityCards.add(((CardDealtToTable)(move)).card);
@@ -348,7 +346,10 @@ public class GameState {
 
     public enum NodeType {DealCard, PlayerDecision, Terminal }
 
-
+    /**
+     * Abstract class that represents any change to the gameState, including player decisions
+     * or community cards being played
+     */
     public static abstract class GameStateChange {
         public NodeType getStartingNodeType() {
             if (this instanceof PlayerDecision) {
