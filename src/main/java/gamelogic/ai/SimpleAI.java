@@ -60,6 +60,7 @@ public class SimpleAI implements GameClient {
             case 3: handQuality *= 1.1; break;
             default:
         }
+        handQuality *= Math.pow(0.96, amountOfPlayers);
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
