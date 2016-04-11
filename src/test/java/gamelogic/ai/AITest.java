@@ -88,8 +88,8 @@ public class AITest {
 
     public void foldsWithShittyHandIfNotBlindProperty(GameClient ai) {
         for (int i = 0; i < N; i++) {
-            setupAi(ai, 3, 2);
             ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(7, Card.Suit.SPADES).get());
+            setupAi(ai, 3, 2);
 
             assertEquals(new Decision(Decision.Move.FOLD), ai.getDecision());
         }
@@ -125,14 +125,14 @@ public class AITest {
         for (int j = 0; j < amountOfPlayers; j++) {
             positions.put(j, (j + positionOffset) % amountOfPlayers);
             stackSizes.put(j, startStack);
-            names.put(j, "AI" + j);
+            names.put(j, "AI-" + j);
         }
         ai.setAmountOfPlayers(amountOfPlayers);
         ai.setPositions(positions);
         ai.setStackSizes(stackSizes);
         ai.setPlayerNames(names);
 
-        ai.playerMadeDecision((0 + positionOffset) % amountOfPlayers, new Decision(Decision.Move.SMALL_BLIND, 25));
-        ai.playerMadeDecision((1 + positionOffset) % amountOfPlayers, new Decision(Decision.Move.BIG_BLIND, 50));
+        ai.playerMadeDecision((0 + amountOfPlayers - positionOffset) % amountOfPlayers, new Decision(Decision.Move.SMALL_BLIND, 25));
+        ai.playerMadeDecision((1 + amountOfPlayers - positionOffset) % amountOfPlayers, new Decision(Decision.Move.BIG_BLIND, 50));
     }
 }
