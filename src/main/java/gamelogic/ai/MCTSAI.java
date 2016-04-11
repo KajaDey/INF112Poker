@@ -36,7 +36,6 @@ public class MCTSAI implements GameClient {
         if (!gameState.isPresent()) {
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
             gameState.get().giveHoleCards(this.playerId, holeCards);
-            System.out.println("Giving holecards to id " + this.playerId);
         }
 
         PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId);
@@ -103,7 +102,6 @@ public class MCTSAI implements GameClient {
         if (!gameState.isPresent()) {
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
             gameState.get().giveHoleCards(this.playerId, holeCards);
-            System.out.println("Giving holecards to id " + this.playerId);
         }
         assert playerId == gameState.get().currentPlayer.id
                 : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
