@@ -137,6 +137,7 @@ public class PlayerLayout {
         //Add objects to the boxes
         stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
+        stats.setMinWidth(175);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
 
@@ -157,10 +158,13 @@ public class PlayerLayout {
         chipBox.setPadding(new Insets(0,0,0,10));
 
         lastMoveAndChips.getChildren().addAll(lastMoveLabel,chipBox);
+        lastMoveAndChips.setMinWidth(100);
         lastMoveAndChips.setAlignment(Pos.CENTER);
+        lastMoveAndChips.setMinHeight(37);
 
         fullBoxWithLastMove.getChildren().addAll(lastMoveAndChips, fullBox);
-        fullBoxWithLastMove.setAlignment(Pos.CENTER);
+        fullBoxWithLastMove.setAlignment(Pos.CENTER_LEFT);
+        fullBoxWithLastMove.setMinWidth(700);
 
         this.setActionsVisible(false);
         return fullBoxWithLastMove;

@@ -19,7 +19,9 @@ import javafx.stage.Stage;
 import java.util.*;
 
 /**
- * TODO: Add class description
+ * This class contains all the information about the game screen.
+ * It gets information from gameClient and moves it to the layouts, which displays it on the screen.
+ *
  *
  * @author André Dyrstad
  * @author Jostein Kringlen
@@ -107,7 +109,7 @@ public class GameScreen {
         if (userID == playerID) {
             VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-160);
+            vbox.setLayoutY(scene.getHeight()-165);
             pane.getChildren().addAll(vbox);
         } else {
 
@@ -134,11 +136,11 @@ public class GameScreen {
                     }
                     break;
                 case 4:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutX(scene.getWidth() - 320);
                     oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 5:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutX(scene.getWidth() - 320);
                     oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 default:
@@ -495,9 +497,9 @@ public class GameScreen {
 
             Runnable task;
             if (clientID == playerID) {
-                task = () -> playerLayout.setStackLabel("Amount of chips: " + stackSizeText);
+                task = () -> playerLayout.setStackLabel("Stack size: " + stackSizeText);
             } else {
-                task = () -> opponents.get(clientID).setStackSizeLabel("Amount of chips: " + stackSizeText);
+                task = () -> opponents.get(clientID).setStackSizeLabel("Stack size: " + stackSizeText);
             }
             Platform.runLater(task);
         }

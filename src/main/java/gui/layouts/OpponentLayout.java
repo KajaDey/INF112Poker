@@ -74,6 +74,7 @@ public class OpponentLayout extends HBox{
             moveInfo.setAlignment(Pos.CENTER_LEFT);
             cards.setAlignment(Pos.CENTER_LEFT);
             this.setAlignment(Pos.CENTER_LEFT);
+            this.setMinWidth(300);
 
         }
         else if (position == 3){
@@ -87,14 +88,15 @@ public class OpponentLayout extends HBox{
             VBox chipBox2 = new VBox();
 
             chipBox2.getChildren().addAll(chipImage);
-            chipBox2.setPadding(new Insets(3,3,3,3));
+            chipBox2.setPadding(new Insets(3, 3, 3, 3));
 
-            moveInfoH.getChildren().addAll(lastMoveLabel,chipBox2);
-            vBox.getChildren().addAll(cards,moveInfoH);
+            moveInfoH.getChildren().addAll(lastMoveLabel, chipBox2);
+            vBox.getChildren().addAll(cards, moveInfoH);
             moveInfoH.setAlignment(Pos.CENTER_LEFT);
 
             vBox.setAlignment(Pos.CENTER);
             this.getChildren().add(vBox);
+            this.setMinWidth(300);
 
         }
         else if(position == 4 || position == 5){
@@ -110,11 +112,11 @@ public class OpponentLayout extends HBox{
             Runnable task = () -> moveInfo.getChildren().addAll(chipBox3,lastMoveLabel);
             Platform.runLater(task);
             this.getChildren().addAll(moveInfo, opponentStats);
-            this.setMinWidth(250);
 
             moveInfo.setAlignment(Pos.CENTER_RIGHT);
             cards.setAlignment(Pos.CENTER_RIGHT);
             this.setAlignment(Pos.CENTER_RIGHT);
+            this.setMinWidth(300);
         }
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
@@ -167,7 +169,7 @@ public class OpponentLayout extends HBox{
      * @param rightCard
      */
     public void setCardImage(Image leftCard,Image rightCard) {
-        Platform.runLater( () -> {
+        Platform.runLater(() -> {
             leftCardImage.setImage(leftCard);
             rightCardImage.setImage(rightCard);
 
