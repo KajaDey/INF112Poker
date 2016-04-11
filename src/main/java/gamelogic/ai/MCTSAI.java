@@ -144,7 +144,7 @@ public class MCTSAI implements GameClient {
     public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.isEmpty() : "MCTS received flop card when it had " + gameState.get().communityCards.size();
-        //assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received flop cards when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions";;
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received flop cards when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card1));
         assert gameState.get().getPlayersToMakeDecision() == 0;
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card2));
@@ -156,7 +156,7 @@ public class MCTSAI implements GameClient {
     public void setTurn(Card turn, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 3 : "MCTS received turn card when it had " + gameState.get().communityCards.size();
-        //assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received turn card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions";
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received turn card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
     }
 
@@ -164,7 +164,7 @@ public class MCTSAI implements GameClient {
     public void setRiver(Card river, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 4 : "MCTS received river card when it had " + gameState.get().communityCards.size();
-        //assert gameState.get().getPlayersToMakeDecision() == 0;
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received river card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
 
     }
