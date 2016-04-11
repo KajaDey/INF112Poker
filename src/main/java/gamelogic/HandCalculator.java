@@ -130,12 +130,6 @@ public class HandCalculator {
             return;
         }
 
-        if (communityCards.size() == 1) {
-            System.out.println("First card " + communityCards.get(0).toString());
-        } else if(communityCards.size() == 2) {
-            System.out.println("Second card " + communityCards.get(1).toString());
-        }
-
         Deck deck = new Deck();
 
         Optional<Card> c;
