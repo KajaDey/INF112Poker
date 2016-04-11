@@ -17,9 +17,6 @@ public class SimpleAI implements GameClient {
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
 
-    private long bigBlindAmount;
-    private long smallBlindAmount;
-
     // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
     private Map<Integer, Long> stackSizes;
 
@@ -42,7 +39,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public Decision getDecision(long timeToThink) {
-        assert bigBlindAmount > 0 && smallBlindAmount > 0: "SimpleAI was asked to make a decision without receiving big and small blind";
         assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
         assert stackSizes.get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get(playerId) + ")";
 
@@ -58,7 +54,7 @@ public class SimpleAI implements GameClient {
 
         int rankDistance = Math.abs(holeCards.get(0).rank - holeCards.get(1).rank);
         switch (rankDistance) {
-            case 0: handQuality *= 1.6; break;
+            case 0: handQuality *= 2.0; break;
             case 1: handQuality *= 1.4; break;
             case 2: handQuality *= 1.2; break;
             case 3: handQuality *= 1.1; break;
@@ -154,7 +150,6 @@ public class SimpleAI implements GameClient {
      * Called whenever there is a new round, after the SimpleAI has gotten its new hole cards
      */
     public void newBettingRound() {
-        minimumRaise = bigBlindAmount;
         betHasBeenPlaced = false;
     }
 
@@ -244,7 +239,7 @@ public class SimpleAI implements GameClient {
                 }
 
                 betHasBeenPlaced = true;
-                minimumRaise = Math.max(decision.size, bigBlindAmount);
+                minimumRaise = decision.size;
                 break;
             case FOLD:
             break;
@@ -256,12 +251,11 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setBigBlind(long bigBlind) {
-        this.bigBlindAmount = bigBlind;
+
     }
 
     @Override
     public void setSmallBlind(long smallBlind) {
-        this.smallBlindAmount = smallBlind;
     }
 
     @Override
