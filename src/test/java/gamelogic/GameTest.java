@@ -2,8 +2,6 @@ package gamelogic;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by kristianrosland on 09.03.2016.
  */

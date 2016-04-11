@@ -1,8 +1,6 @@
 package gamelogic.ai;
 
 import gamelogic.*;
-import gamelogic.ai.SimpleAI;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.*;
 
@@ -81,7 +79,7 @@ public class MCTSAI implements GameClient {
     public void setHandForClient(int userID, Card card1, Card card2) {
         assert this.getID() == userID;
 
-        holeCards = new ArrayList<Card>(2);
+        holeCards = new ArrayList<>(2);
         assert holeCards.size() == 0;
         holeCards.add(card1);
         holeCards.add(card2);

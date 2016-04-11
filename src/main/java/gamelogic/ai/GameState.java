@@ -47,9 +47,7 @@ public class GameState {
 
         allChipsOnTable = stackSizes.keySet().stream().map(stackSizes::get).reduce(0L, Long::sum);
         
-        positions.forEach((key, value) -> {
-            players.add(new Player(key, value, stackSizes.get(key), names.get(key)));
-        });
+        positions.forEach((key, value) -> players.add(new Player(key, value, stackSizes.get(key), names.get(key))));
         players.sort((p1, p2) -> Integer.compare(p1.position, p2.position));
 
         currentPlayer = players.get(0);
@@ -302,7 +300,6 @@ public class GameState {
 
     /**
      * Gives two random hole cards to the given playerId
-     * @param playerId
      */
     public void giveHoleCards(int playerId) {
         giveHoleCards(playerId, Arrays.asList(deck.remove((int)(Math.random() * deck.size())), deck.remove((int)(Math.random() * deck.size()))));
@@ -342,7 +339,7 @@ public class GameState {
         return nodeType;
     }
 
-    public static enum NodeType {DealCard, PlayerDecision, Terminal }
+    public enum NodeType {DealCard, PlayerDecision, Terminal }
 
 
     public static abstract class GameStateChange {
@@ -409,8 +406,7 @@ public class GameState {
         if (!communityCards.equals(gameState.communityCards)) return false;
         if (!currentPlayer.equals(gameState.currentPlayer)) return false;
         if (!dealer.equals(gameState.dealer)) return false;
-        if (!bigBlind.equals(gameState.bigBlind)) return false;
-        return smallBlind.equals(gameState.smallBlind);
+        return bigBlind.equals(gameState.bigBlind) && smallBlind.equals(gameState.smallBlind);
 
     }
 

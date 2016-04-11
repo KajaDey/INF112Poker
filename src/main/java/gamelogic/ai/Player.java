@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by morten on 09.03.16.
+ * Representation of a player. Used by the AI to store data about itself and its opponents
  */
 public class Player {
     public final int id;

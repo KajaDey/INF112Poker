@@ -1,7 +1,6 @@
 package gui;
 import gamelogic.*;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
