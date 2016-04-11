@@ -228,6 +228,57 @@ public class GameState {
         return players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
     }
 
+    public Optional<GameStateChange> getRandomDecision(Random random) {
+        if (playersGivenHolecards < amountOfPlayers) {
+            for (int i = 0; i < amountOfPlayers; i++) {
+                if (players.get(i).holeCards.size() < 2) {
+                    return Optional.of(new CardDealtToPlayer(deck.get(random.nextInt(deck.size())), i));
+                }
+            }
+            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHolecards + " but all players had the cards");
+        }
+        else if (playersLeftInHand + playersAllIn == 1) {
+            return Optional.empty();
+        }
+        else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
+            if (communityCards.size() == 5) {
+                return Optional.empty();
+            }
+            else {
+                return Optional.of(new CardDealtToTable(deck.get(random.nextInt(deck.size()))));
+            }
+        }
+        else {
+            List<GameStateChange> decisions = new ArrayList<>(8);
+            if (currentPlayer.currentBet > getCurrentPot() || currentPlayer.currentBet > currentPlayer.stackSize / 2) {
+                // Only allow the AI to go all in when it needs to
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.ALL_IN)));
+            }
+            if (currentPlayer.currentBet == 0) {
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.CHECK)));
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.CHECK)));
+            }
+            else {
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.FOLD)));
+            }
+            if (currentPlayer.currentBet > 0 && currentPlayer.stackSize > currentPlayer.currentBet) {
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.CALL)));
+                decisions.add(new PlayerDecision(new Decision(Decision.Move.CALL)));
+            }
+            Decision.Move moneyMove = communityCards.size() > 0 && currentPlayer.currentBet == 0 ? Decision.Move.BET : Decision.Move.RAISE;
+            if (currentPlayer.stackSize > currentPlayer.currentBet + currentPlayer.minimumRaise) {
+                decisions.add(new PlayerDecision(new Decision(moneyMove, currentPlayer.minimumRaise)));
+            }
+            if (currentPlayer.stackSize > currentPlayer.currentBet + getCurrentPot() / 2 &&  getCurrentPot() / 2 > currentPlayer.minimumRaise) {
+                decisions.add(new PlayerDecision(new Decision(moneyMove, getCurrentPot() / 2)));
+            }
+            if (currentPlayer.stackSize > currentPlayer.currentBet + getCurrentPot() && getCurrentPot() > currentPlayer.minimumRaise) {
+                decisions.add(new PlayerDecision(new Decision(moneyMove, getCurrentPot())));
+            }
+            return Optional.of(decisions.get(random.nextInt(decisions.size())));
+        }
+    }
+
     /**
      * Gets a list of all possible decisions in the current GameState, without mutating the gamestate.
      * Returns Empty if the node is a terminal node
@@ -371,6 +422,24 @@ public class GameState {
         public String toString() {
             return card + " to player " + playerPosition;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            CardDealtToPlayer that = (CardDealtToPlayer) o;
+
+            if (playerPosition != that.playerPosition) return false;
+            return card.equals(that.card);
+
+        }
+        @Override
+        public int hashCode() {
+            int result = card.hashCode();
+            result = 31 * result + playerPosition;
+            return result;
+        }
     }
 
     public static class CardDealtToTable extends GameStateChange {
@@ -382,10 +451,42 @@ public class GameState {
         public String toString() {
             return card + " to table.";
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            CardDealtToTable that = (CardDealtToTable) o;
+
+            return card.equals(that.card);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return card.hashCode();
+        }
     }
 
     public static class PlayerDecision extends GameStateChange {
         public final Decision decision;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            PlayerDecision that = (PlayerDecision) o;
+
+            return decision.equals(that.decision);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return decision.hashCode();
+        }
 
         public PlayerDecision(Decision decision) {
             this.decision = decision;
