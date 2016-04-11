@@ -781,18 +781,17 @@ public class GameScreen {
 
     /**
      *  Show the hole cards of players remaining in the hand
-     * @param playerList Integer list containing the ID of all the players left in the hand
      * @param holeCards  Map from a player's ID to his hole cards
      */
-    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
-        for (Integer id : playerList) {
-            Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(holeCards.get(id)[0].getCardNameForGui()));
-            Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(holeCards.get(id)[1].getCardNameForGui()));
+    public void showHoleCards(Map<Integer, Card[]> holeCards) {
+        holeCards.forEach((id, cards) -> {
+            Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
+            Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
             if (id == playerID)
                 Platform.runLater(() -> playerLayout.setCardImage(leftCard, rightCard));
             else
                 Platform.runLater(() -> opponents.get(id).setCardImage(leftCard, rightCard));
-        }
+        });
     }
 
     /**

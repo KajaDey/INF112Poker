@@ -262,11 +262,11 @@ public class Game {
      * Display hole cards of remaining players
      */
     private void displayHoleCards() {
-        ArrayList<Integer> playerList = new ArrayList<>();
+        // Map containing the hole cards of only the remaining players
+        Map<Integer, Card[]> showdownHoleCards = new HashMap<>();
         for (Player p : playersStillInCurrentHand)
-            playerList.add(p.getID());
-
-        gameController.showHoleCards(playerList, holeCards);
+            showdownHoleCards.put(p.getID(), p.getHoleCards().clone());
+        gameController.showHoleCards(showdownHoleCards);
     }
 
     /**

@@ -224,7 +224,7 @@ public class GUIClient implements GameClient {
         gameScreen.preShowdownWinner(winnerID, potsize);
     }
 
-    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
-        gameScreen.showHoleCards(playerList, holeCards);
+    public void showHoleCards(Map<Integer, Card[]> holeCards) {
+        gameScreen.showHoleCards(holeCards);
     }
 }
