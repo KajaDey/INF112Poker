@@ -144,9 +144,9 @@ public class PokerMCTS {
         public abstract double[] select(int totalSearches, final GameState gameState, Random random, boolean hasPassedDecisionNode);
 
         public double[] expand(int totalSearches, final GameState gameState, Random random, boolean hasPassedDecisionNode) {
-            int childIndex = (int)(Math.random()*children.size());
+            int childIndex = random.nextInt(children.size());
             while (children.get(childIndex).isPresent()) {
-                childIndex = (int)(Math.random()*children.size());
+                childIndex = (childIndex + 1) % children.size();
             }
 
             List<GameState.GameStateChange> allMoves = gameState.allDecisions().get();
@@ -413,7 +413,7 @@ public class PokerMCTS {
             searches++;
             if (numberOfExploredChildren == children.size()) {
 
-                int randomIndex = (int) (Math.random() * children.size());
+                int randomIndex = random.nextInt(children.size());
                 GameState newGameState = new GameState(gameState);
                 List<GameState.GameStateChange> moves = newGameState.allDecisions().get();
 
