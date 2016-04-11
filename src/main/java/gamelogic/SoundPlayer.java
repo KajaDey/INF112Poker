@@ -22,13 +22,13 @@ public class SoundPlayer {
 
                 break;
             case CHIPS_SOUND:
-                play("poker_chips1.wav");
+                //play("poker_chips1.wav");
                 break;
         }
 
     }
 
-    private void play(final String clipName) {
+    private void play(String clipName) {
         try {
             final AudioClip clip = new AudioClip("resources/sounds/"+clipName);
 

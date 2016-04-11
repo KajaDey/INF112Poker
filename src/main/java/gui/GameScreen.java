@@ -361,7 +361,7 @@ public class GameScreen {
         updateButtonTexts(ID, decision.move);
 
         //Play sound
-        //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+        new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
 
         Runnable task;
         if (ID == this.playerID) {
