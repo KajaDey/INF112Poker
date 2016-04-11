@@ -1,14 +1,5 @@
 package gamelogic.ai;
 
-import gamelogic.Decision;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
-
-import static org.junit.Assert.*;
-
 /**
  * Created by morten on 04.04.16.
  */

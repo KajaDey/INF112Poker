@@ -1,7 +1,6 @@
 package gui;
 import gamelogic.*;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -31,7 +30,7 @@ public class GUIClient implements GameClient {
 
 
     @Override
-    public synchronized Decision getDecision(){
+    public synchronized Decision getDecision(long timeToThink){
         //Make buttons visible
         gameScreen.setActionsVisible(true);
 
@@ -224,7 +223,7 @@ public class GUIClient implements GameClient {
         gameScreen.preShowdownWinner(winnerID, potsize);
     }
 
-    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
-        gameScreen.showHoleCards(playerList, holeCards);
+    public void showHoleCards(Map<Integer, Card[]> holeCards) {
+        gameScreen.showHoleCards(holeCards);
     }
 }

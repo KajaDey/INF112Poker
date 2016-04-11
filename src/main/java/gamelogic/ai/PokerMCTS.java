@@ -1,14 +1,10 @@
 package gamelogic.ai;
 
-import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.Hand;
 import gamelogic.Pot;
-import gui.GUIMain;
-
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Class to represent a single instance of a monte carlo tree search.
@@ -25,7 +21,7 @@ public class PokerMCTS {
     private int totalSearches;
     private int terminalNodesSelected;
 
-    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, List<Card> holeCards) {
+    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId) {
         this.amountOfPlayers = amountOfPlayers;
         this.playerId = playerId;
         this.playerPosition = gameState.players.stream()
@@ -170,7 +166,7 @@ public class PokerMCTS {
                     }
                     break;
                 case Terminal:
-                    childNode = new TerminalNode(0, newGameState);
+                    childNode = new TerminalNode(0, newGameState, totalSearches);
                     break;
                 default: throw new IllegalStateException();
             }
@@ -243,7 +239,7 @@ public class PokerMCTS {
                     }
                     break;
                 case Terminal:
-                    childNode = new TerminalNode(numberOfMovesForChild, newGameState);
+                    childNode = new TerminalNode(numberOfMovesForChild, newGameState, totalSearches);
                     break;
                 default: throw new IllegalStateException();
             }
@@ -373,30 +369,29 @@ public class PokerMCTS {
      */
     private class TerminalNode extends AbstractNode {
 
-        public TerminalNode(int numberOfMoves, GameState gameState) {
+        public TerminalNode(int numberOfMoves, GameState gameState, int totalSearches) {
             super(numberOfMoves);
             assert numberOfMoves == 0;
-            addValues(values, terminalEval(gameState));
+            addValues(values, terminalEval(gameState, totalSearches));
         }
 
         @Override
         public double[] select(int totalSearches, GameState gameState, boolean hasPassedDecicionNode) {
             terminalNodesSelected++;
             this.searches++;
-            return terminalEval(gameState);
+            return terminalEval(gameState, totalSearches);
         }
 
         @Override
         public double[] expand(int totalSearches, GameState gameState, boolean hasPassedDecicionNode) {
             throw new IllegalStateException("Terminal nodes should never be expanded");
-            //return terminalEval(gameState);
         }
 
         @Override
         public double[] simulate(int totalSearches, GameState gameState, boolean hasPassedDecicionNode) {
-            assert values[0] == terminalEval(gameState)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState));
+            //assert values[0] == terminalEval(gameState, totalSearches)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState, totalSearches));
             this.searches++;
-            return terminalEval(gameState);
+            return terminalEval(gameState, totalSearches);
         }
     }
 
@@ -432,7 +427,7 @@ public class PokerMCTS {
         }
     }
 
-    public static double[] terminalEval(GameState gameState) {
+    public static double[] terminalEval(GameState gameState, int totalSearches) {
 
         class Pair<T, U> {
             final T v1;
@@ -442,23 +437,21 @@ public class PokerMCTS {
                 this.v2 = v2;
             }
         }
-
-
-
-        double[] eval = new double[gameState.amountOfPlayers];
+        GameState newGameState = new GameState(gameState);
+        double[] eval = new double[newGameState.amountOfPlayers];
         Pot pot = new Pot();
-        for (Player player : gameState.players) {
+        for (Player player : newGameState.players) {
             assert player.contributedToPot >= 0 : player + " tried to contribute " + player.contributedToPot + " to pot.";
             pot.addToPot(player.id, player.contributedToPot);
-            assert player.holeCards.size() == 2 : "Tried to get terminal eval, but player " + player.id + " has " + player.holeCards.size() + " holecards.";
+            assert player.holeCards.size() == 2 : "Tried to get terminal eval after " + totalSearches + " searches, but player " + player.id + " has " + player.holeCards.size() + " holecards.";
         }
 
-        long playerChipsSum = gameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize, Long::sum);
-        assert playerChipsSum + pot.getPotSize() == gameState.allChipsOnTable;
+        long playerChipsSum = newGameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize, Long::sum);
+        assert playerChipsSum + pot.getPotSize() == newGameState.allChipsOnTable;
 
-        ArrayList<Player> handsList = gameState.players.stream()
+        ArrayList<Player> handsList = newGameState.players.stream()
                 .filter(p -> p.isInHand)
-                .map(p -> new Pair(p, new Hand(p.holeCards.get(0), p.holeCards.get(1), gameState.communityCards)))
+                .map(p -> new Pair(p, new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)))
                 .sorted((pair1, pair2) -> ((Hand)pair1.v2).compareTo(((Hand)pair2.v2)))
                 .map(pair -> (Player)pair.v1)
                 .collect(Collectors.toCollection(ArrayList<Player>::new));
@@ -468,11 +461,11 @@ public class PokerMCTS {
             player.stackSize += pot.getSharePlayerCanWin(player.id);
         }
 
-        for (Player player : gameState.players) {
+        for (Player player : newGameState.players) {
             player.contributedToPot = 0;
         }
 
-        gameState.players.stream()
+        newGameState.players.stream()
                 .filter(p -> !handsList.contains(p))
                 .forEach(p -> {
                     p.stackSize += pot.getSharePlayerCanWin(p.id);
@@ -481,14 +474,14 @@ public class PokerMCTS {
 
         assert pot.getPotSize() == 0 : "Still " + pot.getPotSize() + " chips left in pot";
 
-        for (int i = 0; i < gameState.players.size(); i++) {
-            assert gameState.players.get(i).position == i;
-            eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
+        for (int i = 0; i < newGameState.players.size(); i++) {
+            assert newGameState.players.get(i).position == i;
+            eval[i] = (double)newGameState.players.get(i).stackSize / (double)newGameState.allChipsOnTable;
         }
 
-        playerChipsSum = gameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
-        assert playerChipsSum == gameState.allChipsOnTable :
-                "Sum of player chips is " + playerChipsSum + ", but started with " + gameState.allChipsOnTable + " on table.";
+        playerChipsSum = newGameState.players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
+        assert playerChipsSum == newGameState.allChipsOnTable :
+                "Sum of player chips is " + playerChipsSum + ", but started with " + newGameState.allChipsOnTable + " on table.";
 
         assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001
                 : "Error: winning probs is " + Arrays.toString(eval) + " (sum=" + Arrays.stream(eval).reduce(0.0, Double::sum) + ")";
@@ -502,8 +495,5 @@ public class PokerMCTS {
         for (int i = 0; i < oldEvals.length; i++) {
             oldEvals[i] += evalsToAdd[i];
         }
-    }
-    public static enum GameDecision {
-        FOLD, CHECK, CALL, RAISE_MIN, RAISE_HALF_POT, RAISE_POT, ALL_IN,
     }
 }

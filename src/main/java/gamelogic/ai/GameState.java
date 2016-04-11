@@ -47,9 +47,7 @@ public class GameState {
 
         allChipsOnTable = stackSizes.keySet().stream().map(stackSizes::get).reduce(0L, Long::sum);
         
-        positions.forEach((key, value) -> {
-            players.add(new Player(key, value, stackSizes.get(key), names.get(key)));
-        });
+        positions.forEach((key, value) -> players.add(new Player(key, value, stackSizes.get(key), names.get(key))));
         players.sort((p1, p2) -> Integer.compare(p1.position, p2.position));
 
         currentPlayer = players.get(0);
@@ -70,7 +68,6 @@ public class GameState {
 
     /**
      * Copy constructor for doing a deep clone of the old GameState
-     * @param oldState
      */
     public GameState(GameState oldState) {
         this.deck = new ArrayList<>(oldState.deck);
@@ -219,24 +216,29 @@ public class GameState {
     }
 
     /**
+     * Returns the sum of all the chips in play
+     * Mostly for debugging purposes
+     */
+    public static long sumOfChipsInPlay(List<Player> players) {
+        return players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
+    }
+
+    /**
      * Gets a list of all possible decisions in the current GameState, without mutating the gamestate.
      * Returns Empty if the node is a terminal node
      */
     public Optional<ArrayList<GameStateChange>> allDecisions() {
         ArrayList<GameStateChange> decisions = new ArrayList<>();
-        //System.out.println(playersLeftInHand + " players left in hand, " + playersAllIn + " all in, " + playersToMakeDecision + " players to make decisions");
 
         assert deck.size() + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + communityCards.size() == 52 : "Deck has " + deck.size() + " cards, players have " + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + " holecards [" + players.stream().map(p -> p.name + ": " + p.holeCards).reduce("", String::concat) + "] and table has " + communityCards.size() + " community cards";
-        long playerChipsSum = players.stream().reduce(0L, (acc, player) -> acc + player.stackSize + player.contributedToPot, Long::sum);
-        assert playerChipsSum == allChipsOnTable :
-        "Sum of player chips is " + playerChipsSum + ", but started with " + allChipsOnTable + " on table.";
+        assert sumOfChipsInPlay(players) == allChipsOnTable :
+        "Sum of player chips is " + sumOfChipsInPlay(players) + ", but started with " + allChipsOnTable + " on table.";
 
         assert players.stream().map(player -> player.stackSize).min(Long::compare).get() >= 0L : "A player has negative stack size";
 
         if (playersGivenHolecards < amountOfPlayers) {
 
             for (int i = 0; i < amountOfPlayers; i++) {
-                // System.out.println("Player " + i + " has " + players.get(i).holeCards.size() + " holecards");
                 int icopy = i;
                 assert players.get(i).position == i;
                 if (players.get(i).holeCards.size() < 2) {
@@ -298,7 +300,6 @@ public class GameState {
 
     /**
      * Gives two random hole cards to the given playerId
-     * @param playerId
      */
     public void giveHoleCards(int playerId) {
         giveHoleCards(playerId, Arrays.asList(deck.remove((int)(Math.random() * deck.size())), deck.remove((int)(Math.random() * deck.size()))));
@@ -338,7 +339,7 @@ public class GameState {
         return nodeType;
     }
 
-    public static enum NodeType {DealCard, PlayerDecision, Terminal }
+    public enum NodeType {DealCard, PlayerDecision, Terminal }
 
 
     public static abstract class GameStateChange {
@@ -405,8 +406,7 @@ public class GameState {
         if (!communityCards.equals(gameState.communityCards)) return false;
         if (!currentPlayer.equals(gameState.currentPlayer)) return false;
         if (!dealer.equals(gameState.dealer)) return false;
-        if (!bigBlind.equals(gameState.bigBlind)) return false;
-        return smallBlind.equals(gameState.smallBlind);
+        return bigBlind.equals(gameState.bigBlind) && smallBlind.equals(gameState.smallBlind);
 
     }
 
