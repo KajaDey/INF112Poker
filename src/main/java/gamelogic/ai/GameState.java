@@ -313,8 +313,9 @@ public class GameState {
                 return Optional.empty();
             }
             else {
-                decisions.addAll(deck.stream().map(CardDealtToTable::new).collect(Collectors.toList()));
-
+                for (Card card : deck) {
+                    decisions.add(new CardDealtToTable(card));
+                }
                 return Optional.of(decisions);
             }
         }
