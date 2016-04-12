@@ -104,7 +104,11 @@ public class GameState {
     }
 
     public long getCurrentPot() {
-        return players.stream().reduce(0L, (acc, p) -> acc + p.contributedToPot, Long::sum);
+        long sum = 0;
+        for (Player player : players) {
+            sum += player.contributedToPot;
+        }
+        return sum;
     }
 
     /**
