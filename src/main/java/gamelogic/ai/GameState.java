@@ -25,6 +25,11 @@ public class GameState {
     public final long allChipsOnTable;
     private int playersGivenHolecards = 0;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
+
+    public int getPlayersAllIn() {
+        return playersAllIn;
+    }
+
     private int playersAllIn = 0;
 
     private int playersToMakeDecision; // Players left to make decision in this betting round
@@ -378,6 +383,7 @@ public class GameState {
             nodeType = NodeType.DealCard;
         }
         else if (playersLeftInHand + playersAllIn == 1) {
+            // If everyone except one player has folded
             nodeType = NodeType.Terminal;
         }
         else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
