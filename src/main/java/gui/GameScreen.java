@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -684,11 +685,9 @@ public class GameScreen {
         for (Integer id : positions.keySet()) {
             String pos = "Position: " + getPositionName(positions.get(id));
             if (id == playerID) {
-                task = () -> playerLayout.setPositionLabel(pos);
+                task = () -> playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             } else {
-                task = () -> {
-                    opponents.get(id).setPositionLabel(pos);
-                };
+                task = () -> opponents.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             }
             Platform.runLater(task);
         }
@@ -801,22 +800,38 @@ public class GameScreen {
         if (putOnTable.get(id) == 0)
             return null;
         else if (putOnTable.get(id) <= currentBigBlind / 2)
-            return ImageViewer.getChipImage("sb_image");
+            return ImageViewer.getChipAndButtonImage("sb_image");
         if (putOnTable.get(id) <= currentBigBlind)
-            return ImageViewer.getChipImage("bb_image");
+            return ImageViewer.getChipAndButtonImage("bb_image");
         else if (putOnTable.get(id) <= currentBigBlind * 3)
-            return ImageViewer.getChipImage("poker1");
+            return ImageViewer.getChipAndButtonImage("poker1");
         else if (putOnTable.get(id) <= currentBigBlind * 5)
-            return ImageViewer.getChipImage("poker2");
+            return ImageViewer.getChipAndButtonImage("poker2");
         else if (putOnTable.get(id) <= currentBigBlind * 8)
-            return ImageViewer.getChipImage("poker3");
+            return ImageViewer.getChipAndButtonImage("poker3");
         else if (putOnTable.get(id) <= currentBigBlind * 12)
-            return ImageViewer.getChipImage("poker4");
+            return ImageViewer.getChipAndButtonImage("poker4");
         else if (putOnTable.get(id) <= currentBigBlind * 20)
-            return ImageViewer.getChipImage("poker6");
+            return ImageViewer.getChipAndButtonImage("poker6");
         else if(putOnTable.get(id) <= currentBigBlind * 50)
-            return ImageViewer.getChipImage("poker7");
+            return ImageViewer.getChipAndButtonImage("poker7");
         else
-            return ImageViewer.getChipImage("poker8");
+            return ImageViewer.getChipAndButtonImage("poker8");
     }
+
+    private Image getButtonImage(int player, int id){
+        if (player == 0) {
+            System.out.println(" skhfiudshføioasgøoiashgoøisahghsaghdg " + getPositionName(id));
+            if(getPositionName(id).equals("Dealer"))
+                return ImageViewer.getChipAndButtonImage("dealer");
+            else return null;
+        }
+        if (player > 0){
+            if (getPositionName(id).endsWith("Dealer"))
+                return ImageViewer.getChipAndButtonImage("dealer");
+            else return null;
+        }
+        return null;
+    }
+
 }

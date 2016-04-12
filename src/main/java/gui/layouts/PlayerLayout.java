@@ -24,13 +24,14 @@ import javafx.scene.layout.VBox;
 public class PlayerLayout {
 
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
-    private ImageView leftCardImage, rightCardImage, chipImage;
+    private ImageView leftCardImage, rightCardImage, chipImage, buttonImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextField;
 
     private long currentSmallBlind, currentBigBlind;
 
     private Button betRaiseButton, checkCallButton, foldButton;
+
 
     public PlayerLayout(){
 
@@ -70,11 +71,10 @@ public class PlayerLayout {
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
 
-        //chipImage.setVisible(false);
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipImage(null));
+        chipImage.setImage(ImageViewer.getChipAndButtonImage(null));
         chipImage.setPreserveRatio(true);
-        chipImage.setFitWidth(30);
+        chipImage.setFitWidth(35);
 
         amountTextField = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
@@ -134,8 +134,19 @@ public class PlayerLayout {
         });
 
 
+
+        buttonImage = new ImageView();
+        buttonImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        buttonImage.setPreserveRatio(true);
+        buttonImage.setFitWidth(30);
+        HBox buttonBox = new HBox();
+        buttonBox.getChildren().addAll(buttonImage);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setPadding(new Insets(0,0,5,0));
+
+
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel);
+        stats.getChildren().addAll(buttonBox, nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
         stats.setMinWidth(175);
 
@@ -157,14 +168,19 @@ public class PlayerLayout {
         chipBox.getChildren().addAll(chipImage);
         chipBox.setPadding(new Insets(0,0,0,10));
 
-        lastMoveAndChips.getChildren().addAll(lastMoveLabel,chipBox);
-        lastMoveAndChips.setMinWidth(100);
+        VBox lastMoveBox = new VBox();
+        lastMoveBox.getChildren().addAll(lastMoveLabel);
+        //lastMoveBox.setMinWidth(150);
+
+        lastMoveAndChips.getChildren().addAll(lastMoveBox,chipBox);
+        lastMoveAndChips.setMinWidth(150);
         lastMoveAndChips.setAlignment(Pos.CENTER);
         lastMoveAndChips.setMinHeight(37);
 
         fullBoxWithLastMove.getChildren().addAll(lastMoveAndChips, fullBox);
         fullBoxWithLastMove.setAlignment(Pos.CENTER_LEFT);
         fullBoxWithLastMove.setMinWidth(700);
+        fullBoxWithLastMove.setMinHeight(50);
 
         this.setActionsVisible(false);
         return fullBoxWithLastMove;
@@ -189,11 +205,6 @@ public class PlayerLayout {
             slider.setMax(maxValue);
             slider.setBlockIncrement(0.1f);
             slider.setMinorTickCount(0);
-
-            /*if (maxValue < 100)
-                slider.setVisible(false);
-            else
-                slider.setVisible(true);*/
 
             if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
                 slider.setMajorTickUnit(slider.getMax() / 2);
@@ -236,9 +247,10 @@ public class PlayerLayout {
         amountTextField.setVisible(visible);
     }
 
-    public void setPositionLabel(String pos){
+    public void setPositionLabel(String pos, Image buttonImage){
         Runnable task = () -> {
             positionLabel.setText(pos);
+            this.buttonImage.setImage(buttonImage);
         };
         Platform.runLater(task);
     }
@@ -302,7 +314,7 @@ public class PlayerLayout {
     public void bustPlayer(String bustedText) {
         setLastMove("", null);
         setStackLabel(bustedText);
-        setPositionLabel("");
+        setPositionLabel("", null);
 
         setCardImage(null, null);
     }
@@ -313,4 +325,5 @@ public class PlayerLayout {
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
     }
+
 }
