@@ -158,18 +158,22 @@ public class GameState {
 
                     currentPlayer.putInPot(currentPlayer.currentBet + decision.size);
 
-                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += decision.size;
-                        player.minimumRaise = decision.size;
-                    });
+                    for (Player player : players) {
+                        if (player.id != currentPlayer.id) {
+                            player.currentBet += decision.size;
+                            player.minimumRaise = decision.size;
+                        }
+                    }
                     currentPlayer.minimumRaise = decision.size;
                     currentPlayer.currentBet = 0;
                     break;
                 case ALL_IN:
-                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.minimumRaise);
-                        player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise); // TODO: Everyone must match the all-in to raise further. May not be correct behaviour
-                    });
+                    for (Player player : players) {
+                        if (player.id != currentPlayer.id) {
+                            player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.minimumRaise);
+                            player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise);
+                        }
+                    }
                     playersLeftInHand--;
                     if (currentPlayer.currentBet > currentPlayer.stackSize) {
                         playersToMakeDecision--;
@@ -183,10 +187,12 @@ public class GameState {
                     currentPlayer.isAllIn = true;
                     break;
                 case BIG_BLIND: case SMALL_BLIND:
-                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += decision.size;
-                        player.minimumRaise = decision.size;
-                    });
+                    for (Player player : players) {
+                        if (player.id != currentPlayer.id) {
+                            player.currentBet += decision.size;
+                            player.minimumRaise = decision.size;
+                        }
+                    }
                     currentPlayer.currentBet = 0;
                     currentPlayer.minimumRaise = decision.size;
                     currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
