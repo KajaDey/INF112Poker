@@ -102,6 +102,9 @@ public class OpponentLayout extends HBox{
             chipBox.getChildren().addAll(chipImage);
             chipBox.setPadding(new Insets(3, 3, 3, 3));
 
+            nameLabel.setMinWidth(150);
+            stackSizeLabel.setMinWidth(150);
+            positionLabel.setMinWidth(150);
             opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
             cards.getChildren().addAll(lastMoveButtonChipBox,leftCardImage, rightCardImage, opponentStats);
 
