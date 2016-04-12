@@ -459,14 +459,11 @@ public class PokerMCTS {
             }
         }
 
-        //System.out.print("Getting terminal eval with holecards: ");
-        for (Player player : gameState.players) {
-            //System.out.print(player.id + ": " + player.holeCards + ", ");
-        }
-        //System.out.println("\nCommunity cards: " + gameState.communityCards);
-
         if (gameState.getPlayersLeftInHand() + gameState.getPlayersAllIn() == 1) {
-            //System.out.println("One player folded");
+            for (Player player : gameState.players) {
+                if (player.isInHand || player.isAllIn) {
+                }
+            }
             long pot = 0;
             for (Player player : gameState.players) {
                 pot += player.contributedToPot;
@@ -483,7 +480,6 @@ public class PokerMCTS {
                 assert gameState.players.get(i).position == i;
                 eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
             }
-            //System.out.println(Arrays.toString(eval) + "\n");
             return eval;
         }
         assert gameState.communityCards.size() == 5 : "Getting terminal eval with " + gameState.getPlayersLeftInHand() + " players left in hands and " + gameState.getPlayersAllIn() + " players all in.";
@@ -512,7 +508,6 @@ public class PokerMCTS {
         for (PlayerAndScore pair : fasterHandsList) {
             long share = pot.getSharePlayerCanWin(pair.player.id);
             pair.player.stackSize += share;
-            //System.out.println(player + " won " + share);
         }
 
         for (Player player : newGameState.players) {
@@ -531,7 +526,6 @@ public class PokerMCTS {
 
         assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001
                 : "Error: winning probs is " + Arrays.toString(eval) + " (sum=" + Arrays.stream(eval).reduce(0.0, Double::sum) + ")";
-        //System.out.println(Arrays.toString(eval) + "\n");
         return eval;
     }
 
