@@ -11,6 +11,7 @@ public class MCTSAI implements GameClient {
 
     private final int playerId;
     private int amountOfPlayers;
+    private long bigBlindAmount;
     private List<Card> holeCards = new ArrayList<>();
 
     private Optional<GameState> gameState;
@@ -34,7 +35,7 @@ public class MCTSAI implements GameClient {
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), bigBlindAmount));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
@@ -100,7 +101,7 @@ public class MCTSAI implements GameClient {
         assert names.get().size() == amountOfPlayers;
         assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), bigBlindAmount));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id
@@ -115,6 +116,7 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setBigBlind(long bigBlind) {
+        bigBlindAmount = bigBlind;
     }
 
     @Override

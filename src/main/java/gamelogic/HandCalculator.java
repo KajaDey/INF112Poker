@@ -43,7 +43,7 @@ public class HandCalculator {
         pair = new xOfaKind(2);
         highCard = new HighCard();
 
-        rules = new ArrayList<>();
+        rules = new ArrayList<>(9);
         rules.add(straightFlush);
         rules.add(quad);
         rules.add(house);
@@ -62,6 +62,21 @@ public class HandCalculator {
                 break;
             }
         }
+    }
+
+    /**
+     * Converts the hand into a simple integer score, for quickly comparing and sorting hands
+     */
+    public int getHandScore() {
+        List<Integer> compareValues = getFoundRule().getCompareValues();
+        assert compareValues.size() <= 5 : "CompareValues had length " + compareValues.size();
+
+        int handScore = (HandType.values().length - handType.ordinal()) << 6 * 4;
+        for (int i = 0; i < compareValues.size(); i++) {
+            assert compareValues.get(i) < 16;
+            handScore |= compareValues.get(i) << (4 * 4 - (i * 4));
+        }
+        return handScore;
     }
 
     /**

@@ -23,8 +23,7 @@ public class Hand implements Comparable<Hand> {
 
         allCards.add(card1);
         allCards.add(card2);
-        if (!communityCards.isEmpty())
-            allCards.addAll(communityCards);
+        allCards.addAll(communityCards);
     }
 
     /**

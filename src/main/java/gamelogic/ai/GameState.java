@@ -4,7 +4,6 @@ import gamelogic.Card;
 import gamelogic.Decision;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents the state of a single hand, for use by the MCTSAI
@@ -22,9 +21,16 @@ public class GameState {
     private final Player bigBlind;
     private final Player smallBlind;
 
+    public final long bigBlindAmount;
+
     public final long allChipsOnTable;
     private int playersGivenHolecards = 0;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
+
+    public int getPlayersAllIn() {
+        return playersAllIn;
+    }
+
     private int playersAllIn = 0;
 
     private int playersToMakeDecision; // Players left to make decision in this betting round
@@ -37,7 +43,8 @@ public class GameState {
     }
 
     public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
-                     Map<Integer, String> names) {
+                     Map<Integer, String> names, long bigBlindAmount) {
+        this.bigBlindAmount = bigBlindAmount;
         assert amountOfPlayers == positions.size();
 
         deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
@@ -71,6 +78,7 @@ public class GameState {
      * Copy constructor for doing a deep clone of the old GameState
      */
     public GameState(GameState oldState) {
+        this.bigBlindAmount = oldState.bigBlindAmount;
         this.deck = new ArrayList<>(oldState.deck);
         this.amountOfPlayers = oldState.amountOfPlayers;
         this.players = new ArrayList<>();
@@ -99,7 +107,11 @@ public class GameState {
     }
 
     public long getCurrentPot() {
-        return players.stream().reduce(0L, (acc, p) -> acc + p.contributedToPot, Long::sum);
+        long sum = 0;
+        for (Player player : players) {
+            sum += player.contributedToPot;
+        }
+        return sum;
     }
 
     /**
@@ -124,6 +136,7 @@ public class GameState {
             if (communityCards.size() == 3 || communityCards.size() == 4 || communityCards.size() == 5) {
                 for (Player player : players) {
                     player.currentBet = 0;
+                    player.minimumRaise = bigBlindAmount;
                 }
                 if (playersLeftInHand > 1) {
                     playersToMakeDecision = playersLeftInHand;
@@ -153,18 +166,22 @@ public class GameState {
 
                     currentPlayer.putInPot(currentPlayer.currentBet + decision.size);
 
-                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += decision.size;
-                        player.minimumRaise = decision.size;
-                    });
+                    for (Player player : players) {
+                        if (player.id != currentPlayer.id) {
+                            player.currentBet += decision.size;
+                            player.minimumRaise = decision.size;
+                        }
+                    }
                     currentPlayer.minimumRaise = decision.size;
                     currentPlayer.currentBet = 0;
                     break;
                 case ALL_IN:
-                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.minimumRaise);
-                        player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise); // TODO: Everyone must match the all-in to raise further. May not be correct behaviour
-                    });
+                    for (Player player : players) {
+                        if (player.id != currentPlayer.id) {
+                            player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.minimumRaise);
+                            player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise);
+                        }
+                    }
                     playersLeftInHand--;
                     if (currentPlayer.currentBet > currentPlayer.stackSize) {
                         playersToMakeDecision--;
@@ -178,10 +195,12 @@ public class GameState {
                     currentPlayer.isAllIn = true;
                     break;
                 case BIG_BLIND: case SMALL_BLIND:
-                    players.stream().filter(p -> !p.equals(currentPlayer)).forEach(player -> {
-                        player.currentBet += decision.size;
-                        player.minimumRaise = decision.size;
-                    });
+                    for (Player player : players) {
+                        if (player.id != currentPlayer.id) {
+                            player.currentBet += decision.size;
+                            player.minimumRaise = decision.size;
+                        }
+                    }
                     currentPlayer.currentBet = 0;
                     currentPlayer.minimumRaise = decision.size;
                     currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
@@ -378,6 +397,7 @@ public class GameState {
             nodeType = NodeType.DealCard;
         }
         else if (playersLeftInHand + playersAllIn == 1) {
+            // If everyone except one player has folded
             nodeType = NodeType.Terminal;
         }
         else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
