@@ -84,6 +84,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player " + name + "(id=" + id + ", position=" + position + ", stackSize=" + stackSize;
+        return "Player " + name + "(id=" + id + ", position=" + position + ", stackSize=" + stackSize + ")";
     }
 }

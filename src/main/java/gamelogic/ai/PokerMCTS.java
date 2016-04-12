@@ -2,6 +2,7 @@ package gamelogic.ai;
 
 import gamelogic.Decision;
 import gamelogic.Hand;
+import gamelogic.HandCalculator;
 import gamelogic.Pot;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -377,7 +378,8 @@ public class PokerMCTS {
         public double[] select(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             terminalNodesSelected++;
             this.searches++;
-            return terminalEval(gameState, totalSearches);
+            assert Arrays.equals(values, terminalEval(gameState, totalSearches));
+            return values;
         }
 
         @Override
@@ -389,7 +391,8 @@ public class PokerMCTS {
         public double[] simulate(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             //assert values[0] == terminalEval(gameState, totalSearches)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState, totalSearches));
             this.searches++;
-            return terminalEval(gameState, totalSearches);
+            assert Arrays.equals(values, terminalEval(gameState, totalSearches));
+            return values;
         }
     }
 
@@ -441,6 +444,50 @@ public class PokerMCTS {
                 this.v2 = v2;
             }
         }
+
+        class PlayerAndScore implements Comparable<PlayerAndScore> {
+            final Player player;
+            final int handScore;
+
+            PlayerAndScore(Player player, int handScore) {
+                this.player = player;
+                this.handScore = handScore;
+            }
+            @Override
+            public int compareTo(PlayerAndScore other) {
+                return Integer.compare(this.handScore, other.handScore);
+            }
+        }
+
+        //System.out.print("Getting terminal eval with holecards: ");
+        for (Player player : gameState.players) {
+            //System.out.print(player.id + ": " + player.holeCards + ", ");
+        }
+        //System.out.println("\nCommunity cards: " + gameState.communityCards);
+
+        if (gameState.getPlayersLeftInHand() + gameState.getPlayersAllIn() == 1) {
+            //System.out.println("One player folded");
+            long pot = 0;
+            for (Player player : gameState.players) {
+                pot += player.contributedToPot;
+                player.contributedToPot = 0;
+            }
+            for (Player player : gameState.players) {
+                if (player.isInHand) {
+                    player.stackSize += pot;
+                }
+            }
+            assert gameState.sumOfChipsInPlay(gameState.players) == gameState.allChipsOnTable : gameState.sumOfChipsInPlay(gameState.players) + " chips in play, but started with " + gameState.allChipsOnTable;
+            double[] eval = new double[gameState.amountOfPlayers];
+            for (int i = 0; i < gameState.players.size(); i++) {
+                assert gameState.players.get(i).position == i;
+                eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
+            }
+            //System.out.println(Arrays.toString(eval) + "\n");
+            return eval;
+        }
+        assert gameState.communityCards.size() == 5 : "Getting terminal eval with " + gameState.getPlayersLeftInHand() + " players left in hands and " + gameState.getPlayersAllIn() + " players all in.";
+
         GameState newGameState = new GameState(gameState);
         double[] eval = new double[newGameState.amountOfPlayers];
         Pot pot = new Pot();
@@ -452,7 +499,7 @@ public class PokerMCTS {
         }
 
         assert newGameState.sumOfChipsInPlay(newGameState.players) + pot.getPotSize() == newGameState.allChipsOnTable;
-
+/*
         ArrayList<Player> handsList = newGameState.players.stream()
                 .filter(p -> p.isInHand)
                 .map(p -> new Pair(p, new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)))
@@ -460,22 +507,34 @@ public class PokerMCTS {
                 .map(pair -> (Player)pair.v1)
                 .collect(Collectors.toCollection(ArrayList<Player>::new));
 
+        ArrayList<Player> fastHandsList = newGameState.players.stream()
+                .filter(p -> p.isInHand)
+                .map(p -> new Pair(p, new HandCalculator(new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)).getHandScore()))
+                .sorted((pair1, pair2) -> ((Integer)pair1.v2).compareTo(((Integer)pair2.v2)))
+                .map(pair -> (Player)pair.v1)
+                .collect(Collectors.toCollection(ArrayList<Player>::new));
+*/
+        ArrayList<PlayerAndScore> fasterHandsList = new ArrayList<>();
         for (Player player : newGameState.players) {
             if (player.isInHand) {
-                Hand hand = new Hand(player.holeCards.get(0), player.holeCards.get(1), newGameState.communityCards);
+                fasterHandsList.add(new PlayerAndScore(player, new HandCalculator(new Hand(player.holeCards.get(0), player.holeCards.get(1), newGameState.communityCards)).getHandScore()));
             }
         }
+        fasterHandsList.sort(PlayerAndScore::compareTo);
 
-        Collections.reverse(handsList);
-        for (Player player : handsList) {
-            player.stackSize += pot.getSharePlayerCanWin(player.id);
+        //assert fastHandsList.equals(handsList) : "handsList=" + handsList.stream().map(p -> p + ": " + Integer.toHexString(new HandCalculator(new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)).getHandScore()) + ", hand " + p.holeCards).reduce("", String::concat) + ", community cards: "  + gameState.communityCards + ", but fastHandsList=" + fastHandsList;
+        //assert fasterHandsList.stream().map(pair -> pair.player).collect(Collectors.toList()).equals(fastHandsList) : "faster list: " + fasterHandsList.stream().map(pair -> pair.player).collect(Collectors.toList()) + ", fast: " + fastHandsList;
+
+        Collections.reverse(fasterHandsList);
+        for (PlayerAndScore pair : fasterHandsList) {
+            long share = pot.getSharePlayerCanWin(pair.player.id);
+            pair.player.stackSize += share;
+            //System.out.println(player + " won " + share);
         }
 
-        newGameState.players.stream()
-                .filter(p -> !handsList.contains(p))
-                .forEach(p -> {
-                    p.stackSize += pot.getSharePlayerCanWin(p.id);
-                });
+        for (Player player : newGameState.players) {
+            player.stackSize += pot.getSharePlayerCanWin(player.id);
+        }
 
         assert pot.getPotSize() == 0 : "Still " + pot.getPotSize() + " chips left in pot";
 
@@ -489,7 +548,7 @@ public class PokerMCTS {
 
         assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001
                 : "Error: winning probs is " + Arrays.toString(eval) + " (sum=" + Arrays.stream(eval).reduce(0.0, Double::sum) + ")";
-
+        //System.out.println(Arrays.toString(eval) + "\n");
         return eval;
     }
 
