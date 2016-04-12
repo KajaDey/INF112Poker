@@ -71,32 +71,20 @@ public class BoardLayout {
         return communityCards;
     }
 
-    /**
-     *
-     * @param winnerLabel
-     */
     public void setWinnerLabel(String winnerLabel) {
         this.winnerLabel.setText(winnerLabel);
     }
 
 
     /**
-     *
      * Set the pot
-     *
-     * @param pot
      */
     public void setPotLabel(String pot) {
         potLabel.setText(pot);
     }
 
     /**
-     *
      * Sets the flop and make it visible
-     *
-     * @param card1Image
-     * @param card2Image
-     * @param card3Image
      */
     public void showFlop(Image card1Image, Image card2Image, Image card3Image) {
         communityCards[0].setImage(card1Image);
@@ -108,10 +96,7 @@ public class BoardLayout {
     }
 
     /**
-     *
      * Set and display turn
-     *
-     * @param turn
      */
     public void showTurn(Image turn) {
         communityCards[3].setImage(turn);
@@ -119,10 +104,7 @@ public class BoardLayout {
     }
 
     /**
-     *
      * Set and display river
-     *
-     * @param river
      */
     public void showRiver(Image river) {
         communityCards[4].setImage(river);
