@@ -100,8 +100,9 @@ public class PlayerLayout {
         //Actions
         betRaiseButton.setOnAction(e -> {
             if(!amountTextField.getText().equals("")) {
-                if (amountTextField.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSizeIn), betRaiseButton.getText());
+                if (amountTextField.getText().equals("All in")) {
+                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
+                }
                 else
                     ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
                 updateSliderValues(stackSizeIn);
@@ -111,7 +112,7 @@ public class PlayerLayout {
         amountTextField.setOnAction(e -> {
             if (!amountTextField.getText().equals("")) {
                 if (amountTextField.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSizeIn), betRaiseButton.getText());
+                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
                 else
                     ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
                 updateSliderValues(stackSizeIn);
@@ -171,7 +172,6 @@ public class PlayerLayout {
 
         VBox lastMoveBox = new VBox();
         lastMoveBox.getChildren().addAll(lastMoveLabel);
-        //lastMoveBox.setMinWidth(150);
         lastMoveBox.setMinHeight(50);
 
         lastMoveAndChips.getChildren().addAll(lastMoveBox,chipBox);
@@ -196,7 +196,6 @@ public class PlayerLayout {
 
         task = () -> {
             long maxValue = stackSize;
-
             if (positionLabel.getText().equals("Position: Small blind"))
                 maxValue -= currentSmallBlind;
             else if (positionLabel.getText().equals("Position: Big blind"))

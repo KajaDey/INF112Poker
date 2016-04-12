@@ -11,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -821,7 +820,6 @@ public class GameScreen {
 
     private Image getButtonImage(int player, int id){
         if (player == 0) {
-            System.out.println(" skhfiudshføioasgøoiashgoøisahghsaghdg " + getPositionName(id));
             if(getPositionName(id).equals("Dealer"))
                 return ImageViewer.getChipAndButtonImage("dealer");
             else return null;
