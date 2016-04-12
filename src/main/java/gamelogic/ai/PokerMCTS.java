@@ -499,21 +499,7 @@ public class PokerMCTS {
         }
 
         assert newGameState.sumOfChipsInPlay(newGameState.players) + pot.getPotSize() == newGameState.allChipsOnTable;
-/*
-        ArrayList<Player> handsList = newGameState.players.stream()
-                .filter(p -> p.isInHand)
-                .map(p -> new Pair(p, new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)))
-                .sorted((pair1, pair2) -> ((Hand)pair1.v2).compareTo(((Hand)pair2.v2)))
-                .map(pair -> (Player)pair.v1)
-                .collect(Collectors.toCollection(ArrayList<Player>::new));
 
-        ArrayList<Player> fastHandsList = newGameState.players.stream()
-                .filter(p -> p.isInHand)
-                .map(p -> new Pair(p, new HandCalculator(new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)).getHandScore()))
-                .sorted((pair1, pair2) -> ((Integer)pair1.v2).compareTo(((Integer)pair2.v2)))
-                .map(pair -> (Player)pair.v1)
-                .collect(Collectors.toCollection(ArrayList<Player>::new));
-*/
         ArrayList<PlayerAndScore> fasterHandsList = new ArrayList<>();
         for (Player player : newGameState.players) {
             if (player.isInHand) {
@@ -521,9 +507,6 @@ public class PokerMCTS {
             }
         }
         fasterHandsList.sort(PlayerAndScore::compareTo);
-
-        //assert fastHandsList.equals(handsList) : "handsList=" + handsList.stream().map(p -> p + ": " + Integer.toHexString(new HandCalculator(new Hand(p.holeCards.get(0), p.holeCards.get(1), newGameState.communityCards)).getHandScore()) + ", hand " + p.holeCards).reduce("", String::concat) + ", community cards: "  + gameState.communityCards + ", but fastHandsList=" + fastHandsList;
-        //assert fasterHandsList.stream().map(pair -> pair.player).collect(Collectors.toList()).equals(fastHandsList) : "faster list: " + fasterHandsList.stream().map(pair -> pair.player).collect(Collectors.toList()) + ", fast: " + fastHandsList;
 
         Collections.reverse(fasterHandsList);
         for (PlayerAndScore pair : fasterHandsList) {
