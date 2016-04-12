@@ -4,7 +4,6 @@ import gamelogic.Card;
 import gamelogic.Decision;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents the state of a single hand, for use by the MCTSAI
@@ -21,6 +20,8 @@ public class GameState {
     private final Player dealer;
     private final Player bigBlind;
     private final Player smallBlind;
+
+    public final long bigBlindAmount;
 
     public final long allChipsOnTable;
     private int playersGivenHolecards = 0;
@@ -42,7 +43,8 @@ public class GameState {
     }
 
     public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
-                     Map<Integer, String> names) {
+                     Map<Integer, String> names, long bigBlindAmount) {
+        this.bigBlindAmount = bigBlindAmount;
         assert amountOfPlayers == positions.size();
 
         deck = new ArrayList<>(Arrays.asList(Card.getAllCards()));
@@ -76,6 +78,7 @@ public class GameState {
      * Copy constructor for doing a deep clone of the old GameState
      */
     public GameState(GameState oldState) {
+        this.bigBlindAmount = oldState.bigBlindAmount;
         this.deck = new ArrayList<>(oldState.deck);
         this.amountOfPlayers = oldState.amountOfPlayers;
         this.players = new ArrayList<>();
@@ -133,6 +136,7 @@ public class GameState {
             if (communityCards.size() == 3 || communityCards.size() == 4 || communityCards.size() == 5) {
                 for (Player player : players) {
                     player.currentBet = 0;
+                    player.minimumRaise = bigBlindAmount;
                 }
                 if (playersLeftInHand > 1) {
                     playersToMakeDecision = playersLeftInHand;

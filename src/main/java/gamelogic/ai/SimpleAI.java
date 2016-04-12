@@ -16,6 +16,7 @@ public class SimpleAI implements GameClient {
     private final int playerId;
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
+    private long bigBlindAmount;
 
     // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
     private Map<Integer, Long> stackSizes;
@@ -152,6 +153,7 @@ public class SimpleAI implements GameClient {
      */
     public void newBettingRound() {
         betHasBeenPlaced = false;
+        minimumRaise = bigBlindAmount;
     }
 
     @Override
@@ -252,7 +254,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setBigBlind(long bigBlind) {
-
+        this.bigBlindAmount = bigBlind;
     }
 
     @Override

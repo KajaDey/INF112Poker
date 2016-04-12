@@ -5,7 +5,6 @@ import gamelogic.Hand;
 import gamelogic.HandCalculator;
 import gamelogic.Pot;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Class to represent a single instance of a monte carlo tree search.
@@ -58,6 +57,7 @@ public class PokerMCTS {
         }
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
+        assert criticalEvals.isPresent() : "Did " + totalSearches + " searches, but no critical evals were set";
         assert criticalEvals.get().size() == allDecisions.size() : "Has values for " + criticalEvals.get().size() + " moves, but " + allDecisions.size() + " moves (" + allDecisions + ")";
         double bestValue = 0.0;
 
