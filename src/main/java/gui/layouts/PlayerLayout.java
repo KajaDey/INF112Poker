@@ -24,7 +24,7 @@ import javafx.scene.layout.VBox;
 public class PlayerLayout {
 
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
-    private ImageView leftCardImage, rightCardImage, chipImage, buttonImage;
+    private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextField;
 
@@ -135,18 +135,19 @@ public class PlayerLayout {
 
 
 
-        buttonImage = new ImageView();
-        buttonImage.setImage(ImageViewer.getChipAndButtonImage(null));
-        buttonImage.setPreserveRatio(true);
-        buttonImage.setFitWidth(30);
-        HBox buttonBox = new HBox();
-        buttonBox.getChildren().addAll(buttonImage);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(0,0,5,0));
+        dealerButtonImage = new ImageView();
+        dealerButtonImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        dealerButtonImage.setPreserveRatio(true);
+        dealerButtonImage.setFitWidth(32);
+        HBox dealerButtonBox = new HBox();
+        dealerButtonBox.getChildren().addAll(dealerButtonImage);
+        dealerButtonBox.setAlignment(Pos.CENTER);
+        dealerButtonBox.setMinSize(32,32);
+        dealerButtonBox.setPadding(new Insets(0,0,5,0));
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(buttonBox, nameLabel, stackLabel, positionLabel);
+        stats.getChildren().addAll(dealerButtonBox, nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
         stats.setMinWidth(175);
 
@@ -171,6 +172,7 @@ public class PlayerLayout {
         VBox lastMoveBox = new VBox();
         lastMoveBox.getChildren().addAll(lastMoveLabel);
         //lastMoveBox.setMinWidth(150);
+        lastMoveBox.setMinHeight(50);
 
         lastMoveAndChips.getChildren().addAll(lastMoveBox,chipBox);
         lastMoveAndChips.setMinWidth(150);
@@ -250,7 +252,7 @@ public class PlayerLayout {
     public void setPositionLabel(String pos, Image buttonImage){
         Runnable task = () -> {
             positionLabel.setText(pos);
-            this.buttonImage.setImage(buttonImage);
+            this.dealerButtonImage.setImage(buttonImage);
         };
         Platform.runLater(task);
     }
@@ -315,8 +317,8 @@ public class PlayerLayout {
         setLastMove("", null);
         setStackLabel(bustedText);
         setPositionLabel("", null);
-
         setCardImage(null, null);
+        slider.setVisible(false);
     }
 
     public void removeHolecards() {

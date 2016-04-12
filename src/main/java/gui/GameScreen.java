@@ -111,7 +111,7 @@ public class GameScreen {
         if (userID == playerID) {
             VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-165);
+            vbox.setLayoutY(scene.getHeight()-190);
             pane.getChildren().addAll(vbox);
         } else {
 

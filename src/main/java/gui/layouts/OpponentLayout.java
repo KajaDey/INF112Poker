@@ -68,19 +68,21 @@ public class OpponentLayout extends HBox{
         dealerButtonImage.setFitWidth(32);
         HBox dealerButtonBox = new HBox();
         dealerButtonBox.getChildren().addAll(dealerButtonImage);
-        dealerButtonBox.setMinWidth(100);
+        dealerButtonBox.setMinSize(32,35);
 
         if(position == 1 || position == 2){
             dealerButtonBox.setAlignment(Pos.TOP_LEFT);
             chipBox.setAlignment(Pos.BASELINE_LEFT);
-            lastMoveButtonChipBox.getChildren().addAll(dealerButtonBox,lastMoveLabel,chipBox);
-            lastMoveButtonChipBox.setMaxSize(150,150);
-            lastMoveButtonChipBox.setMinSize(150,150);
+            lastMoveButtonChipBox.getChildren().addAll(dealerButtonBox,lastMoveBox,chipBox);
+            lastMoveButtonChipBox.setMinSize(150,110);
 
             chipBox.getChildren().addAll(chipImage);
             chipBox.setPadding(new Insets(0,6,0,6));
 
-            opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            VBox stats = new VBox();
+            stats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            stats.setAlignment(Pos.TOP_LEFT);
+            opponentStats.getChildren().addAll(cards, stats);
             cards.getChildren().addAll(leftCardImage, rightCardImage, lastMoveButtonChipBox);
 
             this.getChildren().addAll(opponentStats);
@@ -95,8 +97,7 @@ public class OpponentLayout extends HBox{
             chipBox.setAlignment(Pos.BASELINE_RIGHT);
             lastMoveBox.setAlignment(Pos.CENTER_RIGHT);
             lastMoveButtonChipBox.getChildren().addAll(dealerButtonBox, lastMoveBox,chipBox);
-            lastMoveButtonChipBox.setMaxSize(100,100);
-            lastMoveButtonChipBox.setMinSize(100,100);
+            lastMoveButtonChipBox.setMinSize(150,110);
 
             chipBox.getChildren().addAll(chipImage);
             chipBox.setPadding(new Insets(3, 3, 3, 3));
@@ -110,12 +111,10 @@ public class OpponentLayout extends HBox{
         }
         else if(position == 4 || position == 5){
             dealerButtonBox.setAlignment(Pos.TOP_RIGHT);
-            dealerButtonBox.setPadding(new Insets(10,0,0,0));
             chipBox.setAlignment(Pos.BASELINE_RIGHT);
             lastMoveBox.setAlignment(Pos.CENTER_RIGHT);
             lastMoveButtonChipBox.getChildren().addAll(dealerButtonBox, lastMoveBox, chipBox);
-            //lastMoveButtonChipBox.setMaxSize(150,100);
-            lastMoveButtonChipBox.setMinSize(150,100);
+            lastMoveButtonChipBox.setMinSize(150,110);
 
             chipBox.getChildren().addAll(chipImage);
             chipBox.setPadding(new Insets(0,6,0,6));

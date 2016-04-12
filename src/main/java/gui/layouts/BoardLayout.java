@@ -44,6 +44,9 @@ public class BoardLayout {
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
+        currentBBLabel.setMinWidth(115);
+        currentSBLabel.setMinWidth(115);
+        potLabel.setMinWidth(115);
         winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         statsLayout.getChildren().addAll(currentBBLabel, currentSBLabel, potLabel);
