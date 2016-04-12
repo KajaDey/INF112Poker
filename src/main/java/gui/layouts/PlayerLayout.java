@@ -160,8 +160,11 @@ public class PlayerLayout {
         twoButtonsRight.getChildren().addAll(betRaiseButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
 
+        slider.setMaxWidth(150);
+
         sliderAndBestHandBox.getChildren().addAll(bestHand,slider);
-        sliderAndBestHandBox.setAlignment(Pos.CENTER);
+        sliderAndBestHandBox.setAlignment(Pos.CENTER_LEFT);
+        sliderAndBestHandBox.setPadding(new Insets(0,0,0,8));
 
         fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderAndBestHandBox);
         fullBox.setAlignment(Pos.CENTER);
