@@ -1,6 +1,7 @@
 package gamelogic;
 
 import gui.GUIMain;
+import gui.GameScreen;
 import gui.GameSettings;
 
 import java.util.*;
@@ -244,7 +245,7 @@ public class Game {
                     break;
             }
 
-            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision);
+            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision +  ", stacksize = " + playerToAct.getStackSize());
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1)
@@ -615,7 +616,7 @@ public class Game {
 
     public void printAllPlayerStacks() {
         for (Player p : players) {
-            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize());
+            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize() + ", " + (positions.containsKey(p.getID()) ? GameScreen.getPositionName(positions.get(p.getID()), positions.size()) : "Bust"));
         }
         GUIMain.debugPrintln("Pot: " + pot.getPotSize());
     }
