@@ -648,8 +648,10 @@ public class Game {
 
         assert winnerID > -1 : "No winner was determined when game was over";
 
+        rankingTable.put(winnerID, 1);
+
         //Create a new statistics of the object for use in showdown
-        Statistics stats = new Statistics(winnerID, rankingTable.get(p.getID()), p.handsWon(), p.handsPlayed(), p.preFlopFolds(), p.aggressiveMoves(), p.passiveMoves(), p.getBestHand());
+        Statistics stats = new Statistics(winnerID, rankingTable.get(0), p.handsWon(), p.handsPlayed(), p.preFlopFolds(), p.aggressiveMoves(), p.passiveMoves(), p.getBestHand());
 
         //Tell all clients that the game is over
         gameController.gameOver(stats);
