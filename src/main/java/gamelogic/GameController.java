@@ -67,8 +67,10 @@ public class GameController {
     public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, aiType);
-        mainGUI.displayLobbyScreen(name, gameSettings);
-        this.name = name;
+        if (numPlayers >=2 && numPlayers <= 6) {
+            mainGUI.displayLobbyScreen(name, gameSettings);
+            this.name = name;
+        }
     }
 
     /**
@@ -180,21 +182,27 @@ public class GameController {
      */
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
-        if (client instanceof SimpleAI || client instanceof MCTSAI) {
-            long startTime = System.currentTimeMillis();
-            long timeToTake = 500L + (long)(Math.random() * 2000.0);
-            Decision decision = client.getDecision(timeToTake);
-            long timeTaken = System.currentTimeMillis() - startTime;
-            try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
-            catch (InterruptedException e) {
-                System.out.println("Sleeping thread interrupted");
-            }
-            return decision;
-        }
-        else {
+        if (client instanceof SimpleAI || client instanceof MCTSAI)
+            return getAIDecision(client);
+        else
             return client.getDecision(10000L);
-        }
+    }
 
+    /**
+     *  Get a decision from an AI-client
+     * @param aiClient
+     * @return
+     */
+    private Decision getAIDecision(GameClient aiClient) {
+        long startTime = System.currentTimeMillis();
+        long timeToTake = 500L + (long)(Math.random() * 2000.0);
+        Decision decision = aiClient.getDecision(timeToTake);
+        long timeTaken = System.currentTimeMillis() - startTime;
+        try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
+        catch (InterruptedException e) {
+            System.out.println("Sleeping thread interrupted");
+        }
+        return decision;
     }
 
     /**

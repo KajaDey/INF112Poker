@@ -54,9 +54,10 @@ public class Statistics {
         int p = positionFinished;
         String allStats = "";
         allStats += "You finished " + p + (p == 1 ? "st" : p==2 ? "nd" : p==3 ? "rd" : "th") + '\n';
-        allStats += "You won " + handsWon + " of the " + handsPlayed + " hands you played\n";
-        allStats += "You folded " + foldsPreFlop + " times pre-flop\n";
-        allStats += "You made " + aggressiveMoves + " aggressive moves, and " + passiveMoves + " passive moves\n";
+        allStats += "You won " + handsWon + " of the " + handsPlayed + (handsPlayed==1 ? " hand" : " hands") + " you played" + '\n';
+        allStats += "You folded " + foldsPreFlop + (foldsPreFlop==1 ? " time" : " times") + " pre-flop" + '\n';
+        allStats += "You made " + aggressiveMoves + " aggressive " + (aggressiveMoves==1 ? " move" : " moves") + ", and "
+                + passiveMoves + " passive " + (passiveMoves==1 ? " move" : " moves") + '\n';
         allStats += "Your best hand was " + bestHand;
         return allStats;
     }
