@@ -820,12 +820,12 @@ public class GameScreen {
 
     private Image getButtonImage(int player, int id){
         if (player == 0) {
-            if(getPositionName(id).equals("Dealer"))
+            if(getPositionName(id, numberOfPlayers).equals("Dealer"))
                 return ImageViewer.getChipAndButtonImage("dealer");
             else return null;
         }
         if (player > 0){
-            if (getPositionName(id).endsWith("Dealer"))
+            if (getPositionName(id, numberOfPlayers).endsWith("Dealer"))
                 return ImageViewer.getChipAndButtonImage("dealer");
             else return null;
         }
