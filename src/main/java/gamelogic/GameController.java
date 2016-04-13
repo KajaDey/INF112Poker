@@ -92,6 +92,7 @@ public class GameController {
         mainGUI.insertPlayer(0, this.name, settings.getStartStack());
         guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
         names.put(0, name);
+        GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
 
     /**
@@ -102,7 +103,7 @@ public class GameController {
 
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
-            int AI_id = i+1;
+            int AI_id = i + 1;
 
             GameClient aiClient;
             double contemptFactor = 1.0;
@@ -124,6 +125,7 @@ public class GameController {
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
             names.put(AI_id, aiName);
+            GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
     }
 

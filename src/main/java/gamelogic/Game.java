@@ -616,7 +616,7 @@ public class Game {
 
     public void printAllPlayerStacks() {
         for (Player p : players) {
-            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize() + ", " + GameScreen.getPositionName(positions.get(p), this.numberOfPlayers));
+            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize() + ", " + (positions.containsKey(p.getID()) ? GameScreen.getPositionName(positions.get(p.getID()), positions.size()) : "Bust"));
         }
         GUIMain.debugPrintln("Pot: " + pot.getPotSize());
     }
