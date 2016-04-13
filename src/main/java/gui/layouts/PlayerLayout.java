@@ -321,6 +321,7 @@ public class PlayerLayout {
         setPositionLabel("", null);
         setCardImage(null, null);
         slider.setVisible(false);
+        bestHand.setVisible(false);
     }
 
     public void removeHolecards() {
