@@ -70,25 +70,25 @@ public class PokerMCTS {
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
             switch (decision.move) {
                 case FOLD:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.05, 0.5);
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
                     break;
                 case CHECK:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.05, 0.5);
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
                     break;
                 case BET:
                 case RAISE:
                     long betSize = decision.size + initialGameState.currentPlayer.currentBet;
-                    values[i] *= Math.pow(contemptFactor - 0.05, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
                 case CALL:
-                    values[i] *= Math.pow(contemptFactor - 0.05, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
                     break;
                 case BIG_BLIND:
                     break;
                 case SMALL_BLIND:
                     break;
                 case ALL_IN:
-                    values[i] *= contemptFactor - 0.05;
+                    values[i] *= contemptFactor - 0.02;
                     break;
             }
             //System.out.println(values[i]);
