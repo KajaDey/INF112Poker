@@ -102,7 +102,7 @@ public class Player extends User {
      *
      * @return Amount put on table
      */
-    public long getAmountPutOnTableThisBettingRound() {
+    public long putOnTable() {
         return putOnTableThisRound;
     }
 

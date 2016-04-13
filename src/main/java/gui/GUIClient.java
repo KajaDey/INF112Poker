@@ -48,30 +48,14 @@ public class GUIClient implements GameClient {
     }
 
     /**
-     * Called from ButtonListeners-class to nofify the client that a decision has been made
+     * Called from ButtonListeners-class to notify the client that a decision has been made
      *
      * @param move
      * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
-            GUIMain.debugPrint("You don't have this much in your stack");
-            gameScreen.setErrorStateOfAmountTextField(true);
+        if (!validMove(move, moveSize))
             return;
-        }
-
-        if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
-                (moveSize != stackSizes.get(id))) {
-            GUIMain.debugPrint("Raise is too small");
-            gameScreen.setErrorStateOfAmountTextField(true);
-            return;
-        }
-
-        if (move == Decision.Move.BET && moveSize < bigBlind) {
-            GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
-            gameScreen.setErrorStateOfAmountTextField(true);
-            return;
-        }
 
         switch (move) {
             case BET:
@@ -92,6 +76,33 @@ public class GUIClient implements GameClient {
         gameScreen.setErrorStateOfAmountTextField(false);
 
         notifyAll();
+    }
+
+    /**
+     *  Check if a decision is valid (according to current stack size etc)
+     * @param move
+     * @param moveSize
+     * @return
+     */
+    private boolean validMove(Decision.Move move, long moveSize) {
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
+            GUIMain.debugPrint("You don't have this much in your stack");
+            gameScreen.setErrorStateOfAmountTextField(true);
+            return false;
+        }
+        else if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
+                (moveSize != stackSizes.get(id))) {
+            GUIMain.debugPrint("Raise is too small");
+            gameScreen.setErrorStateOfAmountTextField(true);
+            return false;
+        }
+        else if (move == Decision.Move.BET && moveSize < bigBlind) {
+            GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
+            gameScreen.setErrorStateOfAmountTextField(true);
+            return false;
+        }
+
+        return true;
     }
 
     public void setDecision(Decision.Move move) { setDecision(move, 0); }
@@ -181,12 +192,13 @@ public class GUIClient implements GameClient {
         this.smallBlind = smallBlind;
     }
 
-    @Override
+
     /**
      * Sends every player's position, as a map indexed by the players' IDs.
-     * A value of 0 corresponds to the dealer, 1 is small blind, 2 is big blind etc
+     * A value of 0 corresponds to the small blind, 1 is big blind..
      * Sent at the start of each hand
      */
+    @Override
     public void setPositions(Map<Integer, Integer> positions) {
         gameScreen.setPositions(positions);
     }
@@ -215,7 +227,7 @@ public class GUIClient implements GameClient {
      * Prints the log message to the log field
      * @param message The message to be printed
      */
-    public void printToLogfield(String message) {
+    public void printToLogField(String message) {
         gameScreen.printToLogField(message);
     }
 

@@ -236,11 +236,11 @@ public class Game {
                     currentMinimumRaise = decision.size;
                     break;
                 case ALL_IN:
-                    if(playerToAct.getAmountPutOnTableThisBettingRound() >= highestAmountPutOnTable+currentMinimumRaise) {
-                        currentMinimumRaise = playerToAct.getAmountPutOnTableThisBettingRound() - highestAmountPutOnTable;
-                        highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
-                    } else if (playerToAct.getAmountPutOnTableThisBettingRound() > highestAmountPutOnTable){
-                        highestAmountPutOnTable = playerToAct.getAmountPutOnTableThisBettingRound();
+                    if(playerToAct.putOnTable() >= highestAmountPutOnTable+currentMinimumRaise) {
+                        currentMinimumRaise = playerToAct.putOnTable() - highestAmountPutOnTable;
+                        highestAmountPutOnTable = playerToAct.putOnTable();
+                    } else if (playerToAct.putOnTable() > highestAmountPutOnTable){
+                        highestAmountPutOnTable = playerToAct.putOnTable();
                     }
                     break;
                 case FOLD:
@@ -271,7 +271,7 @@ public class Game {
     private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreFlop) {
         long stackSize = playerToAct.getStackSize();
         boolean playerCanCheckBigBlind =
-                isPreFlop && playerToAct.getAmountPutOnTableThisBettingRound() == currentBB && highestAmountPutOnTable == currentBB;
+                isPreFlop && playerToAct.putOnTable() == currentBB && highestAmountPutOnTable == currentBB;
 
         while(true) {
             //Get a decision for playerToAct from GameController
@@ -305,6 +305,10 @@ public class Game {
 
                 case RAISE:
                     assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.size + " when highest amount put on table was 0";
+                    if ((decision.size + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
+                        GUIMain.debugPrintln(playerToAct.getName() + " tried to raise to " + (decision.size + highestAmountPutOnTable) + " but only has " + stackSize);
+                        break;
+                    }
                     if (decision.size >= currentMinimumRaise)
                         return decision;
                     break;
@@ -492,7 +496,7 @@ public class Game {
         for (Player p : playersStillInCurrentHand) {
             if (p.isAllIn())
                 count++;
-            else if (p.hasActed() && p.getAmountPutOnTableThisBettingRound() == highestAmountPutOnTable)
+            else if (p.hasActed() && p.putOnTable() == highestAmountPutOnTable)
                 count++;
         }
 
