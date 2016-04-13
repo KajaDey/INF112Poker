@@ -217,6 +217,7 @@ public class PokerMCTS {
             }
 
             GameState.GameStateChange randomMove = gameState.getRandomDecision(random).get();
+            GameState clonedGameState = new GameState(gameState);
 
             gameState.makeGameStateChange(randomMove);
 
@@ -242,7 +243,7 @@ public class PokerMCTS {
 
             assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node for " + gameState.currentPlayer + " without passing decision node (AI is " + gameState.players.get(playerPosition) + ") after " + totalSearches + " searches.";
             if (!hasPassedDecisionNode && this instanceof AINode) {
-
+                assert allMoves.size() > 0;
                 double[] evals = childNode.simulate(totalSearches, gameState, random, true);
                 //System.out.println(this.getClass().getSimpleName() + " at search #" + totalSearches + ", has stacksize " + gameState.players.get(playerPosition).stackSize + ", currentBet " + gameState.players.get(playerPosition).currentBet + " and moves " + allMoves.stream().map(Object::toString).reduce(String::concat).get());
                 if (!criticalEvals.isPresent()) {
@@ -253,6 +254,7 @@ public class PokerMCTS {
                     }
                 }
                 int moveIndex = allMoves.indexOf(randomMove);
+                assert moveIndex >= 0 : "Found illegal move " + randomMove + " while simulating, allMoves: " + allMoves + ", " + clonedGameState.currentPlayer + ", currentBet: " + clonedGameState.currentPlayer.currentBet + ", pot: " + clonedGameState.getCurrentPot();
                 criticalEvals.get().get(moveIndex).eval += evals[playerPosition];
                 criticalEvals.get().get(moveIndex).searches += 1;
                 // This is a throwaway node, so not neccessary to store the values and number of searches
@@ -378,7 +380,7 @@ public class PokerMCTS {
         public double[] select(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             terminalNodesSelected++;
             this.searches++;
-            assert Arrays.equals(values, terminalEval(gameState, totalSearches));
+            // assert Arrays.equals(values, terminalEval(gameState, totalSearches));
             return values;
         }
 
@@ -391,7 +393,7 @@ public class PokerMCTS {
         public double[] simulate(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             //assert values[0] == terminalEval(gameState, totalSearches)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState, totalSearches));
             this.searches++;
-            assert Arrays.equals(values, terminalEval(gameState, totalSearches));
+            // assert Arrays.equals(values, terminalEval(gameState, totalSearches));
             return values;
         }
     }
@@ -436,15 +438,6 @@ public class PokerMCTS {
 
     public static double[] terminalEval(GameState gameState, int totalSearches) {
 
-        class Pair<T, U> {
-            final T v1;
-            final U v2;
-            Pair(T v1, U v2) {
-                this.v1 = v1;
-                this.v2 = v2;
-            }
-        }
-
         class PlayerAndScore implements Comparable<PlayerAndScore> {
             final Player player;
             final int handScore;
@@ -460,17 +453,13 @@ public class PokerMCTS {
         }
 
         if (gameState.getPlayersLeftInHand() + gameState.getPlayersAllIn() == 1) {
-            for (Player player : gameState.players) {
-                if (player.isInHand || player.isAllIn) {
-                }
-            }
             long pot = 0;
             for (Player player : gameState.players) {
                 pot += player.contributedToPot;
                 player.contributedToPot = 0;
             }
             for (Player player : gameState.players) {
-                if (player.isInHand) {
+                if (player.isInHand || player.isAllIn) {
                     player.stackSize += pot;
                 }
             }
@@ -522,7 +511,7 @@ public class PokerMCTS {
         }
 
         assert newGameState.sumOfChipsInPlay(newGameState.players) == newGameState.allChipsOnTable :
-                "Sum of player chips is " + newGameState.sumOfChipsInPlay(newGameState.players) + ", but started with " + newGameState.allChipsOnTable + " on table.";
+                "Sum of player chips is " + GameState.sumOfChipsInPlay(newGameState.players) + ", but started with " + newGameState.allChipsOnTable + " on table.";
 
         assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001
                 : "Error: winning probs is " + Arrays.toString(eval) + " (sum=" + Arrays.stream(eval).reduce(0.0, Double::sum) + ")";

@@ -15,14 +15,14 @@ import static org.junit.Assert.*;
  */
 public class AITest {
 
-    static final int N = 1;
+    static final int N = 1; // Amount of times to do each test
     HashMap<Integer, Integer> positions;
     HashMap<Integer, Long> stackSizes;
     HashMap<Integer, String> names;
     int smallBlind = 25;
     int bigBlind = 50;
     long startStack = 1000L;
-    long timeToThink = 1000L;
+    long timeToThink = 2000L;
 
     @Test
     public void testAllInAsCall() {
@@ -124,6 +124,8 @@ public class AITest {
         }
     }
 
+    // Test created to reproduce a specific bug in SimpleAI
+    // Bug is fixed now, the test remains because why not
     public void testAllInAsCallProperty(GameClient ai) {
         ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
 
@@ -262,6 +264,8 @@ public class AITest {
     }
 
     @Test
+    // Test created to reproduce a specific bug in the AI
+    // Bug is fixed now, the test remains because why not
     public void testPreflopShowdown() {
         MCTSAI ai = new MCTSAI(3);
         ai.setHandForClient(3, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
@@ -301,7 +305,7 @@ public class AITest {
     /**
      * Prepares the AI by setting names, positions and stacksizes of the players to default values
      * Also gives blinds
-     * @param positionOffset Determines the positions of the AIs. If 0, id=0 -> position=0. If 2, id=0 -> position=2.
+     * @param positionOffset Determines the positions of the AIs. If 0, id=0 -> position=0. If 2, id=0 -> position=2. etc
      */
     public void setupAi(GameClient ai, int amountOfPlayers, int positionOffset) {
         positions = new HashMap<>();
