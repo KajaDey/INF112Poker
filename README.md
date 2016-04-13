@@ -23,6 +23,7 @@ and this years task is to engineer an implementation of Texas Hold'em poker, ove
   * [Scrum board](https://scrumy.com/inf112gruppe4)
 * We also communicate using Slack.
 * We use bitbuckets bug tracker, "Issues", to report bugs when we encounter them, while playing the game.
+* Documentation like minutes, diagrams etc. can be found under docs/ in our repo.
 
 
 ## Usage of software
