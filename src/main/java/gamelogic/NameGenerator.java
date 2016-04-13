@@ -44,8 +44,8 @@ public class NameGenerator {
         String randomCharacter = characterNames.get(randomListIndex).substring(0,1).toUpperCase() + characterNames.get(randomListIndex).substring(1, characterNames.get(randomListIndex).length()).toLowerCase();
         characterNames.remove(randomListIndex);
 
+        randomCharacter = randomCharacter.replaceAll("\\s", "");
         return randomCharacter;
-
     }
 
     /**

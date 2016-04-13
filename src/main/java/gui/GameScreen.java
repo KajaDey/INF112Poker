@@ -762,7 +762,7 @@ public class GameScreen {
      */
     public void preShowdownWinner(int winnerID, long potsize) {
         Platform.runLater(() -> {
-            boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
+            boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
             printToLogField(names.get(winnerID) + " won the pot of " + potsize);
         });
     }

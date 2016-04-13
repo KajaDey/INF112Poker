@@ -309,7 +309,7 @@ public class GameController {
      * Print a message to the on screen log
      */
     public void printToLogfield(String message) {
-        guiClient.printToLogfield(message);
+        guiClient.printToLogField(message);
     }
 
     /**

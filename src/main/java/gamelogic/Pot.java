@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by kristianrosland on 16.03.2016.
  *
- * Class to represent the pot at all times.
+ * Class to represent the pot and who can claim what
  */
 public class Pot {
 
