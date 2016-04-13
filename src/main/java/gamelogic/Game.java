@@ -386,7 +386,7 @@ public class Game {
 
     /**
      * Returns a list of the players who still have chips left (player.getStackSize() > 0).
-     * Order: Small blind, big blind, etc...
+     * Order: Small blind, big blind, UTG...
      *
      * return Ordered list of players still in the game
      */
