@@ -18,9 +18,7 @@ public class ShowdownStats {
         sidePots = new ArrayList<>();
         sidePotSizes = new ArrayList<>();
         this.communityCards = communityCards;
-        this.allPlayers = new ArrayList<>();
-
-        players.stream().forEach(p -> allPlayers.add(p));
+        this.allPlayers = new ArrayList<>(players);
     }
 
     public void addSidePot(List<Player> players, long size) {

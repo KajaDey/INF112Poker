@@ -1,5 +1,6 @@
 package gui;
 
+import gamelogic.AIType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -127,7 +128,7 @@ public class GameLobby {
         choiceBox.setMaxWidth(100);
         choiceBox.setMinHeight(30);
         choiceBox.setMaxWidth(30);
-        choiceBox.getItems().addAll(GameController.AIType.SIMPLE_AI.toString(), GameController.AIType.MCTS_AI.toString(), GameController.AIType.MIXED.toString());
+        choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
         choiceBox.setValue(gameController.gameSettings.getAiType().toString());
         choiceBox.setTooltip(new Tooltip("Pick a difficulty"));
         choiceBox.setPadding(new Insets(5,5,8,5));

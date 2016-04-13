@@ -96,7 +96,7 @@ public class Game {
         printAllPlayerStacks();
 
         //First betting round (preflop)
-        GUIMain.debugPrintln("\nPREFLOP:");
+        GUIMain.debugPrintln("\nPRE FLOP:");
 
         boolean handContinues = bettingRound(preFlop);
         if (!handContinues) {

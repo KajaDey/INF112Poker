@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import gamelogic.GameController;
-import gamelogic.GameController.AIType;
+import gamelogic.AIType;
 
 /**
  * This purpose of this class is to create the full screen that is seen when the application is started.

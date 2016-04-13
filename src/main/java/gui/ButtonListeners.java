@@ -1,5 +1,6 @@
 package gui;
 
+import gamelogic.AIType;
 import gamelogic.Statistics;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -70,7 +71,7 @@ public class ButtonListeners {
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
                                              String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aiChoice) {
 
-        GameController.AIType aiType = GameController.AIType.fromString(aiChoice);
+        AIType aiType = AIType.fromString(aiChoice);
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
@@ -112,7 +113,7 @@ public class ButtonListeners {
         savedGameController = gameController;
         try {
             if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null) {
-                GameController.AIType type = GameController.AIType.fromString(choiceBox);
+                AIType type = AIType.fromString(choiceBox);
 
                 gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), type);
                 gameSettings = gameController.gameSettings;

@@ -4,6 +4,7 @@ package gui;
  * Created by ady on 09/03/16.
  */
 
+import gamelogic.AIType;
 import gamelogic.GameController;
 
 /**
@@ -16,7 +17,7 @@ public class GameSettings {
     private long smallBlind;
     private int maxNumberOfPlayers;
     private int levelDuration;
-    private GameController.AIType aiType;
+    private AIType aiType;
 
     /**
      *
@@ -28,7 +29,7 @@ public class GameSettings {
      * @param aiType The type of AI (Simple/MCTS)
      */
 
-    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, GameController.AIType aiType) {
+    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType) {
         this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;
@@ -75,7 +76,7 @@ public class GameSettings {
         return levelDuration;
     }
 
-    public GameController.AIType getAiType(){
+    public AIType getAiType(){
         return aiType; }
 
 }
