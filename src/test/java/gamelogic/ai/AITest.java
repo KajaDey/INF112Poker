@@ -22,7 +22,7 @@ public class AITest {
     int smallBlind = 25;
     int bigBlind = 50;
     long startStack = 1000L;
-    long timeToThink = 5000L;
+    long timeToThink = 1000L;
 
     @Test
     public void testAllInAsCall() {
@@ -144,6 +144,8 @@ public class AITest {
         ai.setStackSizes(stackSizes);
         ai.setPlayerNames(names);
         ai.setPositions(positions);
+        ai.setSmallBlind(smallBlind);
+        ai.setBigBlind(bigBlind);
 
         ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
         ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, bigBlind));
