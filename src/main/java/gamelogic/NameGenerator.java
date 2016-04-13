@@ -1,12 +1,14 @@
 package gamelogic;
 
 import gui.GUIMain;
+import javafx.application.Platform;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -45,40 +47,12 @@ public class NameGenerator {
         characterNames = new ArrayList<>();
         pathsOfSeries = new ArrayList<>();
 
-        //add all series paths once
-        if(pathsOfSeries.isEmpty()) {
-            pathsOfSeries.add("resources/nameList/bigBangTheory.txt");
-            pathsOfSeries.add("resources/nameList/bms.txt");
-            pathsOfSeries.add("resources/nameList/breakingBad.txt");
-            pathsOfSeries.add("resources/nameList/communists.txt");
-            pathsOfSeries.add("resources/nameList/community.txt");
-            pathsOfSeries.add("resources/nameList/dictators.txt");
-            pathsOfSeries.add("resources/nameList/disney.txt");
-            pathsOfSeries.add("resources/nameList/friends.txt");
-            pathsOfSeries.add("resources/nameList/futurama.txt");
-            pathsOfSeries.add("resources/nameList/gossipGirl");
-            pathsOfSeries.add("resources/nameList/got.txt");
-            pathsOfSeries.add("resources/nameList/harryPotter.txt");
-            pathsOfSeries.add("resources/nameList/hotelCeasar");
-            pathsOfSeries.add("resources/nameList/kapteinSabeltann.txt");
-            pathsOfSeries.add("resources/nameList/kardashians");
-            pathsOfSeries.add("resources/nameList/oneTreeHill");
-            pathsOfSeries.add("resources/nameList/orangeIsTheNewBlack");
-            pathsOfSeries.add("resources/nameList/paradiseHotel.txt");
-            pathsOfSeries.add("resources/nameList/physicists.txt");
-            pathsOfSeries.add("resources/nameList/presidents.txt");
-            pathsOfSeries.add("resources/nameList/programmingLanguageCreators.txt");
-            pathsOfSeries.add("resources/nameList/rickAndMorty.txt");
-            pathsOfSeries.add("resources/nameList/siliconValley.txt");
-            pathsOfSeries.add("resources/nameList/softwarePeople.txt");
-            pathsOfSeries.add("resources/nameList/spiceGirls.txt");
-            pathsOfSeries.add("resources/nameList/starWars.txt");
-            pathsOfSeries.add("resources/nameList/suits.txt");
-            pathsOfSeries.add("resources/nameList/theLordOfTheRings.txt");
-            pathsOfSeries.add("resources/nameList/theOffice.txt");
-            pathsOfSeries.add("resources/nameList/theSimpsons.txt");
-            pathsOfSeries.add("resources/nameList/videoGames.txt");
-            pathsOfSeries.add("resources/nameList/usPresidents.txt");
+        String url = "resources/nameList/";
+        ArrayList<String> names = new ArrayList<>(Arrays.asList(new File(url).list()));
+
+        for (String name : names) {
+            name = url + name;
+            pathsOfSeries.add(name);
         }
 
         //get random filepath from a list of paths of series if we haven't got one

@@ -40,9 +40,9 @@ public class HandCalculatorTest {
     public void testStraightFlushReturn() throws Exception{
         holeCard1=card.of(8, Card.Suit.SPADES).get();
         holeCard2=card.of(6, Card.Suit.SPADES).get();
-        hand = new Hand(holeCard1, holeCard2,communityCards);
+        hand = new Hand(holeCard1, holeCard2, communityCards);
         hc = new HandCalculator(hand);
-        wantedHand = new Hand(holeCard1,holeCard2, Arrays.asList(c1,c3,c4));
+        wantedHand = new Hand(holeCard1,holeCard2, communityCards);
         StraightFlush sf = new StraightFlush();
         sf.match(wantedHand);
         assertEquals(sf.getHand(),hc.getWinningHand());
@@ -101,9 +101,9 @@ public class HandCalculatorTest {
     public void testTripsReturn() throws Exception{
         holeCard1=card.of(7, Card.Suit.DIAMONDS).get();
         holeCard2=card.of(12, Card.Suit.CLUBS).get();
-        hand = new Hand(holeCard1, holeCard2,communityCards);
+        hand = new Hand(holeCard1, holeCard2, communityCards);
         hc = new HandCalculator(hand);
-        wantedHand = new Hand(holeCard1,holeCard2,communityCards);
+        wantedHand = new Hand(holeCard1,holeCard2, communityCards);
 
         xOfaKind trips = new xOfaKind(3);
         trips.match(wantedHand);
@@ -114,9 +114,9 @@ public class HandCalculatorTest {
     public void testTwoPairsReturn() throws Exception{
         holeCard1=card.of(10, Card.Suit.HEARTS).get();
         holeCard2=card.of(9, Card.Suit.CLUBS).get();
-        hand = new Hand(holeCard1, holeCard2,communityCards);
+        hand = new Hand(holeCard1, holeCard2, communityCards);
         hc = new HandCalculator(hand);
-        wantedHand = new Hand(holeCard1,holeCard2,communityCards);
+        wantedHand = new Hand(holeCard1,holeCard2, communityCards);
 
         TwoPairs twoPair = new TwoPairs();
         twoPair.match(wantedHand);

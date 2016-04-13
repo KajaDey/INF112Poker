@@ -1,8 +1,6 @@
 package gamelogic.ai;
 
 import gamelogic.*;
-import gamelogic.ai.SimpleAI;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.*;
 
@@ -13,6 +11,7 @@ public class MCTSAI implements GameClient {
 
     private final int playerId;
     private int amountOfPlayers;
+    private long bigBlindAmount;
     private List<Card> holeCards = new ArrayList<>();
 
     private Optional<GameState> gameState;
@@ -29,19 +28,19 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
+    public Decision getDecision(long timeToThink) {
         assert stackSizes.isPresent();
-        assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
-        assert stackSizes.get().get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
+        assert holeCards.size() == 2: "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
+        assert stackSizes.get().get(playerId) > 0: "AI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), bigBlindAmount));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
-        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, holeCards);
-        return mcts.calculateFor(750 + (int)(1500 * Math.random()));
+        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId);
+        return mcts.calculateFor(timeToThink);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class MCTSAI implements GameClient {
     public void setHandForClient(int userID, Card card1, Card card2) {
         assert this.getID() == userID;
 
-        holeCards = new ArrayList<Card>(2);
+        holeCards = new ArrayList<>(2);
         assert holeCards.size() == 0;
         holeCards.add(card1);
         holeCards.add(card2);
@@ -100,8 +99,9 @@ public class MCTSAI implements GameClient {
         assert positions.get().size() == amountOfPlayers;
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
         assert names.get().size() == amountOfPlayers;
+        assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get()));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), bigBlindAmount));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id
@@ -116,6 +116,7 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setBigBlind(long bigBlind) {
+        bigBlindAmount = bigBlind;
     }
 
     @Override
@@ -143,7 +144,7 @@ public class MCTSAI implements GameClient {
     public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.isEmpty() : "MCTS received flop card when it had " + gameState.get().communityCards.size();
-        //assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received flop cards when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions";;
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received flop cards when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card1));
         assert gameState.get().getPlayersToMakeDecision() == 0;
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card2));
@@ -155,7 +156,7 @@ public class MCTSAI implements GameClient {
     public void setTurn(Card turn, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 3 : "MCTS received turn card when it had " + gameState.get().communityCards.size();
-        //assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received turn card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions";
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received turn card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
     }
 
@@ -163,7 +164,7 @@ public class MCTSAI implements GameClient {
     public void setRiver(Card river, long currentPotSize) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 4 : "MCTS received river card when it had " + gameState.get().communityCards.size();
-        //assert gameState.get().getPlayersToMakeDecision() == 0;
+        assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received river card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
         gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
 
     }

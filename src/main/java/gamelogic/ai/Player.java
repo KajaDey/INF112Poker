@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by morten on 09.03.16.
+ * Representation of a player. Used by the AI to store data about itself and its opponents
  */
 public class Player {
     public final int id;
@@ -15,7 +15,7 @@ public class Player {
     public long stackSize;
     public long minimumRaise; // If they want to raise, the minimum they need to raise by
     public long currentBet; // The amount they need to put on the table to remain in the hand
-    public long contributedToPot = 0;
+    public long contributedToPot = 0; // Amount contributed to the pot throughout this entire hand
 
     public boolean isInHand = true;
     public boolean isAllIn = false;
@@ -51,6 +51,16 @@ public class Player {
         assert stackSize >= 0 : "Player " + name + " with id " + id + " at position " + position + " has a stacksize of " + stackSize;
     }
 
+    /**
+     * A measure of the amount of risk the player is taking
+     * The AI may use this to guess whether the opponent has good cards or not
+     * @param totalChipsOnTable Total amount of chips in play, including the pot and everyone's stacks.
+     * @return A number between 0 and 1,
+     */
+    public double riskTaken(long totalChipsOnTable) {
+        return Math.sqrt( 0.666 * (double)contributedToPot / (stackSize + contributedToPot) + 0.333 * (double)contributedToPot / totalChipsOnTable);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,6 +94,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player " + name + "(id=" + id + ", position=" + position + ", stackSize=" + stackSize;
+        return "Player " + name + "(id=" + id + ", position=" + position + ", stackSize=" + stackSize + ")";
     }
 }

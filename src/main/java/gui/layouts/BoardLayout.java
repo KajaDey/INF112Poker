@@ -2,7 +2,6 @@ package gui.layouts;
 
 import gui.ImageViewer;
 import gui.ObjectStandards;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -45,6 +44,9 @@ public class BoardLayout {
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
+        currentBBLabel.setMinWidth(115);
+        currentSBLabel.setMinWidth(115);
+        potLabel.setMinWidth(115);
         winnerLabel = ObjectStandards.makeStandardLabelWhite("", "");
 
         statsLayout.getChildren().addAll(currentBBLabel, currentSBLabel, potLabel);
@@ -72,32 +74,20 @@ public class BoardLayout {
         return communityCards;
     }
 
-    /**
-     *
-     * @param winnerLabel
-     */
     public void setWinnerLabel(String winnerLabel) {
         this.winnerLabel.setText(winnerLabel);
     }
 
 
     /**
-     *
      * Set the pot
-     *
-     * @param pot
      */
     public void setPotLabel(String pot) {
         potLabel.setText(pot);
     }
 
     /**
-     *
      * Sets the flop and make it visible
-     *
-     * @param card1Image
-     * @param card2Image
-     * @param card3Image
      */
     public void showFlop(Image card1Image, Image card2Image, Image card3Image) {
         communityCards[0].setImage(card1Image);
@@ -109,10 +99,7 @@ public class BoardLayout {
     }
 
     /**
-     *
      * Set and display turn
-     *
-     * @param turn
      */
     public void showTurn(Image turn) {
         communityCards[3].setImage(turn);
@@ -120,10 +107,7 @@ public class BoardLayout {
     }
 
     /**
-     *
      * Set and display river
-     *
-     * @param river
      */
     public void showRiver(Image river) {
         communityCards[4].setImage(river);

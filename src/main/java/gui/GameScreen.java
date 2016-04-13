@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -19,7 +20,9 @@ import javafx.stage.Stage;
 import java.util.*;
 
 /**
- * TODO: Add class description
+ * This class contains all the information about the game screen.
+ * It gets information from gameClient and moves it to the layouts, which displays it on the screen.
+ *
  *
  * @author André Dyrstad
  * @author Jostein Kringlen
@@ -107,7 +110,7 @@ public class GameScreen {
         if (userID == playerID) {
             VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-160);
+            vbox.setLayoutY(scene.getHeight()-190);
             pane.getChildren().addAll(vbox);
         } else {
 
@@ -134,11 +137,11 @@ public class GameScreen {
                     }
                     break;
                 case 4:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutX(scene.getWidth() - 320);
                     oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 5:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutX(scene.getWidth() - 320);
                     oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 default:
@@ -361,7 +364,7 @@ public class GameScreen {
         updateButtonTexts(ID, decision.move);
 
         //Play sound
-        //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+        new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
 
         Runnable task;
         if (ID == this.playerID) {
@@ -495,9 +498,9 @@ public class GameScreen {
 
             Runnable task;
             if (clientID == playerID) {
-                task = () -> playerLayout.setStackLabel("Amount of chips: " + stackSizeText);
+                task = () -> playerLayout.setStackLabel("Stack size: " + stackSizeText);
             } else {
-                task = () -> opponents.get(clientID).setStackSizeLabel("Amount of chips: " + stackSizeText);
+                task = () -> opponents.get(clientID).setStackSizeLabel("Stack size: " + stackSizeText);
             }
             Platform.runLater(task);
         }
@@ -632,7 +635,11 @@ public class GameScreen {
             });
 
             saveStatisticsButton.setOnAction(e -> {
-                ButtonListeners.saveToFile(stats);
+                if (saveStatisticsButton.getText().equals("Save statistics to file")) {
+                    ButtonListeners.saveToFile(stats);
+                    saveStatisticsButton.setText("Statistics saved!");
+                    saveStatisticsButton.setEffect(new Bloom(-0.9));
+                }
             });
 
             vBox.getChildren().addAll(endGameScreen, statsLabel, saveStatisticsButton, backToMainScreenButton);
@@ -675,13 +682,11 @@ public class GameScreen {
     public void setPositions(Map<Integer, Integer> positions) {
         Runnable task;
         for (Integer id : positions.keySet()) {
-            String pos = "Position: " + getPositionName(positions.get(id));
+            String pos = "Position: " + getPositionName(positions.get(id), numberOfPlayers);
             if (id == playerID) {
-                task = () -> playerLayout.setPositionLabel(pos);
+                task = () -> playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             } else {
-                task = () -> {
-                    opponents.get(id).setPositionLabel(pos);
-                };
+                task = () -> opponents.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             }
             Platform.runLater(task);
         }
@@ -692,7 +697,7 @@ public class GameScreen {
      * @param pos
      * @return position
      */
-    private String getPositionName(int pos) {
+    public static String getPositionName(int pos, int numberOfPlayers) {
         if (numberOfPlayers == 2)
             return pos == 0 ? "Dealer" : "Big Blind";
         return (pos == numberOfPlayers-1 ? "Dealer" : pos == 0 ? "Small blind" : pos == 1 ? "Big blind" : pos == 2 ? "UTG" : "UTG+" + (pos-2  ));
@@ -756,7 +761,7 @@ public class GameScreen {
      * @param potsize   The amount the player won
      */
     public void preShowdownWinner(int winnerID, long potsize) {
-        Platform.runLater(() ->  {
+        Platform.runLater(() -> {
             boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
             printToLogField(names.get(winnerID) + " won the pot of " + potsize);
         });
@@ -774,18 +779,17 @@ public class GameScreen {
 
     /**
      *  Show the hole cards of players remaining in the hand
-     * @param playerList Integer list containing the ID of all the players left in the hand
      * @param holeCards  Map from a player's ID to his hole cards
      */
-    public void showHoleCards(ArrayList<Integer> playerList, Map<Integer, Card[]> holeCards) {
-        for (Integer id : playerList) {
-            Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(holeCards.get(id)[0].getCardNameForGui()));
-            Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(holeCards.get(id)[1].getCardNameForGui()));
+    public void showHoleCards(Map<Integer, Card[]> holeCards) {
+        holeCards.forEach((id, cards) -> {
+            Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
+            Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
             if (id == playerID)
                 Platform.runLater(() -> playerLayout.setCardImage(leftCard, rightCard));
             else
                 Platform.runLater(() -> opponents.get(id).setCardImage(leftCard, rightCard));
-        }
+        });
     }
 
     /**
@@ -795,22 +799,37 @@ public class GameScreen {
         if (putOnTable.get(id) == 0)
             return null;
         else if (putOnTable.get(id) <= currentBigBlind / 2)
-            return ImageViewer.getChipImage("sb_image");
+            return ImageViewer.getChipAndButtonImage("sb_image");
         if (putOnTable.get(id) <= currentBigBlind)
-            return ImageViewer.getChipImage("bb_image");
+            return ImageViewer.getChipAndButtonImage("bb_image");
         else if (putOnTable.get(id) <= currentBigBlind * 3)
-            return ImageViewer.getChipImage("poker1");
+            return ImageViewer.getChipAndButtonImage("poker1");
         else if (putOnTable.get(id) <= currentBigBlind * 5)
-            return ImageViewer.getChipImage("poker2");
+            return ImageViewer.getChipAndButtonImage("poker2");
         else if (putOnTable.get(id) <= currentBigBlind * 8)
-            return ImageViewer.getChipImage("poker3");
+            return ImageViewer.getChipAndButtonImage("poker3");
         else if (putOnTable.get(id) <= currentBigBlind * 12)
-            return ImageViewer.getChipImage("poker4");
+            return ImageViewer.getChipAndButtonImage("poker4");
         else if (putOnTable.get(id) <= currentBigBlind * 20)
-            return ImageViewer.getChipImage("poker6");
+            return ImageViewer.getChipAndButtonImage("poker6");
         else if(putOnTable.get(id) <= currentBigBlind * 50)
-            return ImageViewer.getChipImage("poker7");
+            return ImageViewer.getChipAndButtonImage("poker7");
         else
-            return ImageViewer.getChipImage("poker8");
+            return ImageViewer.getChipAndButtonImage("poker8");
     }
+
+    private Image getButtonImage(int player, int id){
+        if (player == 0) {
+            if(getPositionName(id, numberOfPlayers).equals("Dealer"))
+                return ImageViewer.getChipAndButtonImage("dealer");
+            else return null;
+        }
+        if (player > 0){
+            if (getPositionName(id, numberOfPlayers).endsWith("Dealer"))
+                return ImageViewer.getChipAndButtonImage("dealer");
+            else return null;
+        }
+        return null;
+    }
+
 }

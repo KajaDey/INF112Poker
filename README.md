@@ -22,6 +22,7 @@ and this years task is to engineer an implementation of Texas Hold'em poker, ove
 * For this agile project, we have an online Scrum board:
   * [Scrum board](https://scrumy.com/inf112gruppe4)
 * We also communicate using Slack.
+* We use bitbuckets bug tracker, "Issues", to report bugs when we encounter them, while playing the game.
 
 
 ## Usage of software
@@ -38,6 +39,11 @@ Our team is using Intellij, and by using that, you can easily import this projec
 The user can set the preferred game settings and the game continues until one of the players are out of chips.
 Later implementations will allow the user to create a multiplayer game and play against other human
 players over the internet. This implementation will also allow for a user to spectate a table of players.
+
+###Bug tracking
+If you where to test the software, and experience bugs while playing, feel free to add it to our bug tracker in our
+bitbucket repo, under "Issues". We use this feature to report bugs, and to assign the bug to whomever who can fix and/or
+is in charge of that particular part of the program.
 
 # LICENSE
 ---

@@ -16,7 +16,7 @@ public class GameSettings {
     private long smallBlind;
     private int maxNumberOfPlayers;
     private int levelDuration;
-    private GameController.AIType AIType;
+    private GameController.AIType aiType;
 
     /**
      *
@@ -34,7 +34,7 @@ public class GameSettings {
         this.smallBlind = smallBlind;
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
-        this.AIType = aiType;
+        this.aiType = aiType;
     }
 
     /**
@@ -75,6 +75,7 @@ public class GameSettings {
         return levelDuration;
     }
 
-    public GameController.AIType getAIType(){ return AIType; }
+    public GameController.AIType getAiType(){
+        return aiType; }
 
 }

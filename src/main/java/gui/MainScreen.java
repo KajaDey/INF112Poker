@@ -3,15 +3,13 @@ package gui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import gamelogic.GameController;
+import gamelogic.GameController.AIType;
 
 /**
  * This purpose of this class is to create the full screen that is seen when the application is started.
@@ -87,8 +85,8 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI", "Mixed");
-        choiceBox.setValue("Simple-AI");
+        choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
+        choiceBox.setValue(AIType.MIXED.toString());
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 

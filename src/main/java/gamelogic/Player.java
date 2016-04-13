@@ -90,6 +90,7 @@ public class Player extends User {
                 allIn = true;
                 break;
         }
+        assert stackSize >= 0 : this.getName() + " received stackSize " + stackSize + " after " + decision + ", amountToCall=" + amountToCall + ", putOnTableThisRound=" + putOnTableThisRound;
 
         //If a player has posted blind he should not be marked as if he as acted this betting round
         if (decision.move != Decision.Move.SMALL_BLIND && decision.move != Decision.Move.BIG_BLIND)
