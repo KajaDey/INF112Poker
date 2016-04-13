@@ -540,8 +540,8 @@ public class Game {
             error = "All blinds must be positive whole numbers";
         } else if (startBB < startSB * 2) {
             error = "Big blind must be at least twice the size of the small blind";
-        } else if(maxNumberOfPlayers < 2 || maxNumberOfPlayers > 8) {
-            error = "Max number of players must be between 2-8";
+        } else if(maxNumberOfPlayers < 2 || maxNumberOfPlayers > 6) {
+            error = "Number of players must be between 2-6";
         } else if(blindLevelDuration <= 0) {
             error = "Blind level must be a positive whole number";
         }

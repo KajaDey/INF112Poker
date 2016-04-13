@@ -364,7 +364,7 @@ public class GameScreen {
         updateButtonTexts(ID, decision.move);
 
         //Play sound
-        new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+        //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
 
         Runnable task;
         if (ID == this.playerID) {
@@ -394,7 +394,7 @@ public class GameScreen {
                         playerLayout.setCheckCallButton("Check");
                         break;
                     }
-                case BET:case RAISE:case SMALL_BLIND:
+                case BET:case RAISE:case SMALL_BLIND:case ALL_IN:
                     playerLayout.setCheckCallButton("Call");
                     playerLayout.setBetRaiseButton("Raise to");
                     break;
