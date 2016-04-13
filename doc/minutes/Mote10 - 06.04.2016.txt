@@ -1,17 +1,8 @@
-Møte 10 - 06.04.16, kl 10.00
-Sekretær: Ragnhild Aalvik
+MÃ¸te 10 - 06.04.16, kl 10.00
+SekretÃ¦r: Ragnhild Aalvik
 
-Oppmøte:
-Kristian
-Kaja
-Ragnhild
-Jostein
-Andrè
-Simon
-Mariah
-Henrik
-Vegar
-Morten
+OppmÃ¸te:
+Alle i gruppen
 
 Hva er gjort siden sist:
 Skrevet ferdig rank. 
@@ -20,10 +11,17 @@ NameGenerator
 
 Diskusjon:
 NameGenerator
+    - Navnetema?
+    - getRandomName()
+    - Tekstfiler med tema
 
-Plan til neste møte:
-Jobbe videre med oppgaver nevnt forrige møte. 
+Endringer i statistikk
 
-Tid for neste møte:
+
+Plan til neste mÃ¸te:
+Jobbe videre med oppgaver nevnt forrige mÃ¸te.
+Jobbe med Maven (Vegar)
+
+Tid for neste mÃ¸te:
 Fredag, 08.04.16 kl 12.00
 

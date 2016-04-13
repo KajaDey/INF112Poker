@@ -1,31 +1,43 @@
-Møte 8 - 31.03.16, kl 15.00
-Sekretær: Morten Lohne
+MÃ¸te 8 - 31.03.16, kl 15.00
+SekretÃ¦r: Morten Lohne
 
-Oppmøte:
+OppmÃ¸te:
 Vegar
 Kaja
 Kristian
 Jostein
-Andrè
+AndrÃ©
 Simon
 Morten
 Mariah
 Ragnhild
-Fraværende: Henrik
+
+Ikke til stede:
+Henrik
 
 Diskusjon:
-AI - smartere. Morten
-GUI: Hvordan få implementert slik at vi kan ha flere spillere. Jostein, Andrè, Mariah
-Diskuterer hvordan bordet skal se ut i fellesskap.
-Backend: Skal være ganske OK. Kristian ser på dette underveis.
-Regne ut/skrive ut hvilken hånd spilleren har i spillet. Ragnhild, Vegar og Kaja
-Statistikk til fil. Simon og Henrik
-Snakket om oppdatering av diagrammer
+Forrige sprint fungerte bra, godt samarbeid. Ikke noe left over work.
+MÃ¥ legge til de nye storyene og endre pÃ¥ de som handler om antall spillere.
+Oppdatere kravene, diskuterte MoSCoW.
+Diskuterte hvordan bordet og spillere skulle designes.
+Diskuterte hva vi skulle skrive ut som "Current best hand". Ble enige om Ã¥ skrive det ut i GUI.
+Diskuterte hvilken statistikk som skulle skrives ut etter endt spill.
 
 
-Plan til neste møte:
-Alle skal ha laget en plan for hvordan de skal gjennomføre sin oppgave, samt startet på gjennomføringen.
+Oppgavefordeling:
+AI - Lage en bedre, mindre random AI ved bruk av Montecarlo Tree Search algorithm (MCTS): Morten
+GUI - Hvordan fÃ¥ implementert flere spillere. Utarbeide en plan for et PlayerLayout-interface: Jostein, AndrÃ©, Mariah
+Game-loop - GjÃ¸re Gameloopen klar for flere spillere (skal vÃ¦re noen lunde implementert). Fortsette med bug tracking: Kristian
+Current best hand - Skrive ut hvilken hÃ¥nd spilleren har til en hver tid: Vegar, Kaja
+Statistikk - Lage en statistikk-klasse som kan holde pÃ¥ stats og skrive ut til fil: Henrik, Simon
+Oppdatere diagrammer: Kaja, Henrik
+Design model: Ragnhild
+Scrumy: Kaja
 
-Tid for neste møte:
+
+Plan til neste mÃ¸te:
+Alle skal ha laget en plan for hvordan de skal gjennomfÃ¸re sin oppgave, samt startet pÃ¥ gjennomfÃ¸ringen.
+
+Tid for neste mÃ¸te:
 Tirsdag 05.04, kl. 10.00
 

@@ -1,27 +1,32 @@
-Møte 9 - 05.04.16, kl 10.00
-Sekretær: Mariah Vårum
+MÃ¸te 9 - 05.04.16, kl 10.00
+Sekret@r: Mariah Vurum
 
-Oppmøte:
+OppmÃ¸te:
 Kristian
 Kaja
 Ragnhild
 Jostein
-Andrè
+AndrÃ©
 Simon
 Mariah
-Fraværende: Henrik, Vegar og Morten
+
+FravÃ¦rende:
+Henrik
+Vegar
+Morten
 
 Hva er gjort siden sist:
-Jobbet med GUI-kode
-Jobbet med toString i rules. 
-Jobbet med AI.
+Jostein/AndrÃ©/Mariah: Har begynt pÃ¥ Player/Opponent-layout i GUI. Jobber med plassering av forskjellig antall spillere.
+Kaja/Ragnhild: Har begynt pÃ¥ en toString() i Rules som skriver ut den beste hÃ¥nden forelÃ¸pig.
+Kristian: Har jobbet med Game-loop, implementert at et spill med flere spillere kan initialiseres.
 
 Diskusjon:
-Hvilke statistics skal man skrive til fil? 
-Ha en lagre-knapp? 
-Plan til neste møte:
-Alle jobber med oppgaver som nevnt over. 
+Diskuterte mer om hvilken statistikk som skal lagres etter et spill. NÃ¥r og hvordan skal det gjÃ¸res?
+Ble enige om Ã¥ ha en lagre statistikk-knapp i slutten av et spill.
+
+Plan til neste mÃ¸te:
+Alle fortsetter pÃ¥ de oppgavene de har. Jobbe med integreringen mellom GameController og GUI.
 
 
-Tid for neste møte:
-Gruppemøte: 06.04.16 kl 14.30
+Tid for neste mÃ¸te:
+GruppemÃ¸te: 06.04.16 kl 14.30
