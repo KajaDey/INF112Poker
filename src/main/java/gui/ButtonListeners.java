@@ -156,15 +156,6 @@ public class ButtonListeners {
     }
 
     /**
-     *
-     * Return to the lobby
-     *
-     */
-    public static void exitButtonListener(){
-        mainScreenEnterListener(savedName, savedNumOfPlayers, savedChoiceBox, savedGameController);
-    }
-
-    /**
      * sets the client
      */
     public static void setClient(GUIClient c) {

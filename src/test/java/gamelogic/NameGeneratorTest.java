@@ -11,7 +11,10 @@ public class NameGeneratorTest {
 
     @Test
     public void testGetRandomName() throws Exception {
-        String name = NameGenerator.getRandomName();
-        assertTrue(name != null && !name.equals(""));
+
+        for(int i = 0;i<100;i++) {
+            String name = NameGenerator.getRandomName();
+            assertTrue(name != null && !name.equals(""));
+        }
     }
 }
