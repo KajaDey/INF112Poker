@@ -58,7 +58,7 @@ public class Player {
      * @return A number between 0 and 1,
      */
     public double riskTaken(long totalChipsOnTable) {
-        return Math.sqrt( 0.666 * (double)contributedToPot / (stackSize + contributedToPot) + 0.333 * (double)contributedToPot / totalChipsOnTable);
+        return Math.pow( 0.666 * (double)contributedToPot / (stackSize + contributedToPot) + 0.333 * (double)contributedToPot / totalChipsOnTable, 0.333);
     }
 
     @Override

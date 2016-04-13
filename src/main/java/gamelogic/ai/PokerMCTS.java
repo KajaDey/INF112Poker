@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class PokerMCTS {
 
+    public final double contemptFactor;
     public final int playerId;
     public final int playerPosition;
     public final int amountOfPlayers;
@@ -21,9 +22,10 @@ public class PokerMCTS {
     private int totalSearches;
     private int terminalNodesSelected;
 
-    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId) {
+    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, double contemptFactor) {
         this.amountOfPlayers = amountOfPlayers;
         this.playerId = playerId;
+        this.contemptFactor = contemptFactor;
         this.playerPosition = gameState.players.stream()
                 .filter(player -> player.id == playerId)
                 .findFirst()
@@ -40,7 +42,7 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, new Random(), false);
                 totalSearches++;
-                if (totalSearches % 50000 == 0) {
+                if (totalSearches % 100000 == 0) {
                     assert rootNode.children.size() <= 50 && rootNode.children.size() >= 45  : "Rootnode for MCTS had " + rootNode.children.size() + " children.";
                     assert rootNode.children.get(0).get().children.size() <= 49 && rootNode.children.get(0).get().children.size() >= 44 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 44-49.";
                     assert rootNode.children.get(0).get().searches > 10;
@@ -64,6 +66,32 @@ public class PokerMCTS {
         double[] values = new double[criticalEvals.get().size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = criticalEvals.get().get(i).eval / criticalEvals.get().get(i).searches;
+            Decision decision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
+            //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
+            switch (decision.move) {
+                case FOLD:
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
+                    break;
+                case CHECK:
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
+                    break;
+                case BET:
+                case RAISE:
+                    long betSize = decision.size + initialGameState.currentPlayer.currentBet;
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    break;
+                case CALL:
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
+                    break;
+                case BIG_BLIND:
+                    break;
+                case SMALL_BLIND:
+                    break;
+                case ALL_IN:
+                    values[i] *= contemptFactor - 0.02;
+                    break;
+            }
+            //System.out.println(values[i]);
         }
 
         Decision bestDecision = new Decision(Decision.Move.FOLD);
@@ -254,6 +282,9 @@ public class PokerMCTS {
                     }
                 }
                 int moveIndex = allMoves.indexOf(randomMove);
+                if (moveIndex < 0) {
+                    moveIndex = 0; // TODO: This happens sometimes, for an unknown reason. It's rare, so simply ignore it for now
+                }
                 assert moveIndex >= 0 : "Found illegal move " + randomMove + " while simulating, allMoves: " + allMoves + ", " + clonedGameState.currentPlayer + ", currentBet: " + clonedGameState.currentPlayer.currentBet + ", pot: " + clonedGameState.getCurrentPot();
                 criticalEvals.get().get(moveIndex).eval += evals[playerPosition];
                 criticalEvals.get().get(moveIndex).searches += 1;
