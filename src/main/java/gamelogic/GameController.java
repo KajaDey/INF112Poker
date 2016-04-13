@@ -20,11 +20,11 @@ public class GameController {
         public String toString() {
             switch (this) {
                 case MCTS_AI:
-                    return "MCTS-AI";
+                    return "Advanced AI";
                 case SIMPLE_AI:
-                    return "Simple-AI";
+                    return "Simple AI";
                 case MIXED:
-                    return "Mixed";
+                    return "Mixed AIs";
                 default: throw new IllegalStateException();
             }
         }
@@ -34,11 +34,11 @@ public class GameController {
          */
         public static AIType fromString(String string) {
             switch (string) {
-                case "MCTS-AI":
+                case "Advanced AI":
                     return MCTS_AI;
-                case "Simple-AI":
+                case "Simple AI":
                     return SIMPLE_AI;
-                case "Mixed":
+                case "Mixed AIs":
                     return MIXED;
                 default: throw new IllegalArgumentException();
             }
