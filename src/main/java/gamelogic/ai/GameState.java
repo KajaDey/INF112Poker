@@ -160,7 +160,7 @@ public class GameState {
                     break;
                 case BET: case RAISE:
                     assert decision.size >= currentPlayer.minimumRaise : currentPlayer + " made " + decision.size + ", but minimum raise was " + currentPlayer.minimumRaise;
-                    assert decision.size + currentPlayer.currentBet <= currentPlayer.stackSize : currentPlayer + " tried " + decision + " on minimumRaise " + currentPlayer.currentBet + ", but had stackSize " + currentPlayer.stackSize;
+                    assert decision.size + currentPlayer.currentBet <= currentPlayer.stackSize : currentPlayer + " tried " + decision + " on currentBet " + currentPlayer.currentBet + ", but had stackSize " + currentPlayer.stackSize;
                     assert decision.size > 0 : currentPlayer + " tried to bet/raise " + decision.size;
                     playersToMakeDecision = playersLeftInHand - 1;
 

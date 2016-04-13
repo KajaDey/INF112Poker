@@ -125,7 +125,6 @@ public class SimpleAI implements GameClient {
 
     /**
      * Returns a legal amount to raise by, which becomes higher if the hand is good
-     * Also removes the appropriate amount of chips from stackSize
      * May go all in. Will return Optional.empty() if it goes all in
      * @param randomModifier Modifier that gets multipled by the handquality
      */
@@ -136,6 +135,7 @@ public class SimpleAI implements GameClient {
         }
         else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) { // If the hand is really good
             raiseAmount = minimumRaise * 2;
+            System.out.println("Deciding to raise by " + raiseAmount + ", currentBet=" + currentBet + ", minimumRaise=" + minimumRaise + ", stackSize=" + stackSizes.get(playerId));
         }
         else {
             raiseAmount = minimumRaise;
@@ -228,6 +228,7 @@ public class SimpleAI implements GameClient {
             case CALL:
                 stackSizes.compute(playerId, (key, val) -> val -= decision.size);
                 if (playerId == this.playerId) {
+                    stackSizes.compute(playerId, (key, val) -> val -= currentBet);
                     currentBet = 0;
                 }
                 break;
@@ -235,6 +236,8 @@ public class SimpleAI implements GameClient {
             case RAISE:
             case BET:
                 stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.size));
+                if (playerId == this.playerId) {
+                }
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }
