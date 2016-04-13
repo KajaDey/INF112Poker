@@ -1,29 +1,35 @@
-Møte 12 - 10.04.16, kl 12.15
-Sekretær: Kristian Rosland
+MÃ¸te 12 - 10.04.16, kl 12.15
+SekretÃ¦r: Kristian Rosland
 
-Oppmøte:
+OppmÃ¸te:
 Kristian
 Kaja
 Ragnhild
 Jostein
-Andrè
+AndrÃ©
 Simon
 Mariah
 Vegar
 Morten
-Fraværende: Henrik
+
+FravÃ¦rende:
+Henrik
 
 Hva er gjort siden sist:
-Bugtesting
+Bugreports
 Jobbet med diagrammer
-MAVEN er ok
+MAVEN fungerer
 
 Diskusjon:
 Integrering av den nye AIen.
-Legge inn bilder av chips og dealer button. 
+Legge inn bilder av chips og dealer button.
+Alle tester mÃ¥ passere for at Maven skal funke skikkelig med build.
+Lydavspilling (eks. chips/check/dealing)
+Bugs or features?
 
-Plan til neste møte:
-Ferdigstille alt for iterasjon 2. 
+Plan til neste mÃ¸te:
+Ferdigstille alt for iterasjon 2.
 
-Tid for neste møte:
-Skal eventuelt planlegges over slack. 
+Tid for neste mÃ¸te:
+Skal eventuelt planlegges over slack.
+(Ble ingen mÃ¸te nÃ¥)

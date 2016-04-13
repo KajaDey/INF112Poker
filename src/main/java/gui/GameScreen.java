@@ -364,7 +364,7 @@ public class GameScreen {
         updateButtonTexts(ID, decision.move);
 
         //Play sound
-        new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+        //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
 
         Runnable task;
         if (ID == this.playerID) {
@@ -394,7 +394,7 @@ public class GameScreen {
                         playerLayout.setCheckCallButton("Check");
                         break;
                     }
-                case BET:case RAISE:case SMALL_BLIND:
+                case BET:case RAISE:case SMALL_BLIND:case ALL_IN:
                     playerLayout.setCheckCallButton("Call");
                     playerLayout.setBetRaiseButton("Raise to");
                     break;
@@ -682,7 +682,7 @@ public class GameScreen {
     public void setPositions(Map<Integer, Integer> positions) {
         Runnable task;
         for (Integer id : positions.keySet()) {
-            String pos = "Position: " + getPositionName(positions.get(id));
+            String pos = "Position: " + getPositionName(positions.get(id), numberOfPlayers);
             if (id == playerID) {
                 task = () -> playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             } else {
@@ -697,7 +697,7 @@ public class GameScreen {
      * @param pos
      * @return position
      */
-    private String getPositionName(int pos) {
+    public static String getPositionName(int pos, int numberOfPlayers) {
         if (numberOfPlayers == 2)
             return pos == 0 ? "Dealer" : "Big Blind";
         return (pos == numberOfPlayers-1 ? "Dealer" : pos == 0 ? "Small blind" : pos == 1 ? "Big blind" : pos == 2 ? "UTG" : "UTG+" + (pos-2  ));
@@ -762,7 +762,7 @@ public class GameScreen {
      */
     public void preShowdownWinner(int winnerID, long potsize) {
         Platform.runLater(() -> {
-            boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
+            boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
             printToLogField(names.get(winnerID) + " won the pot of " + potsize);
         });
     }
@@ -820,12 +820,12 @@ public class GameScreen {
 
     private Image getButtonImage(int player, int id){
         if (player == 0) {
-            if(getPositionName(id).equals("Dealer"))
+            if(getPositionName(id, numberOfPlayers).equals("Dealer"))
                 return ImageViewer.getChipAndButtonImage("dealer");
             else return null;
         }
         if (player > 0){
-            if (getPositionName(id).endsWith("Dealer"))
+            if (getPositionName(id, numberOfPlayers).endsWith("Dealer"))
                 return ImageViewer.getChipAndButtonImage("dealer");
             else return null;
         }

@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import gamelogic.GameController;
+import gamelogic.AIType;
 
 /**
  * This purpose of this class is to create the full screen that is seen when the application is started.
@@ -61,7 +62,6 @@ public class MainScreen {
         //Top-text
         String title = "Texas Hold'em!";
         String info = "This is an implementation of Texas hold'em.\n" +
-               "Since the program isn't fully implemented yet, you can only choose \"Against AI\" and play against 1-5 AI's\n" +
                "Enter your name, and start playing!";
 
 
@@ -84,8 +84,8 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll("Simple-AI", "MCTS-AI", "Mixed");
-        choiceBox.setValue("Simple-AI");
+        choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
+        choiceBox.setValue(AIType.MIXED.toString());
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 

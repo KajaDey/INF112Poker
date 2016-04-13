@@ -30,6 +30,11 @@ public class NameGenerator {
         filePath = "resources/nameList/names.txt";
     }
 
+    /**
+     *  Get a random name from a theme series
+     *  Guarantees no duplicates
+     *  @return
+     */
     public static String getRandomName(){
         if (pathOfSeries.isEmpty() || characterNames.isEmpty())
             readNewSeries();
@@ -43,6 +48,10 @@ public class NameGenerator {
 
     }
 
+    /**
+     * Resets the current series to get names from
+     * Should be used every time a new game is initialized
+     */
     public static void readNewSeries(){
         characterNames = new ArrayList<>();
         pathsOfSeries = new ArrayList<>();

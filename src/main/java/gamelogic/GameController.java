@@ -12,8 +12,6 @@ import java.util.*;
  * A controller to function as a layer between the GUI and the back end.
  */
 public class GameController {
-    public enum AIType { MCTS_AI, SIMPLE_AI, Mixed}
-
     private Game game;
     private Map<Integer, GameClient> clients;
     private GUIClient guiClient;
@@ -36,8 +34,10 @@ public class GameController {
     public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, aiType);
-        mainGUI.displayLobbyScreen(name, gameSettings);
-        this.name = name;
+        if (numPlayers >=2 && numPlayers <= 6) {
+            mainGUI.displayLobbyScreen(name, gameSettings);
+            this.name = name;
+        }
     }
 
     /**
@@ -92,6 +92,7 @@ public class GameController {
         mainGUI.insertPlayer(0, this.name, settings.getStartStack());
         guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
         names.put(0, name);
+        GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
 
     /**
@@ -102,18 +103,18 @@ public class GameController {
 
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
-            int AI_id = i+1;
+            int AI_id = i + 1;
 
             GameClient aiClient;
-            double contemptFactor = 1.0;
-            switch (gameSettings.getAIType()) {
+            double contemptFactor = 1.00;
+            switch (gameSettings.getAiType()) {
                 case MCTS_AI:
-                    aiClient = new MCTSAI(AI_id);
+                    aiClient = new MCTSAI(AI_id, contemptFactor);
                     break;
                 case SIMPLE_AI:
                     aiClient = new SimpleAI(AI_id, contemptFactor);
                     break;
-                case Mixed:
+                case MIXED:
                     aiClient = Math.random() > 0.5 ? new MCTSAI(AI_id) : new SimpleAI(AI_id, contemptFactor);
                     break;
                 default: throw new IllegalStateException(); // Exception to please our java overlords
@@ -124,6 +125,7 @@ public class GameController {
             game.addPlayer(aiName, AI_id);
             mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
             names.put(AI_id, aiName);
+            GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
     }
 
@@ -147,21 +149,27 @@ public class GameController {
      */
     public Decision getDecisionFromClient(int ID) {
         GameClient client = clients.get(ID);
-        if (client instanceof SimpleAI || client instanceof MCTSAI) {
-            long startTime = System.currentTimeMillis();
-            long timeToTake = 500L + (long)(Math.random() * 2000.0);
-            Decision decision = client.getDecision(timeToTake);
-            long timeTaken = System.currentTimeMillis() - startTime;
-            try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
-            catch (InterruptedException e) {
-                System.out.println("Sleeping thread interrupted");
-            }
-            return decision;
-        }
-        else {
+        if (client instanceof SimpleAI || client instanceof MCTSAI)
+            return getAIDecision(client);
+        else
             return client.getDecision(10000L);
-        }
+    }
 
+    /**
+     *  Get a decision from an AI-client
+     * @param aiClient
+     * @return
+     */
+    private Decision getAIDecision(GameClient aiClient) {
+        long startTime = System.currentTimeMillis();
+        long timeToTake = 500L + (long)(Math.random() * 2000.0);
+        Decision decision = aiClient.getDecision(timeToTake);
+        long timeTaken = System.currentTimeMillis() - startTime;
+        try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
+        catch (InterruptedException e) {
+            System.out.println("Sleeping thread interrupted");
+        }
+        return decision;
     }
 
     /**

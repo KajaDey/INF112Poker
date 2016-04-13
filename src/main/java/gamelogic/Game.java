@@ -1,6 +1,7 @@
 package gamelogic;
 
 import gui.GUIMain;
+import gui.GameScreen;
 import gui.GameSettings;
 
 import java.util.*;
@@ -35,6 +36,7 @@ public class Game {
     private Map<Integer, Card[]> holeCards;
     private Map<Integer, Integer> positions;
     private Map<Integer, Integer> rankingTable;
+    private Map<Integer, String> names;
     private Card [] communityCards;
 
     public Game(GameSettings gamesettings, GameController gameController) {
@@ -50,6 +52,7 @@ public class Game {
         this.blindLevelDuration = gamesettings.getLevelDuration();
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
+        this.names = new HashMap<>();
     }
 
     /**
@@ -95,7 +98,7 @@ public class Game {
         printAllPlayerStacks();
 
         //First betting round (preflop)
-        GUIMain.debugPrintln("\nPREFLOP:");
+        GUIMain.debugPrintln("\nPRE FLOP:");
 
         boolean handContinues = bettingRound(preFlop);
         if (!handContinues) {
@@ -244,7 +247,7 @@ public class Game {
                     break;
             }
 
-            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision);
+            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision +  ", stacksize = " + playerToAct.getStackSize());
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1)
@@ -386,7 +389,7 @@ public class Game {
 
     /**
      * Returns a list of the players who still have chips left (player.getStackSize() > 0).
-     * Order: Small blind, big blind, etc...
+     * Order: Small blind, big blind, UTG...
      *
      * return Ordered list of players still in the game
      */
@@ -472,6 +475,7 @@ public class Game {
         }
 
         stackSizes.put(ID, gamesettings.getStartStack());
+        names.put(ID, name);
 
         return true;
     }
@@ -539,8 +543,8 @@ public class Game {
             error = "All blinds must be positive whole numbers";
         } else if (startBB < startSB * 2) {
             error = "Big blind must be at least twice the size of the small blind";
-        } else if(maxNumberOfPlayers < 2 || maxNumberOfPlayers > 8) {
-            error = "Max number of players must be between 2-8";
+        } else if(maxNumberOfPlayers < 2 || maxNumberOfPlayers > 6) {
+            error = "Number of players must be between 2-6";
         } else if(blindLevelDuration <= 0) {
             error = "Blind level must be a positive whole number";
         }
@@ -615,7 +619,7 @@ public class Game {
 
     public void printAllPlayerStacks() {
         for (Player p : players) {
-            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize());
+            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize() + ", " + (positions.containsKey(p.getID()) ? GameScreen.getPositionName(positions.get(p.getID()), positions.size()) : "Bust"));
         }
         GUIMain.debugPrintln("Pot: " + pot.getPotSize());
     }
@@ -647,8 +651,10 @@ public class Game {
 
         assert winnerID > -1 : "No winner was determined when game was over";
 
+        rankingTable.put(winnerID, 1);
+
         //Create a new statistics of the object for use in showdown
-        Statistics stats = new Statistics(winnerID, rankingTable.get(p.getID()), p.handsWon(), p.handsPlayed(), p.preFlopFolds(), p.aggressiveMoves(), p.passiveMoves(), p.getBestHand());
+        Statistics stats = new Statistics(p, names, rankingTable);
 
         //Tell all clients that the game is over
         gameController.gameOver(stats);

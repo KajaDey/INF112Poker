@@ -38,8 +38,31 @@ public class SimpleAI implements GameClient {
         this.contemptFactor = contemptFactor;
     }
 
+    /**
+     * Gives a very rough estimate of the quality of a set of holeCards
+     * @return A number between 7 and 56
+     */
+    public static double handQuality(Card card1, Card card2) {
+        double handQuality = card1.rank + card2.rank;
+
+        if (card1.suit == card2.suit) {
+            handQuality *= 1.2;
+        }
+
+        int rankDistance = Math.abs(card1.rank - card2.rank);
+        switch (rankDistance) {
+            case 0: handQuality *= 2.0; break;
+            case 1: handQuality *= 1.5; break;
+            case 2: handQuality *= 1.25; break;
+            case 3: handQuality *= 1.1; break;
+            default:
+        }
+        return handQuality;
+    }
+
     @Override
     public Decision getDecision(long timeToThink) {
+        assert bigBlindAmount > 0: "Ai was asked to make a decision without receving big blind";
         assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
         assert stackSizes.get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get(playerId) + ")";
 
@@ -47,21 +70,8 @@ public class SimpleAI implements GameClient {
         assert stackSizes.get(playerId).equals(stackSizes.get(this.playerId)) :
                 "AI: stacksize mismatch: " + stackSizes.get(playerId) + " != " + stackSizes.get(this.playerId);
 
-        int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
-        if (holeCards.get(0).suit == holeCards.get(1).suit) {
-            handQuality *= 1.2;
-        }
-
-        int rankDistance = Math.abs(holeCards.get(0).rank - holeCards.get(1).rank);
-        switch (rankDistance) {
-            case 0: handQuality *= 2.0; break;
-            case 1: handQuality *= 1.4; break;
-            case 2: handQuality *= 1.2; break;
-            case 3: handQuality *= 1.1; break;
-            default:
-        }
-        handQuality *= Math.pow(0.95, amountOfPlayers);
+        double handQuality = handQuality(holeCards.get(0), holeCards.get(1)) * Math.pow(0.95, amountOfPlayers);;
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
@@ -124,11 +134,10 @@ public class SimpleAI implements GameClient {
 
     /**
      * Returns a legal amount to raise by, which becomes higher if the hand is good
-     * Also removes the appropriate amount of chips from stackSize
      * May go all in. Will return Optional.empty() if it goes all in
      * @param randomModifier Modifier that gets multipled by the handquality
      */
-    public Optional<Long> getRaiseAmount(double randomModifier, int handQuality) {
+    public Optional<Long> getRaiseAmount(double randomModifier, double handQuality) {
         long raiseAmount;
         if (randomModifier * (handQuality / 26.0) > 1 / contemptFactor) { // If the hand is really good
             raiseAmount = minimumRaise * 4;
@@ -227,6 +236,7 @@ public class SimpleAI implements GameClient {
             case CALL:
                 stackSizes.compute(playerId, (key, val) -> val -= decision.size);
                 if (playerId == this.playerId) {
+                    stackSizes.compute(playerId, (key, val) -> val -= currentBet);
                     currentBet = 0;
                 }
                 break;
@@ -234,6 +244,8 @@ public class SimpleAI implements GameClient {
             case RAISE:
             case BET:
                 stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.size));
+                if (playerId == this.playerId) {
+                }
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }

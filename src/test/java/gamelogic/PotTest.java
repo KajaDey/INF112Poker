@@ -2,6 +2,7 @@ package gamelogic;
 
 import org.junit.Before;
 import org.junit.Test;
+import sun.plugin2.message.ShowDocumentMessage;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -211,8 +212,46 @@ public class PotTest {
             }
 
             assertEquals(0, pot.getPotSize());
+
         }
     }
 
+    @Test
+    public void testThatASidePotOfZeroIsNotAdded() {
+        //Player 2 will win the main pot of 19825
+        //Player 4 will take a side pot of 150
+        //Player 0 will take a side pot of 2525
+        //The stats should not print that player 3 wins a side pot of 0
+
+        pot.addToPot(0, 7525);
+        pot.addToPot(1, 25);
+        pot.addToPot(2, 4950);
+        pot.addToPot(3, 5000);
+        pot.addToPot(4, 5000);
+
+        players.get(0).setHoleCards(Card.of(4, Card.Suit.DIAMONDS).get(), Card.of(10, Card.Suit.HEARTS).get());
+        players.get(1).setHoleCards(Card.of(2, Card.Suit.CLUBS).get(), Card.of(8, Card.Suit.SPADES).get());
+        players.get(2).setHoleCards(Card.of(10, Card.Suit.CLUBS).get(), Card.of(7, Card.Suit.CLUBS).get());
+        players.get(3).setHoleCards(Card.of(13, Card.Suit.SPADES).get(), Card.of(7, Card.Suit.DIAMONDS).get());
+        players.get(4).setHoleCards(Card.of(13, Card.Suit.CLUBS).get(), Card.of(14, Card.Suit.DIAMONDS).get());
+
+        //Player 1 folded
+        players.remove(1);
+
+        ArrayList<Card> communityCards = new ArrayList<>();
+        communityCards.add(Card.of(9, Card.Suit.CLUBS).get());
+        communityCards.add(Card.of(13, Card.Suit.DIAMONDS).get());
+        communityCards.add(Card.of(8, Card.Suit.DIAMONDS).get());
+        communityCards.add(Card.of(11, Card.Suit.HEARTS).get());
+        communityCards.add(Card.of(3, Card.Suit.CLUBS).get());
+
+        ShowdownStats stats = new ShowdownStats(players, communityCards);
+        pot.handOutPot(players, communityCards, stats);
+
+        assertFalse(stats.getWinnerText().contains(players.get(2).getName()));
+        assertTrue(stats.getWinnerText().contains(players.get(0).getName()));
+        assertTrue(stats.getWinnerText().contains(players.get(1).getName()));
+        assertTrue(stats.getWinnerText().contains(players.get(3).getName()));
+    }
 
 }

@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by kristianrosland on 16.03.2016.
  *
- * Class to represent the pot at all times.
+ * Class to represent the pot and who can claim what
  */
 public class Pot {
 
@@ -100,7 +100,8 @@ public class Pot {
             players.remove(minPlayer);
         }
 
-        showdown.addSidePot(winnersCopy, size);
+        if (size > 0)
+            showdown.addSidePot(winnersCopy, size);
     }
 
     /**
@@ -131,7 +132,7 @@ public class Pot {
      * @return  A list of the player(s) with the best hand
      */
     private ArrayList<Player> getPotWinners(List<Player> players, List<Card> communityCards) {
-        assert players.size() > 0 : "Tried to get main pot winner for " + players.size() + " players";
+        assert players.size() > 0 : "Tried to get pot winner for " + players.size() + " players";
         ArrayList<Hand> hands = new ArrayList<>();
 
         //Add all player hands

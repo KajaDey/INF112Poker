@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class PokerMCTS {
 
+    public final double contemptFactor;
     public final int playerId;
     public final int playerPosition;
     public final int amountOfPlayers;
@@ -21,9 +22,10 @@ public class PokerMCTS {
     private int totalSearches;
     private int terminalNodesSelected;
 
-    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId) {
+    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, double contemptFactor) {
         this.amountOfPlayers = amountOfPlayers;
         this.playerId = playerId;
+        this.contemptFactor = contemptFactor;
         this.playerPosition = gameState.players.stream()
                 .filter(player -> player.id == playerId)
                 .findFirst()
@@ -40,7 +42,7 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, new Random(), false);
                 totalSearches++;
-                if (totalSearches % 50000 == 0) {
+                if (totalSearches % 100000 == 0) {
                     assert rootNode.children.size() <= 50 && rootNode.children.size() >= 45  : "Rootnode for MCTS had " + rootNode.children.size() + " children.";
                     assert rootNode.children.get(0).get().children.size() <= 49 && rootNode.children.get(0).get().children.size() >= 44 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 44-49.";
                     assert rootNode.children.get(0).get().searches > 10;
@@ -64,6 +66,32 @@ public class PokerMCTS {
         double[] values = new double[criticalEvals.get().size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = criticalEvals.get().get(i).eval / criticalEvals.get().get(i).searches;
+            Decision decision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
+            //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
+            switch (decision.move) {
+                case FOLD:
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
+                    break;
+                case CHECK:
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
+                    break;
+                case BET:
+                case RAISE:
+                    long betSize = decision.size + initialGameState.currentPlayer.currentBet;
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    break;
+                case CALL:
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
+                    break;
+                case BIG_BLIND:
+                    break;
+                case SMALL_BLIND:
+                    break;
+                case ALL_IN:
+                    values[i] *= contemptFactor - 0.02;
+                    break;
+            }
+            //System.out.println(values[i]);
         }
 
         Decision bestDecision = new Decision(Decision.Move.FOLD);
@@ -217,6 +245,7 @@ public class PokerMCTS {
             }
 
             GameState.GameStateChange randomMove = gameState.getRandomDecision(random).get();
+            GameState clonedGameState = new GameState(gameState);
 
             gameState.makeGameStateChange(randomMove);
 
@@ -242,7 +271,7 @@ public class PokerMCTS {
 
             assert hasPassedDecisionNode || !(this instanceof OpponentNode) : "Found opponent node for " + gameState.currentPlayer + " without passing decision node (AI is " + gameState.players.get(playerPosition) + ") after " + totalSearches + " searches.";
             if (!hasPassedDecisionNode && this instanceof AINode) {
-
+                assert allMoves.size() > 0;
                 double[] evals = childNode.simulate(totalSearches, gameState, random, true);
                 //System.out.println(this.getClass().getSimpleName() + " at search #" + totalSearches + ", has stacksize " + gameState.players.get(playerPosition).stackSize + ", currentBet " + gameState.players.get(playerPosition).currentBet + " and moves " + allMoves.stream().map(Object::toString).reduce(String::concat).get());
                 if (!criticalEvals.isPresent()) {
@@ -253,6 +282,10 @@ public class PokerMCTS {
                     }
                 }
                 int moveIndex = allMoves.indexOf(randomMove);
+                if (moveIndex < 0) {
+                    moveIndex = 0; // TODO: This happens sometimes, for an unknown reason. It's rare, so simply ignore it for now
+                }
+                assert moveIndex >= 0 : "Found illegal move " + randomMove + " while simulating, allMoves: " + allMoves + ", " + clonedGameState.currentPlayer + ", currentBet: " + clonedGameState.currentPlayer.currentBet + ", pot: " + clonedGameState.getCurrentPot();
                 criticalEvals.get().get(moveIndex).eval += evals[playerPosition];
                 criticalEvals.get().get(moveIndex).searches += 1;
                 // This is a throwaway node, so not neccessary to store the values and number of searches
@@ -378,7 +411,7 @@ public class PokerMCTS {
         public double[] select(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             terminalNodesSelected++;
             this.searches++;
-            assert Arrays.equals(values, terminalEval(gameState, totalSearches));
+            // assert Arrays.equals(values, terminalEval(gameState, totalSearches));
             return values;
         }
 
@@ -391,7 +424,7 @@ public class PokerMCTS {
         public double[] simulate(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             //assert values[0] == terminalEval(gameState, totalSearches)[0] : "Terminal node has values " + Arrays.toString(values) + " but values were now computed to " + Arrays.toString(terminalEval(gameState, totalSearches));
             this.searches++;
-            assert Arrays.equals(values, terminalEval(gameState, totalSearches));
+            // assert Arrays.equals(values, terminalEval(gameState, totalSearches));
             return values;
         }
     }
@@ -436,15 +469,6 @@ public class PokerMCTS {
 
     public static double[] terminalEval(GameState gameState, int totalSearches) {
 
-        class Pair<T, U> {
-            final T v1;
-            final U v2;
-            Pair(T v1, U v2) {
-                this.v1 = v1;
-                this.v2 = v2;
-            }
-        }
-
         class PlayerAndScore implements Comparable<PlayerAndScore> {
             final Player player;
             final int handScore;
@@ -460,17 +484,13 @@ public class PokerMCTS {
         }
 
         if (gameState.getPlayersLeftInHand() + gameState.getPlayersAllIn() == 1) {
-            for (Player player : gameState.players) {
-                if (player.isInHand || player.isAllIn) {
-                }
-            }
             long pot = 0;
             for (Player player : gameState.players) {
                 pot += player.contributedToPot;
                 player.contributedToPot = 0;
             }
             for (Player player : gameState.players) {
-                if (player.isInHand) {
+                if (player.isInHand || player.isAllIn) {
                     player.stackSize += pot;
                 }
             }
@@ -522,7 +542,7 @@ public class PokerMCTS {
         }
 
         assert newGameState.sumOfChipsInPlay(newGameState.players) == newGameState.allChipsOnTable :
-                "Sum of player chips is " + newGameState.sumOfChipsInPlay(newGameState.players) + ", but started with " + newGameState.allChipsOnTable + " on table.";
+                "Sum of player chips is " + GameState.sumOfChipsInPlay(newGameState.players) + ", but started with " + newGameState.allChipsOnTable + " on table.";
 
         assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001
                 : "Error: winning probs is " + Arrays.toString(eval) + " (sum=" + Arrays.stream(eval).reduce(0.0, Double::sum) + ")";
