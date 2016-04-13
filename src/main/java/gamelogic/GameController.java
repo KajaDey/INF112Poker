@@ -15,7 +15,7 @@ public class GameController {
     public enum AIType { MCTS_AI, SIMPLE_AI, MIXED;
 
         /**
-         * @return a string representation of this AI type, as it is shown in the choice buttons
+         * @return A string representation of this AI type, as it is shown in the choice buttons in the GUI
          */
         public String toString() {
             switch (this) {
@@ -26,6 +26,21 @@ public class GameController {
                 case MIXED:
                     return "Mixed";
                 default: throw new IllegalStateException();
+            }
+        }
+
+        /**
+         * @return The AIType corresponding to the input string, as shown in the choice buttons in the GUI
+         */
+        public static AIType fromString(String string) {
+            switch (string) {
+                case "MCTS-AI":
+                    return MCTS_AI;
+                case "Simple-AI":
+                    return SIMPLE_AI;
+                case "Mixed":
+                    return MIXED;
+                default: throw new IllegalArgumentException();
             }
         }
     }
