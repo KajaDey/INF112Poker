@@ -122,7 +122,7 @@ public class GameLobby {
         levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
 
         choiceBox = new ChoiceBox<>();
-        choiceBox.setValue(gameController.gameSettings.getAIType().name());
+        choiceBox.setValue(gameController.gameSettings.getAiType().toString());
         choiceBox.setMinWidth(100);
         choiceBox.setMaxWidth(100);
         choiceBox.setMinHeight(30);
