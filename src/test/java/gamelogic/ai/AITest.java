@@ -22,7 +22,7 @@ public class AITest {
     int smallBlind = 25;
     int bigBlind = 50;
     long startStack = 1000L;
-    long timeToThink = 2000L;
+    long timeToThink = 5000L;
 
     @Test
     public void testAllInAsCall() {
