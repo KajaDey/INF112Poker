@@ -76,7 +76,7 @@ public class ButtonListeners {
             aiType = GameController.AIType.MCTS_AI;
         }
         else if (aiChoice.equals("Mixed")) {
-            aiType = GameController.AIType.Mixed;
+            aiType = GameController.AIType.MIXED;
         }
         else {
             throw new IllegalArgumentException();
@@ -130,7 +130,7 @@ public class ButtonListeners {
                     type = GameController.AIType.MCTS_AI;
                 }
                 else if (choiceBox.equals("Mixed")) {
-                    type = GameController.AIType.Mixed;
+                    type = GameController.AIType.MIXED;
                 }
                 else {
                     throw new IllegalArgumentException();

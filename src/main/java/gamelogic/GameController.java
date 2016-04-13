@@ -12,7 +12,23 @@ import java.util.*;
  * A controller to function as a layer between the GUI and the back end.
  */
 public class GameController {
-    public enum AIType { MCTS_AI, SIMPLE_AI, Mixed}
+    public enum AIType { MCTS_AI, SIMPLE_AI, MIXED;
+
+        /**
+         * @return a string representation of this AI type, as it is shown in the choice buttons
+         */
+        public String toString() {
+            switch (this) {
+                case MCTS_AI:
+                    return "MCTS-AI";
+                case SIMPLE_AI:
+                    return "Simple-AI";
+                case MIXED:
+                    return "Mixed";
+                default: throw new IllegalStateException();
+            }
+        }
+    }
 
     private Game game;
     private Map<Integer, GameClient> clients;
@@ -107,14 +123,14 @@ public class GameController {
 
             GameClient aiClient;
             double contemptFactor = 1.0;
-            switch (gameSettings.getAIType()) {
+            switch (gameSettings.getAiType()) {
                 case MCTS_AI:
                     aiClient = new MCTSAI(AI_id);
                     break;
                 case SIMPLE_AI:
                     aiClient = new SimpleAI(AI_id, contemptFactor);
                     break;
-                case Mixed:
+                case MIXED:
                     aiClient = Math.random() > 0.5 ? new MCTSAI(AI_id) : new SimpleAI(AI_id, contemptFactor);
                     break;
                 default: throw new IllegalStateException(); // Exception to please our java overlords
