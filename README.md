@@ -2,9 +2,9 @@
 ---
 This is a project in context with a subject at the University in Bergen, Norway.
 The subject is "Software Engineering", code INF112 ([info can be found here](http://www.uib.no/en/course/INF112)),
-and this years task is to engineer an implementation of Texas Hold'em poker, over three sprints, using agile methods.
+and this years task is to engineer an implementation of Texas Hold'em poker, over three sprints, using unified process (UP).
 
-* The project is using Maven. The code is written in java, gui is written with JavaFX.
+* The project is using Maven. The code is written in java, GUI is written using the JavaFX library.
 
 ##Authors
 ---
@@ -44,6 +44,8 @@ players over the internet. This implementation will also allow for a user to spe
 If you where to test the software, and experience bugs while playing, feel free to add it to our bug tracker in our
 bitbucket repo, under "Issues". We use this feature to report bugs, and to assign the bug to whomever who can fix and/or
 is in charge of that particular part of the program.
+
+**Link to bug tracker:** https://bitbucket.org/tha056/inf112v16-g4/issues
 
 # LICENSE
 ---
