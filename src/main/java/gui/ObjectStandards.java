@@ -251,12 +251,12 @@ public class ObjectStandards {
         MenuItem aboutTexasHoldem = new MenuItem("Texas Hold'em");
 
         MenuItem quit = new MenuItem("Quit");
-        MenuItem restart = new MenuItem("Restart");
+        //MenuItem restart = new MenuItem("Restart");
 
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);
-        file.getItems().addAll(quit, restart);
+        file.getItems().addAll(quit/*,restart*/);
 
         //Adding all menus to the menu bar
         menuBar.getMenus().addAll(file,about);
@@ -304,12 +304,12 @@ public class ObjectStandards {
         });
 
         quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
-        restart.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+        //restart.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
 
-        restart.setOnAction(event -> {
+        /*restart.setOnAction(event -> {
             MainScreen.getStage().close();
             MainScreen.createSceneForMainScreen("PokerTable", MainScreen.getGameController());
-        });
+        });*/
 
 
         return menuBar;
