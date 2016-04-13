@@ -203,7 +203,7 @@ public class Player extends User {
     public int preFlopFolds () { return foldsPreFlop; }
     public int aggressiveMoves() { return numberOfAggressiveMoves; }
     public int passiveMoves() { return numberOfPassiveMoves; }
-    public String getBestHand() { return bestHand == null ? "No hands won" : new HandCalculator(bestHand).getBestHandString(); }
+    public String getBestHand() { return bestHand == null ? "<no hands won>" : new HandCalculator(bestHand).getBestHandString(); }
 
 }
 
