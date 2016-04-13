@@ -682,7 +682,7 @@ public class GameScreen {
     public void setPositions(Map<Integer, Integer> positions) {
         Runnable task;
         for (Integer id : positions.keySet()) {
-            String pos = "Position: " + getPositionName(positions.get(id));
+            String pos = "Position: " + getPositionName(positions.get(id), numberOfPlayers);
             if (id == playerID) {
                 task = () -> playerLayout.setPositionLabel(pos);
             } else {
@@ -699,7 +699,7 @@ public class GameScreen {
      * @param pos
      * @return position
      */
-    private String getPositionName(int pos) {
+    public static String getPositionName(int pos, int numberOfPlayers) {
         if (numberOfPlayers == 2)
             return pos == 0 ? "Dealer" : "Big Blind";
         return (pos == numberOfPlayers-1 ? "Dealer" : pos == 0 ? "Small blind" : pos == 1 ? "Big blind" : pos == 2 ? "UTG" : "UTG+" + (pos-2  ));
