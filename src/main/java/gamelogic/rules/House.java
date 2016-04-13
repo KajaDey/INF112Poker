@@ -12,22 +12,20 @@ import java.util.*;
  * Checks if a hand contains a house. (3 + 2 cards of the same rank).
  */
 public class House implements IRule {
-    private boolean isFullHouse = false;
-    private List<Card> bestCards, allCards, cards;
+    private List<Card> returnHand;
     private List<Integer> compareValues = new ArrayList<>();
-
-    public Map<Integer, Integer> cardCount = new HashMap<Integer, Integer>();
-    public Card tripsCard, pairCard;
 
     @Override
     public boolean match(Hand hand) {
-        cards = hand.getAllCards();
+        List<Card> cards = hand.getAllCards();
 
         if (cards.size() < 5)
             return false;
 
         cards.sort(Card::compareTo);
-        allCards = cards;
+        List<Card> allCards = cards;
+
+        Map<Integer, Integer> cardCount = new HashMap<Integer, Integer>();
 
         //count how many of each card we gt
         for (Card card : cards)
@@ -42,25 +40,22 @@ public class House implements IRule {
             if (cardCount.get(card.rank) > 1) {
                 for (Card otherCard : cards) {
                     if (!(otherCard.rank == card.rank) && cardCount.get(otherCard.rank) > 2) {
-                        isFullHouse = true;
-                        tripsCard=otherCard;
-                        pairCard=card;
+                        setHand(allCards);
+                        return true;
                     }
                 }
             }
         }
-        setHand();
-        return isFullHouse;
+        return false;
     }
 
     @Override
     public Optional<List<Card>> getHand() {
-        if (bestCards.size() > 0) {
-            return Optional.of(bestCards);
+        if (returnHand.size() > 0) {
+            return Optional.of(returnHand);
         }
         return Optional.empty();
     }
-
 
     @Override
     public HandCalculator.HandType getType() {
@@ -74,23 +69,23 @@ public class House implements IRule {
 
     @Override
     public String toString(){
+        if (compareValues.isEmpty())
+            return "No match";
 
-        return tripsCard.getRankString()+"'s full of "+pairCard.getRankString()+"'s";
+        return returnHand.get(0).getRankString()+"s full of "+returnHand.get(3).getRankString()+"s";
     }
 
-    /**
-     * Fills the hand with the pair and trip included in the full house.
-     */
-    public void setHand() {
-        bestCards = new ArrayList<Card>();
+    private void setHand(List<Card> allCards) {
+
+        returnHand = new ArrayList<>();
 
         //search cards for a triplet
         for (int i = allCards.size() - 1; i > 1; i--) {
             if (allCards.get(i).rank == allCards.get(i - 1).rank && allCards.get(i).rank == allCards.get(i - 2).rank) {
                 //add the best triplet
-                bestCards.add(allCards.get(i));
-                bestCards.add(allCards.get(i - 1));
-                bestCards.add(allCards.get(i - 2));
+                returnHand.add(allCards.get(i));
+                returnHand.add(allCards.get(i - 1));
+                returnHand.add(allCards.get(i - 2));
 
                 compareValues.add(allCards.get(i).rank);
 
@@ -107,8 +102,8 @@ public class House implements IRule {
         //
         for (int i = allCards.size() - 1; i > 0; i--) {
             if (allCards.get(i).rank == allCards.get(i - 1).rank) {
-                bestCards.add(allCards.get(i));
-                bestCards.add(allCards.get(i - 1));
+                returnHand.add(allCards.get(i));
+                returnHand.add(allCards.get(i - 1));
                 compareValues.add(allCards.get(i).rank);
 
                 break;

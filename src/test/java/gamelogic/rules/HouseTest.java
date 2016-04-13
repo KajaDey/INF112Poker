@@ -5,7 +5,6 @@ import gamelogic.Hand;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +37,9 @@ public class HouseTest {
 
     @Test
     public void testMatchWhenFullHouse() throws Exception {
-        hand = new Hand(card6, card7, Arrays.asList(card1, card2, card3, card4, card5));
+        hand = new Hand(card6, card8, Arrays.asList(card1, card2, card3, card4, card5));
         assertTrue(house.match(hand));
-        assertEquals("2's full of 3's",house.toString());
+        assertEquals("3s full of 2s", house.toString());
     }
 
     @Test

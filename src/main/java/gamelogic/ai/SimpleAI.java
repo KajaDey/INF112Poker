@@ -1,9 +1,6 @@
 package gamelogic.ai;
 
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
-import gui.GUIMain;
+import gamelogic.*;
 
 import java.util.*;
 
@@ -19,21 +16,12 @@ public class SimpleAI implements GameClient {
     private final int playerId;
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
-
     private long bigBlindAmount;
-    private long smallBlindAmount;
-    private int position; // 0 is dealer
 
-    private Optional<Decision> lastDecision = Optional.empty();
-
-    // The AI keeps track of its stackSize by changing it in getDecision()
-    private long stackSize;
     // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
-    // by updating it in playerMadeDecision()
     private Map<Integer, Long> stackSizes;
 
     private boolean betHasBeenPlaced;
-    private int playersLeftInCurrentHand;
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
     private long currentBet; // The amount the SimpleAI needs to put on the table to remain in the hand
 
@@ -51,21 +39,13 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public Decision getDecision() {
-        assert bigBlindAmount > 0 && smallBlindAmount > 0: "SimpleAI was asked to make a decision without receiving big and small blind";
+    public Decision getDecision(long timeToThink) {
         assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
-        assert stackSize > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSize + ")";
+        assert stackSizes.get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get(playerId) + ")";
 
         assert minimumRaise > 0;
-        assert stackSize == stackSizes.get(this.playerId) :
-                "AI: stacksize mismatch: " + stackSize + " != " + stackSizes.get(this.playerId);
-
-        //Sleep for some time to make it more realistic
-        Random rand = new Random();
-        try {
-            // Thread.sleep(1000 + rand.nextInt(2000));
-            // Waiting 600 seconds for AI tests was to realistic
-        } catch (Exception e) { e.printStackTrace(); }
+        assert stackSizes.get(playerId).equals(stackSizes.get(this.playerId)) :
+                "AI: stacksize mismatch: " + stackSizes.get(playerId) + " != " + stackSizes.get(this.playerId);
 
         int handQuality = holeCards.get(0).rank + holeCards.get(1).rank;
 
@@ -75,12 +55,13 @@ public class SimpleAI implements GameClient {
 
         int rankDistance = Math.abs(holeCards.get(0).rank - holeCards.get(1).rank);
         switch (rankDistance) {
-            case 0: handQuality *= 1.6; break;
+            case 0: handQuality *= 2.0; break;
             case 1: handQuality *= 1.4; break;
             case 2: handQuality *= 1.2; break;
             case 3: handQuality *= 1.1; break;
-            default: ;
+            default:
         }
+        handQuality *= Math.pow(0.95, amountOfPlayers);
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
@@ -112,12 +93,10 @@ public class SimpleAI implements GameClient {
                 }
             }
             else {
-                if (stackSize > currentBet) {
-                    stackSize -= currentBet;
+                if (stackSizes.get(playerId) > currentBet) {
                     return new Decision(Decision.Move.CALL);
                 }
                 else {
-                    stackSize = 0;
                     return new Decision(Decision.Move.ALL_IN);
                 }
             }
@@ -126,8 +105,7 @@ public class SimpleAI implements GameClient {
             if (currentBet == 0) {
                 return new Decision(Decision.Move.CHECK);
             }
-            else if (currentBet < stackSize / 20 * randomModifier) {
-                stackSize -= currentBet;
+            else if (currentBet < stackSizes.get(playerId)  / 20 * randomModifier) {
                 return new Decision(Decision.Move.CALL);
             }
             else {
@@ -162,12 +140,10 @@ public class SimpleAI implements GameClient {
             raiseAmount = minimumRaise;
         }
 
-        if (stackSize > raiseAmount + currentBet) {
-            stackSize -= raiseAmount + currentBet;
+        if (stackSizes.get(playerId) > raiseAmount + currentBet) {
             return Optional.of(raiseAmount);
         }
         else { // Go all in
-            stackSize = 0;
             return Optional.empty();
         }
     }
@@ -176,13 +152,12 @@ public class SimpleAI implements GameClient {
      * Called whenever there is a new round, after the SimpleAI has gotten its new hole cards
      */
     public void newBettingRound() {
-        minimumRaise = bigBlindAmount;
         betHasBeenPlaced = false;
+        minimumRaise = bigBlindAmount;
     }
 
     @Override
     public void startNewHand() {
-        playersLeftInCurrentHand = amountOfPlayers;
         holeCards.clear();
     }
 
@@ -192,10 +167,12 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void gameOver(int winnerID) { }
+    public void gameOver(Statistics stats) { }
 
     @Override
-    public void setPlayerNames(Map<Integer, String> names) { }
+    public void setPlayerNames(Map<Integer, String> names) {
+        assert names.size() == amountOfPlayers : "SimpleAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players playing.";
+    }
 
     public int getID() {
         return playerId;
@@ -203,9 +180,9 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        assert this.getID() == userID;
+        assert this.getID() == userID : "SimpleAI received cards for id " + userID + ", but AI's id is " + this.getID();
 
-        holeCards = new ArrayList<Card>(2);
+        holeCards = new ArrayList<>(2);
         assert holeCards.size() == 0;
         newBettingRound();
         holeCards.add(card1);
@@ -214,11 +191,11 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
+        assert stackSizes.size() == amountOfPlayers;
         assert stackSizes.get(this.playerId) >= 0 : "AI was sent a stacksize of " + stackSizes.get(this.playerId);
         for (int playerId : stackSizes.keySet()) {
             assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);
         }
-        this.stackSize = stackSizes.get(this.playerId);
         this.stackSizes = stackSizes;
     }
 
@@ -238,9 +215,8 @@ public class SimpleAI implements GameClient {
                 betHasBeenPlaced = true;
                 minimumRaise = decision.size;
 
-                stackSizes.put(playerId, stackSizes.get(playerId) - decision.size);
+                stackSizes.compute(playerId, (key, val) -> val -= decision.size);
                 if (playerId == this.playerId) {
-                    stackSize -= decision.size;
                     currentBet = 0;
                 }
                 else {
@@ -249,7 +225,7 @@ public class SimpleAI implements GameClient {
                 break;
 
             case CALL:
-                stackSizes.put(playerId, stackSizes.get(playerId) - currentBet);
+                stackSizes.compute(playerId, (key, val) -> val -= decision.size);
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }
@@ -266,16 +242,15 @@ public class SimpleAI implements GameClient {
                 }
 
                 betHasBeenPlaced = true;
-                minimumRaise = Math.max(decision.size, bigBlindAmount);
+                minimumRaise = decision.size;
                 break;
             case FOLD:
-                playersLeftInCurrentHand--;
             break;
         }
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) { }
+    public void showdown(ShowdownStats showdownStats) { }
 
     @Override
     public void setBigBlind(long bigBlind) {
@@ -284,7 +259,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setSmallBlind(long smallBlind) {
-        this.smallBlindAmount = smallBlind;
     }
 
     @Override
@@ -292,14 +266,11 @@ public class SimpleAI implements GameClient {
         assert positions.size() == amountOfPlayers :
         "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
         assert positions.get(playerId) != null : "AI " + playerId + " received positions object which didn't contain its own position";
-
-        position = positions.get(playerId);
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
         this.amountOfPlayers = amountOfPlayers;
-        this.playersLeftInCurrentHand = amountOfPlayers;
     }
 
     @Override

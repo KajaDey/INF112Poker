@@ -4,17 +4,19 @@ package gui;
  * Created by ady on 09/03/16.
  */
 
+import gamelogic.GameController;
+
 /**
  * A class that contains all the settings we need to know
  */
 public class GameSettings {
 
-    public long startStack;
-    public long bigBlind;
-    public long smallBlind;
-    public int maxNumberOfPlayers;
-    public int levelDuration;
-    public String difficulty;
+    private long startStack;
+    private long bigBlind;
+    private long smallBlind;
+    private int maxNumberOfPlayers;
+    private int levelDuration;
+    private GameController.AIType AIType;
 
     /**
      *
@@ -23,16 +25,16 @@ public class GameSettings {
      * @param smallBlind
      * @param maxNumberOfPlayers
      * @param levelDuration
-     * @param difficulty
+     * @param aiType The type of AI (Simple/MCTS)
      */
 
-    public GameSettings(long startStack, int bigBlind, int smallBlind, int maxNumberOfPlayers, int levelDuration, String difficulty) {
+    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, GameController.AIType aiType) {
         this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
-        this.difficulty = difficulty;
+        this.AIType = aiType;
     }
 
     /**
@@ -73,6 +75,6 @@ public class GameSettings {
         return levelDuration;
     }
 
-    public String getDifficulty(){ return difficulty; }
+    public GameController.AIType getAIType(){ return AIType; }
 
 }

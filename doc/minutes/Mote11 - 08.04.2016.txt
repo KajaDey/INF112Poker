@@ -1,0 +1,33 @@
+Møte 11 - 08.04.16, kl 12.15
+Sekretær: Kaja Dey
+
+Oppmøte:
+Kristian
+Kaja
+Ragnhild
+Jostein
+Andrè
+Simon
+Mariah
+Henrik
+Vegar
+Morten
+
+Hva er gjort siden sist:
+Maven er fikset
+Debugging
+Fortsatt med oppdatering av diagrammer. 
+Tegnet chips
+
+Diskusjon:
+Navneliste til AI
+Bestemt oss for å velge GNU general public license 3. 
+
+Plan til neste møte:
+Buggtesting
+Se over at alle diagrammer og README-filen stemmer. 
+Legge inn bilder av blinds, dealer, chips
+
+Tid for neste møte:
+Søndag 10.04.2016, kl 14:00
+

@@ -4,6 +4,7 @@ import gui.ButtonListeners;
 import gui.ImageViewer;
 import gui.ObjectStandards;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,14 +24,14 @@ import javafx.scene.layout.VBox;
 public class PlayerLayout {
 
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
-    private ImageView leftCardImage, rightCardImage;
+    private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private Slider slider = new Slider(0,0,0);
-    private TextField amountTextfield;
+    private TextField amountTextField;
 
     private long currentSmallBlind, currentBigBlind;
-    private long stackSize;
 
     private Button betRaiseButton, checkCallButton, foldButton;
+
 
     public PlayerLayout(){
 
@@ -41,7 +42,7 @@ public class PlayerLayout {
      *
      * @return A VBox with the player layout
      */
-    public VBox updateLayout(int playerID, String name, long stackSize) {
+    public VBox updateLayout(int playerID, String name, long stackSizeIn) {
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -50,14 +51,15 @@ public class PlayerLayout {
         HBox twoButtonsUnderInput = new HBox();
         twoButtonsUnderInput.setMaxWidth(50);
         VBox twoButtonsRight = new VBox();
-        VBox sliderBox = new VBox();
+        VBox sliderAndBestHandBox = new VBox();
+        HBox lastMoveAndChips = new HBox();
 
         //////Make all the elements i want to add to the playerLayout//////////
-        stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
+        stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSizeIn + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("Name: ", name);
-        bestHand = ObjectStandards.makeStandardLabelWhite("Best hand:","");
+        bestHand = ObjectStandards.makeStandardLabelWhite("Your hand:","");
 
 
         Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
@@ -69,10 +71,15 @@ public class PlayerLayout {
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
 
-        amountTextfield = ObjectStandards.makeTextFieldForGameScreen("Amount");
+        chipImage = new ImageView();
+        chipImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        chipImage.setPreserveRatio(true);
+        chipImage.setFitWidth(35);
+
+        amountTextField = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
         slider.setMin(currentBigBlind);
-        slider.setMax(stackSize);
+        slider.setMax(stackSizeIn);
         slider.setValue(currentBigBlind);
 
         slider.setShowTickMarks(true);
@@ -92,28 +99,29 @@ public class PlayerLayout {
 
         //Actions
         betRaiseButton.setOnAction(e -> {
-            if(!amountTextfield.getText().equals("")) {
-                if (amountTextfield.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSize), betRaiseButton.getText());
+            if(!amountTextField.getText().equals("")) {
+                if (amountTextField.getText().equals("All in")) {
+                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
+                }
                 else
-                    ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
-                updateSliderValues();
+                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
+                updateSliderValues(stackSizeIn);
             }
         });
 
-        amountTextfield.setOnAction(e -> {
-            if (!amountTextfield.getText().equals("")) {
-                if (amountTextfield.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf(stackSize), betRaiseButton.getText());
+        amountTextField.setOnAction(e -> {
+            if (!amountTextField.getText().equals("")) {
+                if (amountTextField.getText().equals("All in"))
+                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
                 else
-                    ButtonListeners.betButtonListener(amountTextfield.getText(), betRaiseButton.getText());
-                updateSliderValues();
+                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
+                updateSliderValues(stackSizeIn);
             }
         });
 
         checkCallButton.setOnAction(e -> {
             ButtonListeners.checkButtonListener(checkCallButton.getText());
-            updateSliderValues();
+            updateSliderValues(stackSizeIn);
         });
 
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());
@@ -121,32 +129,63 @@ public class PlayerLayout {
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int sliderNumber = (int) slider.getValue();
             if (sliderNumber >= slider.getMax())
-                amountTextfield.setText("All in");
+                amountTextField.setText("All in");
             else
-                amountTextfield.setText(String.valueOf(sliderNumber));
+                amountTextField.setText(String.valueOf(sliderNumber));
         });
 
 
+
+        dealerButtonImage = new ImageView();
+        dealerButtonImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        dealerButtonImage.setPreserveRatio(true);
+        dealerButtonImage.setFitWidth(32);
+        HBox dealerButtonBox = new HBox();
+        dealerButtonBox.getChildren().addAll(dealerButtonImage);
+        dealerButtonBox.setAlignment(Pos.CENTER);
+        dealerButtonBox.setMinSize(32,32);
+        dealerButtonBox.setPadding(new Insets(0,0,5,0));
+
+
         //Add objects to the boxes
-        stats.getChildren().addAll(nameLabel, stackLabel, positionLabel,bestHand);
+        stats.getChildren().addAll(dealerButtonBox, nameLabel, stackLabel, positionLabel);
         stats.setAlignment(Pos.CENTER);
+        stats.setMinWidth(175);
 
         twoButtonsUnderInput.getChildren().addAll(checkCallButton, foldButton);
 
-        inputAndButtons.getChildren().addAll(amountTextfield, twoButtonsUnderInput);
+        inputAndButtons.getChildren().addAll(amountTextField, twoButtonsUnderInput);
         inputAndButtons.setAlignment(Pos.CENTER);
 
         twoButtonsRight.getChildren().addAll(betRaiseButton);
         twoButtonsRight.setAlignment(Pos.CENTER);
 
-        sliderBox.getChildren().addAll(slider);
-        sliderBox.setAlignment(Pos.CENTER);
+        slider.setMaxWidth(150);
 
-        fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderBox);
+        sliderAndBestHandBox.getChildren().addAll(bestHand,slider);
+        sliderAndBestHandBox.setAlignment(Pos.CENTER_LEFT);
+        sliderAndBestHandBox.setPadding(new Insets(0,0,0,8));
+
+        fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderAndBestHandBox);
         fullBox.setAlignment(Pos.CENTER);
 
-        fullBoxWithLastMove.getChildren().addAll(lastMoveLabel, fullBox);
-        fullBoxWithLastMove.setAlignment(Pos.CENTER);
+        VBox chipBox = new VBox();
+        chipBox.getChildren().addAll(chipImage);
+        chipBox.setPadding(new Insets(0,0,0,10));
+
+        VBox lastMoveBox = new VBox();
+        lastMoveBox.getChildren().addAll(lastMoveLabel);
+        lastMoveBox.setMinHeight(50);
+
+        lastMoveAndChips.getChildren().addAll(lastMoveBox,chipBox);
+        lastMoveAndChips.setMinWidth(150);
+        lastMoveAndChips.setAlignment(Pos.CENTER);
+        lastMoveAndChips.setMinHeight(37);
+
+        fullBoxWithLastMove.getChildren().addAll(lastMoveAndChips, fullBox);
+        fullBoxWithLastMove.setAlignment(Pos.CENTER_LEFT);
+        fullBoxWithLastMove.setMinWidth(700);
+        fullBoxWithLastMove.setMinHeight(50);
 
         this.setActionsVisible(false);
         return fullBoxWithLastMove;
@@ -155,12 +194,11 @@ public class PlayerLayout {
     /**
      * Updates the values of the slider
      */
-    public void updateSliderValues(){
+    public void updateSliderValues(long stackSize){
         Runnable task;
 
         task = () -> {
             long maxValue = stackSize;
-
             if (positionLabel.getText().equals("Position: Small blind"))
                 maxValue -= currentSmallBlind;
             else if (positionLabel.getText().equals("Position: Big blind"))
@@ -171,11 +209,6 @@ public class PlayerLayout {
             slider.setMax(maxValue);
             slider.setBlockIncrement(0.1f);
             slider.setMinorTickCount(0);
-
-            /*if (maxValue < 100)
-                slider.setVisible(false);
-            else
-                slider.setVisible(true);*/
 
             if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
                 slider.setMajorTickUnit(slider.getMax() / 2);
@@ -199,7 +232,7 @@ public class PlayerLayout {
             betRaiseButton.setVisible(visible);
             checkCallButton.setVisible(visible);
             foldButton.setVisible(visible);
-            amountTextfield.setVisible(visible);
+            amountTextField.setVisible(visible);
             slider.setVisible(visible);
         };
         Platform.runLater(task);
@@ -215,19 +248,25 @@ public class PlayerLayout {
         betRaiseButton.setVisible(visible);
         checkCallButton.setVisible(visible);
         foldButton.setVisible(visible);
-        amountTextfield.setVisible(visible);
+        amountTextField.setVisible(visible);
     }
 
-    public void setPositionLabel(String pos){
-        Platform.runLater(() -> positionLabel.setText(pos));
+    public void setPositionLabel(String pos, Image buttonImage){
+        Runnable task = () -> {
+            positionLabel.setText(pos);
+            this.dealerButtonImage.setImage(buttonImage);
+        };
+        Platform.runLater(task);
     }
 
     public void setStackLabel(String stack) {
         Platform.runLater(() -> stackLabel.setText(stack));
     }
 
-    public void setLastMoveLabel(String lastMove) {
+    public void setLastMove(String lastMove, Image chipImage) {
         lastMoveLabel.setText(lastMove);
+
+        this.chipImage.setImage(chipImage);
     }
 
     public void setCheckCallButton(String checkCall) {
@@ -238,12 +277,12 @@ public class PlayerLayout {
         betRaiseButton.setText(betRaise);
     }
 
-    public void setAmountTextfield(String amount) {
-        amountTextfield.setText(amount);
+    public void setAmountTextField(String amount) {
+        amountTextField.setText(amount);
     }
 
     public void setTextfieldStyle(String textfieldStyle) {
-        amountTextfield.setStyle(textfieldStyle);
+        amountTextField.setStyle(textfieldStyle);
     }
 
     public void setBestHand(String bestHand){
@@ -276,16 +315,12 @@ public class PlayerLayout {
         slider.setVisible(true);
     }
 
-    public void setStackSize(long stackSize) {
-        this.stackSize = stackSize;
-    }
-
     public void bustPlayer(String bustedText) {
-        setLastMoveLabel("");
+        setLastMove("", null);
         setStackLabel(bustedText);
-        setPositionLabel("");
-
+        setPositionLabel("", null);
         setCardImage(null, null);
+        slider.setVisible(false);
     }
 
     public void removeHolecards() {
@@ -294,4 +329,5 @@ public class PlayerLayout {
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
     }
+
 }

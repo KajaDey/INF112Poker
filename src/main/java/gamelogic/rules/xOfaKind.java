@@ -13,18 +13,10 @@ import java.util.*;
  * (4,3,2 cards of the same rank)
  */
 public class xOfaKind implements IRule {
-    private boolean fourOfaKind;
-    private boolean threeOfaKind;
-    private boolean twoOfaKind;
-    private List<Card> allCards = new ArrayList<>(7);
+    private boolean fourOfaKind, threeOfaKind, twoOfaKind;
     private List<Card> returnHand = new ArrayList<>(5);
-    private List<Card> tempHand = new ArrayList<>(5);
-    private List<Card> markedCards = new ArrayList<>(5);
-
-    //private Card quadCard, tressCArd, pairCard;
-
-    private int nrToCheck;
     private List<Integer> compareValues = new ArrayList<>();
+    private int nrToCheck;
 
     public xOfaKind(int nrToCheck) {
         this.nrToCheck = nrToCheck;
@@ -38,7 +30,9 @@ public class xOfaKind implements IRule {
      */
     @Override
     public boolean match(Hand hand) {
-        allCards = hand.getAllCards();
+        List<Card> markedCards = new ArrayList<>(5);
+        List<Card> tempHand = new ArrayList<>(5);
+        List<Card> allCards = hand.getAllCards();
 
         allCards.sort(Card::compareTo);
 
@@ -60,9 +54,8 @@ public class xOfaKind implements IRule {
                 case 4:
                     if (tempHand.size() == 4) {
                         returnHand.addAll(tempHand);
-                        int nrOfCardsToAdd = 1;
                         compareValues.add(rankToCheck);
-                        addHighCards(nrOfCardsToAdd);
+                        addHighCards(1, allCards, markedCards);
                         fourOfaKind = true;
                         return true;
                     }
@@ -70,9 +63,8 @@ public class xOfaKind implements IRule {
                 case 3:
                     if (tempHand.size() == 3) {
                         returnHand.addAll(tempHand);
-                        int nrOfCardsToAdd = 2;
                         compareValues.add(rankToCheck);
-                        addHighCards(nrOfCardsToAdd);
+                        addHighCards(2, allCards, markedCards);
                         threeOfaKind = true;
                         return true;
                     }
@@ -80,9 +72,8 @@ public class xOfaKind implements IRule {
                 case 2:
                     if (tempHand.size() == 2) {
                         returnHand.addAll(tempHand);
-                        int nrOfCardsToAdd = 3;
                         compareValues.add(rankToCheck);
-                        addHighCards(nrOfCardsToAdd);
+                        addHighCards(3, allCards, markedCards);
                         twoOfaKind = true;
                         return true;
                     }
@@ -96,7 +87,6 @@ public class xOfaKind implements IRule {
         return (false);
     }
 
-
     @Override
     public Optional<List<Card>> getHand() {
         if (returnHand.size() > 0) {
@@ -104,7 +94,6 @@ public class xOfaKind implements IRule {
         }
         return Optional.empty();
     }
-
 
     @Override
     public HandCalculator.HandType getType() {
@@ -121,11 +110,11 @@ public class xOfaKind implements IRule {
     @Override
     public String toString(){
         if(fourOfaKind)
-            return "Quad "+returnHand.get(0).getRankString()+"'s";
+            return "Quad "+returnHand.get(0).getRankString()+"s";
         else if(threeOfaKind)
-            return "Trip "+returnHand.get(0).getRankString()+"'s";
+            return "Trip "+returnHand.get(0).getRankString()+"s";
         else if (twoOfaKind)
-            return "Pair of "+returnHand.get(0).getRankString()+"'s";
+            return "Pair of "+returnHand.get(0).getRankString()+"s";
         return "";
     }
 
@@ -133,7 +122,7 @@ public class xOfaKind implements IRule {
      * Fills return hand with high cards after the pair/trip/quad was added.
      * @param nrOfCardsToAdd Number of high cards to add
      */
-    private void addHighCards(int nrOfCardsToAdd) {
+    private void addHighCards(int nrOfCardsToAdd, List<Card> allCards, List<Card> markedCards) {
         int counter = 0;
         for (int i = allCards.size() - 1; i > -1; i--) { //desc
             if (!markedCards.contains(allCards.get(i))) {

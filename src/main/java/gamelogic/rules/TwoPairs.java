@@ -5,7 +5,6 @@ import gamelogic.Hand;
 import gamelogic.HandCalculator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,10 +15,9 @@ import java.util.Optional;
  */
 public class TwoPairs implements IRule {
 
-    private boolean onePair = false;
     private List<Card> returnHand = new ArrayList<Card>();
-    private int firstPairValue, secondPairValue, highCard;
-    private Card pair1, pair2;
+    private List<Integer> compareValues = new ArrayList<>();
+    private boolean onePair = false;
 
     @Override
     public boolean match(Hand hand) {
@@ -37,7 +35,7 @@ public class TwoPairs implements IRule {
                     onePair = true;
                     returnHand.add(cards.get(i));
                     returnHand.add(cards.get(i - 1));
-                    firstPairValue = cards.get(i).rank;
+                    compareValues.add(cards.get(i).rank);
                     cards.remove(i);
                     cards.remove(i - 1);
                     i--;
@@ -45,14 +43,11 @@ public class TwoPairs implements IRule {
                 } else {
                     returnHand.add(cards.get(i));
                     returnHand.add(cards.get(i - 1));
-                    secondPairValue = cards.get(i).rank;
+                    compareValues.add(cards.get(i).rank);
                     cards.remove(i);
                     cards.remove(i - 1);
-
-                    returnHand.add(cards.get(cards.size() - 1));
-                    highCard = cards.get(cards.size() - 1).rank;
-                    pair1 = returnHand.get(0);
-                    pair2 = returnHand.get(2);
+                    returnHand.add(cards.get(cards.size() - 1)); // high card
+                    compareValues.add(cards.get(cards.size() - 1).rank); // high card
 
                     return true;
                 }
@@ -76,23 +71,14 @@ public class TwoPairs implements IRule {
 
     @Override
     public List<Integer> getCompareValues() {
-        List<Integer> compareValues = new ArrayList<>();
-
-        if (firstPairValue > secondPairValue) {
-            compareValues.add(firstPairValue);
-            compareValues.add(secondPairValue);
-        } else {
-            compareValues.add(secondPairValue);
-            compareValues.add(firstPairValue);
-        }
-        compareValues.add(highCard);
-
         return compareValues;
     }
 
     @Override
     public String toString(){
-        return "Two pairs, "+pair1.getRankString()+"'s and "+pair2.getRankString()+"'s";
+        if (returnHand.isEmpty())
+            return "No match";
+        return "Two pairs, " +returnHand.get(0).getRankString() +"s and " +returnHand.get(2).getRankString() +"s";
     }
 }
 

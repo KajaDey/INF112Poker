@@ -12,7 +12,7 @@ import java.util.Optional;
  * A class to represent a hand (2-7 cards).
  */
 public class Hand implements Comparable<Hand> {
-    private List<Card> holeCards = new ArrayList<Card>(2);
+    private List<Card> holeCards = new ArrayList<>(2);
     private List<Card> communityCards;
     private List<Card> allCards = new ArrayList<>();
 
@@ -23,8 +23,7 @@ public class Hand implements Comparable<Hand> {
 
         allCards.add(card1);
         allCards.add(card2);
-        if (!communityCards.isEmpty())
-            allCards.addAll(communityCards);
+        allCards.addAll(communityCards);
     }
 
     /**
@@ -40,7 +39,7 @@ public class Hand implements Comparable<Hand> {
 
     /**
      * Gets the 0-5 community cards in the hand
-     * @return List of community cards, or empty
+     * @return List of community cards
      */
     public Optional<List<Card>> getCommunityCards() {
         if (communityCards.isEmpty())
@@ -52,7 +51,7 @@ public class Hand implements Comparable<Hand> {
     }
 
     /**
-     * Gets all 5-7 cards in the hand, both hole cards and community cards.
+     * Gets all 2-7 cards in the hand, both hole cards and community cards.
      * @return List of all cards
      */
     public List<Card> getAllCards() {

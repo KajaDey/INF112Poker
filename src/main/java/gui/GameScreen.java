@@ -1,7 +1,6 @@
 package gui;
 
-import gamelogic.Hand;
-import gamelogic.HandCalculator;
+import gamelogic.*;
 import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
@@ -9,6 +8,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -16,18 +16,22 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import gamelogic.Card;
-import gamelogic.Decision;
 
 import java.util.*;
 
 /**
- * Created by ady on 07/03/16.
+ * This class contains all the information about the game screen.
+ * It gets information from gameClient and moves it to the layouts, which displays it on the screen.
+ *
+ *
+ * @author André Dyrstad
+ * @author Jostein Kringlen
+ * @author Kristian Rosland
  */
 public class GameScreen {
 
    // BorderPane borderPane;
-    Scene scene;
+    private Scene scene;
     private int playerID;
     private int [] positions;
     private int numberOfOpponentsAddedToTheGame = 0;
@@ -37,7 +41,7 @@ public class GameScreen {
 
     //Storagevariables
     private long highestAmountPutOnTable = 0, pot = 0;
-    private long currentSmallBlind, currentBigBlind;
+    private long currentBigBlind;
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
@@ -46,12 +50,11 @@ public class GameScreen {
 
     private Pane pane = new Pane();
 
-    PlayerLayout playerLayout = new PlayerLayout();
-    BoardLayout boardLayout = new BoardLayout();
+    private PlayerLayout playerLayout = new PlayerLayout();
+    private BoardLayout boardLayout = new BoardLayout();
 
     private TextArea textArea = new TextArea();
     private String logText = "";
-    private Button exitButton;
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
@@ -60,9 +63,13 @@ public class GameScreen {
 
         initializePlayerLayouts(numberOfPlayers);
         insertLogField();
-        addExitButton();
+        addMenuBarToGameScreen();
     }
 
+    /**
+     *  Initiate all the layouts in the GUI
+     * @param numberOfPlayers
+     */
     private void initializePlayerLayouts(int numberOfPlayers) {
         playerLayout = new PlayerLayout();
         for (int i = 1; i < numberOfPlayers; i++) {
@@ -76,7 +83,6 @@ public class GameScreen {
      * @param settings
      * @return a scene containing a gamescreen
      */
-
     public Scene createSceneForGameScreen(GameSettings settings) {
         VBox box = boardLayout.updateLayout(settings.getSmallBlind(), settings.getBigBlind());
         box.setLayoutX(scene.getWidth() / 4 - 30);
@@ -93,17 +99,18 @@ public class GameScreen {
      * @param stackSize
      * @return player objects
      */
-
     public boolean insertPlayer(int userID, String name, long stackSize) {
+        final String os = System.getProperty("os.version");
+
 
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
-        playerLayout.setStackSize(stackSize);
+        //playerLayout.setStackSize(stackSize);
 
         if (userID == playerID) {
-            VBox vbox = playerLayout.updateLayout(userID,name,stackSize);
+            VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
             vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-160);
+            vbox.setLayoutY(scene.getHeight()-190);
             pane.getChildren().addAll(vbox);
         } else {
 
@@ -122,14 +129,19 @@ public class GameScreen {
                     break;
                 case 3:
                     oppLayout.setLayoutX(scene.getWidth() / 3);
-                    oppLayout.setLayoutY(20);
+                    if (!os.isEmpty()) {
+                        if (!os.startsWith("Mac"))
+                            oppLayout.setLayoutY(30);
+                        else
+                            oppLayout.setLayoutY(20);
+                    }
                     break;
                 case 4:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutX(scene.getWidth() - 320);
                     oppLayout.setLayoutY(scene.getHeight() / 6);
                     break;
                 case 5:
-                    oppLayout.setLayoutX(scene.getWidth() - 280);
+                    oppLayout.setLayoutX(scene.getWidth() - 320);
                     oppLayout.setLayoutY(scene.getHeight() / 2);
                     break;
                 default:
@@ -152,7 +164,6 @@ public class GameScreen {
      * @return An array of all the positions.
      */
     private int[] giveOpponentPosition() {
-
         int [] positions = new int[numberOfPlayers-1];
 
         switch (numberOfPlayers){
@@ -218,18 +229,11 @@ public class GameScreen {
 
     }
 
-    /**
-     * Adds a working exit button to the game screen. The button takes you back to the lobby screen
-     */
-    public void addExitButton(){
-        exitButton = ObjectStandards.makeStandardButton("Exit");
-
-        exitButton.setLayoutX(scene.getWidth()- 80);
-        exitButton.setLayoutY(3);
-
-        pane.getChildren().add(exitButton);
-
-        exitButton.setOnAction(event -> ButtonListeners.exitButtonListener());
+    public void addMenuBarToGameScreen(){
+        MenuBar menuBar = ObjectStandards.createMenuBar();
+        menuBar.setLayoutX(0);
+        menuBar.setLayoutY(0);
+        pane.getChildren().add(menuBar);
     }
 
     /**
@@ -239,7 +243,6 @@ public class GameScreen {
      * @param leftCard
      * @param rightCard
      */
-
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
@@ -252,67 +255,73 @@ public class GameScreen {
         Platform.runLater(task);
 
         holeCards = new ArrayList<>();
-        communityCards = new ArrayList<>();
         holeCards.add(leftCard);
         holeCards.add(rightCard);
-        updateBestHandLabel();
+        updateYourHandLabel();
     }
 
     /**
      * Shows the cards of the players around the table
      *
-     * @param stillPlaying The players who are still in the game
-     * @param winnerID     The winner of the game
+     * @param showdownStats Information about the showdown
      */
-    public void showDown(List<Integer> stillPlaying, int winnerID, Map<Integer, Card[]> holeCards) {
-        Card[] cards;
+    public void showdown(ShowdownStats showdownStats) {
+        List<Player> playersToShowdown = showdownStats.getAllPlayers();
+        printToLogField(showdownStats.numberOfPlayers() + " players to showdown");
 
-        for (Integer i : stillPlaying) {
-            cards = holeCards.get(i);
+        Map<Integer, Card[]> hCards = showdownStats.getHoleCards();
+
+        for (Player p : playersToShowdown) {
+            Card[] cards = hCards.get(p.getID());
             Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
-            Runnable task = () -> {
-                if (i != playerID && opponents.get(i) != null) {
-                    opponents.get(i).setCardImage(leftImage,rightImage);
-                }
-            };
-            Platform.runLater(task);
 
-            showWinner(names.get(winnerID), pot, holeCards.get(winnerID));
+            //Print the players hand
+            printToLogField(names.get(p.getID()) + ": " + cards[0] + " " + cards[1]);
+            if (p.getID() != playerID && opponents.get(p.getID()) != null)
+                Platform.runLater(() -> opponents.get(p.getID()).setCardImage(leftImage,rightImage));
         }
+
+        String winnerString = showdownStats.getWinnerText();
+        Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
+
+        //Print all community cards to in-game log
+        printCommunityCardsToLogField();
+        printToLogField(winnerString);
     }
 
     /**
-     * Displays the flop on the screen
+     * Displays the first three cards (the flop) on the screen
      *
      * @param card1
      * @param card2
      * @param card3
      */
-
     public void displayFlop(Card card1, Card card2, Card card3) {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setFlop(card1Image,card2Image,card3Image));
+        Platform.runLater(() -> boardLayout.showFlop(card1Image,card2Image,card3Image));
 
         communityCards.add(card1);
         communityCards.add(card2);
         communityCards.add(card3);
-        updateBestHandLabel();
+        updateYourHandLabel();
+
+        printToLogField("Flop " + card1 + " " + card2 + " " + card3);
     }
 
     /**
      * Displays the fourth card on the board
-     *
      * @param turnCard
      */
-
     public void displayTurn(Card turnCard) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setTurn(turnImage));
+        Platform.runLater(() -> boardLayout.showTurn(turnImage));
         communityCards.add(turnCard);
-        updateBestHandLabel();
+        updateYourHandLabel();
+
+        printToLogField("Turn " + turnCard);
     }
 
     /**
@@ -320,20 +329,19 @@ public class GameScreen {
      *
      * @param riverCard
      */
-
     public void displayRiver(Card riverCard) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.setRiver(riverImage));
+        Platform.runLater(() -> boardLayout.showRiver(riverImage));
         communityCards.add(riverCard);
-        updateBestHandLabel();
+        updateYourHandLabel();
+
+        printToLogField("River " + riverCard);
     }
 
     /**
-     * Show the buttons on the board
-     *
+     * Show the players possible actions (buttons)
      * @param visible
      */
-
     public void setActionsVisible(boolean visible) {
         Runnable task = () -> {
             playerLayout.setVisible(visible);
@@ -349,9 +357,63 @@ public class GameScreen {
      * @param decision
      */
     public void playerMadeDecision(int ID, Decision decision) {
+        //Update all values in the GUI and return a string of the decision that can be displayed
+        final String finalDecision = evaluateDecision(ID, decision);
+
+        //Set button texts depending on the action
+        updateButtonTexts(ID, decision.move);
+
+        //Play sound
+        new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+
+        Runnable task;
+        if (ID == this.playerID) {
+            task = () -> {
+                playerLayout.setLastMove(finalDecision, getChipImage(ID));
+                playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
+            };
+        } else {
+            task = () -> {
+                opponents.get(ID).setLastMove(finalDecision, getChipImage(ID));
+                opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
+            };
+        }
+        Platform.runLater(task);
+    }
+
+    /**
+     *   Update the buttons in the GUI depending on the last move made
+     * @param id
+     * @param move
+     */
+    private void updateButtonTexts(int id, Decision.Move move) {
+        Runnable task = () -> {
+            switch (move) {
+                case BIG_BLIND:
+                    if (id == playerID) {
+                        playerLayout.setCheckCallButton("Check");
+                        break;
+                    }
+                case BET:case RAISE:case SMALL_BLIND:
+                    playerLayout.setCheckCallButton("Call");
+                    playerLayout.setBetRaiseButton("Raise to");
+                    break;
+            }
+
+            updateSliderValues();
+        };
+        Platform.runLater(task);
+    }
+
+    /**
+     *  Update GUI and all player values depending on the decision
+     * @param ID  ID of the player that made the decision
+     * @param decision  The decision the player made
+     * @return  A String of the decision, example "Call 200" or "Fold"
+     */
+    private String evaluateDecision(int ID, Decision decision) {
         long newStackSize = stackSizes.get(ID);
         String decisionText = decision.move.toString() + " ";
-        String checkCallButtonText = "Call";
 
         //Init putOnTable-map
         if (putOnTable.get(ID) == null)
@@ -361,6 +423,8 @@ public class GameScreen {
             case CALL:
                 newStackSize -= Math.min(stackSizes.get(ID), (highestAmountPutOnTable - putOnTable.get(ID)));
                 putOnTable.put(ID,Math.min(stackSizes.get(ID),highestAmountPutOnTable));
+                decisionText += putOnTable.get(ID);
+                printToLogField(names.get(ID) + " called " + putOnTable.get(ID));
                 break;
 
             case BET:
@@ -368,6 +432,7 @@ public class GameScreen {
                 newStackSize -= decision.size;
                 decisionText += (highestAmountPutOnTable = decision.size);
                 setAmountTextfield(highestAmountPutOnTable *2 + "");
+                printToLogField(names.get(ID) + " bet " + decision.size);
                 break;
             case RAISE:
 
@@ -376,19 +441,21 @@ public class GameScreen {
                 decisionText += (highestAmountPutOnTable += decision.size);
                 setAmountTextfield((highestAmountPutOnTable + decision.size) + "");
                 putOnTable.put(ID, highestAmountPutOnTable);
+                printToLogField(names.get(ID) + " raised to " + highestAmountPutOnTable);
                 break;
             case BIG_BLIND:
                 newStackSize -= decision.size;
                 decisionText += (highestAmountPutOnTable = decision.size);
                 setAmountTextfield("" + currentBigBlind * 2);
-                if (ID == playerID) { checkCallButtonText = "Check"; }
                 putOnTable.put(ID, highestAmountPutOnTable);
+                printToLogField(names.get(ID) + " posted big blind");
                 break;
             case SMALL_BLIND:
                 newStackSize -= decision.size;
                 decisionText += (decision.size);
                 setAmountTextfield("" + currentBigBlind * 2);
                 putOnTable.put(ID, decision.size);
+                printToLogField(names.get(ID) + " posted small blind");
                 break;
             case ALL_IN:
                 if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) { //If raise is valid
@@ -396,50 +463,27 @@ public class GameScreen {
                 }
                 putOnTable.put(ID, putOnTable.get(ID) + stackSizes.get(ID));
                 newStackSize = 0;
+                decisionText += putOnTable.get(ID);
+                printToLogField(names.get(ID) + " went all in with " + putOnTable.get(ID));
                 break;
             case FOLD:
                 if (ID == playerID)
                     Platform.runLater(() -> playerLayout.removeHolecards());
                 else
                     Platform.runLater(() -> opponents.get(ID).removeHolecards());
+
+                printToLogField(names.get(ID) + " folded");
                 break;
+            case CHECK:
+                printToLogField(names.get(ID) + " checked");
         }
 
-        if (ID == playerID) {
-            playerLayout.setStackSize(newStackSize);
-        }
+        //Reset the error state of the amountTextField (remove potential red frame)
+        setErrorStateOfAmountTextField(false);
 
+        //Update stack size of the player that acted
         stackSizes.put(ID, newStackSize);
-
-        //Set button texts depending on the action
-        String finalText = checkCallButtonText;
-        switch (decision.move) {
-            case BET:case RAISE:case BIG_BLIND:case SMALL_BLIND:
-                Runnable task = () -> {
-                    playerLayout.setCheckCallButton(finalText);
-                    playerLayout.setBetRaiseButton("Raise to");
-                };
-                Platform.runLater(task);
-                break;
-        }
-
-        setErrorStateOfAmountTextfield(false);
-        final String finalDecision = decisionText;
-        final String stackSizeText = "Stack size: " + newStackSize;
-
-        Runnable task;
-        if (ID == this.playerID) {
-            task = () -> {
-                playerLayout.setLastMoveLabel(finalDecision);
-                playerLayout.setStackLabel(stackSizeText);
-            };
-        } else {
-            task = () -> {
-                opponents.get(ID).setLastMoveLabel(finalDecision);
-                opponents.get(ID).setStackSizeLabel(stackSizeText);
-            };
-        }
-        Platform.runLater(task);
+        return decisionText;
     }
 
     /**
@@ -447,7 +491,6 @@ public class GameScreen {
      *
      * @param stackSizes
      */
-
     public void updateStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : stackSizes.keySet()) {
             this.stackSizes = stackSizes;
@@ -455,20 +498,19 @@ public class GameScreen {
 
             Runnable task;
             if (clientID == playerID) {
-                task = () -> playerLayout.setStackLabel("Amount of chips: " + stackSizeText);
+                task = () -> playerLayout.setStackLabel("Stack size: " + stackSizeText);
             } else {
-                task = () -> opponents.get(clientID).setStackSizeLabel("Amount of chips: " + stackSizeText);
+                task = () -> opponents.get(clientID).setStackSizeLabel("Stack size: " + stackSizeText);
             }
             Platform.runLater(task);
         }
     }
 
     /**
-     * Starting a new betting round an resets buttons
+     * Start a new betting round and reset buttons
      *
      * @param potSize
      */
-
     public void newBettingRound(long potSize) {
         setPot(potSize);
 
@@ -485,23 +527,22 @@ public class GameScreen {
 
         Runnable task = () -> {
             this.highestAmountPutOnTable = 0;
-            playerLayout.setLastMoveLabel("");
+            playerLayout.setLastMove("", null);
             playerLayout.setCheckCallButton("Check");
             playerLayout.setBetRaiseButton("Bet");
             this.setAmountTextfield(currentBigBlind + "");
-            this.setErrorStateOfAmountTextfield(false);
+            this.setErrorStateOfAmountTextField(false);
 
             for (Integer id : opponents.keySet()) {
-                opponents.get(id).setLastMoveLabel("");
+                opponents.get(id).setLastMove("", null);
             }
         };
         Platform.runLater(task);
-        playerLayout.updateSliderValues();
+        updateSliderValues();
     }
 
     /**
      * Set the pot label
-     *
      * @param pot
      */
     public void setPot(long pot) {
@@ -529,8 +570,10 @@ public class GameScreen {
     /**
      * Start a new hard
      */
-
     public void startNewHand() {
+        printToLogField(" ------ New hand ------");
+        communityCards = new ArrayList<>();
+
         Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
         Runnable task = () -> {
             for (ImageView imageview : boardLayout.getCommunityCards()) {
@@ -552,41 +595,33 @@ public class GameScreen {
     }
 
     /**
-     * Displays the winner of the round
-     *  @param winnerName The name of the winner
-     * @param pot         The total pot that the winner is granted
-     * @param holeCards   The winners holeCards
-     */
-    public void showWinner(String winnerName, long pot, Card[] holeCards) {
-        HandCalculator hc = new HandCalculator(new Hand(holeCards[0], holeCards[1], communityCards));
-        String winnerString = winnerName + " won the pot of " + String.valueOf(pot) + " with " + hc.getBestHandString().toLowerCase();
-
-        Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
-    }
-
-    /**
      * Called when the game is over. Display a message with who the winner is
      *
-     * @param userId
+     * @param stats Statistics of the game just played
      */
-    public void gameOver(int userId){
+    public void gameOver(Statistics stats){
+        int winnerID = stats.getWinnerID();
 
         Runnable task = () -> {
-
             VBox vBox = new VBox();
-            Button backToMainScreen = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
-            backToMainScreen.setMinWidth(200);
+            Button backToMainScreenButton = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
+            Button saveStatisticsButton = ObjectStandards.makeButtonForLobbyScreen("Save statistics to file");
+            backToMainScreenButton.setMinWidth(200);
+            saveStatisticsButton.setMinWidth(200);
 
-            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(userId) + " is the winner!","");
+            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
             endGameScreen.setFont(new Font("Areal", 30));
+
+            Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");
+            statsLabel.setWrapText(true);
+            statsLabel.setFont(new Font("Areal", 15));
 
             Stage endGame = new Stage();
             endGame.setAlwaysOnTop(true);
             endGame.initModality(Modality.APPLICATION_MODAL);
-            endGame.setTitle("Congratulation!");
+            endGame.setTitle("Game over!");
 
             vBox.setAlignment(Pos.CENTER);
-
 
             vBox.setStyle("-fx-background-color:#42b43d, " +
                     "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +
@@ -594,13 +629,21 @@ public class GameScreen {
                     "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
                     "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
 
-            backToMainScreen.setOnAction(e -> {
+            backToMainScreenButton.setOnAction(e -> {
                 endGame.close();
                 ButtonListeners.returnToMainMenuButtonListener();
             });
 
-            vBox.getChildren().addAll(endGameScreen,backToMainScreen);
-            Scene scene = new Scene(vBox,600,100);
+            saveStatisticsButton.setOnAction(e -> {
+                if (saveStatisticsButton.getText().equals("Save statistics to file")) {
+                    ButtonListeners.saveToFile(stats);
+                    saveStatisticsButton.setText("Statistics saved!");
+                    saveStatisticsButton.setEffect(new Bloom(-0.9));
+                }
+            });
+
+            vBox.getChildren().addAll(endGameScreen, statsLabel, saveStatisticsButton, backToMainScreenButton);
+            Scene scene = new Scene(vBox,600,450);
             endGame.setScene(scene);
             endGame.show();
         };
@@ -612,7 +655,7 @@ public class GameScreen {
      * @param message
      */
     public void setAmountTextfield(String message) {
-        Runnable task = () -> playerLayout.setAmountTextfield(message);
+        Runnable task = () -> playerLayout.setAmountTextField(message);
         Platform.runLater(task);
     }
 
@@ -620,8 +663,7 @@ public class GameScreen {
      *  Set the border around the amount textfield to red, indicating an error
      * @param error
      */
-
-    public void setErrorStateOfAmountTextfield(boolean error) {
+    public void setErrorStateOfAmountTextField(boolean error) {
         Runnable task;
         if (error) {
             task = () -> playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
@@ -634,31 +676,24 @@ public class GameScreen {
     }
 
     /**
-     *
      * Set the positions of the players
-     *
      * @param positions
      */
-
     public void setPositions(Map<Integer, Integer> positions) {
         Runnable task;
         for (Integer id : positions.keySet()) {
             String pos = "Position: " + getPositionName(positions.get(id));
             if (id == playerID) {
-                task = () -> playerLayout.setPositionLabel(pos);
+                task = () -> playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             } else {
-                task = () -> {
-                    opponents.get(id).setPositionLabel(pos);
-                };
+                task = () -> opponents.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             }
             Platform.runLater(task);
         }
     }
 
-
     /**
-     * Get the position of each player
-     *
+     *  Turn an integer position into a string ("Dealer", "Small blind", ...)
      * @param pos
      * @return position
      */
@@ -671,24 +706,28 @@ public class GameScreen {
     /**
      * Updates slider values
      */
-   public void updateSliderValues(){
-       playerLayout.updateSliderValues();
+    public void updateSliderValues(){
+        if (stackSizes.get(0) != null)
+            playerLayout.updateSliderValues(stackSizes.get(0));
    }
 
-    /**
-     * Setter for number of players.
-     *
-     * @param numberOfPlayers
-     */
+    /** Sent in the start of a game to set the number of players */
     public void setNumberOfPlayers(int numberOfPlayers){
         this.numberOfPlayers = numberOfPlayers;
         positions = giveOpponentPosition();
 
     }
 
+    /**
+     *   Set a playerLayout as bust. Prints to log.
+     * @param playerID   ID of the player that busted
+     * @param rank       The place the player came in
+     */
     public void bustPlayer(int playerID, int rank) {
         numberOfPlayers--;
-        String bustedText = "Busted " + rank + (rank == 1 ? "st" : (rank == 2) ? "nd" : (rank == 3) ? "rd" : "th");
+        String bustedText = "Busted in " + rank + (rank == 1 ? "st" : (rank == 2) ? "nd" : (rank == 3) ? "rd" : "th");
+        if (rank == 1) bustedText = "Won";
+
         if (this.playerID == playerID) {
             playerLayout.bustPlayer(bustedText);
             playerLayout.setBestHand("");
@@ -696,8 +735,11 @@ public class GameScreen {
             opponents.get(playerID).bustPlayer(bustedText);
             opponents.remove(playerID);
         }
+
+        printToLogField(names.get(playerID) + " " + bustedText.toLowerCase());
     }
 
+    /** Set the big blind */
     public void setBigBlind(long bigBlind) {
         this.currentBigBlind = bigBlind;
     }
@@ -705,11 +747,89 @@ public class GameScreen {
     /**
      *  Set the 'Best hand'-label to the players current best hand (e.g.: "Pair of 2's")
      */
-    private void updateBestHandLabel() {
+    private void updateYourHandLabel() {
         if (holeCards.isEmpty())
-            playerLayout.setBestHand("Best hand: ");
+            playerLayout.setBestHand("Your hand: ");
 
         HandCalculator hc = new HandCalculator(new Hand(holeCards.get(0), holeCards.get(1), communityCards));
-        playerLayout.setBestHand("Best hand: " + hc.getBestHandString());
+        playerLayout.setBestHand("Your hand: " + hc.getBestHandString());
     }
+
+    /**
+     *   Sent if the hand is over before showdown
+     * @param winnerID  The player that was left in the hand
+     * @param potsize   The amount the player won
+     */
+    public void preShowdownWinner(int winnerID, long potsize) {
+        Platform.runLater(() -> {
+            boardLayout.setWinnerLabel("Everyone else folded, " + names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
+            printToLogField(names.get(winnerID) + " won the pot of " + potsize);
+        });
+    }
+
+    /**
+     * Print all the community cards to the logField
+     */
+    private void printCommunityCardsToLogField() {
+        String communityCardsText = "";
+        for (Card c : communityCards)
+            communityCardsText += c.toString() + " ";
+        printToLogField(communityCardsText);
+    }
+
+    /**
+     *  Show the hole cards of players remaining in the hand
+     * @param holeCards  Map from a player's ID to his hole cards
+     */
+    public void showHoleCards(Map<Integer, Card[]> holeCards) {
+        holeCards.forEach((id, cards) -> {
+            Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
+            Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
+            if (id == playerID)
+                Platform.runLater(() -> playerLayout.setCardImage(leftCard, rightCard));
+            else
+                Platform.runLater(() -> opponents.get(id).setCardImage(leftCard, rightCard));
+        });
+    }
+
+    /**
+     *  Get the correct image for this decision (based ont the decision and the amount)
+     */
+    private Image getChipImage(int id) {
+        if (putOnTable.get(id) == 0)
+            return null;
+        else if (putOnTable.get(id) <= currentBigBlind / 2)
+            return ImageViewer.getChipAndButtonImage("sb_image");
+        if (putOnTable.get(id) <= currentBigBlind)
+            return ImageViewer.getChipAndButtonImage("bb_image");
+        else if (putOnTable.get(id) <= currentBigBlind * 3)
+            return ImageViewer.getChipAndButtonImage("poker1");
+        else if (putOnTable.get(id) <= currentBigBlind * 5)
+            return ImageViewer.getChipAndButtonImage("poker2");
+        else if (putOnTable.get(id) <= currentBigBlind * 8)
+            return ImageViewer.getChipAndButtonImage("poker3");
+        else if (putOnTable.get(id) <= currentBigBlind * 12)
+            return ImageViewer.getChipAndButtonImage("poker4");
+        else if (putOnTable.get(id) <= currentBigBlind * 20)
+            return ImageViewer.getChipAndButtonImage("poker6");
+        else if(putOnTable.get(id) <= currentBigBlind * 50)
+            return ImageViewer.getChipAndButtonImage("poker7");
+        else
+            return ImageViewer.getChipAndButtonImage("poker8");
+    }
+
+    private Image getButtonImage(int player, int id){
+        if (player == 0) {
+            if(getPositionName(id).equals("Dealer"))
+                return ImageViewer.getChipAndButtonImage("dealer");
+            else return null;
+        }
+        if (player > 0){
+            if (getPositionName(id).endsWith("Dealer"))
+                return ImageViewer.getChipAndButtonImage("dealer");
+            else return null;
+        }
+        return null;
+    }
+
 }

@@ -1,9 +1,6 @@
 package gui;
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
+import gamelogic.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +30,7 @@ public class GUIClient implements GameClient {
 
 
     @Override
-    public synchronized Decision getDecision(){
+    public synchronized Decision getDecision(long timeToThink){
         //Make buttons visible
         gameScreen.setActionsVisible(true);
 
@@ -59,20 +56,20 @@ public class GUIClient implements GameClient {
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
             GUIMain.debugPrint("You don't have this much in your stack");
-            gameScreen.setErrorStateOfAmountTextfield(true);
+            gameScreen.setErrorStateOfAmountTextField(true);
             return;
         }
 
         if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
             GUIMain.debugPrint("Raise is too small");
-            gameScreen.setErrorStateOfAmountTextfield(true);
+            gameScreen.setErrorStateOfAmountTextField(true);
             return;
         }
 
         if (move == Decision.Move.BET && moveSize < bigBlind) {
             GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
-            gameScreen.setErrorStateOfAmountTextfield(true);
+            gameScreen.setErrorStateOfAmountTextField(true);
             return;
         }
 
@@ -92,7 +89,7 @@ public class GUIClient implements GameClient {
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
 
-        gameScreen.setErrorStateOfAmountTextfield(false);
+        gameScreen.setErrorStateOfAmountTextField(false);
 
         notifyAll();
     }
@@ -139,8 +136,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void gameOver(int winnerID) {
-        gameScreen.gameOver(winnerID);
+    public void gameOver(Statistics stats) {
+        gameScreen.gameOver(stats);
     }
 
     @Override
@@ -169,9 +166,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void showdown(List<Integer> playersStillPlaying, int winnerID, Map<Integer, Card[]> holeCards, long pot) {
-        gameScreen.setPot(pot);
-        gameScreen.showDown(playersStillPlaying, winnerID, holeCards);
+    public void showdown(ShowdownStats showdownStats) {
+        gameScreen.showdown(showdownStats);
     }
 
     @Override
@@ -183,7 +179,6 @@ public class GUIClient implements GameClient {
     @Override
     public void setSmallBlind(long smallBlind) {
         this.smallBlind = smallBlind;
-        //TODO: Update label in GUI
     }
 
     @Override
@@ -203,7 +198,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setLevelDuration(int levelDuration) {
-        //TODO: Update label in GUI
     }
 
     public void newBettingRound(long potSize) {
@@ -223,5 +217,13 @@ public class GUIClient implements GameClient {
      */
     public void printToLogfield(String message) {
         gameScreen.printToLogField(message);
+    }
+
+    public void preShowdownWinner(int winnerID, long potsize) {
+        gameScreen.preShowdownWinner(winnerID, potsize);
+    }
+
+    public void showHoleCards(Map<Integer, Card[]> holeCards) {
+        gameScreen.showHoleCards(holeCards);
     }
 }
