@@ -139,7 +139,7 @@ public class GameController {
             int AI_id = i + 1;
 
             GameClient aiClient;
-            double contemptFactor = 0.95;
+            double contemptFactor = 1.00;
             switch (gameSettings.getAiType()) {
                 case MCTS_AI:
                     aiClient = new MCTSAI(AI_id, contemptFactor);

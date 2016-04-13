@@ -42,7 +42,7 @@ public class PokerMCTS {
             for (int i = 0; i < 100; i++) {
                 rootNode.select(totalSearches, initialGameState, new Random(), false);
                 totalSearches++;
-                if (totalSearches % 50000 == 0) {
+                if (totalSearches % 100000 == 0) {
                     assert rootNode.children.size() <= 50 && rootNode.children.size() >= 45  : "Rootnode for MCTS had " + rootNode.children.size() + " children.";
                     assert rootNode.children.get(0).get().children.size() <= 49 && rootNode.children.get(0).get().children.size() >= 44 : "2nd level node has " + rootNode.children.get(0).get().children.size() + " children, should have 44-49.";
                     assert rootNode.children.get(0).get().searches > 10;
@@ -70,25 +70,25 @@ public class PokerMCTS {
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
             switch (decision.move) {
                 case FOLD:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.05, 0.5);
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
                     break;
                 case CHECK:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.05, 0.5);
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
                     break;
                 case BET:
                 case RAISE:
                     long betSize = decision.size + initialGameState.currentPlayer.currentBet;
-                    values[i] *= Math.pow(contemptFactor - 0.05, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
                 case CALL:
-                    values[i] *= Math.pow(contemptFactor - 0.05, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
+                    values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
                     break;
                 case BIG_BLIND:
                     break;
                 case SMALL_BLIND:
                     break;
                 case ALL_IN:
-                    values[i] *= contemptFactor - 0.05;
+                    values[i] *= contemptFactor - 0.02;
                     break;
             }
             //System.out.println(values[i]);

@@ -291,7 +291,7 @@ public class GameState {
         else {
             double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1));
             // Random modifier between with an average of 1.0
-            double randomModifier = Math.pow(Math.random() + Math.random(), 1.5);
+            double randomModifier = Math.pow(Math.random() + Math.random(), 2);
 
             Decision.Move moneyMove = communityCards.size() > 0 && currentPlayer.currentBet == 0 ? Decision.Move.BET : Decision.Move.RAISE;
             Decision decision;

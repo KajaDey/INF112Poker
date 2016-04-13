@@ -21,8 +21,8 @@ public class AITest {
     HashMap<Integer, String> names;
     int smallBlind = 25;
     int bigBlind = 50;
-    long startStack = 1000L;
-    long timeToThink = 2000L;
+    long startStack = 5000L;
+    long timeToThink = 5000L;
 
     @Test
     public void testAllInAsCall() {
