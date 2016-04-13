@@ -9,6 +9,7 @@ import java.util.*;
  */
 public class MCTSAI implements GameClient {
 
+    public final double contemptFactor;
     private final int playerId;
     private int amountOfPlayers;
     private long bigBlindAmount;
@@ -19,12 +20,17 @@ public class MCTSAI implements GameClient {
     private Optional<Map<Integer, Integer>> positions;
     private Optional<Map<Integer, String>> names;
 
-    public MCTSAI(int playerId) {
+    public MCTSAI(int playerId, double contemptFactor) {
         gameState = Optional.empty();
         stackSizes = Optional.empty();
         positions = Optional.empty();
         names = Optional.empty();
         this.playerId = playerId;
+        this.contemptFactor = contemptFactor;
+    }
+
+    public MCTSAI(int playerId) {
+        this(playerId, 1.0);
     }
 
     @Override
@@ -39,7 +45,7 @@ public class MCTSAI implements GameClient {
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
-        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId);
+        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, Math.sqrt(contemptFactor));
         return mcts.calculateFor(timeToThink);
     }
 

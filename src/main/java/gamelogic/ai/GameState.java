@@ -251,13 +251,12 @@ public class GameState {
     public Optional<GameStateChange> getRandomDecision(Random random) {
         if (playersGivenHolecards < amountOfPlayers) {
             for (int i = 0; i < amountOfPlayers; i++) {
-
                 if (players.get(i).holeCards.size() < 2) {
-                    while (true) {
+                    for (int j = 0; j < 50; j++) {
                         int randomCardIndex = random.nextInt(deck.size());
                         if (currentPlayer.holeCards.size() == 0) {
                             double handQuality = deck.get(randomCardIndex).rank;
-                            if (handQuality / 14 > currentPlayer.riskTaken(allChipsOnTable)) {
+                            if (handQuality / (15 - j / 2) > currentPlayer.riskTaken(allChipsOnTable)) {
                                 return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), i));
                             }
                             else {
@@ -266,14 +265,13 @@ public class GameState {
                         }
                         else {
                             double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), deck.get(randomCardIndex));
-                            if (handQuality / 40 > currentPlayer.riskTaken(allChipsOnTable)) {
+                            if (handQuality / (60 - j) > currentPlayer.riskTaken(allChipsOnTable)) {
                                 return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), i));
                             }
                             else {
                                 continue;
                             }
                         }
-
                     }
                 }
             }

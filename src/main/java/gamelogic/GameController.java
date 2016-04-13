@@ -137,10 +137,10 @@ public class GameController {
             int AI_id = i + 1;
 
             GameClient aiClient;
-            double contemptFactor = 1.0;
+            double contemptFactor = 0.95;
             switch (gameSettings.getAiType()) {
                 case MCTS_AI:
-                    aiClient = new MCTSAI(AI_id);
+                    aiClient = new MCTSAI(AI_id, contemptFactor);
                     break;
                 case SIMPLE_AI:
                     aiClient = new SimpleAI(AI_id, contemptFactor);
