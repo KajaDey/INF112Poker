@@ -31,8 +31,8 @@ public class NameGenerator {
     }
 
     /**
-     *  Get a random name from a theme series
-     *  Guarantees no duplicates
+     *  Get a random name from a randomly selected theme series
+     *  Guarantees no duplicates, removes all white spaces
      *  @return
      */
     public static String getRandomName(){
