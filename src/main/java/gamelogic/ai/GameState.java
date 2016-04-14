@@ -251,7 +251,7 @@ public class GameState {
         if (playersGivenHoleCards < amountOfPlayers) {
             for (int i = 0; i < amountOfPlayers; i++) {
                 if (players.get(i).holeCards.size() < 2) {
-                    for (int j = 0; j < 50; j++) {
+                    for (int j = 0; j < 100; j++) {
                         int randomCardIndex = random.nextInt(deck.size());
                         if (currentPlayer.holeCards.size() == 0) {
                             double handQuality = deck.get(randomCardIndex).rank;
