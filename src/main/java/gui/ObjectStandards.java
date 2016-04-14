@@ -20,7 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * This meaning of this class is to create standard gui objects that will be used throughout the
+ * The meaning of this class is to create standard gui objects that will be used throughout the
  * entire application.
  *
  * The standard objects made in this class are:
@@ -34,18 +34,21 @@ import java.net.URISyntaxException;
  */
 public class ObjectStandards {
 
-    private static DropShadow dropShadow = new DropShadow();
+    private static DropShadow dropShadow;
+    private static String styling;
 
-    private static String styling = "-fx-background-color:#090a0c, " +
-            "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
-            "linear-gradient(#20262b, #191d22), " +
-            "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
-            "-fx-background-radius: 5,4,3,5; " +
-            "-fx-background-insets: 0,1,2,0; " +
-            "-fx-text-fill: white; " +
-            "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); " +
-            "-fx-text-fill: linear-gradient(white, #d0d0d0)";
-
+    static {
+        dropShadow = new DropShadow();
+        styling = "-fx-background-color:#090a0c, " +
+                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
+                "linear-gradient(#20262b, #191d22), " +
+                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
+                "-fx-background-radius: 5,4,3,5; " +
+                "-fx-background-insets: 0,1,2,0; " +
+                "-fx-text-fill: white; " +
+                "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); " +
+                "-fx-text-fill: linear-gradient(white, #d0d0d0)";
+    }
 
     /**
      * A template for a button

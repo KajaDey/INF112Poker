@@ -9,7 +9,11 @@ import javafx.stage.Stage;
  */
 public class SceneBuilder {
 
-    static Stage window = new Stage();
+    private static Stage window;
+
+    static {
+        window = new Stage();
+    }
 
     /**
      * Displays a given layout

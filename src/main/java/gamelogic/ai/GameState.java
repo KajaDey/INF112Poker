@@ -2,7 +2,6 @@ package gamelogic.ai;
 
 import gamelogic.Card;
 import gamelogic.Decision;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.*;
 
@@ -10,7 +9,7 @@ import java.util.*;
  * Represents the state of a single hand, for use by the MCTSAI
  */
 public class GameState {
-    private final ArrayList<Card> deck;
+    private final List<Card> deck;
 
     public final int amountOfPlayers;
     public final List<Player> players;
@@ -25,7 +24,7 @@ public class GameState {
     public final long bigBlindAmount;
 
     public final long allChipsOnTable;
-    private int playersGivenHolecards = 0;
+    private int playersGivenHoleCards = 0;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
 
     public int getPlayersAllIn() {
@@ -104,7 +103,7 @@ public class GameState {
         this.playersLeftInHand = oldState.playersLeftInHand;
         this.playersAllIn = oldState.playersAllIn;
         this.playersToMakeDecision = oldState.playersToMakeDecision;
-        this.playersGivenHolecards = oldState.playersGivenHolecards;
+        this.playersGivenHoleCards = oldState.playersGivenHoleCards;
     }
 
     public long getCurrentPot() {
@@ -125,7 +124,7 @@ public class GameState {
             players.get(cardDeal.playerPosition).holeCards.add(cardDeal.card);
             deck.remove(cardDeal.card);
             if (players.get(cardDeal.playerPosition).holeCards.size() == 2) {
-                playersGivenHolecards++;
+                playersGivenHoleCards++;
             }
             assert players.get(cardDeal.playerPosition).holeCards.size() <= 2
                     : "Player " + cardDeal.playerPosition + " has " + players.get(cardDeal.playerPosition).holeCards.size() + " hole cards";
@@ -249,7 +248,7 @@ public class GameState {
     }
 
     public Optional<GameStateChange> getRandomDecision(Random random) {
-        if (playersGivenHolecards < amountOfPlayers) {
+        if (playersGivenHoleCards < amountOfPlayers) {
             for (int i = 0; i < amountOfPlayers; i++) {
                 if (players.get(i).holeCards.size() < 2) {
                     for (int j = 0; j < 50; j++) {
@@ -275,7 +274,7 @@ public class GameState {
                     }
                 }
             }
-            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHolecards + " but all players had the cards");
+            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHoleCards + " but all players had the cards");
         }
         else if (playersLeftInHand + playersAllIn == 1) {
             return Optional.empty();
@@ -410,8 +409,8 @@ public class GameState {
      * Gets a list of all possible decisions in the current GameState, without mutating the gamestate.
      * Returns Empty if the node is a terminal node
      */
-    public Optional<ArrayList<GameStateChange>> allDecisions() {
-        ArrayList<GameStateChange> decisions = new ArrayList<>(20);
+    public Optional<List<GameStateChange>> allDecisions() {
+        List<GameStateChange> decisions = new ArrayList<>(20);
 
         assert deck.size() + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + communityCards.size() == 52 : "Deck has " + deck.size() + " cards, players have " + players.stream().map(p -> p.holeCards.size()).reduce(0, Integer::sum) + " holecards [" + players.stream().map(p -> p.name + ": " + p.holeCards).reduce("", String::concat) + "] and table has " + communityCards.size() + " community cards";
         assert sumOfChipsInPlay(players) == allChipsOnTable :
@@ -419,7 +418,7 @@ public class GameState {
 
         assert players.stream().map(player -> player.stackSize).min(Long::compare).get() >= 0L : "A player has negative stack size";
 
-        if (playersGivenHolecards < amountOfPlayers) {
+        if (playersGivenHoleCards < amountOfPlayers) {
 
             for (int i = 0; i < amountOfPlayers; i++) {
                 assert players.get(i).position == i;
@@ -430,7 +429,7 @@ public class GameState {
                     return Optional.of(decisions);
                 }
             }
-            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHolecards + " but all players had the cards");
+            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHoleCards + " but all players had the cards");
         }
         else if (playersLeftInHand + playersAllIn == 1) {
             return Optional.empty();
@@ -495,34 +494,34 @@ public class GameState {
         assert player.holeCards.size() == 0;
         player.holeCards.addAll(holeCards);
         deck.removeAll(holeCards);
-        playersGivenHolecards++;
+        playersGivenHoleCards++;
     }
 
     // Returns the kind of decision that needs to be done in this gamestate
     public NodeType getNextNodeType() {
         NodeType nodeType;
-        if (playersGivenHolecards < amountOfPlayers) {
-            nodeType = NodeType.DealCard;
+        if (playersGivenHoleCards < amountOfPlayers) {
+            nodeType = NodeType.DEAL_CARD;
         }
         else if (playersLeftInHand + playersAllIn == 1) {
             // If everyone except one player has folded
-            nodeType = NodeType.Terminal;
+            nodeType = NodeType.TERMINAL;
         }
         else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
             if (communityCards.size() == 5) {
-                nodeType = NodeType.Terminal;
+                nodeType = NodeType.TERMINAL;
             }
             else {
-                nodeType = NodeType.DealCard;
+                nodeType = NodeType.DEAL_CARD;
             }
         }
         else {
-            nodeType = NodeType.PlayerDecision;
+            nodeType = NodeType.PLAYER_DECISION;
         }
         return nodeType;
     }
 
-    public enum NodeType {DealCard, PlayerDecision, Terminal }
+    public enum NodeType {DEAL_CARD, PLAYER_DECISION, TERMINAL}
 
     /**
      * Abstract class that represents any change to the gameState, including player decisions
@@ -531,10 +530,10 @@ public class GameState {
     public static abstract class GameStateChange {
         public NodeType getStartingNodeType() {
             if (this instanceof PlayerDecision) {
-                return NodeType.PlayerDecision;
+                return NodeType.PLAYER_DECISION;
             }
             else {
-                return NodeType.DealCard;
+                return NodeType.DEAL_CARD;
             }
         }
     }

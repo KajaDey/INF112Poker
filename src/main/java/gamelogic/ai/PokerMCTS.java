@@ -184,17 +184,17 @@ public class PokerMCTS {
             newGameState.makeGameStateChange(allMoves.get(childIndex));
 
             GameState.NodeType childNodeType = newGameState.getNextNodeType();
-            Optional<ArrayList<GameState.GameStateChange>> allMovesForChild = newGameState.allDecisions();
+            Optional<List<GameState.GameStateChange>> allMovesForChild = newGameState.allDecisions();
 
             AbstractNode childNode;
 
             //TODO: Currently computes all moves for this node AND child node, which may be wasteful
 
             switch (childNodeType) {
-                case DealCard:
+                case DEAL_CARD:
                     childNode = new RandomNode(allMovesForChild.get().size());
                     break;
-                case PlayerDecision:
+                case PLAYER_DECISION:
                     if (newGameState.currentPlayer.id == playerId) {
                         childNode = new AINode(allMovesForChild.get().size());
                     }
@@ -202,7 +202,7 @@ public class PokerMCTS {
                         childNode = new OpponentNode(allMovesForChild.get().size());
                     }
                     break;
-                case Terminal:
+                case TERMINAL:
                     childNode = new TerminalNode(0, newGameState, totalSearches);
                     break;
                 default: throw new IllegalStateException();
@@ -234,7 +234,7 @@ public class PokerMCTS {
         }
 
         public double[] simulate(int totalSearches, final GameState gameState, Random random, boolean hasPassedDecisionNode) {
-            assert gameState.getNextNodeType() != GameState.NodeType.Terminal : "Tried to simulate a " + this.getClass().getSimpleName() + " when it was actually a terminal node";
+            assert gameState.getNextNodeType() != GameState.NodeType.TERMINAL : "Tried to simulate a " + this.getClass().getSimpleName() + " when it was actually a terminal node";
 
             List<GameState.GameStateChange> allMoves;
             if (!hasPassedDecisionNode && this instanceof AINode) {
@@ -252,10 +252,10 @@ public class PokerMCTS {
             AbstractNode childNode;
 
             switch (gameState.getNextNodeType()) {
-                case DealCard:
+                case DEAL_CARD:
                     childNode = new RandomNode();
                     break;
-                case PlayerDecision:
+                case PLAYER_DECISION:
                     if (gameState.currentPlayer.id == playerId) {
                         childNode = new AINode();
                     }
@@ -263,7 +263,7 @@ public class PokerMCTS {
                         childNode = new OpponentNode();
                     }
                     break;
-                case Terminal:
+                case TERMINAL:
                     childNode = new TerminalNode(0, gameState, totalSearches);
                     break;
                 default: throw new IllegalStateException();
@@ -310,13 +310,13 @@ public class PokerMCTS {
 
         public GameState.NodeType getNodeType() {
             if (this instanceof PlayerNode) {
-                return GameState.NodeType.PlayerDecision;
+                return GameState.NodeType.PLAYER_DECISION;
             }
             else if (this instanceof TerminalNode) {
-                return GameState.NodeType.Terminal;
+                return GameState.NodeType.TERMINAL;
             }
             else {
-                return GameState.NodeType.DealCard;
+                return GameState.NodeType.DEAL_CARD;
             }
         }
     }
