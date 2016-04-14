@@ -309,7 +309,7 @@ public class ObjectStandards {
             else {
                 Runtime runtime = Runtime.getRuntime();
                 try {
-                    runtime.exec("xdg-open " + "https://en.wikipedia.org/wiki/Texas_hold_%27em");
+                    runtime.exec("/usr/bin/firefox -new-window https://en.wikipedia.org/wiki/Texas_hold_%27em");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
