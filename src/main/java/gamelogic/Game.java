@@ -14,7 +14,7 @@ public class Game {
     //Controls
     private Player [] players;
     private GameController gameController;
-    private GameSettings gamesettings;
+    private GameSettings gameSettings;
 
     //Settings
     private int maxNumberOfPlayers;
@@ -23,6 +23,7 @@ public class Game {
     private long startSB, startBB;
     private long currentSB, currentBB;
     private long startStack;
+    private int handsStarted = 0;
 
     //Indexes
     private int smallBlindIndex = 0;
@@ -39,17 +40,17 @@ public class Game {
     private Map<Integer, String> names;
     private Card [] communityCards;
 
-    public Game(GameSettings gamesettings, GameController gameController) {
+    public Game(GameSettings gameSettings, GameController gameController) {
         this.gameController = gameController;
-        this.gamesettings = gamesettings;
+        this.gameSettings = gameSettings;
 
-        this.maxNumberOfPlayers = finishedInPosition =  gamesettings.getMaxNumberOfPlayers();
+        this.maxNumberOfPlayers = finishedInPosition =  gameSettings.getMaxNumberOfPlayers();
         this.players = new Player[maxNumberOfPlayers];
 
-        this.startStack = gamesettings.getStartStack();
-        this.currentSB = (this.startSB = gamesettings.getSmallBlind());
-        this.currentBB = (this.startBB = gamesettings.getBigBlind());
-        this.blindLevelDuration = gamesettings.getLevelDuration();
+        this.startStack = gameSettings.getStartStack();
+        this.currentSB = (this.startSB = gameSettings.getSmallBlind());
+        this.currentBB = (this.startBB = gameSettings.getBigBlind());
+        this.blindLevelDuration = gameSettings.getLevelDuration();
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
         this.names = new HashMap<>();
@@ -76,7 +77,7 @@ public class Game {
             }
         }
 
-        stackSizes.put(ID, gamesettings.getStartStack());
+        stackSizes.put(ID, gameSettings.getStartStack());
         names.put(ID, name);
 
         return true;
@@ -120,9 +121,18 @@ public class Game {
      */
     private void playHand() {
         boolean preFlop = true;
-
+        handsStarted++;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
         GUIMain.debugPrintln("\nBLINDS");
+        if (handsStarted % blindLevelDuration == 0) {
+            gameSettings.increaseBlinds();
+            this.currentBB = gameSettings.getBigBlind();
+            this.currentSB = gameSettings.getSmallBlind();
+            GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
+            gameController.setBlinds(gameSettings);
+
+
+        }
         postBlinds();
         printAllPlayerStacks();
 
@@ -551,7 +561,7 @@ public class Game {
         gameController.setStackSizes(stacks);
 
         totalChipsInPlay += pot.getPotSize();
-        assert totalChipsInPlay == maxNumberOfPlayers * gamesettings.getStartStack() : "Too many chips in play, " + totalChipsInPlay;
+        assert totalChipsInPlay == maxNumberOfPlayers * gameSettings.getStartStack() : "Too many chips in play, " + totalChipsInPlay;
     }
 
     /**
