@@ -247,12 +247,14 @@ public class OpponentLayout extends HBox{
     }
 
     public void bustPlayer(String bustedText) {
-        isBust = true;
-        setLastMove("", null);
-        setStackSizeLabel(bustedText);
-        setPositionLabel("", null);
+        Platform.runLater(() -> {
+            isBust = true;
+            setLastMove("", null);
+            setStackSizeLabel(bustedText);
+            setPositionLabel("", null);
 
-        setCardImage(null, null);
+            setCardImage(null, null);
+        });
     }
 
     public boolean isBust() {
