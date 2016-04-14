@@ -316,12 +316,14 @@ public class PlayerLayout {
     }
 
     public void bustPlayer(String bustedText) {
-        setLastMove("", null);
-        setStackLabel(bustedText);
-        setPositionLabel("", null);
-        setCardImage(null, null);
-        slider.setVisible(false);
-        bestHand.setVisible(false);
+        Platform.runLater(() -> {
+            setLastMove("", null);
+            setStackLabel(bustedText);
+            setPositionLabel("", null);
+            setCardImage(null, null);
+            slider.setVisible(false);
+            bestHand.setVisible(false);
+        });
     }
 
     public void removeHolecards() {
