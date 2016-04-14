@@ -300,8 +300,7 @@ public class ObjectStandards {
 
         aboutTexasHoldem.setOnAction(event -> {
             assert os != null;
-            /*Æif (os.contains("nix") || os.contains("nux")){
-                assert Desktop.getDesktop().isSupported(Desktop.Action.BROWSE);
+            if (os.contains("nix") || os.contains("nux")){
                 Runtime runtime = Runtime.getRuntime();
                 try {
                     runtime.exec("xdg-open https://en.wikipedia.org/wiki/Texas_hold_%27em");
@@ -309,13 +308,13 @@ public class ObjectStandards {
                     e.printStackTrace();
                 }
             }
-            else {*/
+            else {
                 try {
                     Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Texas_hold_%27em"));
                 } catch (IOException | URISyntaxException e) {
                     e.printStackTrace();
                 }
-            //}
+            }
         });
 
         quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
