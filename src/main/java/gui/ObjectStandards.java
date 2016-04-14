@@ -299,7 +299,8 @@ public class ObjectStandards {
         });
 
         aboutTexasHoldem.setOnAction(event -> {
-            if (Desktop.isDesktopSupported()) {
+            assert os != null;
+            if (Desktop.isDesktopSupported() && !os.equals("Linux")) {
                 try {
                     Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Texas_hold_%27em"));
                 } catch (IOException | URISyntaxException e) {
