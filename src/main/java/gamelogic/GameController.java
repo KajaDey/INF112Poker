@@ -132,12 +132,20 @@ public class GameController {
     /**
      * Informs each client about the small and big blind amount
      */
-    private void initClients(GameSettings gamesettings) {
+    private void initClients(GameSettings gameSettings) {
+        setBlinds(gameSettings);
         for (Integer clientID : clients.keySet()) {
-            GameClient client = clients.get(clientID);
-            client.setBigBlind(gamesettings.getBigBlind());
-            client.setSmallBlind(gamesettings.getSmallBlind());
-            client.setPlayerNames(names);
+            clients.get(clientID).setPlayerNames(names);
+        }
+    }
+
+    /**
+     * Sends the blinds to all the clients
+     */
+    public void setBlinds(GameSettings gameSettings) {
+        for (int clientID : clients.keySet()) {
+            clients.get(clientID).setBigBlind(gameSettings.getBigBlind());
+            clients.get(clientID).setSmallBlind(gameSettings.getSmallBlind());
         }
     }
 

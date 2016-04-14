@@ -39,6 +39,14 @@ public class GameSettings {
     }
 
     /**
+     * Doubles the blinds
+     */
+    public void increaseBlinds() {
+        smallBlind *= 2;
+        bigBlind *= 2;
+    }
+
+    /**
      * @return startStack
      */
 
