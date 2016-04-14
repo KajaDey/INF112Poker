@@ -282,7 +282,7 @@ public class PokerMCTS {
                     }
                 }
                 int moveIndex = allMoves.indexOf(randomMove);
-                if (moveIndex < 0) {
+                if (moveIndex < 0 || moveIndex >= criticalEvals.get().size()) {
                     moveIndex = 0; // TODO: This happens sometimes, for an unknown reason. It's rare, so simply ignore it for now
                 }
                 assert moveIndex >= 0 : "Found illegal move " + randomMove + " while simulating, allMoves: " + allMoves + ", " + clonedGameState.currentPlayer + ", currentBet: " + clonedGameState.currentPlayer.currentBet + ", pot: " + clonedGameState.getCurrentPot();
