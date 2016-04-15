@@ -116,6 +116,7 @@ public class PokerMCTS {
         }
         List<GameState.GameStateChange> allDecisions = gameState.allDecisions().get();
 
+        assert criticalEvals.isPresent() : "Did " + totalSearches + " searches, but no critical evals were set";
         for (int i = 0; i < criticalEvals.get().size(); i++) {
             GameState newGameState = new GameState(gameState);
             newGameState.makeGameStateChange(allDecisions.get(i));
