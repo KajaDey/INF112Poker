@@ -12,11 +12,11 @@ import gamelogic.GameController;
  */
 public class GameSettings {
 
-    private long startStack;
+    private final long startStack;
     private long bigBlind;
     private long smallBlind;
-    private int maxNumberOfPlayers;
-    private int levelDuration;
+    private final int maxNumberOfPlayers;
+    private final int levelDuration;
     private AIType aiType;
 
     /**
@@ -36,6 +36,14 @@ public class GameSettings {
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
         this.aiType = aiType;
+    }
+
+    /**
+     * Doubles the blinds
+     */
+    public void increaseBlinds() {
+        smallBlind *= 2;
+        bigBlind *= 2;
     }
 
     /**

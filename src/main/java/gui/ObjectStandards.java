@@ -299,18 +299,19 @@ public class ObjectStandards {
         });
 
         aboutTexasHoldem.setOnAction(event -> {
-            if (Desktop.isDesktopSupported()) {
+            assert os != null;
+            if (os.contains("nix") || os.contains("nux")){
+                Runtime runtime = Runtime.getRuntime();
                 try {
-                    Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Texas_hold_%27em"));
-                } catch (IOException | URISyntaxException e) {
+                    runtime.exec("xdg-open https://en.wikipedia.org/wiki/Texas_hold_%27em");
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             else {
-                Runtime runtime = Runtime.getRuntime();
                 try {
-                    runtime.exec("xdg-open " + "https://en.wikipedia.org/wiki/Texas_hold_%27em");
-                } catch (IOException e) {
+                    Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Texas_hold_%27em"));
+                } catch (IOException | URISyntaxException e) {
                     e.printStackTrace();
                 }
             }

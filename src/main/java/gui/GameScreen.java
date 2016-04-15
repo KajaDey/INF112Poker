@@ -195,7 +195,7 @@ public class GameScreen {
                 positions[4] =5;
                 break;
             default:
-                GUIMain.debugPrint("Too many players");
+                GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game");
                 break;
         }
 
