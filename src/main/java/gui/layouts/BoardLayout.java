@@ -42,7 +42,7 @@ public class BoardLayout {
         VBox fullLayout = new VBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
-        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SM:", smallBlind + "$");
+        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SB:", smallBlind + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
         currentBBLabel.setMinWidth(115);
         currentSBLabel.setMinWidth(115);

@@ -17,12 +17,8 @@ public class Game {
     private GameSettings gameSettings;
 
     //Settings
-    private int maxNumberOfPlayers;
     private int numberOfPlayers = 0, finishedInPosition;
-    private int blindLevelDuration;
     private long startSB, startBB;
-    private long currentSB, currentBB;
-    private long startStack;
     private int handsStarted = 0;
 
     //Indexes
@@ -44,13 +40,8 @@ public class Game {
         this.gameController = gameController;
         this.gameSettings = gameSettings;
 
-        this.maxNumberOfPlayers = finishedInPosition =  gameSettings.getMaxNumberOfPlayers();
-        this.players = new Player[maxNumberOfPlayers];
-
-        this.startStack = gameSettings.getStartStack();
-        this.currentSB = (this.startSB = gameSettings.getSmallBlind());
-        this.currentBB = (this.startBB = gameSettings.getBigBlind());
-        this.blindLevelDuration = gameSettings.getLevelDuration();
+        this.finishedInPosition =  gameSettings.getMaxNumberOfPlayers();
+        this.players = new Player[gameSettings.getMaxNumberOfPlayers()];
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
         this.names = new HashMap<>();
@@ -64,12 +55,12 @@ public class Game {
      * @return true if player was added successfully, else false
      */
     public boolean addPlayer(String name, int ID) {
-        if (numberOfPlayers >= maxNumberOfPlayers) {
+        if (numberOfPlayers >= gameSettings.getMaxNumberOfPlayers()) {
             return false;
         }
 
-        Player p = new Player(name, startStack, ID);
-        for (int i = 0; i < maxNumberOfPlayers; i++) {
+        Player p = new Player(name, gameSettings.getStartStack(), ID);
+        for (int i = 0; i < gameSettings.getMaxNumberOfPlayers(); i++) {
             if (players[i] == null) {
                 players[i] = p;
                 numberOfPlayers++;
@@ -124,12 +115,10 @@ public class Game {
         handsStarted++;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
         GUIMain.debugPrintln("\nBLINDS");
-        if (handsStarted % blindLevelDuration == 0) {
+        if (handsStarted % gameSettings.getLevelDuration() == 0) {
             gameSettings.increaseBlinds();
-            this.currentBB = gameSettings.getBigBlind();
-            this.currentSB = gameSettings.getSmallBlind();
             GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
-            gameController.setBlinds(gameSettings);
+            gameController.setBlinds();
 
 
         }
@@ -190,8 +179,8 @@ public class Game {
         else
             actingPlayerIndex = (isPreFlop ? 2 % playersStillInCurrentHand.size() : 0);
 
-        highestAmountPutOnTable = (isPreFlop ? currentBB : 0);
-        currentMinimumRaise = currentBB;
+        highestAmountPutOnTable = (isPreFlop ? gameSettings.getBigBlind() : 0);
+        currentMinimumRaise = gameSettings.getBigBlind();
 
         if (!isPreFlop) {
             for (Player p : players)
@@ -281,7 +270,7 @@ public class Game {
     private Decision getValidDecisionFromPlayer(Player playerToAct, boolean isPreFlop) {
         long stackSize = playerToAct.getStackSize();
         boolean playerCanCheckBigBlind =
-                isPreFlop && playerToAct.putOnTable() == currentBB && highestAmountPutOnTable == currentBB;
+                isPreFlop && playerToAct.putOnTable() == gameSettings.getBigBlind() && highestAmountPutOnTable == gameSettings.getBigBlind();
 
         while(true) {
             //Get a decision for playerToAct from GameController
@@ -341,8 +330,8 @@ public class Game {
     private void postBlinds() {
         assert playersStillInCurrentHand.size() >= 2 : "Not enough players still playing to post blinds";
 
-        Decision postSB = new Decision(Decision.Move.SMALL_BLIND, currentSB);
-        Decision postBB = new Decision(Decision.Move.BIG_BLIND, currentBB);
+        Decision postSB = new Decision(Decision.Move.SMALL_BLIND, gameSettings.getSmallBlind());
+        Decision postBB = new Decision(Decision.Move.BIG_BLIND, gameSettings.getBigBlind());
 
         Player smallBlindPlayer, bigBlindPlayer;
         if (playersStillInCurrentHand.size() == 2) {
@@ -370,8 +359,8 @@ public class Game {
         stackSizes.put(smallBlindPlayer.getID(), smallBlindPlayer.getStackSize());
         stackSizes.put(bigBlindPlayer.getID(), bigBlindPlayer.getStackSize());
 
-        currentMinimumRaise = currentBB;
-        highestAmountPutOnTable = currentBB;
+        currentMinimumRaise = gameSettings.getBigBlind();
+        highestAmountPutOnTable = gameSettings.getBigBlind();
     }
 
     /**
@@ -561,7 +550,7 @@ public class Game {
         gameController.setStackSizes(stacks);
 
         totalChipsInPlay += pot.getPotSize();
-        assert totalChipsInPlay == maxNumberOfPlayers * gameSettings.getStartStack() : "Too many chips in play, " + totalChipsInPlay;
+        assert totalChipsInPlay == gameSettings.getMaxNumberOfPlayers() * gameSettings.getStartStack() : "Too many chips in play, " + totalChipsInPlay;
     }
 
     /**
@@ -670,17 +659,17 @@ public class Game {
      */
     public String getError() {
         String error = null;
-        if (startStack < 0) {
+        if (gameSettings.getStartStack() < 0) {
             error = "Start stack must be a positive whole number";
-        } else if (startStack < startBB * 10){
+        } else if (gameSettings.getStartStack() < startBB * 10){
             error = "Start stack must be at least 10 times the big blind";
         } else if(startBB < 0 || startSB < 0) {
             error = "All blinds must be positive whole numbers";
         } else if (startBB < startSB * 2) {
             error = "Big blind must be at least twice the size of the small blind";
-        } else if(maxNumberOfPlayers < 2 || maxNumberOfPlayers > 6) {
+        } else if(gameSettings.getMaxNumberOfPlayers() < 2 || gameSettings.getMaxNumberOfPlayers() > 6) {
             error = "Number of players must be between 2-6";
-        } else if(blindLevelDuration <= 0) {
+        } else if(gameSettings.getBigBlind() <= 0) {
             error = "Blind level must be a positive whole number";
         }
 

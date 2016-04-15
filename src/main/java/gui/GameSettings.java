@@ -12,11 +12,11 @@ import gamelogic.GameController;
  */
 public class GameSettings {
 
-    private long startStack;
+    private final long startStack;
     private long bigBlind;
     private long smallBlind;
-    private int maxNumberOfPlayers;
-    private int levelDuration;
+    private final int maxNumberOfPlayers;
+    private final int levelDuration;
     private AIType aiType;
 
     /**

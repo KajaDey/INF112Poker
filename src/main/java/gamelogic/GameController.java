@@ -68,7 +68,7 @@ public class GameController {
         createAIClients(numberOfAIClients, gamesettings);
 
         //Set initial blind values for clients
-        initClients(gamesettings);
+        initClients();
 
         //Print welcome message to log
         this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
@@ -132,8 +132,8 @@ public class GameController {
     /**
      * Informs each client about the small and big blind amount
      */
-    private void initClients(GameSettings gameSettings) {
-        setBlinds(gameSettings);
+    private void initClients() {
+        setBlinds();
         for (Integer clientID : clients.keySet()) {
             clients.get(clientID).setPlayerNames(names);
         }
@@ -142,7 +142,7 @@ public class GameController {
     /**
      * Sends the blinds to all the clients
      */
-    public void setBlinds(GameSettings gameSettings) {
+    public void setBlinds() {
         for (int clientID : clients.keySet()) {
             clients.get(clientID).setBigBlind(gameSettings.getBigBlind());
             clients.get(clientID).setSmallBlind(gameSettings.getSmallBlind());

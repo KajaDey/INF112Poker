@@ -86,7 +86,7 @@ public class GUIClient implements GameClient {
      */
     private boolean validMove(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
-            GUIMain.debugPrint("You don't have this much in your stack");
+            GUIMain.debugPrintln("You don't have this much in your stack. Stacksize=" + stackSizes.get(id) + ", moveSize=" + moveSize);
             gameScreen.setErrorStateOfAmountTextField(true);
             return false;
         }

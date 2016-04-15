@@ -5,6 +5,8 @@ import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -193,7 +195,7 @@ public class GameScreen {
                 positions[4] =5;
                 break;
             default:
-                GUIMain.debugPrint("Too many players");
+                GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game");
                 break;
         }
 
@@ -214,6 +216,14 @@ public class GameScreen {
         textArea.setWrapText(true);
         pane.getChildren().add(textArea);
         textArea.setOpacity(0.9);
+        textArea.textProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<?> observable, Object oldValue,
+                                Object newValue) {
+                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+            }
+        });
+
     }
 
     /**
@@ -222,8 +232,7 @@ public class GameScreen {
      */
     public void printToLogField(String printInfo){
         Runnable task = () -> {
-            logText = printInfo + "\n" + logText;
-            textArea.setText(logText);
+            textArea.appendText("\n"+printInfo);
         };
         Platform.runLater(task);
 
