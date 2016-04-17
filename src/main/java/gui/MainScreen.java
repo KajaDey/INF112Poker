@@ -61,7 +61,8 @@ public class MainScreen {
 
         //Top-text
         String title = "Texas Hold'em!";
-        String info = "This is an implementation of Texas hold'em.\n" +
+        String info = "In this game, you can play the popular \nversion of poker called " +
+                "Texas Hold'em against 1-5 players.\n" +
                "Enter your name, and start playing!";
 
 
@@ -77,7 +78,7 @@ public class MainScreen {
         horisontalFull.setAlignment(Pos.CENTER);
         horisontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
 
-        TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Enter name");
+        TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Name");
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
         Button enter = ObjectStandards.makeStandardButton("Enter");
