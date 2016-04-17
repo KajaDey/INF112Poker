@@ -3,7 +3,6 @@ package gui.layouts;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -152,11 +151,8 @@ public class OpponentLayout extends HBox{
      * @param lastMove
      */
     public void setLastMove(String lastMove, Image chipImage){
-        Runnable task = () -> {
-            lastMoveLabel.setText(lastMove);
-            this.chipImage.setImage(chipImage);
-        };
-        Platform.runLater(task);
+        lastMoveLabel.setText(lastMove);
+        this.chipImage.setImage(chipImage);
     }
 
     /**
@@ -166,7 +162,7 @@ public class OpponentLayout extends HBox{
      */
 
     public void setStackSizeLabel(String s){
-        Platform.runLater(() -> stackSizeLabel.setText(s));
+        stackSizeLabel.setText(s);
     }
 
     /**
@@ -177,10 +173,8 @@ public class OpponentLayout extends HBox{
      */
 
     public void setPositionLabel(String s, Image buttonImage){
-        Platform.runLater(() -> {
-            positionLabel.setText(s);
-            this.dealerButtonImage.setImage(buttonImage);
-        });
+        positionLabel.setText(s);
+        this.dealerButtonImage.setImage(buttonImage);
     }
 
     /**
@@ -191,15 +185,13 @@ public class OpponentLayout extends HBox{
      * @param rightCard
      */
     public void setCardImage(Image leftCard,Image rightCard) {
-        Platform.runLater(() -> {
-            leftCardImage.setImage(leftCard);
-            rightCardImage.setImage(rightCard);
+        leftCardImage.setImage(leftCard);
+        rightCardImage.setImage(rightCard);
 
-            leftCardImage.setEffect(dropShadow);
-            rightCardImage.setEffect(dropShadow);
-            leftCardImage.setVisible(true);
-            rightCardImage.setVisible(true);
-        });
+        leftCardImage.setEffect(dropShadow);
+        rightCardImage.setEffect(dropShadow);
+        leftCardImage.setVisible(true);
+        rightCardImage.setVisible(true);
     }
 
     /**
@@ -247,14 +239,11 @@ public class OpponentLayout extends HBox{
     }
 
     public void bustPlayer(String bustedText) {
-        Platform.runLater(() -> {
-            isBust = true;
-            setLastMove("", null);
-            setStackSizeLabel(bustedText);
-            setPositionLabel("", null);
-
-            setCardImage(null, null);
-        });
+        isBust = true;
+        setLastMove("", null);
+        setStackSizeLabel(bustedText);
+        setPositionLabel("", null);
+        setCardImage(null, null);
     }
 
     public boolean isBust() {

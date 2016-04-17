@@ -1,6 +1,7 @@
 package gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import gamelogic.*;
 
@@ -75,8 +76,8 @@ public class GUIMain extends Application{
      * @param stackSize The player's stack size
      * @return The game screen containing the new player
      */
-    public boolean insertPlayer(int userID, String name, long stackSize) {
-        return gameScreen.insertPlayer(userID, name, stackSize);
+    public void insertPlayer(int userID, String name, long stackSize) {
+        Platform.runLater(()->gameScreen.insertPlayer(userID, name, stackSize));
     }
 
     /**
