@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -320,23 +321,34 @@ public class ObjectStandards {
         quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
         restart.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
 
+        File[] files = new File(System.getProperty("user.dir")).listFiles();
         restart.setOnAction(event -> {
-            /**
-             * When restarting the game, it will search for the jar-file in either target/ (if run in intellij)
-             * or in the directory of the jar (if the jar is run directly).
-             * It will then start new process containing the jar file, and exit the already running program
-             * by using System.exit(0)
-             */
-            Process process;
             try {
-                process = Runtime.getRuntime().exec("java -jar target/inf112v16-g4-Poker.jar");
-                process = Runtime.getRuntime().exec("java -jar inf112v16-g4-Poker.jar");
-                System.exit(0);
+                startNewInstanceOfGame(files);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         });
+
         return menuBar;
+    }
+
+    /**
+     * When restarting the game, it will search for the jar-file in either target/ (if run in intellij)
+     * or in the directory of the jar (if the jar is run directly).
+     * It will then start new process containing the jar file, and exit the already running program
+     * by using System.exit(0)
+     */
+    public static void startNewInstanceOfGame(File[] files) throws IOException {
+        Process process;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                startNewInstanceOfGame(file.listFiles());
+            } else if (file.getName().contains("Poker.jar")){
+                process = Runtime.getRuntime().exec("java -jar " + file.getParent() + "/" + file.getName());
+                System.exit(0);
+            }
+        }
+
     }
 }

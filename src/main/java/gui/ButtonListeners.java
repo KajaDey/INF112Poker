@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 import gamelogic.Decision;
 import gamelogic.GameController;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -100,8 +102,9 @@ public class ButtonListeners {
     /**
      * What happens when the leaveLobbyButton is pushed
      */
-    public static void leaveLobbyButtonListener(GameController gameController) {
-        MainScreen.createSceneForMainScreen("PokerTable", gameController);
+    public static void leaveLobbyButtonListener() throws IOException {
+        File[] files = new File(System.getProperty("user.dir")).listFiles();
+        ObjectStandards.startNewInstanceOfGame(files);
     }
     /**
      * Listener for the button on the enter button on the main screen
