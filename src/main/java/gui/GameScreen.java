@@ -4,7 +4,6 @@ import gamelogic.*;
 import gui.layouts.BoardLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -216,6 +215,8 @@ public class GameScreen {
         textArea.setWrapText(true);
         pane.getChildren().add(textArea);
         textArea.setOpacity(0.9);
+
+        //Add listener to listen for changes and automatically scroll to the bottom
         textArea.textProperty().addListener(new ChangeListener<Object>() {
             @Override
             public void changed(ObservableValue<?> observable, Object oldValue,
@@ -231,11 +232,7 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        Runnable task = () -> {
-            textArea.appendText("\n"+printInfo);
-        };
-        Platform.runLater(task);
-
+        textArea.appendText("\n"+printInfo);
     }
 
     public void addMenuBarToGameScreen(){
@@ -258,10 +255,7 @@ public class GameScreen {
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
 
-        Runnable task = () -> {
-            playerLayout.setCardImage(leftImage,rightImage);
-        };
-        Platform.runLater(task);
+        playerLayout.setCardImage(leftImage,rightImage);
 
         holeCards = new ArrayList<>();
         holeCards.add(leftCard);
@@ -288,11 +282,11 @@ public class GameScreen {
             //Print the players hand
             printToLogField(names.get(p.getID()) + ": " + cards[0] + " " + cards[1]);
             if (p.getID() != playerID && opponents.get(p.getID()) != null)
-                Platform.runLater(() -> opponents.get(p.getID()).setCardImage(leftImage,rightImage));
+                opponents.get(p.getID()).setCardImage(leftImage,rightImage);
         }
 
         String winnerString = showdownStats.getWinnerText();
-        Platform.runLater(() -> boardLayout.setWinnerLabel(winnerString));
+        boardLayout.setWinnerLabel(winnerString);
 
         //Print all community cards to in-game log
         printCommunityCardsToLogField();
@@ -310,7 +304,7 @@ public class GameScreen {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.showFlop(card1Image,card2Image,card3Image));
+        boardLayout.showFlop(card1Image,card2Image,card3Image);
 
         communityCards.add(card1);
         communityCards.add(card2);
@@ -326,7 +320,7 @@ public class GameScreen {
      */
     public void displayTurn(Card turnCard) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.showTurn(turnImage));
+        boardLayout.showTurn(turnImage);
         communityCards.add(turnCard);
         updateYourHandLabel();
 
@@ -340,7 +334,7 @@ public class GameScreen {
      */
     public void displayRiver(Card riverCard) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
-        Platform.runLater(() -> boardLayout.showRiver(riverImage));
+        boardLayout.showRiver(riverImage);
         communityCards.add(riverCard);
         updateYourHandLabel();
 
@@ -352,11 +346,8 @@ public class GameScreen {
      * @param visible
      */
     public void setActionsVisible(boolean visible) {
-        Runnable task = () -> {
-            playerLayout.setVisible(visible);
-            playerLayout.setSliderVisibility();
-        };
-        Platform.runLater(task);
+        playerLayout.setVisible(visible);
+        playerLayout.setSliderVisibility();
     }
 
     /**
@@ -375,19 +366,13 @@ public class GameScreen {
         //Play sound
         //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
 
-        Runnable task;
         if (ID == this.playerID) {
-            task = () -> {
-                playerLayout.setLastMove(finalDecision, getChipImage(ID));
-                playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
-            };
+            playerLayout.setLastMove(finalDecision, getChipImage(ID));
+            playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
         } else {
-            task = () -> {
-                opponents.get(ID).setLastMove(finalDecision, getChipImage(ID));
-                opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
-            };
+            opponents.get(ID).setLastMove(finalDecision, getChipImage(ID));
+            opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
         }
-        Platform.runLater(task);
     }
 
     /**
@@ -396,22 +381,22 @@ public class GameScreen {
      * @param move
      */
     private void updateButtonTexts(int id, Decision.Move move) {
-        Runnable task = () -> {
-            switch (move) {
-                case BIG_BLIND:
-                    if (id == playerID) {
-                        playerLayout.setCheckCallButton("Check");
-                        break;
-                    }
-                case BET:case RAISE:case SMALL_BLIND:case ALL_IN:
-                    playerLayout.setCheckCallButton("Call");
-                    playerLayout.setBetRaiseButton("Raise to");
+        switch (move) {
+            case BIG_BLIND:
+                if (id == playerID) {
+                    playerLayout.setCheckCallButton("Check");
                     break;
-            }
+                }
+            case BET:
+            case RAISE:
+            case SMALL_BLIND:
+            case ALL_IN:
+                playerLayout.setCheckCallButton("Call");
+                playerLayout.setBetRaiseButton("Raise to");
+                break;
+        }
 
-            updateSliderValues();
-        };
-        Platform.runLater(task);
+        updateSliderValues();
     }
 
     /**
@@ -477,9 +462,9 @@ public class GameScreen {
                 break;
             case FOLD:
                 if (ID == playerID)
-                    Platform.runLater(() -> playerLayout.removeHolecards());
+                    playerLayout.removeHolecards();
                 else
-                    Platform.runLater(() -> opponents.get(ID).removeHolecards());
+                    opponents.get(ID).removeHolecards();
 
                 printToLogField(names.get(ID) + " folded");
                 break;
@@ -505,13 +490,11 @@ public class GameScreen {
             this.stackSizes = stackSizes;
             String stackSizeText = "" + stackSizes.get(clientID);
 
-            Runnable task;
             if (clientID == playerID) {
-                task = () -> playerLayout.setStackLabel("Stack size: " + stackSizeText);
+                playerLayout.setStackLabel("Stack size: " + stackSizeText);
             } else {
-                task = () -> opponents.get(clientID).setStackSizeLabel("Stack size: " + stackSizeText);
+                opponents.get(clientID).setStackSizeLabel("Stack size: " + stackSizeText);
             }
-            Platform.runLater(task);
         }
     }
 
@@ -534,19 +517,16 @@ public class GameScreen {
             e.printStackTrace();
         }
 
-        Runnable task = () -> {
-            this.highestAmountPutOnTable = 0;
-            playerLayout.setLastMove("", null);
-            playerLayout.setCheckCallButton("Check");
-            playerLayout.setBetRaiseButton("Bet");
-            this.setAmountTextfield(currentBigBlind + "");
-            this.setErrorStateOfAmountTextField(false);
+        this.highestAmountPutOnTable = 0;
+        playerLayout.setLastMove("", null);
+        playerLayout.setCheckCallButton("Check");
+        playerLayout.setBetRaiseButton("Bet");
+        this.setAmountTextfield(currentBigBlind + "");
+        this.setErrorStateOfAmountTextField(false);
+        for (Integer id : opponents.keySet()) {
+            opponents.get(id).setLastMove("", null);
+        }
 
-            for (Integer id : opponents.keySet()) {
-                opponents.get(id).setLastMove("", null);
-            }
-        };
-        Platform.runLater(task);
         updateSliderValues();
     }
 
@@ -557,7 +537,7 @@ public class GameScreen {
     public void setPot(long pot) {
         this.pot = pot;
         String potString = Long.toString(pot);
-        Platform.runLater(() -> boardLayout.setPotLabel("Pot: " + potString));
+        boardLayout.setPotLabel("Pot: " + potString);
     }
 
     /**
@@ -567,13 +547,10 @@ public class GameScreen {
      */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
-        Runnable task = () -> {
-            playerLayout.setNameLabel("Name: " + names.get(playerID));
-            for (Integer i : opponents.keySet()) {
-                opponents.get(i).setNameLabel("Name: " + names.get(i));
-            }
-        };
-        Platform.runLater(task);
+        playerLayout.setNameLabel("Name: " + names.get(playerID));
+        for (Integer i : opponents.keySet()) {
+            opponents.get(i).setNameLabel("Name: " + names.get(i));
+        }
     }
 
     /**
@@ -584,22 +561,18 @@ public class GameScreen {
         communityCards = new ArrayList<>();
 
         Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
-        Runnable task = () -> {
-            for (ImageView imageview : boardLayout.getCommunityCards()) {
-                imageview.setImage(backImage);
-                imageview.setVisible(false);
-            }
-            boardLayout.setWinnerLabel("");
+        for (ImageView imageview : boardLayout.getCommunityCards()) {
+            imageview.setImage(backImage);
+            imageview.setVisible(false);
+        }
+        boardLayout.setWinnerLabel("");
+        //Set opponent hand
+        for (Integer id : opponents.keySet()) {
+            OpponentLayout opp = opponents.get(id);
+            if (!opp.isBust())
+                opp.setCardImage(backImage, backImage);
+        }
 
-            //Set opponent hand
-            for (Integer id : opponents.keySet()) {
-                OpponentLayout opp = opponents.get(id);
-                if (!opp.isBust())
-                    opp.setCardImage(backImage, backImage);
-            }
-
-        };
-        Platform.runLater(task);
         setPot(0);
     }
 
@@ -611,52 +584,49 @@ public class GameScreen {
     public void gameOver(Statistics stats){
         int winnerID = stats.getWinnerID();
 
-        Runnable task = () -> {
-            VBox vBox = new VBox();
-            Button backToMainScreenButton = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
-            Button saveStatisticsButton = ObjectStandards.makeButtonForLobbyScreen("Save statistics to file");
-            backToMainScreenButton.setMinWidth(200);
-            saveStatisticsButton.setMinWidth(200);
+        VBox vBox = new VBox();
+        Button backToMainScreenButton = ObjectStandards.makeButtonForLobbyScreen("Back to main menu");
+        Button saveStatisticsButton = ObjectStandards.makeButtonForLobbyScreen("Save statistics to file");
+        backToMainScreenButton.setMinWidth(200);
+        saveStatisticsButton.setMinWidth(200);
 
-            endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
-            endGameScreen.setFont(new Font("Areal", 30));
+        endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
+        endGameScreen.setFont(new Font("Areal", 30));
 
-            Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");
-            statsLabel.setWrapText(true);
-            statsLabel.setFont(new Font("Areal", 15));
+        Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");
+        statsLabel.setWrapText(true);
+        statsLabel.setFont(new Font("Areal", 15));
 
-            Stage endGame = new Stage();
-            endGame.setAlwaysOnTop(true);
-            endGame.initModality(Modality.APPLICATION_MODAL);
-            endGame.setTitle("Game over!");
+        Stage endGame = new Stage();
+        endGame.setAlwaysOnTop(true);
+        endGame.initModality(Modality.APPLICATION_MODAL);
+        endGame.setTitle("Game over!");
 
-            vBox.setAlignment(Pos.CENTER);
+        vBox.setAlignment(Pos.CENTER);
 
-            vBox.setStyle("-fx-background-color:#42b43d, " +
-                    "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +
-                    "linear-gradient(#218a0f, #42b43d), " +
-                    "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
-                    "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
+        vBox.setStyle("-fx-background-color:#42b43d, " +
+                "linear-gradient(#309e2a 0%, #2bbd24 20%, #42b43d 100%), " +
+                "linear-gradient(#218a0f, #42b43d), " +
+                "radial-gradient(center 50% 0%, radius 100%, rgba(63,191,63,0.9), rgba(51,151,51,1)); " +
+                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
 
-            backToMainScreenButton.setOnAction(e -> {
-                endGame.close();
-                ButtonListeners.returnToMainMenuButtonListener();
-            });
+        backToMainScreenButton.setOnAction(e -> {
+            endGame.close();
+            ButtonListeners.returnToMainMenuButtonListener();
+        });
 
-            saveStatisticsButton.setOnAction(e -> {
-                if (saveStatisticsButton.getText().equals("Save statistics to file")) {
-                    ButtonListeners.saveToFile(stats);
-                    saveStatisticsButton.setText("Statistics saved!");
-                    saveStatisticsButton.setEffect(new Bloom(-0.9));
-                }
-            });
+        saveStatisticsButton.setOnAction(e -> {
+            if (saveStatisticsButton.getText().equals("Save statistics to file")) {
+                ButtonListeners.saveToFile(stats);
+                saveStatisticsButton.setText("Statistics saved!");
+                saveStatisticsButton.setEffect(new Bloom(-0.9));
+            }
+        });
 
-            vBox.getChildren().addAll(endGameScreen, statsLabel, saveStatisticsButton, backToMainScreenButton);
-            Scene scene = new Scene(vBox,600,450);
-            endGame.setScene(scene);
-            endGame.show();
-        };
-        Platform.runLater(task);
+        vBox.getChildren().addAll(endGameScreen, statsLabel, saveStatisticsButton, backToMainScreenButton);
+        Scene scene = new Scene(vBox,600,450);
+        endGame.setScene(scene);
+        endGame.show();
     }
 
     /**
@@ -664,8 +634,7 @@ public class GameScreen {
      * @param message
      */
     public void setAmountTextfield(String message) {
-        Runnable task = () -> playerLayout.setAmountTextField(message);
-        Platform.runLater(task);
+        playerLayout.setAmountTextField(message);
     }
 
     /**
@@ -673,15 +642,12 @@ public class GameScreen {
      * @param error
      */
     public void setErrorStateOfAmountTextField(boolean error) {
-        Runnable task;
         if (error) {
-            task = () -> playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
+            playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
         }
         else {
-            task = () -> playerLayout.setTextfieldStyle("-fx-border-color: rgb(255, 255, 255) ; -fx-border-width: 3px ;");
+            playerLayout.setTextfieldStyle("-fx-border-color: rgb(255, 255, 255) ; -fx-border-width: 3px ;");
         }
-
-        Platform.runLater(task);
     }
 
     /**
@@ -689,15 +655,13 @@ public class GameScreen {
      * @param positions
      */
     public void setPositions(Map<Integer, Integer> positions) {
-        Runnable task;
         for (Integer id : positions.keySet()) {
             String pos = "Position: " + getPositionName(positions.get(id), numberOfPlayers);
             if (id == playerID) {
-                task = () -> playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
+                playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             } else {
-                task = () -> opponents.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
+                opponents.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
             }
-            Platform.runLater(task);
         }
     }
 
@@ -767,13 +731,11 @@ public class GameScreen {
     /**
      *   Sent if the hand is over before showdown
      * @param winnerID  The player that was left in the hand
-     * @param potsize   The amount the player won
+     * @param potSize   The amount the player won
      */
-    public void preShowdownWinner(int winnerID, long potsize) {
-        Platform.runLater(() -> {
-            boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potsize));
-            printToLogField(names.get(winnerID) + " won the pot of " + potsize);
-        });
+    public void preShowdownWinner(int winnerID, long potSize) {
+        boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potSize));
+        printToLogField(names.get(winnerID) + " won the pot of " + potSize);
     }
 
     /**
@@ -795,9 +757,9 @@ public class GameScreen {
             Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
             if (id == playerID)
-                Platform.runLater(() -> playerLayout.setCardImage(leftCard, rightCard));
+                playerLayout.setCardImage(leftCard, rightCard);
             else
-                Platform.runLater(() -> opponents.get(id).setCardImage(leftCard, rightCard));
+                opponents.get(id).setCardImage(leftCard, rightCard);
         });
     }
 

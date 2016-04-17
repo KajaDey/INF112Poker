@@ -195,7 +195,9 @@ public class Game {
         }
 
         //Return true if hand continues, false if hand is over
-        return getDecisions(actingPlayerIndex, isPreFlop);
+        boolean handContinues = getDecisions(actingPlayerIndex, isPreFlop);
+        delay(1000);
+        return handContinues;
     }
 
     /**

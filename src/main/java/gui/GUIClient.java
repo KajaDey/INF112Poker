@@ -1,5 +1,6 @@
 package gui;
 import gamelogic.*;
+import javafx.application.Platform;
 
 import java.util.Map;
 
@@ -25,14 +26,14 @@ public class GUIClient implements GameClient {
         this.id = id;
         this.gameScreen = gameScreen;
         this.numberOfPlayers = maxNumberOfPlayers;
-        gameScreen.setNumberOfPlayers(numberOfPlayers);
+        Platform.runLater(() -> gameScreen.setNumberOfPlayers(numberOfPlayers));
     }
 
 
     @Override
     public synchronized Decision getDecision(long timeToThink){
         //Make buttons visible
-        gameScreen.setActionsVisible(true);
+        Platform.runLater(() -> gameScreen.setActionsVisible(true));
 
         try {
             wait();
@@ -41,7 +42,7 @@ public class GUIClient implements GameClient {
         }
 
         //Make buttons invisible
-        gameScreen.setActionsVisible(false);
+        Platform.runLater(() -> gameScreen.setActionsVisible(false));
 
         //Return decision
         return decision;
@@ -73,7 +74,7 @@ public class GUIClient implements GameClient {
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
 
-        gameScreen.setErrorStateOfAmountTextField(false);
+        Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(false));
 
         notifyAll();
     }
@@ -86,19 +87,19 @@ public class GUIClient implements GameClient {
      */
     private boolean validMove(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
-            GUIMain.debugPrintln("You don't have this much in your stack. Stacksize=" + stackSizes.get(id) + ", moveSize=" + moveSize);
-            gameScreen.setErrorStateOfAmountTextField(true);
+            GUIMain.debugPrintln("You don't have this much in your stack. Stack size=" + stackSizes.get(id) + ", moveSize=" + moveSize);
+            Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
         else if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
             GUIMain.debugPrint("Raise is too small");
-            gameScreen.setErrorStateOfAmountTextField(true);
+            Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
         else if (move == Decision.Move.BET && moveSize < bigBlind) {
             GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
-            gameScreen.setErrorStateOfAmountTextField(true);
+            Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
 
@@ -109,55 +110,57 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
-        gameScreen.setNames(names);
+        Platform.runLater(() ->gameScreen.setNames(names));
     }
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        gameScreen.setHandForUser(userID, card1, card2);
+        Platform.runLater(() -> gameScreen.setHandForUser(userID, card1, card2));
     }
 
     @Override
     public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
-        gameScreen.displayFlop(card1, card2, card3);
+        Platform.runLater(() -> gameScreen.displayFlop(card1, card2, card3));
         newBettingRound(currentPotSize);
     }
 
     @Override
     public void setTurn(Card turn, long currentPotSize) {
-        gameScreen.displayTurn(turn);
+        Platform.runLater(() -> gameScreen.displayTurn(turn));
         newBettingRound(currentPotSize);
     }
 
     @Override
     public void setRiver(Card river, long currentPotSize) {
-        gameScreen.displayRiver(river);
+        Platform.runLater(() -> gameScreen.displayRiver(river));
         newBettingRound(currentPotSize);
     }
 
     @Override
     public void startNewHand() {
-        gameScreen.startNewHand();
+        Platform.runLater(() -> gameScreen.startNewHand());
         newBettingRound(0);
     }
 
     @Override
     public void playerBust(int playerID, int rank) {
-        gameScreen.bustPlayer(playerID, rank);
+        Platform.runLater(() -> gameScreen.bustPlayer(playerID, rank));
     }
 
     @Override
     public void gameOver(Statistics stats) {
-        gameScreen.gameOver(stats);
+        Platform.runLater(() -> gameScreen.gameOver(stats));
     }
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
-        gameScreen.updateStackSizes(stackSizes);
+        Platform.runLater(() -> {
+            gameScreen.updateStackSizes(stackSizes);
 
-        //Updates the values of the slider
-        gameScreen.updateSliderValues();
+            //Updates the values of the slider
+            gameScreen.updateSliderValues();
+        });
     }
 
     @Override
@@ -173,18 +176,18 @@ public class GUIClient implements GameClient {
             case ALL_IN:
                 break;
         }
-        gameScreen.playerMadeDecision(playerId, decision);
+        Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
     }
 
     @Override
     public void showdown(ShowdownStats showdownStats) {
-        gameScreen.showdown(showdownStats);
+        Platform.runLater(() -> gameScreen.showdown(showdownStats));
     }
 
     @Override
     public void setBigBlind(long bigBlind) {
         this.bigBlind = bigBlind;
-        gameScreen.setBigBlind(bigBlind);
+        Platform.runLater(() -> gameScreen.setBigBlind(bigBlind));
     }
 
     @Override
@@ -200,12 +203,12 @@ public class GUIClient implements GameClient {
      */
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
-        gameScreen.setPositions(positions);
+        Platform.runLater(() -> gameScreen.setPositions(positions));
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
-        gameScreen.setNumberOfPlayers(amountOfPlayers);
+        Platform.runLater(() -> gameScreen.setNumberOfPlayers(amountOfPlayers));
     }
 
     @Override
@@ -213,9 +216,9 @@ public class GUIClient implements GameClient {
     }
 
     public void newBettingRound(long potSize) {
-        gameScreen.newBettingRound(potSize);
         minimumRaise = 0;
         highestAmountPutOnTableThisBettingRound = 0;
+        Platform.runLater(() -> gameScreen.newBettingRound(potSize));
     }
 
 
@@ -228,14 +231,15 @@ public class GUIClient implements GameClient {
      * @param message The message to be printed
      */
     public void printToLogField(String message) {
-        gameScreen.printToLogField(message);
+
+        Platform.runLater(() -> gameScreen.printToLogField(message));
     }
 
     public void preShowdownWinner(int winnerID, long potsize) {
-        gameScreen.preShowdownWinner(winnerID, potsize);
+        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID, potsize));
     }
 
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        gameScreen.showHoleCards(holeCards);
+        Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
     }
 }

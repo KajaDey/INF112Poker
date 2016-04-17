@@ -3,7 +3,6 @@ package gui.layouts;
 import gui.ButtonListeners;
 import gui.ImageViewer;
 import gui.ObjectStandards;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -195,30 +194,25 @@ public class PlayerLayout {
      * Updates the values of the slider
      */
     public void updateSliderValues(long stackSize){
-        Runnable task;
+        long maxValue = stackSize;
+        if (positionLabel.getText().equals("Position: Small blind"))
+            maxValue -= currentSmallBlind;
+        else if (positionLabel.getText().equals("Position: Big blind"))
+            maxValue -= currentBigBlind;
 
-        task = () -> {
-            long maxValue = stackSize;
-            if (positionLabel.getText().equals("Position: Small blind"))
-                maxValue -= currentSmallBlind;
-            else if (positionLabel.getText().equals("Position: Big blind"))
-                maxValue -= currentBigBlind;
+        slider.setValue(currentBigBlind);
+        slider.setMin(currentBigBlind);
+        slider.setMax(maxValue);
+        slider.setBlockIncrement(0.1f);
+        slider.setMinorTickCount(0);
 
-            slider.setValue(currentBigBlind);
-            slider.setMin(currentBigBlind);
-            slider.setMax(maxValue);
-            slider.setBlockIncrement(0.1f);
-            slider.setMinorTickCount(0);
+        if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
+            slider.setMajorTickUnit(slider.getMax() / 2);
+        else {
+            slider.setMajorTickUnit(1);
+            slider.setVisible(false);
+        }
 
-            if (slider.getMax() > 2 * slider.getMin() && slider.getMax() / 2 > 0)
-                slider.setMajorTickUnit(slider.getMax() / 2);
-            else {
-                slider.setMajorTickUnit(1);
-                slider.setVisible(false);
-            }
-
-        };
-        Platform.runLater(task);
     }
 
     /**
@@ -228,14 +222,11 @@ public class PlayerLayout {
      */
 
     public void setActionsVisible(boolean visible) {
-        Runnable task = () -> {
-            betRaiseButton.setVisible(visible);
-            checkCallButton.setVisible(visible);
-            foldButton.setVisible(visible);
-            amountTextField.setVisible(visible);
-            slider.setVisible(visible);
-        };
-        Platform.runLater(task);
+        betRaiseButton.setVisible(visible);
+        checkCallButton.setVisible(visible);
+        foldButton.setVisible(visible);
+        amountTextField.setVisible(visible);
+        slider.setVisible(visible);
     }
 
     /**
@@ -252,20 +243,16 @@ public class PlayerLayout {
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
-        Runnable task = () -> {
-            positionLabel.setText(pos);
-            this.dealerButtonImage.setImage(buttonImage);
-        };
-        Platform.runLater(task);
+        positionLabel.setText(pos);
+        this.dealerButtonImage.setImage(buttonImage);
     }
 
     public void setStackLabel(String stack) {
-        Platform.runLater(() -> stackLabel.setText(stack));
+        stackLabel.setText(stack);
     }
 
     public void setLastMove(String lastMove, Image chipImage) {
         lastMoveLabel.setText(lastMove);
-
         this.chipImage.setImage(chipImage);
     }
 
@@ -286,7 +273,7 @@ public class PlayerLayout {
     }
 
     public void setBestHand(String bestHand){
-        Platform.runLater(() -> this.bestHand.setText(bestHand));
+        this.bestHand.setText(bestHand);
     }
 
 
@@ -316,14 +303,12 @@ public class PlayerLayout {
     }
 
     public void bustPlayer(String bustedText) {
-        Platform.runLater(() -> {
-            setLastMove("", null);
-            setStackLabel(bustedText);
-            setPositionLabel("", null);
-            setCardImage(null, null);
-            slider.setVisible(false);
-            bestHand.setVisible(false);
-        });
+        setLastMove("", null);
+        setStackLabel(bustedText);
+        setPositionLabel("", null);
+        setCardImage(null, null);
+        slider.setVisible(false);
+        bestHand.setVisible(false);
     }
 
     public void removeHolecards() {
