@@ -72,6 +72,14 @@ public class AITest {
         checksWithShittyHandAsBigBlindHeadsUpProperty(simpleAi);
     }
 
+    @Test
+    public void doesNotFoldWithPairOfDeuces() {
+        MCTSAI mctsAi = new MCTSAI(0);
+        SimpleAI simpleAi = new SimpleAI(0);
+        doesNotFoldWithPairOfDeucesProperty(mctsAi);
+        doesNotFoldWithPairOfDeucesProperty(simpleAi);
+    }
+
     public void checksWithShittyHandAsBigBlindProperty(GameClient ai) {
         for (int i = 0; i < N; i++) {
 
@@ -122,6 +130,14 @@ public class AITest {
 
             assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
         }
+    }
+
+    public void doesNotFoldWithPairOfDeucesProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(2, Card.Suit.SPADES).get());
+
+        setupAi(ai, 4, 3);
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+        assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
     }
 
     // Test created to reproduce a specific bug in SimpleAI
