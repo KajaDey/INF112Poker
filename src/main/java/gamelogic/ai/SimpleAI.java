@@ -40,7 +40,7 @@ public class SimpleAI implements GameClient {
 
     /**
      * Gives a very rough estimate of the quality of a set of holeCards
-     * @return A number between 7 and 56
+     * @return A number between 7 and 60
      */
     public static double handQuality(Card card1, Card card2) {
         double handQuality = card1.rank + card2.rank;
@@ -51,10 +51,10 @@ public class SimpleAI implements GameClient {
 
         int rankDistance = Math.abs(card1.rank - card2.rank);
         switch (rankDistance) {
-            case 0: handQuality *= 2.0; break;
-            case 1: handQuality *= 1.5; break;
-            case 2: handQuality *= 1.25; break;
-            case 3: handQuality *= 1.1; break;
+            case 0: handQuality = handQuality * 2.0 + 6; break;
+            case 1: handQuality = handQuality * 2.0 + 3; break;
+            case 2: handQuality = handQuality * 2.0 + 2; break;
+            case 3: handQuality = handQuality * 2.0 + 1; break;
             default:
         }
         return handQuality;
@@ -298,7 +298,12 @@ public class SimpleAI implements GameClient {
                     if (currentBet + pot / 2 >= stackSize) {
                         return new Decision(Decision.Move.ALL_IN);
                     }
-                    return new Decision(moneyMove, pot / 2);
+                    else if (pot / 2 >= minimumRaise) {
+                        return new Decision(moneyMove, pot / 2);
+                    }
+                    else {
+                        throw new IllegalArgumentException("Tried to turn a " + this + " into real decision, but minimum raise is too low (pot=" + pot + ", minimumRaise=" + minimumRaise + ")");
+                    }
                 case RAISE_POT:
                     if (currentBet + pot >= stackSize) {
                         return new Decision(Decision.Move.ALL_IN);

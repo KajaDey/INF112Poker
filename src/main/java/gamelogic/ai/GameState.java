@@ -157,6 +157,10 @@ public class GameState {
                     playersLeftInHand--;
                     playersToMakeDecision--;
                     currentPlayer.isInHand = false;
+                    // If the player never received hole cards, count as if they did
+                    if (currentPlayer.holeCards.size() < 2) {
+                        playersGivenHoleCards++;
+                    }
                     break;
                 case CHECK:
                     playersToMakeDecision--;
@@ -166,7 +170,8 @@ public class GameState {
                     currentPlayer.putInPot(Math.min(currentPlayer.stackSize, currentPlayer.currentBet));
                     break;
                 case BET: case RAISE:
-                    assert decision.size >= currentPlayer.minimumRaise : currentPlayer + " made " + decision + ", but minimum raise was " + currentPlayer.minimumRaise;
+                    assert decision.move == Decision.Move.RAISE || communityCards.size() > 0 : "Received " + decision + " with " + communityCards.size() + " community cards on table";
+                    assert decision.size >= currentPlayer.minimumRaise : currentPlayer + " made " + decision + " from " + move + ", but minimum raise was " + currentPlayer.minimumRaise;
                     assert decision.size + currentPlayer.currentBet <= currentPlayer.stackSize : currentPlayer + " tried " + decision + " on currentBet " + currentPlayer.currentBet + ", but had stackSize " + currentPlayer.stackSize;
                     assert decision.size > 0 : currentPlayer + " tried to bet/raise " + decision.size;
                     playersToMakeDecision = playersLeftInHand - 1;
@@ -255,85 +260,96 @@ public class GameState {
     }
 
     public Optional<GameStateChange> getRandomDecision(Random random) {
-        if (playersGivenHoleCards < amountOfPlayers) {
-            for (int i = 0; i < amountOfPlayers; i++) {
-                if (players.get(i).holeCards.size() < 2) {
-                    for (int j = 0; j < 100; j++) {
-                        int randomCardIndex = random.nextInt(deck.size());
-                        if (currentPlayer.holeCards.size() == 0) {
-                            double handQuality = deck.get(randomCardIndex).rank;
-                            if (handQuality / (15 - j / 2) > currentPlayer.riskTaken(allChipsOnTable)) {
-                                return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), i));
-                            }
-                            else {
-                                continue;
-                            }
-                        }
-                        else {
-                            double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), deck.get(randomCardIndex));
-                            if (handQuality / (60 - j) > currentPlayer.riskTaken(allChipsOnTable)) {
-                                return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), i));
-                            }
-                            else {
-                                continue;
-                            }
+        switch (getNextNodeType()) {
+            case DEAL_COMMUNITY_CARD:
+                return Optional.of(new CardDealtToTable(deck.get(random.nextInt(deck.size()))));
+            case DEAL_HAND_CARD:
+                // Loop trying to give the opponents a good hand if they have bet a lot of chips
+                Player playerToReceive = null;
+                if (currentPlayer.holeCards.size() < 2) {
+                    playerToReceive = currentPlayer;
+                }
+                else {
+                    for (Player player : players) {
+                        if (player.isAllIn && player.holeCards.size() < 2) {
+                            playerToReceive = player;
                         }
                     }
                 }
-            }
-            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHoleCards + " but all players had the cards");
-        }
-        else if (playersLeftInHand + playersAllIn == 1) {
-            return Optional.empty();
-        }
-        else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
-            if (communityCards.size() == 5) {
+                assert playerToReceive != null : ("Couldn't find a player to give hole card to");
+                for (int j = 0; j < 100; j++) {
+                    int randomCardIndex = random.nextInt(deck.size());
+                    if (playerToReceive.holeCards.size() == 0) {
+                        double handQuality = deck.get(randomCardIndex).rank;
+                        if (handQuality / (14 - j / 2) > playerToReceive.riskTaken(allChipsOnTable)) {
+                            //System.out.println("Rejected " + j + " while giving first hole card");
+                            return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), playerToReceive.position));
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                    else {
+                        double handQuality = SimpleAI.handQuality(playerToReceive.holeCards.get(0), deck.get(randomCardIndex));
+                        if (handQuality / (50 - j) > playerToReceive.riskTaken(allChipsOnTable)) {
+                            //System.out.println("Rejected " + j + " while giving second hole card");
+                            return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), playerToReceive.position));
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                }
+
+            case PLAYER_DECISION:
+                double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1)) * Math.pow(0.95, amountOfPlayers);;
+
+                // Random modifier between 0.5 and 1.5
+                double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
+                SimpleAI.AIDecision aiDecision;
+
+                if (randomModifier * (handQuality / 18.0) > 1) {
+                    // If the hand is considered "good", raise or bet if no one else has done it
+                    if (currentPlayer.currentBet == 0) {
+                        aiDecision = SimpleAI.getRaiseAmount(randomModifier, handQuality, 1.0);
+                        if (aiDecision == AIDecision.RAISE_HALF_POT && getCurrentPot() / 2 < currentPlayer.minimumRaise) {
+                            aiDecision = AIDecision.RAISE_MINIMUM;
+                        }
+                    }
+                    // If someone has already raised, raise anyway if the hand is really good
+                    else if (randomModifier * (handQuality / 22.0) > 1) {
+                        aiDecision = SimpleAI.getRaiseAmount(randomModifier, handQuality, 1.0);
+                        if (aiDecision == AIDecision.RAISE_HALF_POT && getCurrentPot() / 2 < currentPlayer.minimumRaise) {
+                            aiDecision = AIDecision.RAISE_POT;
+                        }
+                    }
+                    else {
+                        aiDecision = AIDecision.CALL;
+                    }
+                }
+                else if (randomModifier * (handQuality / 14.0) > 1) { // If the hand is decent
+                    if (currentPlayer.currentBet == 0) {
+                        aiDecision = AIDecision.CHECK;
+                    }
+                    else if (currentPlayer.currentBet < currentPlayer.stackSize  / 20 * randomModifier) { // If it's a small call
+                        aiDecision = AIDecision.CALL;
+                    }
+                    else {
+                        aiDecision = AIDecision.FOLD;
+                    }
+                }
+                else {
+                    if (currentPlayer.currentBet == 0) {
+                        aiDecision = AIDecision.CHECK;
+                    }
+                    else {
+                        aiDecision = AIDecision.FOLD;
+                    }
+                }
+                return Optional.of(new AIMove(aiDecision));
+            case TERMINAL:
                 return Optional.empty();
-            }
-            else {
-                return Optional.of(new CardDealtToTable(deck.get(random.nextInt(deck.size()))));
-            }
-        }
-        else {
-            double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1)) * Math.pow(0.95, amountOfPlayers);;
-
-            // Random modifier between 0.5 and 1.5
-            double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
-            SimpleAI.AIDecision aiDecision;
-
-            if (randomModifier * (handQuality / 18.0) > 1) {
-                // If the hand is considered "good", raise or bet if no one else has done it
-                if (currentPlayer.currentBet == 0) {
-                    aiDecision = SimpleAI.getRaiseAmount(randomModifier, handQuality, 1.0);
-                }
-                // If someone has already raised, raise anyway if the hand is really good
-                else if (randomModifier * (handQuality / 22.0) > 1) {
-                    aiDecision = SimpleAI.getRaiseAmount(randomModifier, handQuality, 1.0);
-                }
-                else {
-                    aiDecision = AIDecision.CALL;
-                }
-            }
-            else if (randomModifier * (handQuality / 14.0) > 1) { // If the hand is decent
-                if (currentPlayer.currentBet == 0) {
-                    aiDecision = AIDecision.CHECK;
-                }
-                else if (currentPlayer.currentBet < currentPlayer.stackSize  / 20 * randomModifier) { // If it's a small call
-                    aiDecision = AIDecision.CALL;
-                }
-                else {
-                    aiDecision = AIDecision.FOLD;
-                }
-            }
-            else {
-                if (currentPlayer.currentBet == 0) {
-                    aiDecision = AIDecision.CHECK;
-                }
-                else {
-                    aiDecision = AIDecision.FOLD;
-                }
-            }
-            return Optional.of(new AIMove(aiDecision));
+            default: throw new IllegalStateException();
         }
     }
 
@@ -350,53 +366,56 @@ public class GameState {
 
         assert players.stream().map(player -> player.stackSize).min(Long::compare).get() >= 0L : "A player has negative stack size";
 
-        if (playersGivenHoleCards < amountOfPlayers) {
-
-            for (int i = 0; i < amountOfPlayers; i++) {
-                assert players.get(i).position == i;
-                if (players.get(i).holeCards.size() < 2) {
+        switch (getNextNodeType()) {
+            case DEAL_HAND_CARD:
+                if (currentPlayer.holeCards.size() < 2) {
+                    assert currentPlayer.isInHand || currentPlayer.isAllIn;
+                    assert currentPlayer.holeCards.size() < 2;
                     for (Card card : deck) {
-                        decisions.add(new CardDealtToPlayer(card, i));
+                        decisions.add(new CardDealtToPlayer(card, currentPlayer.position));
                     }
-                    return Optional.of(decisions);
                 }
-            }
-            throw new IllegalStateException("playersGivenHoleCards=" + playersGivenHoleCards + " but all players had the cards");
-        }
-        else if (playersLeftInHand + playersAllIn == 1) {
-            return Optional.empty();
-        }
-        else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
-            if (communityCards.size() == 5) {
-                return Optional.empty();
-            }
-            else {
+                else {
+                    for (Player player : players) {
+                        if (player.isAllIn && player.holeCards.size() < 2) {
+                            for (Card card : deck) {
+                                decisions.add(new CardDealtToPlayer(card, player.position));
+                            }
+                        }
+                    }
+                }
+                return Optional.of(decisions);
+
+            case DEAL_COMMUNITY_CARD:
                 for (Card card : deck) {
                     decisions.add(new CardDealtToTable(card));
                 }
                 return Optional.of(decisions);
-            }
-        }
-        else {
-            assert playersLeftInHand > 0: "Trying to generate possible decisions for player, when there are no players left (" +
-                    playersAllIn + " players all in, " + playersToMakeDecision + " players to make decisions)";
-            assert currentPlayer.isInHand && !currentPlayer.isAllIn : "Asked for decisions for " + currentPlayer + ", but player was not in hand. isAllIn=" + currentPlayer.isAllIn + ", isInHand=" + currentPlayer.isInHand;
-            assert currentPlayer.stackSize > 0 : currentPlayer + " has a stacksize of " + currentPlayer.stackSize;
-            assert currentPlayer.minimumRaise > 0;
+            case PLAYER_DECISION:
+                assert playersLeftInHand > 0: "Trying to generate possible decisions for player, when there are no players left (" +
+                        playersAllIn + " players all in, " + playersToMakeDecision + " players to make decisions)";
+                assert currentPlayer.isInHand && !currentPlayer.isAllIn : "Asked for decisions for " + currentPlayer + ", but player was not in hand. isAllIn=" + currentPlayer.isAllIn + ", isInHand=" + currentPlayer.isInHand;
+                assert currentPlayer.stackSize > 0 : currentPlayer + " has a stacksize of " + currentPlayer.stackSize;
+                assert currentPlayer.minimumRaise > 0;
 
-            if (currentPlayer.currentBet == 0) {
-                decisions.add(new AIMove(AIDecision.CHECK));
-            }
-            else {
-                decisions.add(new AIMove(AIDecision.FOLD));
-            }
-            if (currentPlayer.currentBet > 0 && currentPlayer.stackSize > currentPlayer.currentBet) {
-                decisions.add(new AIMove(AIDecision.CALL));
-            }
-            decisions.add(new AIMove(AIDecision.RAISE_MINIMUM));
-            decisions.add(new AIMove(AIDecision.RAISE_HALF_POT));
-            decisions.add(new AIMove(AIDecision.RAISE_POT));
-            return Optional.of(decisions);
+                if (currentPlayer.currentBet == 0) {
+                    decisions.add(new AIMove(AIDecision.CHECK));
+                }
+                else {
+                    decisions.add(new AIMove(AIDecision.FOLD));
+                }
+                if (currentPlayer.currentBet > 0 && currentPlayer.stackSize > currentPlayer.currentBet) {
+                    decisions.add(new AIMove(AIDecision.CALL));
+                }
+                decisions.add(new AIMove(AIDecision.RAISE_MINIMUM));
+                if (getCurrentPot() / 2 > currentPlayer.minimumRaise) {
+                    decisions.add(new AIMove(AIDecision.RAISE_HALF_POT));
+                }
+                decisions.add(new AIMove(AIDecision.RAISE_POT));
+                return Optional.of(decisions);
+            case TERMINAL:
+                return Optional.empty();
+            default: throw new IllegalStateException();
         }
     }
 
@@ -421,8 +440,8 @@ public class GameState {
     // Returns the kind of decision that needs to be done in this gamestate
     public NodeType getNextNodeType() {
         NodeType nodeType;
-        if (playersGivenHoleCards < amountOfPlayers) {
-            nodeType = NodeType.DEAL_CARD;
+        if (currentPlayer.holeCards.size() < 2) {
+            nodeType = NodeType.DEAL_HAND_CARD;
         }
         else if (playersLeftInHand + playersAllIn == 1) {
             // If everyone except one player has folded
@@ -430,10 +449,23 @@ public class GameState {
         }
         else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
             if (communityCards.size() == 5) {
-                nodeType = NodeType.TERMINAL;
+                if (playersGivenHoleCards < amountOfPlayers) {
+                    // Make sure all players have hole cards
+                    // TODO: This should maybe be done before just before the terminal eval, to improve min-maxing
+                    for (Player player : players) {
+                        if (player.holeCards.size() < 2 && player.isAllIn) {
+                            assert player.isAllIn : player + " had " + player.holeCards.size() + " hole cards, but they are not all in, and there are 0 players to make decisions";
+                            return NodeType.DEAL_HAND_CARD;
+                        }
+                    }
+                    throw new IllegalStateException("Didn't find a player to give holecards to. " + players);
+                }
+                else {
+                    nodeType = NodeType.TERMINAL;
+                }
             }
             else {
-                nodeType = NodeType.DEAL_CARD;
+                nodeType = NodeType.DEAL_COMMUNITY_CARD;
             }
         }
         else {
@@ -442,21 +474,14 @@ public class GameState {
         return nodeType;
     }
 
-    public enum NodeType {DEAL_CARD, PLAYER_DECISION, TERMINAL}
+    public enum NodeType {DEAL_COMMUNITY_CARD, DEAL_HAND_CARD, PLAYER_DECISION, TERMINAL}
 
     /**
      * Abstract class that represents any change to the gameState, including player decisions
      * or community cards being played
      */
     public static abstract class GameStateChange {
-        public NodeType getStartingNodeType() {
-            if (this instanceof PlayerDecision) {
-                return NodeType.PLAYER_DECISION;
-            }
-            else {
-                return NodeType.DEAL_CARD;
-            }
-        }
+
     }
 
 
