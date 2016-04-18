@@ -19,34 +19,26 @@ import javafx.scene.text.FontWeight;
 /**
  * Created by ady on 04/04/16.
  */
-public class OpponentLayout extends HBox{
+public class OpponentLayout extends HBox implements IPlayerLayout{
 
     private DropShadow dropShadow = new DropShadow();
     private DropShadow glow = new DropShadow();
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
-    private int position;
     private boolean isBust = false;
     private boolean folded = false;
 
-    /**
-     * Makes the layout for the opponentScreen
-     *
-     * @param name
-     * @param stackSize
-     * @return a layout
-     */
-    public void updateLayout(String name, long stackSize) {
-        leftCardImage = ImageViewer.getEmptyImageView("opponent");
-        rightCardImage = ImageViewer.getEmptyImageView("opponent");
+    public OpponentLayout(String name, long stackSize, int position) {
+        leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
+        rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
 
-        Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
+        Image backOfCards = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
 
         leftCardImage.setImage(backOfCards);
         rightCardImage.setImage(backOfCards);
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        chipImage.setImage(ImageViewer.getChipImage(null));
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(35);
 
@@ -72,7 +64,7 @@ public class OpponentLayout extends HBox{
         lastMoveBox.getChildren().addAll(lastMoveLabel);
 
         dealerButtonImage = new ImageView();
-        dealerButtonImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        dealerButtonImage.setImage(ImageViewer.getChipImage(null));
         dealerButtonImage.setPreserveRatio(true);
         dealerButtonImage.setFitWidth(32);
         HBox dealerButtonBox = new HBox();
@@ -98,8 +90,6 @@ public class OpponentLayout extends HBox{
 
             cards.setAlignment(Pos.CENTER_LEFT);
             this.setAlignment(Pos.CENTER_LEFT);
-            this.setMinWidth(300);
-
         }
         else if (position == 3){
             dealerButtonBox.setAlignment(Pos.TOP_RIGHT);
@@ -111,15 +101,10 @@ public class OpponentLayout extends HBox{
             chipBox.getChildren().addAll(chipImage);
             chipBox.setPadding(new Insets(3, 3, 3, 3));
 
-            nameLabel.setMinWidth(150);
-            stackSizeLabel.setMinWidth(150);
-            positionLabel.setMinWidth(150);
             opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
             cards.getChildren().addAll(lastMoveButtonChipBox,leftCardImage, rightCardImage, opponentStats);
 
             this.getChildren().add(cards);
-            this.setMinWidth(300);
-
         }
         else if(position == 4 || position == 5){
             dealerButtonBox.setAlignment(Pos.TOP_RIGHT);
@@ -132,9 +117,6 @@ public class OpponentLayout extends HBox{
             chipBox.setPadding(new Insets(0, 6, 0, 6));
 
             VBox stats = new VBox();
-            nameLabel.setMinWidth(150);
-            stackSizeLabel.setMinWidth(150);
-            positionLabel.setMinWidth(150);
             stats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
             stats.setAlignment(Pos.TOP_RIGHT);
             opponentStats.getChildren().addAll(cards, stats);
@@ -144,22 +126,28 @@ public class OpponentLayout extends HBox{
 
             cards.setAlignment(Pos.CENTER_RIGHT);
             this.setAlignment(Pos.CENTER_RIGHT);
-            this.setMinWidth(300);
         }
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
 
+        nameLabel.setMinWidth(150);
+        stackSizeLabel.setMinWidth(150);
+        positionLabel.setMinWidth(150);
+
+        this.setMinWidth(300);
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
         cards.setSpacing(10);
 
-    }
+    };
 
     /**
-     * Set last move for opponent
+     * Set last move label for opponent (e.g.: "CALL 50" or "ALL IN")
+     * Set the chip image (or null) for this move
      *
-     * @param lastMove
+     * @param lastMove The complete string the last move label should be set to
      */
+    @Override
     public void setLastMove(String lastMove, Image chipImage){
         lastMoveLabel.setText(lastMove);
         this.chipImage.setImage(chipImage);
@@ -170,35 +158,33 @@ public class OpponentLayout extends HBox{
     }
 
     /**
-     * Set stack size for opponent
-     *
-     * @param s
+     * Sets stack size label for this opponent
+     * @param s The complete string the label will be set to
      */
-
-    public void setStackSizeLabel(String s){
+    @Override
+    public void setStackLabel(String s){
         stackSizeLabel.setText(s);
     }
 
     /**
-     *
-     * Set position for opponent
-     *
+     * Sets the position label for this opponent to the given string.
      * @param s
      */
-
+    @Override
     public void setPositionLabel(String s, Image buttonImage){
         positionLabel.setText(s);
         this.dealerButtonImage.setImage(buttonImage);
     }
 
+
     /**
-     *
-     * Show cards
-     *
+     * Sets this opponents hole cards to the images provided
+     * Used at showdown and when hands are being dealt
      * @param leftCard
      * @param rightCard
      */
-    public void setCardImage(Image leftCard, Image rightCard) {
+    @Override
+    public void setCardImage(Image leftCard,Image rightCard) {
         leftCardImage.setImage(leftCard);
         rightCardImage.setImage(rightCard);
 
@@ -213,7 +199,7 @@ public class OpponentLayout extends HBox{
      *
      * @param name
      */
-
+    @Override
     public void setNameLabel(String name) {
         nameLabel.setText(name);
     }
@@ -222,8 +208,8 @@ public class OpponentLayout extends HBox{
     /**
      * Gray out cards
      */
-
-    public void removeHolecards() {
+    @Override
+    public void foldPlayer() {
         ColorAdjust adjust = new ColorAdjust();
         adjust.setBrightness(-0.5);
         folded = true;
@@ -232,39 +218,20 @@ public class OpponentLayout extends HBox{
     }
 
     /**
-     * Get opponent position
-     *
-     * @return position
-     */
-
-    public int getPosition() {
-        return position;
-    }
-
-    /**
-     * Set opponent position
-     *
-     * @param position
-     */
-
-    public void setPosition(int position){
-        this.position = position;
-        folded = false;
-    }
-
-    /**
      * What happens when a player is bust
      *
      * @param bustedText
      */
+    @Override
     public void bustPlayer(String bustedText) {
         isBust = true;
         setLastMove("", null);
-        setStackSizeLabel(bustedText);
+        setStackLabel(bustedText);
         setPositionLabel("", null);
         setCardImage(null, null);
     }
 
+    @Override
     public boolean isBust() {
         return isBust;
     }
@@ -273,6 +240,48 @@ public class OpponentLayout extends HBox{
         if (leftCardImage != null && rightCardImage != null) {
             leftCardImage.setEffect(glow);
             rightCardImage.setEffect(glow);
+        }
+    }
+
+    /**
+     *  Return the X-layout of an opponent layout based on his position on the table
+     * @param pos    The players position
+     * @param width  Screen width
+     * @return The xLayout of this opponentLayout
+     */
+    public static double getLayoutX(int pos, double width) {
+        switch (pos){
+            case 1:case 2:
+                return 20.0;
+            case 3:
+                return width / 3;
+            case 4:case 5:
+                return width - 320;
+            default:
+                GUIMain.debugPrintln("** Cannot place opponent" + pos + " **\n");
+                return 0.0;
+        }
+    }
+
+    /**
+     *  Return the Y-layout of an opponent layout based on his position on the table
+     * @param pos       The opponents position
+     * @param height    The height of the screen
+     * @return  The y-layout of this opponentLayout
+     */
+    public static double getLayoutY(int pos, double height) {
+        final String os = System.getProperty("os.version");
+
+        switch (pos) {
+            case 1: case 5:
+                return height / 2;
+            case 2: case 4:
+                return height / 6;
+            case 3:
+                return !os.isEmpty() ? 20 : !os.startsWith("Mac") ? 30 : 20;
+            default:
+                GUIMain.debugPrintln("** Cannot place opponent" + pos + " **\n");
+                return 0.0;
         }
     }
 }

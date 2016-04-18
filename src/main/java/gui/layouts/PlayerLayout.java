@@ -23,7 +23,7 @@ import javafx.scene.text.FontWeight;
  * Created by ady on 04/04/16.
  */
 
-public class PlayerLayout {
+public class PlayerLayout extends VBox implements IPlayerLayout {
 
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
@@ -33,18 +33,10 @@ public class PlayerLayout {
     private long currentSmallBlind, currentBigBlind;
 
     private Button betRaiseButton, checkCallButton, foldButton;
+    private boolean isBust;
 
 
-    public PlayerLayout(){
-
-    }
-
-    /**
-     * A method for making a playerLayout
-     *
-     * @return A VBox with the player layout
-     */
-    public VBox updateLayout(int playerID, String name, long stackSizeIn) {
+    public PlayerLayout(int playerID, String name, long stackSizeIn){
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -56,26 +48,24 @@ public class PlayerLayout {
         VBox sliderAndBestHandBox = new VBox();
         HBox lastMoveAndChips = new HBox();
 
-        //////Make all the elements i want to add to the playerLayout//////////
-        stackLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSizeIn + "");
-        positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ", "");
+        //////Make all the elements I want to add to the playerLayout//////////
+        stackLabel = ObjectStandards.makeStandardLabelWhite("", stackSizeIn + "");
+        positionLabel = ObjectStandards.makeStandardLabelWhite("", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
         bestHand = ObjectStandards.makeStandardLabelWhite("Your hand:","");
 
-
-        Image backOfCards = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
-
-        leftCardImage = ImageViewer.getEmptyImageView("player");
-        rightCardImage = ImageViewer.getEmptyImageView("player");
+        Image backOfCards = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
+        leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.PLAYER);
+        rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.PLAYER);
         leftCardImage.setImage(backOfCards);
         rightCardImage.setImage(backOfCards);
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
 
         chipImage = new ImageView();
-        chipImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        chipImage.setImage(ImageViewer.getChipImage(null));
         chipImage.setPreserveRatio(true);
         chipImage.setFitWidth(35);
 
@@ -137,10 +127,8 @@ public class PlayerLayout {
                 amountTextField.setText(String.valueOf(sliderNumber));
         });
 
-
-
         dealerButtonImage = new ImageView();
-        dealerButtonImage.setImage(ImageViewer.getChipAndButtonImage(null));
+        dealerButtonImage.setImage(ImageViewer.getChipImage(null));
         dealerButtonImage.setPreserveRatio(true);
         dealerButtonImage.setFitWidth(32);
         HBox dealerButtonBox = new HBox();
@@ -191,7 +179,7 @@ public class PlayerLayout {
         fullBoxWithLastMove.setMinHeight(50);
 
         this.setActionsVisible(false);
-        return fullBoxWithLastMove;
+        this.getChildren().add(fullBoxWithLastMove);
     }
 
     /**
@@ -199,9 +187,9 @@ public class PlayerLayout {
      */
     public void updateSliderValues(long stackSize){
         long maxValue = stackSize;
-        if (positionLabel.getText().equals("Position: Small blind"))
+        if (positionLabel.getText().toLowerCase().contains("small"))
             maxValue -= currentSmallBlind;
-        else if (positionLabel.getText().equals("Position: Big blind"))
+        else if (positionLabel.getText().toLowerCase().contains("big"))
             maxValue -= currentBigBlind;
 
         slider.setValue(currentBigBlind);
@@ -216,34 +204,18 @@ public class PlayerLayout {
             slider.setMajorTickUnit(1);
             slider.setVisible(false);
         }
-
     }
 
     /**
-     * Show the buttons on the board
-     *
-     * @param visible
+     * Make the action buttons visible
+     * @param visible True if buttons should be set to visible
      */
-
     public void setActionsVisible(boolean visible) {
         betRaiseButton.setVisible(visible);
         checkCallButton.setVisible(visible);
         foldButton.setVisible(visible);
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
-    }
-
-    /**
-     * Set button visibility
-     *
-     * @param visible
-     */
-
-    public void setVisible(boolean visible){
-        betRaiseButton.setVisible(visible);
-        checkCallButton.setVisible(visible);
-        foldButton.setVisible(visible);
-        amountTextField.setVisible(visible);
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
@@ -280,7 +252,6 @@ public class PlayerLayout {
         this.bestHand.setText(bestHand);
     }
 
-
     /**
      *
      * Set card image and make them visible
@@ -302,10 +273,6 @@ public class PlayerLayout {
         nameLabel.setText(name);
     }
 
-    public void setSliderVisibility() {
-        slider.setVisible(true);
-    }
-
     public void bustPlayer(String bustedText) {
         setLastMove("", null);
         setStackLabel(bustedText);
@@ -313,13 +280,24 @@ public class PlayerLayout {
         setCardImage(null, null);
         slider.setVisible(false);
         bestHand.setVisible(false);
+        isBust = true;
     }
 
-    public void removeHolecards() {
+    public void foldPlayer() {
         ColorAdjust adjust = new ColorAdjust();
         adjust.setBrightness(-0.5);
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
+    }
+
+    @Override
+    public void highlightTurn() {
+        //Nothing for now
+    }
+
+    @Override
+    public boolean isBust() {
+        return isBust;
     }
 
 }

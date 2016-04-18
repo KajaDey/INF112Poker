@@ -8,6 +8,7 @@ import javafx.scene.layout.*;
  * Created by ady on 05/03/16.
  */
 public class ImageViewer {
+    public enum Image_type { DEALER_BUTTON, CARD_BACK, PLAYER, OPPONENT }
 
     /**
      * Gets the name of a card, and returns the URL of the given card.
@@ -50,15 +51,17 @@ public class ImageViewer {
 
     /**
      * Returns an empty image view, with the correct image size.
-     * @param player The type of player. Either a player or an opponent.
+     * @param type The type of player. Either a PLAYER or OPPONENT.
      * @return The total image view.
      */
-    public static ImageView getEmptyImageView(String player){
+    public static ImageView getEmptyImageView(Image_type type){
         int imageSize = 0;
-        if (player.equals("player"))
+        if (type == Image_type.PLAYER)
             imageSize = 130;
-        else if (player.equals("opponent"))
+        else if (type == Image_type.OPPONENT)
             imageSize = 100;
+        else
+            return null;
 
         ImageView imageView = new ImageView();
         imageView.setPreserveRatio(true);
@@ -67,7 +70,7 @@ public class ImageViewer {
         return imageView;
     }
 
-    public static Image getChipAndButtonImage(String name){
+    public static Image getChipImage(String name){
         String chipOut = "file:resources/Images/" + name + ".png";
         if (chipOut.isEmpty())
             return null;
@@ -75,4 +78,14 @@ public class ImageViewer {
         return new Image(chipOut);
     }
 
+    public static Image getImage(Image_type type) {
+        switch (type) {
+            case DEALER_BUTTON:
+                return new Image("file:resources/Images/dealer.png");
+            case CARD_BACK:
+                return new Image("file:resources/CardSprites/_Back.png");
+            default:
+                return null;
+        }
+    }
 }
