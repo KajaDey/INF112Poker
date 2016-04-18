@@ -290,7 +290,7 @@ public class GameState {
                         }
                     }
                     else {
-                        double handQuality = SimpleAI.handQuality(playerToReceive.holeCards.get(0), deck.get(randomCardIndex));
+                        double handQuality = SimpleAI.handQuality(playerToReceive.holeCards.get(0), deck.get(randomCardIndex), communityCards);
                         if (handQuality / (50 - j) > playerToReceive.riskTaken(allChipsOnTable)) {
                             //System.out.println("Rejected " + j + " while giving second hole card");
                             return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), playerToReceive.position));
@@ -302,7 +302,7 @@ public class GameState {
                 }
 
             case PLAYER_DECISION:
-                double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1)) * Math.pow(0.95, amountOfPlayers);;
+                double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1), communityCards) * Math.pow(0.95, amountOfPlayers);
 
                 // Random modifier between 0.5 and 1.5
                 double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;

@@ -52,7 +52,7 @@ public class PokerMCTS {
         }
 
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
-        double bestValue = 0.0;
+
 
         double[] values = rootNode.values.clone();
         /*for (int i = 0; i < values.length; i++) {
@@ -81,7 +81,9 @@ public class PokerMCTS {
             }
         }*/
 
+        double bestValue = 0.0;
         AIDecision bestDecision = AIDecision.FOLD;
+
         assert allDecisions.size() > 1;
         for (int i = 0; i < allDecisions.size(); i++) {
             double value = rootNode.children.get(i).get().values[playerPosition];
