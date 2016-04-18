@@ -10,7 +10,7 @@ import gamelogic.GameController;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.net.MalformedURLException;
 
 /**
  * Created by ady on 07/03/16.
@@ -23,10 +23,12 @@ public class ButtonListeners {
     private static String savedName, savedNumOfPlayers, savedChoiceBox;
     private static GameController savedGameController;
 
+    private static SoundPlayer soundPlayer = new SoundPlayer();
+
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount, String buttonText){
+    public static void betButtonListener(String betAmount, String buttonText) throws MalformedURLException {
         try {
             if (buttonText.equalsIgnoreCase("Raise to")) {
                 client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
@@ -36,16 +38,19 @@ public class ButtonListeners {
         } catch (Exception e){
             e.printStackTrace();
         }
+        soundPlayer.playChipSound();
     }
 
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(String buttonText){
+    public static void checkButtonListener(String buttonText) throws MalformedURLException {
         if (buttonText.equals("Call")) {
             client.setDecision(Decision.Move.CALL);
+            soundPlayer.playChipSound();
         } else if (buttonText.equals("Check")) {
             client.setDecision(Decision.Move.CHECK);
+            soundPlayer.playCheckSound();
         }
     }
 

@@ -18,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.net.MalformedURLException;
 import java.util.*;
 
 /**
@@ -56,6 +57,7 @@ public class GameScreen {
 
     private TextArea textArea = new TextArea();
     private String logText = "";
+    private SoundPlayer soundPlayer = new SoundPlayer();
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
@@ -356,7 +358,7 @@ public class GameScreen {
      * @param ID
      * @param decision
      */
-    public void playerMadeDecision(int ID, Decision decision) {
+    public void playerMadeDecision(int ID, Decision decision) throws MalformedURLException {
         //Update all values in the GUI and return a string of the decision that can be displayed
         final String finalDecision = evaluateDecision(ID, decision);
 
@@ -364,7 +366,7 @@ public class GameScreen {
         updateButtonTexts(ID, decision.move);
 
         //Play sound
-        //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
+        soundPlayer.playSound(decision.move);
 
         if (ID == this.playerID) {
             playerLayout.setLastMove(finalDecision, getChipImage(ID));

@@ -19,6 +19,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 /**
  * Created by ady on 04/04/16.
  */
@@ -104,10 +107,18 @@ public class PlayerLayout {
         betRaiseButton.setOnAction(e -> {
             if(!amountTextField.getText().equals("")) {
                 if (amountTextField.getText().equals("All in")) {
-                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
+                    try {
+                        ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
+                    } catch (MalformedURLException e1) {
+                        e1.printStackTrace();
+                    }
                 }
                 else
-                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
+                    try {
+                        ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
+                    } catch (MalformedURLException e1) {
+                        e1.printStackTrace();
+                    }
                 updateSliderValues(stackSizeIn);
             }
         });
@@ -115,15 +126,27 @@ public class PlayerLayout {
         amountTextField.setOnAction(e -> {
             if (!amountTextField.getText().equals("")) {
                 if (amountTextField.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
+                    try {
+                        ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
+                    } catch (MalformedURLException e1) {
+                        e1.printStackTrace();
+                    }
                 else
-                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
+                    try {
+                        ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
+                    } catch (MalformedURLException e1) {
+                        e1.printStackTrace();
+                    }
                 updateSliderValues(stackSizeIn);
             }
         });
 
         checkCallButton.setOnAction(e -> {
-            ButtonListeners.checkButtonListener(checkCallButton.getText());
+            try {
+                ButtonListeners.checkButtonListener(checkCallButton.getText());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             updateSliderValues(stackSizeIn);
         });
 
