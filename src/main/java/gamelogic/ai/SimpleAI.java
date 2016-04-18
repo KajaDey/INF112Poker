@@ -80,19 +80,19 @@ public class SimpleAI implements GameClient {
                     // These increments may happen several times, increasing the handQuality if there are many outs for straights
                     case 3:
                         if (communityCards.size() == 3) {
-                            handQuality += 1;
+                            handQuality += 2;
                         }
                         break;
                     case 4:
                         if (communityCards.size() == 3) {
-                            handQuality += 5;
+                            handQuality += 8;
                         }
                         else if (communityCards.size() == 4) {
-                            handQuality += 3;
+                            handQuality += 4;
                         }
                         break;
                     case 5:
-                        handQuality += 18;
+                        handQuality += 25;
                         break;
                 }
             }
@@ -124,19 +124,19 @@ public class SimpleAI implements GameClient {
             switch (ofSameSuit) {
                 case 3:
                     if (communityCards.size() == 3) {
-                        handQuality += 2;
+                        handQuality += 3;
                     }
                     break;
                 case 4:
                     if (communityCards.size() == 3) {
-                        handQuality += 10;
+                        handQuality += 15;
                     }
                     else if (communityCards.size() == 4) {
-                        handQuality += 5;
+                        handQuality += 8;
                     }
                     break;
                 case 5:
-                    handQuality += 25;
+                    handQuality += 30;
                     break;
             }
 
@@ -174,16 +174,16 @@ public class SimpleAI implements GameClient {
             int rankDistance = Math.abs(card1.rank - card2.rank);
             switch (rankDistance) {
                 case 0:
-                    handQuality = handQuality * 1.8 + 20;
+                    handQuality = handQuality * 1.6 + 15;
                     break;
                 case 1:
-                    handQuality = handQuality * 1.4 + 8;
+                    handQuality = handQuality * 1.4 + 6;
                     break;
                 case 2:
-                    handQuality = handQuality * 1.3 + 5;
+                    handQuality = handQuality * 1.2 + 3;
                     break;
                 case 3:
-                    handQuality = handQuality * 1.1 + 2;
+                    handQuality = handQuality * 1.05 + 1;
                     break;
                 default:
             }
@@ -196,21 +196,21 @@ public class SimpleAI implements GameClient {
             case 2:
                 switch (holeCardsGiven) {
                     case 3:
-                        return 15;
+                        return 18;
                     case 4:
-                        return 12;
+                        return 15;
                     case 5:
-                        return 10;
+                        return 12;
                 }
                 break;
             case 3:
                 switch (holeCardsGiven) {
                     case 3:
-                        return 25;
+                        return 22;
                     case 4:
-                        return 23;
-                    case 5:
                         return 20;
+                    case 5:
+                        return 18;
                 }
                 break;
             case 4:
