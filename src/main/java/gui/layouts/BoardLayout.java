@@ -13,33 +13,21 @@ import javafx.scene.layout.VBox;
 /**
  * Created by ady on 04/04/16.
  */
-public class BoardLayout {
+public class BoardLayout extends VBox {
 
     private Label currentBBLabel, currentSBLabel,  potLabel, winnerLabel;
-    private long currentSmallBlind, currentBigBlind;
     private ImageView[] communityCards = new ImageView[5];
 
-    public BoardLayout(){
-    }
-
-    /**
-     * Generates a boardLayout
-     *
-     * @return a boardLayout
-     */
-    public VBox updateLayout(long smallBlind, long bigBlind) {
+    public BoardLayout(long smallBlind, long bigBlind){
         DropShadow dropShadow = new DropShadow();
-        this.currentSmallBlind = smallBlind;
-        this.currentBigBlind = bigBlind;
 
         for (int i = 0; i < communityCards.length; i++) {
-            communityCards[i] = ImageViewer.getEmptyImageView("player");
+            communityCards[i] = ImageViewer.getEmptyImageView(ImageViewer.Image_type.PLAYER);
             communityCards[i].setEffect(dropShadow);
         }
 
         HBox cardLayout = new HBox();
         VBox statsLayout = new VBox();
-        VBox fullLayout = new VBox();
 
         currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
         currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SB:", smallBlind + "$");
@@ -59,11 +47,8 @@ public class BoardLayout {
         cardLayout.setSpacing(10);
         cardLayout.setAlignment(Pos.CENTER);
 
-        fullLayout.getChildren().setAll(cardLayout, winnerLabel);
-        fullLayout.setAlignment(Pos.CENTER);
-
-
-        return fullLayout;
+        this.getChildren().setAll(cardLayout, winnerLabel);
+        this.setAlignment(Pos.CENTER);
     }
 
     /**
@@ -112,5 +97,15 @@ public class BoardLayout {
     public void showRiver(Image river) {
         communityCards[4].setImage(river);
         communityCards[4].setVisible(true);
+    }
+
+    public void newHand() {
+        Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
+        for (ImageView imageview : communityCards) {
+            imageview.setImage(backImage);
+            imageview.setVisible(false);
+        }
+
+        setWinnerLabel("");
     }
 }

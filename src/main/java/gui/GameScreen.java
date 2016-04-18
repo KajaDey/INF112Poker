@@ -2,6 +2,7 @@ package gui;
 
 import gamelogic.*;
 import gui.layouts.BoardLayout;
+import gui.layouts.IPlayerLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
 import javafx.beans.value.ChangeListener;
@@ -11,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -31,51 +31,38 @@ import java.util.*;
  */
 public class GameScreen {
 
-   // BorderPane borderPane;
-    private Scene scene;
+
     private int playerID;
-    private int [] positions;
     private int numberOfOpponentsAddedToTheGame = 0;
-    private int numberOfPlayers = 2;
+    private int numberOfPlayers;
 
-    private Label endGameScreen;
-
-    //Storagevariables
-    private long highestAmountPutOnTable = 0, pot = 0;
+    //Storage variables
+    private long highestAmountPutOnTable = 0;
     private long currentBigBlind;
+    private int [] positions;
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
-    private Map<Integer, OpponentLayout> opponents;
     private ArrayList<Card> holeCards, communityCards;
 
+
+    //GUI-elements
+    private Scene scene;
     private Pane pane = new Pane();
-
-    private PlayerLayout playerLayout = new PlayerLayout();
-    private BoardLayout boardLayout = new BoardLayout();
-
+    private PlayerLayout playerLayout;
+    private BoardLayout boardLayout;
+    private Map<Integer, IPlayerLayout> allPlayerLayouts;
+    private Label endGameScreen;
     private TextArea textArea = new TextArea();
-    private String logText = "";
+
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
-        this.opponents = new HashMap<>();
+        this.allPlayerLayouts = new HashMap<>();
 
-        initializePlayerLayouts(numberOfPlayers);
         insertLogField();
         addMenuBarToGameScreen();
-    }
-
-    /**
-     *  Initiate all the layouts in the GUI
-     * @param numberOfPlayers
-     */
-    private void initializePlayerLayouts(int numberOfPlayers) {
-        playerLayout = new PlayerLayout();
-        for (int i = 1; i < numberOfPlayers; i++) {
-            opponents.put(i, new OpponentLayout());
-        }
     }
 
     /**
@@ -85,10 +72,11 @@ public class GameScreen {
      * @return a scene containing a gamescreen
      */
     public Scene createSceneForGameScreen(GameSettings settings) {
-        VBox box = boardLayout.updateLayout(settings.getSmallBlind(), settings.getBigBlind());
-        box.setLayoutX(scene.getWidth() / 4 - 30);
-        box.setLayoutY(scene.getHeight() / 3 + 30);
-        pane.getChildren().addAll((box));
+        long sb = settings.getSmallBlind(), bb = settings.getBigBlind();
+        boardLayout = new BoardLayout(sb, bb);
+        boardLayout.setLayoutX(scene.getWidth() / 4 - 30);
+        boardLayout.setLayoutY(scene.getHeight() / 3 + 30);
+        pane.getChildren().add(boardLayout);
         return scene;
     }
 
@@ -101,57 +89,28 @@ public class GameScreen {
      * @return player objects
      */
     public boolean insertPlayer(int userID, String name, long stackSize) {
-        final String os = System.getProperty("os.version");
-
-
         this.names.put(userID, name);
         this.stackSizes.put(userID, stackSize);
-        //playerLayout.setStackSize(stackSize);
 
         if (userID == playerID) {
-            VBox vbox = playerLayout.updateLayout(userID,name,stackSizes.get(0));
-            vbox.setLayoutX(scene.getWidth()/4);
-            vbox.setLayoutY(scene.getHeight()-190);
-            pane.getChildren().addAll(vbox);
+            PlayerLayout pLayout = new PlayerLayout(userID,name,stackSizes.get(0));
+            playerLayout = pLayout;
+            pLayout.setLayoutX(scene.getWidth()/4);
+            pLayout.setLayoutY(scene.getHeight()-190);
+            pane.getChildren().addAll(pLayout);
+            allPlayerLayouts.put(userID, pLayout);
         } else {
+            int oppPosition = positions[numberOfOpponentsAddedToTheGame];
+            OpponentLayout oppLayout = new OpponentLayout(name, stackSize, oppPosition);
 
-            OpponentLayout oppLayout = opponents.get(userID);
-            oppLayout.setPosition(positions[numberOfOpponentsAddedToTheGame]);
-            oppLayout.updateLayout(name, stackSize);
-
-            switch (oppLayout.getPosition()){
-                case 1:
-                    oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(scene.getHeight() / 2);
-                    break;
-                case 2:
-                    oppLayout.setLayoutX(20);
-                    oppLayout.setLayoutY(scene.getHeight() / 6);
-                    break;
-                case 3:
-                    oppLayout.setLayoutX(scene.getWidth() / 3);
-                    if (!os.isEmpty()) {
-                        if (!os.startsWith("Mac"))
-                            oppLayout.setLayoutY(30);
-                        else
-                            oppLayout.setLayoutY(20);
-                    }
-                    break;
-                case 4:
-                    oppLayout.setLayoutX(scene.getWidth() - 320);
-                    oppLayout.setLayoutY(scene.getHeight() / 6);
-                    break;
-                case 5:
-                    oppLayout.setLayoutX(scene.getWidth() - 320);
-                    oppLayout.setLayoutY(scene.getHeight() / 2);
-                    break;
-                default:
-                    GUIMain.debugPrintln("Cannot place opponent");
-            }
+            //Set X/Y-layout of this opponent
+            double height = scene.getHeight(), width = scene.getWidth();
+            oppLayout.setLayoutX(OpponentLayout.getLayoutX(oppPosition, width));
+            oppLayout.setLayoutY(OpponentLayout.getLayoutY(oppPosition, height));
 
             numberOfOpponentsAddedToTheGame++;
             pane.getChildren().add(oppLayout);
-            opponents.put(userID, oppLayout);
+            allPlayerLayouts.put(userID, oppLayout);
         }
 
         return true;
@@ -281,8 +240,8 @@ public class GameScreen {
 
             //Print the players hand
             printToLogField(names.get(p.getID()) + ": " + cards[0] + " " + cards[1]);
-            if (p.getID() != playerID && opponents.get(p.getID()) != null)
-                opponents.get(p.getID()).setCardImage(leftImage,rightImage);
+            if (p.getID() != playerID && allPlayerLayouts.get(p.getID()) != null)
+                allPlayerLayouts.get(p.getID()).setCardImage(leftImage,rightImage);
         }
 
         String winnerString = showdownStats.getWinnerText();
@@ -346,8 +305,7 @@ public class GameScreen {
      * @param visible
      */
     public void setActionsVisible(boolean visible) {
-        playerLayout.setVisible(visible);
-        playerLayout.setSliderVisibility();
+        playerLayout.setActionsVisible(visible);
     }
 
     /**
@@ -366,13 +324,8 @@ public class GameScreen {
         //Play sound
         //new SoundPlayer().playSound(SoundPlayer.Sound.CHIPS_SOUND);
 
-        if (ID == this.playerID) {
-            playerLayout.setLastMove(finalDecision, getChipImage(ID));
-            playerLayout.setStackLabel("Stack size: " + stackSizes.get(ID));
-        } else {
-            opponents.get(ID).setLastMove(finalDecision, getChipImage(ID));
-            opponents.get(ID).setStackSizeLabel("Stack size: " + stackSizes.get(ID));
-        }
+        allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
+        allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
     }
 
     /**
@@ -461,11 +414,7 @@ public class GameScreen {
                 printToLogField(names.get(ID) + " went all in with " + putOnTable.get(ID));
                 break;
             case FOLD:
-                if (ID == playerID)
-                    playerLayout.removeHolecards();
-                else
-                    opponents.get(ID).removeHolecards();
-
+                allPlayerLayouts.get(ID).foldPlayer();
                 printToLogField(names.get(ID) + " folded");
                 break;
             case CHECK:
@@ -489,12 +438,7 @@ public class GameScreen {
         for (Integer clientID : stackSizes.keySet()) {
             this.stackSizes = stackSizes;
             String stackSizeText = "" + stackSizes.get(clientID);
-
-            if (clientID == playerID) {
-                playerLayout.setStackLabel("Stack size: " + stackSizeText);
-            } else {
-                opponents.get(clientID).setStackSizeLabel("Stack size: " + stackSizeText);
-            }
+            allPlayerLayouts.get(clientID).setStackLabel("" + stackSizeText);
         }
     }
 
@@ -518,15 +462,12 @@ public class GameScreen {
         }
 
         this.highestAmountPutOnTable = 0;
-        playerLayout.setLastMove("", null);
         playerLayout.setCheckCallButton("Check");
         playerLayout.setBetRaiseButton("Bet");
         this.setAmountTextfield(currentBigBlind + "");
         this.setErrorStateOfAmountTextField(false);
-        for (Integer id : opponents.keySet()) {
-            opponents.get(id).setLastMove("", null);
-        }
 
+        allPlayerLayouts.forEach((id, layout) -> layout.setLastMove("", null));
         updateSliderValues();
     }
 
@@ -535,7 +476,6 @@ public class GameScreen {
      * @param pot
      */
     public void setPot(long pot) {
-        this.pot = pot;
         String potString = Long.toString(pot);
         boardLayout.setPotLabel("Pot: " + potString);
     }
@@ -547,10 +487,7 @@ public class GameScreen {
      */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
-        playerLayout.setNameLabel("Name: " + names.get(playerID));
-        for (Integer i : opponents.keySet()) {
-            opponents.get(i).setNameLabel("Name: " + names.get(i));
-        }
+        allPlayerLayouts.forEach((id, layout) -> layout.setNameLabel(names.get(id)));
     }
 
     /**
@@ -560,19 +497,16 @@ public class GameScreen {
         printToLogField(" ------ New hand ------");
         communityCards = new ArrayList<>();
 
-        Image backImage = new Image(ImageViewer.returnURLPathForCardSprites("_Back"));
-        for (ImageView imageview : boardLayout.getCommunityCards()) {
-            imageview.setImage(backImage);
-            imageview.setVisible(false);
-        }
-        boardLayout.setWinnerLabel("");
-        //Set opponent hand
-        for (Integer id : opponents.keySet()) {
-            OpponentLayout opp = opponents.get(id);
-            if (!opp.isBust())
-                opp.setCardImage(backImage, backImage);
-        }
+        //Set opponent hands
+        Image backImage = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
+        allPlayerLayouts.forEach((id, layout) -> {
+            if (!layout.isBust()) {
+                layout.setCardImage(backImage, backImage);
+            }
+        });
 
+        //Reset board
+        boardLayout.newHand();
         setPot(0);
     }
 
@@ -656,12 +590,8 @@ public class GameScreen {
      */
     public void setPositions(Map<Integer, Integer> positions) {
         for (Integer id : positions.keySet()) {
-            String pos = "Position: " + getPositionName(positions.get(id), numberOfPlayers);
-            if (id == playerID) {
-                playerLayout.setPositionLabel(pos, getButtonImage(id, positions.get(id)));
-            } else {
-                opponents.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
-            }
+            String pos = getPositionName(positions.get(id), numberOfPlayers);
+            allPlayerLayouts.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
         }
     }
 
@@ -701,13 +631,11 @@ public class GameScreen {
         String bustedText = "Busted in " + rank + (rank == 1 ? "st" : (rank == 2) ? "nd" : (rank == 3) ? "rd" : "th");
         if (rank == 1) bustedText = "Won";
 
-        if (this.playerID == playerID) {
-            playerLayout.bustPlayer(bustedText);
+        if (this.playerID == playerID)
             playerLayout.setBestHand("");
-        } else {
-            opponents.get(playerID).bustPlayer(bustedText);
-            opponents.remove(playerID);
-        }
+
+        allPlayerLayouts.get(playerID).bustPlayer(bustedText);
+        allPlayerLayouts.remove(playerID);
 
         printToLogField(names.get(playerID) + " " + bustedText.toLowerCase());
     }
@@ -756,10 +684,8 @@ public class GameScreen {
         holeCards.forEach((id, cards) -> {
             Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
-            if (id == playerID)
-                playerLayout.setCardImage(leftCard, rightCard);
-            else
-                opponents.get(id).setCardImage(leftCard, rightCard);
+
+            allPlayerLayouts.get(id).setCardImage(leftCard, rightCard);
         });
     }
 
@@ -770,34 +696,34 @@ public class GameScreen {
         if (putOnTable.get(id) == 0)
             return null;
         else if (putOnTable.get(id) <= currentBigBlind / 2)
-            return ImageViewer.getChipAndButtonImage("sb_image");
+            return ImageViewer.getChipImage("sb_image");
         if (putOnTable.get(id) <= currentBigBlind)
-            return ImageViewer.getChipAndButtonImage("bb_image");
+            return ImageViewer.getChipImage("bb_image");
         else if (putOnTable.get(id) <= currentBigBlind * 3)
-            return ImageViewer.getChipAndButtonImage("poker1");
+            return ImageViewer.getChipImage("poker1");
         else if (putOnTable.get(id) <= currentBigBlind * 5)
-            return ImageViewer.getChipAndButtonImage("poker2");
+            return ImageViewer.getChipImage("poker2");
         else if (putOnTable.get(id) <= currentBigBlind * 8)
-            return ImageViewer.getChipAndButtonImage("poker3");
+            return ImageViewer.getChipImage("poker3");
         else if (putOnTable.get(id) <= currentBigBlind * 12)
-            return ImageViewer.getChipAndButtonImage("poker4");
+            return ImageViewer.getChipImage("poker4");
         else if (putOnTable.get(id) <= currentBigBlind * 20)
-            return ImageViewer.getChipAndButtonImage("poker6");
+            return ImageViewer.getChipImage("poker6");
         else if(putOnTable.get(id) <= currentBigBlind * 50)
-            return ImageViewer.getChipAndButtonImage("poker7");
+            return ImageViewer.getChipImage("poker7");
         else
-            return ImageViewer.getChipAndButtonImage("poker8");
+            return ImageViewer.getChipImage("poker8");
     }
 
     private Image getButtonImage(int player, int id){
         if (player == 0) {
             if(getPositionName(id, numberOfPlayers).equals("Dealer"))
-                return ImageViewer.getChipAndButtonImage("dealer");
+                return ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
             else return null;
         }
         if (player > 0){
             if (getPositionName(id, numberOfPlayers).endsWith("Dealer"))
-                return ImageViewer.getChipAndButtonImage("dealer");
+                return ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
             else return null;
         }
         return null;
