@@ -10,6 +10,12 @@ import javafx.scene.layout.*;
 public class ImageViewer {
     public enum Image_type { DEALER_BUTTON, CARD_BACK, PLAYER, OPPONENT }
 
+    private static Image backImage;
+
+    static {
+        backImage = new Image("file:resources/CardSprites/_Back.png");
+    }
+
     /**
      * Gets the name of a card, and returns the URL of the given card.
      * @param card The name of the card
@@ -83,7 +89,7 @@ public class ImageViewer {
             case DEALER_BUTTON:
                 return new Image("file:resources/Images/dealer.png");
             case CARD_BACK:
-                return new Image("file:resources/CardSprites/_Back.png");
+                return backImage;
             default:
                 return null;
         }

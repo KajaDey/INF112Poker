@@ -38,7 +38,6 @@ public class ButtonListeners {
         } catch (Exception e){
             e.printStackTrace();
         }
-        soundPlayer.playChipSound();
     }
 
     /**
@@ -47,10 +46,8 @@ public class ButtonListeners {
     public static void checkButtonListener(String buttonText) throws MalformedURLException {
         if (buttonText.equals("Call")) {
             client.setDecision(Decision.Move.CALL);
-            soundPlayer.playChipSound();
         } else if (buttonText.equals("Check")) {
             client.setDecision(Decision.Move.CHECK);
-            soundPlayer.playCheckSound();
         }
     }
 

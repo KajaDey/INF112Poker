@@ -271,6 +271,7 @@ public class GameScreen {
         communityCards.add(card3);
         updateYourHandLabel();
 
+        new SoundPlayer().playDealCardSound();
         printToLogField("Flop " + card1 + " " + card2 + " " + card3);
     }
 
@@ -285,6 +286,7 @@ public class GameScreen {
         updateYourHandLabel();
 
         printToLogField("Turn " + turnCard);
+        soundPlayer.playDealCardSound();
     }
 
     /**
@@ -297,6 +299,7 @@ public class GameScreen {
         boardLayout.showRiver(riverImage);
         communityCards.add(riverCard);
         updateYourHandLabel();
+        soundPlayer.playDealCardSound();
 
         printToLogField("River " + riverCard);
     }
@@ -453,17 +456,10 @@ public class GameScreen {
      */
     public void newBettingRound(long potSize) {
         setPot(potSize);
-
         //Reset everything people have put on the table
         for (Integer i : putOnTable.keySet())
             putOnTable.put(i, 0L);
         highestAmountPutOnTable = 0;
-
-        try {
-            Thread.sleep(1500L);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         this.highestAmountPutOnTable = 0;
         playerLayout.setCheckCallButton("Check");
@@ -498,6 +494,7 @@ public class GameScreen {
      * Start a new hard
      */
     public void startNewHand() {
+        new SoundPlayer().playShuffleSound();
         printToLogField(" ------ New hand ------");
         communityCards = new ArrayList<>();
 
