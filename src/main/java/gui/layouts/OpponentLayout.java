@@ -151,10 +151,6 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     public void setLastMove(String lastMove, Image chipImage){
         lastMoveLabel.setText(lastMove);
         this.chipImage.setImage(chipImage);
-        if(!folded) {
-            leftCardImage.setEffect(dropShadow);
-            rightCardImage.setEffect(dropShadow);
-        }
     }
 
     /**
@@ -236,10 +232,16 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         return isBust;
     }
 
-    public void highlightTurn() {
-        if (leftCardImage != null && rightCardImage != null) {
+    public void highlightTurn(boolean highlight) {
+        if (!(leftCardImage != null && rightCardImage != null))
+            return;
+
+        if (highlight) {
             leftCardImage.setEffect(glow);
             rightCardImage.setEffect(glow);
+        } else {
+            leftCardImage.setEffect(dropShadow);
+            rightCardImage.setEffect(dropShadow);
         }
     }
 

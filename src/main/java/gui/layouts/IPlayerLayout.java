@@ -25,6 +25,6 @@ public interface IPlayerLayout {
 
     void foldPlayer();
 
-    void highlightTurn();
+    void highlightTurn(boolean highlight);
 
 }

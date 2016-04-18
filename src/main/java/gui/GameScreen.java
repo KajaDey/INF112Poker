@@ -315,6 +315,9 @@ public class GameScreen {
      * @param decision
      */
     public void playerMadeDecision(int ID, Decision decision) {
+        //Remove player highlighting
+        allPlayerLayouts.get(ID).highlightTurn(false);
+
         //Update all values in the GUI and return a string of the decision that can be displayed
         final String finalDecision = evaluateDecision(ID, decision);
 
@@ -730,6 +733,7 @@ public class GameScreen {
     }
 
     public void highlightPlayerTurn(int id) {
-        allPlayerLayouts.get(id).highlightTurn();
+        if (allPlayerLayouts.get(id) != null)
+            allPlayerLayouts.get(id).highlightTurn(true);
     }
 }

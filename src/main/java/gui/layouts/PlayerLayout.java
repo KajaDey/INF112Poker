@@ -291,7 +291,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     @Override
-    public void highlightTurn() {
+    public void highlightTurn(boolean highlight) {
         //Nothing for now
     }
 
