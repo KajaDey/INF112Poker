@@ -242,4 +242,8 @@ public class GUIClient implements GameClient {
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
         Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
     }
+
+    public void highlightPlayerTurn(int id) {
+        gameScreen.highlightPlayerTurn(id);
+    }
 }
