@@ -4,6 +4,7 @@ import gamelogic.Decision;
 import gamelogic.Hand;
 import gamelogic.HandCalculator;
 import gamelogic.Pot;
+import gamelogic.ai.SimpleAI.AIDecision;
 import java.util.*;
 
 /**
@@ -66,44 +67,42 @@ public class PokerMCTS {
         double[] values = new double[criticalEvals.get().size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = criticalEvals.get().get(i).eval / criticalEvals.get().get(i).searches;
-            Decision decision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
+            AIDecision decision = ((GameState.AIMove)allDecisions.get(i)).decision;
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
-            switch (decision.move) {
+            switch (decision) {
                 case FOLD:
                     values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
                     break;
                 case CHECK:
                     values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
                     break;
-                case BET:
-                case RAISE:
-                    long betSize = decision.size + initialGameState.currentPlayer.currentBet;
+                case RAISE_HALF_POT:
+                    long betSize = gameState.getCurrentPot() / 2 + gameState.currentPlayer.currentBet;
+                case RAISE_MINIMUM:
+                    betSize = gameState.currentPlayer.minimumRaise + gameState.currentPlayer.currentBet;
+                case RAISE_POT:
+                    betSize = gameState.getCurrentPot() + gameState.currentPlayer.currentBet;
+                    // TODO: betsize is not set properly here. Also, it does not take all in into account when evaluating the value of a decision
                     values[i] *= Math.pow(contemptFactor - 0.02, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
                 case CALL:
                     values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
                     break;
-                case BIG_BLIND:
-                    break;
-                case SMALL_BLIND:
-                    break;
-                case ALL_IN:
-                    values[i] *= contemptFactor - 0.02;
-                    break;
             }
-            //System.out.println(values[i]);
         }
 
-        Decision bestDecision = new Decision(Decision.Move.FOLD);
+        AIDecision bestDecision = AIDecision.FOLD;
         assert allDecisions.size() > 1;
         for (int i = 0; i < allDecisions.size(); i++) {
             if (values[i] > bestValue) {
                 bestValue = values[i];
-                bestDecision = ((GameState.PlayerDecision)allDecisions.get(i)).decision;
+                bestDecision = ((GameState.AIMove)allDecisions.get(i)).decision;
             }
         }
         printProgressReport();
-        return bestDecision;
+        return bestDecision.toRealDecision(gameState.currentPlayer.currentBet, gameState.currentPlayer.minimumRaise,
+                gameState.currentPlayer.stackSize, gameState.getCurrentPot(),
+                gameState.currentPlayer.currentBet == 0 && gameState.communityCards.size() > 1);
     }
 
     public void printProgressReport() {

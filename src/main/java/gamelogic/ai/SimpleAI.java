@@ -70,90 +70,61 @@ public class SimpleAI implements GameClient {
         assert stackSizes.get(playerId).equals(stackSizes.get(this.playerId)) :
                 "AI: stacksize mismatch: " + stackSizes.get(playerId) + " != " + stackSizes.get(this.playerId);
 
-
         double handQuality = handQuality(holeCards.get(0), holeCards.get(1)) * Math.pow(0.95, amountOfPlayers);;
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
+        AIDecision aiDecision;
 
         if (randomModifier * (handQuality / 18.0) > 1 / contemptFactor) {
             // If the hand is considered "good", raise or bet if no one else has done it
             if (currentBet == 0) {
-                Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
-                if (raiseAmount.isPresent()) {
-                    if(betHasBeenPlaced) {
-                        return new Decision(Decision.Move.RAISE, raiseAmount.get());
-                    }
-                    else {
-                        return new Decision(Decision.Move.BET, raiseAmount.get());
-                    }
-                }
-                else {
-                    return new Decision(Decision.Move.ALL_IN);
-                }
+                aiDecision = getRaiseAmount(randomModifier, handQuality, contemptFactor);
             }
             // If someone has already raised, raise anyway if the hand is really good
             else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) {
-                Optional<Long> raiseAmount = getRaiseAmount(randomModifier, handQuality);
-                if (raiseAmount.isPresent()) {
-                    return new Decision(Decision.Move.RAISE, raiseAmount.get());
-                }
-                else { // Go all in
-                    return new Decision(Decision.Move.ALL_IN);
-                }
+                aiDecision = getRaiseAmount(randomModifier, handQuality, contemptFactor);
             }
             else {
-                if (stackSizes.get(playerId) > currentBet) {
-                    return new Decision(Decision.Move.CALL);
-                }
-                else {
-                    return new Decision(Decision.Move.ALL_IN);
-                }
+                aiDecision = AIDecision.CALL;
             }
         }
         else if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is decent
             if (currentBet == 0) {
-                return new Decision(Decision.Move.CHECK);
+                aiDecision = AIDecision.CHECK;
             }
-            else if (currentBet < stackSizes.get(playerId)  / 20 * randomModifier) {
-                return new Decision(Decision.Move.CALL);
+            else if (currentBet < stackSizes.get(playerId)  / 20 * randomModifier) { // If it's a small call
+                aiDecision = AIDecision.CALL;
             }
             else {
-                return new Decision(Decision.Move.FOLD);
+                aiDecision = AIDecision.FOLD;
             }
         }
         else {
             if (currentBet == 0) {
-                return new Decision(Decision.Move.CHECK);
+                aiDecision = AIDecision.CHECK;
             }
             else {
-                return new Decision(Decision.Move.FOLD);
+                aiDecision = AIDecision.FOLD;
             }
         }
+        return aiDecision.toRealDecision(currentBet, minimumRaise, stackSizes.get(playerId), 2 * minimumRaise, betHasBeenPlaced);
     }
 
     /**
-     * Returns a legal amount to raise by, which becomes higher if the hand is good
-     * May go all in. Will return Optional.empty() if it goes all in
+     * Returns a raise decision, which becomes higher if the hand is good
+     * May return a decision to raise higher than stacksize. This gets converted to an ALL_IN decision.
      * @param randomModifier Modifier that gets multipled by the handquality
      */
-    public Optional<Long> getRaiseAmount(double randomModifier, double handQuality) {
-        long raiseAmount;
+    public static AIDecision getRaiseAmount(double randomModifier, double handQuality, double contemptFactor) {
         if (randomModifier * (handQuality / 26.0) > 1 / contemptFactor) { // If the hand is really good
-            raiseAmount = minimumRaise * 4;
+            return AIDecision.RAISE_POT;
         }
         else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) { // If the hand is really good
-            raiseAmount = minimumRaise * 2;
+            return AIDecision.RAISE_HALF_POT;
         }
         else {
-            raiseAmount = minimumRaise;
-        }
-
-        if (stackSizes.get(playerId) > raiseAmount + currentBet) {
-            return Optional.of(raiseAmount);
-        }
-        else { // Go all in
-            return Optional.empty();
+            return AIDecision.RAISE_MINIMUM;
         }
     }
 
@@ -301,5 +272,41 @@ public class SimpleAI implements GameClient {
     @Override
     public void setRiver(Card river, long currentPotSize) {
         newBettingRound();
+    }
+
+    public enum AIDecision {
+        FOLD, CHECK, CALL, RAISE_MINIMUM, RAISE_HALF_POT, RAISE_POT;
+
+        public Decision toRealDecision(long currentBet, long minimumRaise, long stackSize, long pot, boolean betHasBeenPlaced) {
+            Decision.Move moneyMove = betHasBeenPlaced ? Decision.Move.RAISE : Decision.Move.BET;
+            switch (this) {
+                case FOLD:
+                    return new Decision(Decision.Move.FOLD);
+                case CHECK:
+                    return new Decision(Decision.Move.CHECK);
+                case CALL:
+                    if (currentBet >= stackSize) {
+                        return new Decision(Decision.Move.ALL_IN);
+                    }
+                    return new Decision(Decision.Move.CALL);
+                case RAISE_MINIMUM:
+                    if (currentBet + minimumRaise >= stackSize) {
+                        return new Decision(Decision.Move.ALL_IN);
+                    }
+                    return new Decision(moneyMove, minimumRaise);
+                case RAISE_HALF_POT:
+                    if (currentBet + pot / 2 >= stackSize) {
+                        return new Decision(Decision.Move.ALL_IN);
+                    }
+                    return new Decision(moneyMove, pot / 2);
+                case RAISE_POT:
+                    if (currentBet + pot >= stackSize) {
+                        return new Decision(Decision.Move.ALL_IN);
+                    }
+                    return new Decision(moneyMove, pot);
+                default: throw new IllegalStateException();
+
+            }
+        }
     }
 }
