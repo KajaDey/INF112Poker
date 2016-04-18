@@ -22,7 +22,7 @@ public class AITest {
     int smallBlind = 25;
     int bigBlind = 50;
     long startStack = 5000L;
-    long timeToThink = 2000L;
+    long timeToThink = 100000L;
 
     @Test
     public void testAllInAsCall() {
@@ -78,6 +78,14 @@ public class AITest {
         SimpleAI simpleAi = new SimpleAI(0);
         doesNotFoldWithPairOfDeucesProperty(mctsAi);
         doesNotFoldWithPairOfDeucesProperty(simpleAi);
+    }
+
+    @Test
+    public void doesNotFoldWithLowStraightFlush() {
+        MCTSAI mctsAi = new MCTSAI(0);
+        SimpleAI simpleAi = new SimpleAI(0);
+        doesNotFoldWithLowStraightFlushProperty(mctsAi);
+        //doesNotFoldWithLowStraightFlushProperty(simpleAi);
     }
 
     public void checksWithShittyHandAsBigBlindProperty(GameClient ai) {
@@ -137,6 +145,23 @@ public class AITest {
 
         setupAi(ai, 4, 3);
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+        assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
+    }
+
+    public void doesNotFoldWithLowStraightFlushProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(2, Card.Suit.CLUBS).get(), Card.of(4, Card.Suit.CLUBS).get());
+
+        setupAi(ai, 4, 2);
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CHECK));
+
+        ai.setFlop(Card.of(3, Card.Suit.CLUBS).get(), Card.of(5, Card.Suit.CLUBS).get(),  Card.of(6, Card.Suit.CLUBS).get(), 0L);
+
+        ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 1000));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+
         assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
     }
 
