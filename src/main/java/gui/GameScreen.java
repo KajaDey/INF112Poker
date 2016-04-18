@@ -18,7 +18,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.net.MalformedURLException;
 import java.util.*;
 
 /**
@@ -329,7 +328,7 @@ public class GameScreen {
         updateButtonTexts(ID, decision.move);
 
         //Play sound
-        soundPlayer.playSound(decision.move);
+        soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
         allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
