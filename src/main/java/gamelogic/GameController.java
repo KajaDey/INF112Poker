@@ -156,11 +156,16 @@ public class GameController {
      * @return Decision made by the client
      */
     public Decision getDecisionFromClient(int ID) {
+        //Tell the GUI-client to highlight the players turn
+        guiClient.highlightPlayerTurn(ID);
+
+        //Ask for decision from client
         GameClient client = clients.get(ID);
         if (client instanceof SimpleAI || client instanceof MCTSAI)
             return getAIDecision(client);
         else
             return client.getDecision(10000L);
+
     }
 
     /**

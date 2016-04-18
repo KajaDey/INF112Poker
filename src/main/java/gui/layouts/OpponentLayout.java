@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -21,11 +22,13 @@ import javafx.scene.text.FontWeight;
 public class OpponentLayout extends HBox{
 
     private DropShadow dropShadow = new DropShadow();
+    private DropShadow glow = new DropShadow();
 
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private int position;
     private boolean isBust = false;
+    private boolean folded = false;
 
     /**
      * Makes the layout for the opponentScreen
@@ -50,6 +53,10 @@ public class OpponentLayout extends HBox{
         leftCardImage.setVisible(false);
         rightCardImage.setVisible(false);
         chipImage.setVisible(true);
+
+        glow.setColor(Color.WHITE);
+        glow.setHeight(50);
+        glow.setWidth(50);
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
@@ -119,10 +126,10 @@ public class OpponentLayout extends HBox{
             chipBox.setAlignment(Pos.BASELINE_RIGHT);
             lastMoveBox.setAlignment(Pos.CENTER_RIGHT);
             lastMoveButtonChipBox.getChildren().addAll(dealerButtonBox, lastMoveBox, chipBox);
-            lastMoveButtonChipBox.setMinSize(150,110);
+            lastMoveButtonChipBox.setMinSize(150, 110);
 
             chipBox.getChildren().addAll(chipImage);
-            chipBox.setPadding(new Insets(0,6,0,6));
+            chipBox.setPadding(new Insets(0, 6, 0, 6));
 
             VBox stats = new VBox();
             nameLabel.setMinWidth(150);
@@ -156,6 +163,10 @@ public class OpponentLayout extends HBox{
     public void setLastMove(String lastMove, Image chipImage){
         lastMoveLabel.setText(lastMove);
         this.chipImage.setImage(chipImage);
+        if(!folded) {
+            leftCardImage.setEffect(dropShadow);
+            rightCardImage.setEffect(dropShadow);
+        }
     }
 
     /**
@@ -187,7 +198,7 @@ public class OpponentLayout extends HBox{
      * @param leftCard
      * @param rightCard
      */
-    public void setCardImage(Image leftCard,Image rightCard) {
+    public void setCardImage(Image leftCard, Image rightCard) {
         leftCardImage.setImage(leftCard);
         rightCardImage.setImage(rightCard);
 
@@ -215,12 +226,12 @@ public class OpponentLayout extends HBox{
     public void removeHolecards() {
         ColorAdjust adjust = new ColorAdjust();
         adjust.setBrightness(-0.5);
+        folded = true;
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
     }
 
     /**
-     *
      * Get opponent position
      *
      * @return position
@@ -231,7 +242,6 @@ public class OpponentLayout extends HBox{
     }
 
     /**
-     *
      * Set opponent position
      *
      * @param position
@@ -239,8 +249,14 @@ public class OpponentLayout extends HBox{
 
     public void setPosition(int position){
         this.position = position;
+        folded = false;
     }
 
+    /**
+     * What happens when a player is bust
+     *
+     * @param bustedText
+     */
     public void bustPlayer(String bustedText) {
         isBust = true;
         setLastMove("", null);
@@ -253,4 +269,10 @@ public class OpponentLayout extends HBox{
         return isBust;
     }
 
+    public void highlightTurn() {
+        if (leftCardImage != null && rightCardImage != null) {
+            leftCardImage.setEffect(glow);
+            rightCardImage.setEffect(glow);
+        }
+    }
 }
