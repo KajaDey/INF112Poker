@@ -211,7 +211,7 @@ public class GameScreen {
         textArea.setMaxHeight(100);
         textArea.setEditable(false);
         textArea.setLayoutX(5);
-        textArea.setLayoutY(scene.getHeight()-105);
+        textArea.setLayoutY(scene.getHeight() - 105);
         textArea.setWrapText(true);
         pane.getChildren().add(textArea);
         textArea.setOpacity(0.9);
@@ -232,7 +232,7 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        textArea.appendText("\n"+printInfo);
+        textArea.appendText("\n" + printInfo);
     }
 
     public void addMenuBarToGameScreen(){
@@ -255,7 +255,7 @@ public class GameScreen {
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
 
-        playerLayout.setCardImage(leftImage,rightImage);
+        playerLayout.setCardImage(leftImage, rightImage);
 
         holeCards = new ArrayList<>();
         holeCards.add(leftCard);
@@ -282,7 +282,7 @@ public class GameScreen {
             //Print the players hand
             printToLogField(names.get(p.getID()) + ": " + cards[0] + " " + cards[1]);
             if (p.getID() != playerID && opponents.get(p.getID()) != null)
-                opponents.get(p.getID()).setCardImage(leftImage,rightImage);
+                opponents.get(p.getID()).setCardImage(leftImage, rightImage);
         }
 
         String winnerString = showdownStats.getWinnerText();
@@ -304,7 +304,7 @@ public class GameScreen {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
         Image card2Image = new Image(ImageViewer.returnURLPathForCardSprites(card2.getCardNameForGui()));
         Image card3Image = new Image(ImageViewer.returnURLPathForCardSprites(card3.getCardNameForGui()));
-        boardLayout.showFlop(card1Image,card2Image,card3Image);
+        boardLayout.showFlop(card1Image, card2Image, card3Image);
 
         communityCards.add(card1);
         communityCards.add(card2);
@@ -803,4 +803,8 @@ public class GameScreen {
         return null;
     }
 
+    public void highlightPlayerTurn(int id) {
+        if (opponents.get(id) != null)
+            opponents.get(id).highlightTurn();
+    }
 }
