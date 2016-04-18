@@ -12,6 +12,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 /**
  * Created by ady on 04/04/16.
@@ -50,6 +52,7 @@ public class OpponentLayout extends HBox{
         chipImage.setVisible(true);
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
+        nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
         stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
         lastMoveLabel = ObjectStandards.makeLobbyLabelWhite("", "");

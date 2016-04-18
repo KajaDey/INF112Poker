@@ -13,6 +13,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.GameController;
 
+import java.io.IOException;
+
 /**
  * TODO: Add class description
  *
@@ -61,7 +63,11 @@ public class GameLobby {
 
         leaveLobby.setOnAction(e -> {
             window.close();
-            ButtonListeners.leaveLobbyButtonListener(gameController);
+            try {
+                ButtonListeners.leaveLobbyButtonListener();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
 
         //Put objects in boxes

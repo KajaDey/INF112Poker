@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -254,12 +255,12 @@ public class ObjectStandards {
         MenuItem aboutTexasHoldem = new MenuItem("Texas Hold'em");
 
         MenuItem quit = new MenuItem("Quit");
-        //MenuItem restart = new MenuItem("Restart");
+        MenuItem restart = new MenuItem("Restart");
 
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);
-        file.getItems().addAll(quit/*,restart*/);
+        file.getItems().addAll(quit,restart);
 
         //Adding all menus to the menu bar
         menuBar.getMenus().addAll(file,about);
@@ -318,14 +319,36 @@ public class ObjectStandards {
         });
 
         quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
-        //restart.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+        restart.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
 
-        /*restart.setOnAction(event -> {
-            MainScreen.getStage().close();
-            MainScreen.createSceneForMainScreen("PokerTable", MainScreen.getGameController());
-        });*/
-
+        File[] files = new File(System.getProperty("user.dir")).listFiles();
+        restart.setOnAction(event -> {
+            try {
+                startNewInstanceOfGame(files);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         return menuBar;
+    }
+
+    /**
+     * When restarting the game, it will search for the jar-file in either target/ (if run in intellij)
+     * or in the directory of the jar (if the jar is run directly).
+     * It will then start new process containing the jar file, and exit the already running program
+     * by using System.exit(0)
+     */
+    public static void startNewInstanceOfGame(File[] files) throws IOException {
+        Process process;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                startNewInstanceOfGame(file.listFiles());
+            } else if (file.getName().contains("Poker.jar")){
+                process = Runtime.getRuntime().exec("java -jar " + file.getParent() + "/" + file.getName());
+                System.exit(0);
+            }
+        }
+
     }
 }

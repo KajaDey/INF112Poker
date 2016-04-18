@@ -547,9 +547,9 @@ public class GameScreen {
      */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
-        playerLayout.setNameLabel("Name: " + names.get(playerID));
+        playerLayout.setNameLabel(names.get(playerID));
         for (Integer i : opponents.keySet()) {
-            opponents.get(i).setNameLabel("Name: " + names.get(i));
+            opponents.get(i).setNameLabel(names.get(i));
         }
     }
 
