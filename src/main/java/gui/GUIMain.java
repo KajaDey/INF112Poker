@@ -41,7 +41,8 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displayLobbyScreen(String name, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
+        //GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
+        LobbyScreen.createScreenForGameLobby(gameSettings,gameController,name);
     }
 
     /**

@@ -156,4 +156,7 @@ public class ButtonListeners {
     }
 
 
+    public static void moreInfoButtonListener() {
+        LobbyScreen.displayGameInfo();
+    }
 }
