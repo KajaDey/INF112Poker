@@ -21,7 +21,7 @@ public class AITest {
     HashMap<Integer, String> names;
     int smallBlind = 25;
     int bigBlind = 50;
-    long startStack = 5000L;
+    long startStack = 2500L;
     long timeToThink = 5000L;
 
     @Test
@@ -143,7 +143,7 @@ public class AITest {
     public void doesNotFoldWithPairOfDeucesProperty(GameClient ai) {
         ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(2, Card.Suit.SPADES).get());
 
-        setupAi(ai, 4, 3);
+        setupAi(ai, 3, 0);
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
         assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
     }

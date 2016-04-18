@@ -290,7 +290,7 @@ public class GameState {
                         }
                     }
                     else {
-                        double handQuality = SimpleAI.handQuality(playerToReceive.holeCards.get(0), deck.get(randomCardIndex), communityCards);
+                        double handQuality = HandEstimator.handQuality(playerToReceive.holeCards.get(0), deck.get(randomCardIndex), communityCards);
                         if (handQuality / (50 - j) > playerToReceive.riskTaken(allChipsOnTable)) {
                             //System.out.println("Rejected " + j + " while giving second hole card");
                             return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), playerToReceive.position));
@@ -302,7 +302,7 @@ public class GameState {
                 }
 
             case PLAYER_DECISION:
-                double handQuality = SimpleAI.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1), communityCards) * Math.pow(0.95, amountOfPlayers);
+                double handQuality = HandEstimator.handQuality(currentPlayer.holeCards.get(0), currentPlayer.holeCards.get(1), communityCards) * Math.pow(0.95, playersLeftInHand);
 
                 // Random modifier between 0.5 and 1.5
                 double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
@@ -311,14 +311,14 @@ public class GameState {
                 if (randomModifier * (handQuality / 18.0) > 1) {
                     // If the hand is considered "good", raise or bet if no one else has done it
                     if (currentPlayer.currentBet == 0) {
-                        aiDecision = SimpleAI.getRaiseAmount(randomModifier, handQuality, 1.0);
+                        aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, 1.0);
                         if (aiDecision == AIDecision.RAISE_HALF_POT && getCurrentPot() / 2 < currentPlayer.minimumRaise) {
                             aiDecision = AIDecision.RAISE_MINIMUM;
                         }
                     }
                     // If someone has already raised, raise anyway if the hand is really good
                     else if (randomModifier * (handQuality / 22.0) > 1) {
-                        aiDecision = SimpleAI.getRaiseAmount(randomModifier, handQuality, 1.0);
+                        aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, 1.0);
                         if (aiDecision == AIDecision.RAISE_HALF_POT && getCurrentPot() / 2 < currentPlayer.minimumRaise) {
                             aiDecision = AIDecision.RAISE_POT;
                         }
