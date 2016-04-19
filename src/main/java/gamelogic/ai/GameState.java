@@ -143,6 +143,7 @@ public class GameState {
                 case CALL:
                     playersToMakeDecision--;
                     currentPlayer.putInPot(Math.min(currentPlayer.stackSize, currentPlayer.currentBet));
+                    currentPlayer.currentBet = 0;
                     break;
                 case BET: case RAISE:
                     assert decision.move == Decision.Move.RAISE || communityCards.size() > 0 : "Received " + decision + " with " + communityCards.size() + " community cards on table";
@@ -183,15 +184,34 @@ public class GameState {
                     currentPlayer.putInPot(currentPlayer.stackSize);
                     currentPlayer.isAllIn = true;
                     break;
-                case BIG_BLIND: case SMALL_BLIND:
+                case SMALL_BLIND:
                     for (Player player : players) {
-                        if (player.id != currentPlayer.id) {
-                            player.currentBet += decision.size;
-                            player.minimumRaise = decision.size;
-                        }
+                        player.currentBet = decision.size;
+                        player.minimumRaise = decision.size;
                     }
+
                     currentPlayer.currentBet = 0;
-                    currentPlayer.minimumRaise = decision.size;
+                    currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
+                    if (currentPlayer.stackSize == 0) {
+                        playersAllIn++;
+                        playersToMakeDecision--;
+                        playersLeftInHand--;
+                    }
+                    break;
+                case BIG_BLIND:
+                    for (Player player : players) {
+
+                        // If is small blind
+                        if (player.currentBet == 0) {
+                            player.currentBet = decision.size - currentPlayer.currentBet;
+                        }
+                        else {
+                            player.currentBet = decision.size;
+                        }
+                        player.minimumRaise = decision.size;
+                    }
+
+                    currentPlayer.currentBet = 0;
                     currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
                     if (currentPlayer.stackSize == 0) {
                         playersAllIn++;
