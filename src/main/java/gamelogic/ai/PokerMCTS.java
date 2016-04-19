@@ -52,9 +52,12 @@ public class PokerMCTS {
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
 
-        /*double[] values = rootNode.values.clone();
+        double[] values = new double[allDecisions.size()];
         for (int i = 0; i < values.length; i++) {
-            values[i] = values[i] / rootNode.children.get(i).get().searches;
+            double value = rootNode.children.get(i).get().values[playerPosition];
+            int searches = rootNode.children.get(i).get().searches;
+            values[i] = value / searches;
+
             AIDecision decision = ((GameState.AIMove)allDecisions.get(i)).decision;
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
             switch (decision) {
@@ -77,17 +80,17 @@ public class PokerMCTS {
                     values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
                     break;
             }
-        }*/
+        }
 
         double bestValue = 0.0;
         AIDecision bestDecision = AIDecision.FOLD;
 
         assert allDecisions.size() > 1 : "Only had " + allDecisions.size() + " decisions to make: " + allDecisions;
         for (int i = 0; i < allDecisions.size(); i++) {
-            double value = rootNode.children.get(i).get().values[playerPosition];
-            int searches = rootNode.children.get(i).get().searches;
-            if (value / searches > bestValue) {
-                bestValue = value / searches;
+            //double value = rootNode.children.get(i).get().values[playerPosition];
+            //int searches = rootNode.children.get(i).get().searches;
+            if (values[i] > bestValue) {
+                bestValue = values[i];
                 bestDecision = ((GameState.AIMove)allDecisions.get(i)).decision;
             }
         }
