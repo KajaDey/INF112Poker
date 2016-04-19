@@ -62,10 +62,10 @@ public class PokerMCTS {
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
             switch (decision) {
                 case FOLD:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.03, 0.5);
                     break;
                 case CHECK:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.02, 0.5);
+                    values[i] *= 1 / Math.pow(contemptFactor - 0.03, 0.5);
                     break;
                 case RAISE_HALF_POT:
                     long betSize = initialGameState.getCurrentPot() / 2 + initialGameState.currentPlayer.currentBet;
@@ -74,10 +74,10 @@ public class PokerMCTS {
                 case RAISE_POT:
                     betSize = initialGameState.getCurrentPot() + initialGameState.currentPlayer.currentBet;
                     // TODO: betsize is not set properly here. Also, it does not take all in into account when evaluating the value of a decision
-                    values[i] *= Math.pow(contemptFactor - 0.02, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
                 case CALL:
-                    values[i] *= Math.pow(contemptFactor - 0.02, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
+                    values[i] *= Math.pow(contemptFactor - 0.03, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
                     break;
             }
         }
