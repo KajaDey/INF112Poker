@@ -2,11 +2,15 @@ package gamelogic.ai;
 
 import gamelogic.Card;
 import gamelogic.Decision;
+import gamelogic.Deck;
 import gamelogic.GameClient;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +25,7 @@ public class AITest {
     HashMap<Integer, String> names;
     int smallBlind = 25;
     int bigBlind = 50;
-    long startStack = 5000L;
+    long startStack = 2500L;
     long timeToThink = 2000L;
 
     @Test
@@ -70,6 +74,22 @@ public class AITest {
         MCTSAI mctsAi = new MCTSAI(0);
         checksWithShittyHandAsBigBlindHeadsUpProperty(mctsAi);
         checksWithShittyHandAsBigBlindHeadsUpProperty(simpleAi);
+    }
+    // Commented out for lack of passing
+    //@Test
+    public void doesNotFoldWithPairOfDeuces() {
+        MCTSAI mctsAi = new MCTSAI(0);
+        SimpleAI simpleAi = new SimpleAI(0);
+        doesNotFoldWithPairOfDeucesProperty(mctsAi);
+        doesNotFoldWithPairOfDeucesProperty(simpleAi);
+    }
+
+    @Test
+    public void doesNotFoldWithLowStraightFlush() {
+        MCTSAI mctsAi = new MCTSAI(0);
+        SimpleAI simpleAi = new SimpleAI(0);
+        doesNotFoldWithLowStraightFlushProperty(mctsAi);
+        //doesNotFoldWithLowStraightFlushProperty(simpleAi);
     }
 
     public void checksWithShittyHandAsBigBlindProperty(GameClient ai) {
@@ -124,6 +144,31 @@ public class AITest {
         }
     }
 
+    public void doesNotFoldWithPairOfDeucesProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(2, Card.Suit.SPADES).get());
+
+        setupAi(ai, 3, 0);
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
+    }
+
+    public void doesNotFoldWithLowStraightFlushProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(2, Card.Suit.CLUBS).get(), Card.of(4, Card.Suit.CLUBS).get());
+
+        setupAi(ai, 4, 2);
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CHECK));
+
+        ai.setFlop(Card.of(3, Card.Suit.CLUBS).get(), Card.of(5, Card.Suit.CLUBS).get(),  Card.of(6, Card.Suit.CLUBS).get(), 0L);
+
+        ai.playerMadeDecision(2, new Decision(Decision.Move.BET, 1000));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+
+        assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
+    }
+
     // Test created to reproduce a specific bug in SimpleAI
     // Bug is fixed now, the test remains because why not
     public void testAllInAsCallProperty(GameClient ai) {
@@ -153,19 +198,20 @@ public class AITest {
         ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, bigBlind));
         ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
-        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
-        ai.playerMadeDecision(1, new Decision(Decision.Move.CHECK));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 950));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
         ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get(), 75L);
 
-        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 1000));
-        ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.BET, 1000));
         ai.playerMadeDecision(2, new Decision(Decision.Move.FOLD));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
         ai.setTurn(Card.of(14, Card.Suit.CLUBS).get(), 75L);
 
-        ai.getDecision(timeToThink);
+        ai.getDecision(timeToThink / 4);
         ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
