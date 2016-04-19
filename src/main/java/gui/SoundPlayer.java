@@ -1,14 +1,7 @@
 package gui;
 import gamelogic.Decision;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-
-import javax.sound.sampled.*;
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
