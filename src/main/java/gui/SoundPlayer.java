@@ -1,9 +1,14 @@
 package gui;
-
 import gamelogic.Decision;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
+import javax.sound.sampled.*;
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
@@ -164,7 +169,7 @@ public class SoundPlayer{
      * The method for playing the sound of the move
      * @param soundURL The name/URL of the sound to be played.
      */
-    private void playSound(String soundURL){
+    private void playSound(String soundURL) {
         if (!muted) {
             try {
                 audioClip = Applet.newAudioClip(new URL(soundURL));
@@ -172,6 +177,7 @@ public class SoundPlayer{
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
