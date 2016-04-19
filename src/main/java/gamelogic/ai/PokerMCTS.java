@@ -44,8 +44,6 @@ public class PokerMCTS {
                 rootNode.select(totalSearches, initialGameState, new Random(), false);
                 totalSearches++;
                 if (totalSearches % 100000 == 0) {
-                    assert rootNode.children.get(0).get().searches > 10;
-                    assert rootNode.children.get(0).get().children.get(0).isPresent();
                     printProgressReport();
                 }
             }
@@ -54,8 +52,8 @@ public class PokerMCTS {
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
 
-        double[] values = rootNode.values.clone();
-        /*for (int i = 0; i < values.length; i++) {
+        /*double[] values = rootNode.values.clone();
+        for (int i = 0; i < values.length; i++) {
             values[i] = values[i] / rootNode.children.get(i).get().searches;
             AIDecision decision = ((GameState.AIMove)allDecisions.get(i)).decision;
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
@@ -96,7 +94,7 @@ public class PokerMCTS {
         printProgressReport();
         return bestDecision.toRealDecision(initialGameState.currentPlayer.currentBet, initialGameState.currentPlayer.minimumRaise,
                 initialGameState.currentPlayer.stackSize, initialGameState.getCurrentPot(),
-                initialGameState.currentPlayer.currentBet > 0 || initialGameState.communityCards.size() > 0);
+                initialGameState.currentPlayer.currentBet > 0 || initialGameState.communityCards.size() == 0);
     }
 
     public void printProgressReport() {
@@ -313,6 +311,7 @@ public class PokerMCTS {
         public TerminalNode(int numberOfMoves, GameState gameState, int totalSearches) {
             super(numberOfMoves);
             assert numberOfMoves == 0;
+            //assert gameState.getPlayersAllIn() + gameState.getPlayersLeftInHand() == 1 || gameState.getPlayersGivenHoleCards() == gameState.amountOfPlayers : gameState.getPlayersGivenHoleCards() + " players given holecards but " + gameState.amountOfPlayers + " players left in hand.";
             addValues(values, terminalEval(gameState, totalSearches));
         }
 
@@ -342,6 +341,7 @@ public class PokerMCTS {
 
         public RandomNode(int numberOfMoves) {
             super(numberOfMoves);
+            //assert numberOfMoves > 0 : "Tried to create a " + this.getClass().getSimpleName() + " with " + numberOfMoves + " children.";
         }
 
         /**
@@ -353,6 +353,8 @@ public class PokerMCTS {
         @Override
         public double[] select(int totalSearches, final GameState gameState, Random random, boolean hasPassedDecicionNode) {
             searches++;
+            assert gameState.allDecisions().isPresent() && gameState.allDecisions().get().size() == children.size() : "Tried to select node with wrong gamestate, " + gameState.allDecisions().orElse(new ArrayList<>(0)).size() + " decisions but " + children.size() + " children.";
+            assert children.size() > 0 : "Tried to select a " + this.getClass().getSimpleName() + " with " + children.size() + " children, " + gameState.getPlayersAllIn() + " players all in, " + gameState.getPlayersLeftInHand() + " players left in hand, players: " + gameState.players;
             if (numberOfExploredChildren == children.size()) {
 
                 int randomIndex = random.nextInt(children.size());
@@ -379,11 +381,11 @@ public class PokerMCTS {
      * @param totalSearches
      * @return
      */
-    public static double[] terminalEval(GameState gameState, int totalSearches) {
+    private static double[] terminalEval(GameState gameState, int totalSearches) {
 
         class PlayerAndScore implements Comparable<PlayerAndScore> {
-            final Player player;
-            final int handScore;
+            public final Player player;
+            public final int handScore;
 
             PlayerAndScore(Player player, int handScore) {
                 this.player = player;
@@ -420,10 +422,13 @@ public class PokerMCTS {
         double[] eval = new double[newGameState.amountOfPlayers];
         Pot pot = new Pot();
         for (Player player : newGameState.players) {
+            if (player.holeCards.size() < 2) {
+                newGameState.giveHoleCards(player.id);
+            }
+            assert (!player.isInHand && !player.isAllIn) || player.holeCards.size() == 2 : "Tried to get terminal eval after " + totalSearches + " searches, but " + player + (player.isAllIn ? " (is all in)" : "") + " has " + player.holeCards.size() + " holecards. " + gameState.getPlayersGivenHoleCards() + " players were given hole cards, players: " + newGameState.players;
             assert player.contributedToPot >= 0 : player + " tried to contribute " + player.contributedToPot + " to pot.";
             pot.addToPot(player.id, player.contributedToPot);
             player.contributedToPot = 0;
-            assert (!player.isInHand && !player.isAllIn) || player.holeCards.size() == 2 : "Tried to get terminal eval after " + totalSearches + " searches, but " + player + (player.isAllIn ? " (is all in)" : "") + " has " + player.holeCards.size() + " holecards.";
         }
 
         assert newGameState.sumOfChipsInPlay(newGameState.players) + pot.getPotSize() == newGameState.allChipsOnTable;

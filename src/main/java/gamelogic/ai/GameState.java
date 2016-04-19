@@ -18,12 +18,7 @@ public class GameState {
 
     public Player currentPlayer;
 
-    private final Player dealer;
-    private final Player bigBlind;
-    private final Player smallBlind;
-
     public final long bigBlindAmount;
-
     public final long allChipsOnTable;
     private int playersGivenHoleCards = 0;
     private int playersLeftInHand; // Players who have not folded or gone all in (players still making decisions)
@@ -61,16 +56,6 @@ public class GameState {
 
         currentPlayer = players.get(0);
 
-        if (amountOfPlayers == 2) {
-            dealer = players.get(0);
-            smallBlind = players.get(0);
-            bigBlind = players.get(1);
-        }
-        else {
-            dealer = players.get(0);
-            smallBlind = players.get(1);
-            bigBlind = players.get(2);
-        }
         playersLeftInHand = amountOfPlayers;
         playersToMakeDecision = amountOfPlayers;
     }
@@ -90,16 +75,6 @@ public class GameState {
 
         currentPlayer = this.players.get(oldState.currentPlayer.position);
 
-        if (amountOfPlayers == 2) {
-            dealer = players.get(0);
-            smallBlind = players.get(0);
-            bigBlind = players.get(1);
-        }
-        else {
-            dealer = players.get(0);
-            smallBlind = players.get(1);
-            bigBlind = players.get(2);
-        }
         this.allChipsOnTable = oldState.allChipsOnTable;
         this.playersLeftInHand = oldState.playersLeftInHand;
         this.playersAllIn = oldState.playersAllIn;
@@ -171,6 +146,8 @@ public class GameState {
                     break;
                 case BET: case RAISE:
                     assert decision.move == Decision.Move.RAISE || communityCards.size() > 0 : "Received " + decision + " with " + communityCards.size() + " community cards on table";
+                    assert decision.move == Decision.Move.BET || communityCards.size() == 0 || currentPlayer.currentBet > 0;
+
                     assert decision.size >= currentPlayer.minimumRaise : currentPlayer + " made " + decision + " from " + move + ", but minimum raise was " + currentPlayer.minimumRaise;
                     assert decision.size + currentPlayer.currentBet <= currentPlayer.stackSize : currentPlayer + " tried " + decision + " on currentBet " + currentPlayer.currentBet + ", but had stackSize " + currentPlayer.stackSize;
                     assert decision.size > 0 : currentPlayer + " tried to bet/raise " + decision.size;
@@ -270,11 +247,13 @@ public class GameState {
                     playerToReceive = currentPlayer;
                 }
                 else {
+                    assert false;
                     for (Player player : players) {
                         if (player.isAllIn && player.holeCards.size() < 2) {
                             playerToReceive = player;
                         }
                     }
+                    assert playerToReceive != null : "Could not find a player to give hole cards to";
                 }
                 assert playerToReceive != null : ("Couldn't find a player to give hole card to");
                 for (int j = 0; j < 100; j++) {
@@ -368,8 +347,8 @@ public class GameState {
 
         switch (getNextNodeType()) {
             case DEAL_HAND_CARD:
-                if (currentPlayer.holeCards.size() < 2) {
-                    assert currentPlayer.isInHand || currentPlayer.isAllIn;
+                if (currentPlayer.holeCards.size() < 2 && (currentPlayer.isInHand || currentPlayer.isAllIn)) {
+                    assert currentPlayer.isInHand || currentPlayer.isAllIn : currentPlayer + " is neither in hand nor all in, players in hand=" + playersLeftInHand + ", players given hole cards=" + playersGivenHoleCards;
                     assert currentPlayer.holeCards.size() < 2;
                     for (Card card : deck) {
                         decisions.add(new CardDealtToPlayer(card, currentPlayer.position));
@@ -423,18 +402,26 @@ public class GameState {
      * Gives two random hole cards to the given playerId
      */
     public void giveHoleCards(int playerId) {
-        giveHoleCards(playerId, Arrays.asList(deck.remove((int)(Math.random() * deck.size())), deck.remove((int)(Math.random() * deck.size()))));
+        List<Card> newHoleCards = new ArrayList<>();
+        while (players.stream().filter(p -> p.id == playerId).findFirst().get().holeCards.size() + newHoleCards.size() < 2) {
+            newHoleCards.add(deck.get((int)Math.random()));
+        }
+        giveHoleCards(playerId, newHoleCards);
+    }
+
+    public int getPlayersGivenHoleCards() {
+        return playersGivenHoleCards;
     }
 
     /*
-     * Gives the holecards to the player
-     */
+         * Gives the holecards to the player
+         */
     public void giveHoleCards(int playerId, List<Card> holeCards) {
         Player player = players.stream().filter(p -> p.id == playerId).findFirst().get();
-        assert player.holeCards.size() == 0;
         player.holeCards.addAll(holeCards);
         deck.removeAll(holeCards);
         playersGivenHoleCards++;
+        assert player.holeCards.size() == 2;
     }
 
     // Returns the kind of decision that needs to be done in this gamestate
@@ -449,11 +436,12 @@ public class GameState {
         }
         else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
             if (communityCards.size() == 5) {
-                if (playersGivenHoleCards < amountOfPlayers) {
-                    // Make sure all players have hole cards
+                /*if (playersGivenHoleCards < amountOfPlayers) {
+                    // Make sure all players have hole cards before doing terminal evaluation
                     // TODO: This should maybe be done before just before the terminal eval, to improve min-maxing
                     for (Player player : players) {
                         if (player.holeCards.size() < 2 && player.isAllIn) {
+                            System.out.println("Discovered " + player + " with missing holecards");
                             assert player.isAllIn : player + " had " + player.holeCards.size() + " hole cards, but they are not all in, and there are 0 players to make decisions";
                             return NodeType.DEAL_HAND_CARD;
                         }
@@ -461,8 +449,10 @@ public class GameState {
                     throw new IllegalStateException("Didn't find a player to give holecards to. " + players);
                 }
                 else {
+                    System.out.println("Next node is terminal, because of showdown");
+                    */
                     nodeType = NodeType.TERMINAL;
-                }
+                //}
             }
             else {
                 nodeType = NodeType.DEAL_COMMUNITY_CARD;
@@ -614,8 +604,7 @@ public class GameState {
         if (!players.equals(gameState.players)) return false;
         if (!communityCards.equals(gameState.communityCards)) return false;
         if (!currentPlayer.equals(gameState.currentPlayer)) return false;
-        if (!dealer.equals(gameState.dealer)) return false;
-        return bigBlind.equals(gameState.bigBlind) && smallBlind.equals(gameState.smallBlind);
+        return true;
 
     }
 
@@ -626,9 +615,7 @@ public class GameState {
         result = 31 * result + players.hashCode();
         result = 31 * result + communityCards.hashCode();
         result = 31 * result + currentPlayer.hashCode();
-        result = 31 * result + dealer.hashCode();
-        result = 31 * result + bigBlind.hashCode();
-        result = 31 * result + smallBlind.hashCode();
+
         result = 31 * result + playersLeftInHand;
         result = 31 * result + playersAllIn;
         result = 31 * result + playersToMakeDecision;
