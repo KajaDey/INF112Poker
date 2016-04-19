@@ -1,13 +1,15 @@
 package gui;
 
 import gamelogic.GameController;
-import gamelogic.Hand;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+
+import java.util.ArrayList;
 
 /**
  * Created by ady on 18/04/16.
@@ -16,7 +18,9 @@ public class LobbyScreen {
 
     //static Label name,name2,players,players2;
 
-    static String styling = "-fx-border-color: darkgreen ";
+    static String styling = "-fx-border-color: #65ff1c ";
+
+    static ArrayList<Integer> emptyPositions = new ArrayList<>();
 
     static GameController gameController;
     static GameSettings gameSettings;
@@ -37,9 +41,10 @@ public class LobbyScreen {
         sideMenu.setStyle(styling);
         sideMenu.setMinHeight(500);
         sideMenu.setMinWidth(150);
-        sideMenu = ImageViewer.setBackground(("listbackground"),sideMenu,150,500);
+        //sideMenu = ImageViewer.setBackground(("listbackground"),sideMenu,150,500);
+        sideMenu.setStyle("-fx-background-color: lightgray");
 
-        fullLayout.setStyle("-fx-background-color: #890418");
+        fullLayout.setStyle("-fx-background-color: dimgray");
         fullLayout.getChildren().addAll(sideMenu, pane);
 
 
@@ -74,6 +79,10 @@ public class LobbyScreen {
     }
 
     public static void displayGameInfo() {
+
+        for(int i=0;i<6;i++)
+            emptyPositions.add(i);
+
         Pane pane = new Pane();
         pane.setLayoutX(150);
         pane.setLayoutY(110);
@@ -108,17 +117,56 @@ public class LobbyScreen {
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        pane.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName);
+        pane.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName,addPlayerOnBoard(),addPlayerOnBoard());
         fullLayout.getChildren().remove(1);
         fullLayout.getChildren().add(pane);
 
     }
 
-    /*public static void addPlayerOnBoard(){
-        switch (numberOfPlayers){
+    public static Label addPlayerOnBoard(){
+
+        emptyPositions.sort(null);
+        Label label = new Label("Simple AI");
+        label.setStyle("-fx-text-fill: white");
+        label.setFont(new Font("Areal",20));
+
+        switch (emptyPositions.get(0)){
+            case 0:
+                label.setLayoutX(270);
+                label.setLayoutY(367);
+                emptyPositions.remove(0);
+                break;
             case 1:
+                label.setLayoutX(0);
+                label.setLayoutY(300);
+                emptyPositions.remove(0);
+                break;
+            case 2:
+                label.setLayoutX(0);
+                label.setLayoutY(175);
+                emptyPositions.remove(0);
+                break;
+            case 3:
+                label.setLayoutX(270);
+                label.setLayoutY(113);
+                emptyPositions.remove(0);
+                break;
+            case 4:
+                label.setLayoutX(510);
+                label.setLayoutY(175);
+                emptyPositions.remove(0);
+                break;
+            case 5:
+                label.setLayoutX(510);
+                label.setLayoutY(300);
+                emptyPositions.remove(0);
+                break;
+            default:
+                GUIMain.debugPrint("Lobby is full");
+                break;
         }
-    }*/
+        return label;
+    }
 
     public static VBox generateSettingsBox(GameSettings gameSettings){
         VBox vBox = new VBox();
@@ -130,7 +178,7 @@ public class LobbyScreen {
         Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",gameSettings.getLevelDuration()+"");
         Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",gameSettings.getAiType()+"");
 
-        vBox.getChildren().addAll(stackSize,numberOfPlayers,bigBlind,smallBlind,levelDuration, aIDifficulty);
+        vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, aIDifficulty);
         return vBox;
     }
 
