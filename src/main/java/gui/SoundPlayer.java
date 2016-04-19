@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.Random;
 
 
+
 /**
  * This class plays a sound for a given move for both players and AIs.
  * The sounds that are played are all self made, which means that all of the sounds
@@ -21,6 +22,7 @@ public class SoundPlayer{
 
     private String sound;
     private AudioClip audioClip;
+    private static boolean muted;
 
     /**
      * Method for differentiating between the different sounds for the different moves
@@ -163,11 +165,21 @@ public class SoundPlayer{
      * @param soundURL The name/URL of the sound to be played.
      */
     private void playSound(String soundURL){
-        try {
-            audioClip = Applet.newAudioClip(new URL(soundURL));
-            audioClip.play();
-        } catch (MalformedURLException e){
-            e.printStackTrace();
+        if (!muted) {
+            try {
+                audioClip = Applet.newAudioClip(new URL(soundURL));
+                audioClip.play();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public void muteSound(){
+        if (!muted) muted = true;
+        else muted = false;
+    }
+    public boolean getMutedValue(){
+        return muted;
     }
 }
