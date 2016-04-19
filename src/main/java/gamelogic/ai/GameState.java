@@ -122,7 +122,7 @@ public class GameState {
         else if (move instanceof PlayerDecision || move instanceof AIMove) {
             Decision decision;
             if (move instanceof AIMove) {
-                decision = ((AIMove)move).decision.toRealDecision(currentPlayer.currentBet, currentPlayer.minimumRaise, currentPlayer.stackSize, getCurrentPot(), currentPlayer.currentBet > 0 || communityCards.size() == 0);
+                decision = ((AIMove)move).decision.toRealDecision(currentPlayer.currentBet, currentPlayer.minimumRaise, currentPlayer.stackSize, getCurrentPot(), playersLeftInHand == 1, currentPlayer.currentBet > 0 || communityCards.size() == 0);
             }
             else {
                 decision = ((PlayerDecision)move).decision;
@@ -167,12 +167,12 @@ public class GameState {
                 case ALL_IN:
                     for (Player player : players) {
                         if (player.id != currentPlayer.id) {
-                            player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.minimumRaise);
+                            player.currentBet += Math.max(0, currentPlayer.stackSize - currentPlayer.currentBet);
                             player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise);
                         }
                     }
                     playersLeftInHand--;
-                    if (currentPlayer.currentBet > currentPlayer.stackSize) {
+                    if (currentPlayer.currentBet >= currentPlayer.stackSize) {
                         playersToMakeDecision--;
                     }
                     else {
@@ -347,28 +347,21 @@ public class GameState {
 
         switch (getNextNodeType()) {
             case DEAL_HAND_CARD:
-                if (currentPlayer.holeCards.size() < 2 && (currentPlayer.isInHand || currentPlayer.isAllIn)) {
-                    assert currentPlayer.isInHand || currentPlayer.isAllIn : currentPlayer + " is neither in hand nor all in, players in hand=" + playersLeftInHand + ", players given hole cards=" + playersGivenHoleCards;
-                    assert currentPlayer.holeCards.size() < 2;
-                    for (Card card : deck) {
-                        decisions.add(new CardDealtToPlayer(card, currentPlayer.position));
-                    }
+                assert currentPlayer.holeCards.size() < 2 : "Tried to deal hole card to " + currentPlayer + ", but they had " + currentPlayer.holeCards.size();
+                assert currentPlayer.isInHand || currentPlayer.isAllIn : currentPlayer + " is neither in hand nor all in, players in hand=" + playersLeftInHand + ", players given hole cards=" + playersGivenHoleCards;
+                assert currentPlayer.holeCards.size() < 2;
+                for (Card card : deck) {
+                    decisions.add(new CardDealtToPlayer(card, currentPlayer.position));
                 }
-                else {
-                    for (Player player : players) {
-                        if (player.isAllIn && player.holeCards.size() < 2) {
-                            for (Card card : deck) {
-                                decisions.add(new CardDealtToPlayer(card, player.position));
-                            }
-                        }
-                    }
-                }
+
+                assert decisions.size() > 0 : "Was not able to deal any hand card to " + currentPlayer + ", deck has " + deck.size() + " cards.";
                 return Optional.of(decisions);
 
             case DEAL_COMMUNITY_CARD:
                 for (Card card : deck) {
                     decisions.add(new CardDealtToTable(card));
                 }
+                assert decisions.size() > 0;
                 return Optional.of(decisions);
             case PLAYER_DECISION:
                 assert playersLeftInHand > 0: "Trying to generate possible decisions for player, when there are no players left (" +
@@ -383,7 +376,7 @@ public class GameState {
                 else {
                     decisions.add(new AIMove(AIDecision.FOLD));
                 }
-                if (currentPlayer.currentBet > 0 && currentPlayer.stackSize > currentPlayer.currentBet) {
+                if (currentPlayer.currentBet > 0 && currentPlayer.stackSize >= currentPlayer.currentBet) {
                     decisions.add(new AIMove(AIDecision.CALL));
                 }
                 decisions.add(new AIMove(AIDecision.RAISE_MINIMUM));
@@ -391,6 +384,7 @@ public class GameState {
                     decisions.add(new AIMove(AIDecision.RAISE_HALF_POT));
                 }
                 decisions.add(new AIMove(AIDecision.RAISE_POT));
+
                 return Optional.of(decisions);
             case TERMINAL:
                 return Optional.empty();
@@ -427,36 +421,20 @@ public class GameState {
     // Returns the kind of decision that needs to be done in this gamestate
     public NodeType getNextNodeType() {
         NodeType nodeType;
-        if (currentPlayer.holeCards.size() < 2) {
-            nodeType = NodeType.DEAL_HAND_CARD;
-        }
-        else if (playersLeftInHand + playersAllIn == 1) {
+        if (playersLeftInHand + playersAllIn == 1) {
             // If everyone except one player has folded
             nodeType = NodeType.TERMINAL;
         }
         else if (playersToMakeDecision == 0 || (playersLeftInHand == 0 && playersAllIn > 2)) {
             if (communityCards.size() == 5) {
-                /*if (playersGivenHoleCards < amountOfPlayers) {
-                    // Make sure all players have hole cards before doing terminal evaluation
-                    // TODO: This should maybe be done before just before the terminal eval, to improve min-maxing
-                    for (Player player : players) {
-                        if (player.holeCards.size() < 2 && player.isAllIn) {
-                            System.out.println("Discovered " + player + " with missing holecards");
-                            assert player.isAllIn : player + " had " + player.holeCards.size() + " hole cards, but they are not all in, and there are 0 players to make decisions";
-                            return NodeType.DEAL_HAND_CARD;
-                        }
-                    }
-                    throw new IllegalStateException("Didn't find a player to give holecards to. " + players);
-                }
-                else {
-                    System.out.println("Next node is terminal, because of showdown");
-                    */
-                    nodeType = NodeType.TERMINAL;
-                //}
+                nodeType = NodeType.TERMINAL;
             }
             else {
                 nodeType = NodeType.DEAL_COMMUNITY_CARD;
             }
+        }
+        else if (currentPlayer.holeCards.size() < 2) {
+            nodeType = NodeType.DEAL_HAND_CARD;
         }
         else {
             nodeType = NodeType.PLAYER_DECISION;

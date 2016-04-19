@@ -87,7 +87,7 @@ public class SimpleAI implements GameClient {
                 aiDecision = AIDecision.FOLD;
             }
         }
-        return aiDecision.toRealDecision(currentBet, minimumRaise, stackSizes.get(playerId), 2 * minimumRaise, betHasBeenPlaced);
+        return aiDecision.toRealDecision(currentBet, minimumRaise, stackSizes.get(playerId), 2 * minimumRaise, false, betHasBeenPlaced);
     }
 
     /**
@@ -239,7 +239,8 @@ public class SimpleAI implements GameClient {
     public enum AIDecision {
         FOLD, CHECK, CALL, RAISE_MINIMUM, RAISE_HALF_POT, RAISE_POT;
 
-        public Decision toRealDecision(long currentBet, long minimumRaise, long stackSize, long pot, boolean betHasBeenPlaced) {
+        public Decision toRealDecision(long currentBet, long minimumRaise, long stackSize, long pot,
+                                       boolean isOnlyPlayerInHand, boolean betHasBeenPlaced) {
             Decision.Move moneyMove = betHasBeenPlaced ? Decision.Move.RAISE : Decision.Move.BET;
             switch (this) {
                 case FOLD:

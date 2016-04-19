@@ -82,7 +82,7 @@ public class PokerMCTS {
         double bestValue = 0.0;
         AIDecision bestDecision = AIDecision.FOLD;
 
-        assert allDecisions.size() > 1;
+        assert allDecisions.size() > 1 : "Only had " + allDecisions.size() + " decisions to make: " + allDecisions;
         for (int i = 0; i < allDecisions.size(); i++) {
             double value = rootNode.children.get(i).get().values[playerPosition];
             int searches = rootNode.children.get(i).get().searches;
@@ -93,7 +93,7 @@ public class PokerMCTS {
         }
         printProgressReport();
         return bestDecision.toRealDecision(initialGameState.currentPlayer.currentBet, initialGameState.currentPlayer.minimumRaise,
-                initialGameState.currentPlayer.stackSize, initialGameState.getCurrentPot(),
+                initialGameState.currentPlayer.stackSize, initialGameState.getCurrentPot(), initialGameState.getPlayersLeftInHand()== 1,
                 initialGameState.currentPlayer.currentBet > 0 || initialGameState.communityCards.size() == 0);
     }
 
