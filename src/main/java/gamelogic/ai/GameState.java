@@ -225,7 +225,12 @@ public class GameState {
             // Small blind moves first post-flop
             if (playersToMakeDecision == 0) {
                 //System.out.println("Everyone has made decisions");
-                currentPlayer = players.get(players.size() - 1);
+                if (amountOfPlayers == 2) {
+                    currentPlayer = players.get(0);
+                }
+                else {
+                    currentPlayer = players.get(players.size() - 1);
+                }
                 for (Player player : players) {
                     player.currentBet = 0;
                 }
