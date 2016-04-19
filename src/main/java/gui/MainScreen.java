@@ -86,7 +86,7 @@ public class MainScreen {
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
         choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
-        choiceBox.setValue(AIType.MIXED.toString());
+        choiceBox.setValue(AIType.MCTS_AI.toString());
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 
