@@ -2,11 +2,15 @@ package gamelogic.ai;
 
 import gamelogic.Card;
 import gamelogic.Decision;
+import gamelogic.Deck;
 import gamelogic.GameClient;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -144,7 +148,7 @@ public class AITest {
         ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(2, Card.Suit.SPADES).get());
 
         setupAi(ai, 3, 0);
-        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
         assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
     }
 
@@ -159,7 +163,7 @@ public class AITest {
 
         ai.setFlop(Card.of(3, Card.Suit.CLUBS).get(), Card.of(5, Card.Suit.CLUBS).get(),  Card.of(6, Card.Suit.CLUBS).get(), 0L);
 
-        ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 1000));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.BET, 1000));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
         assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
@@ -199,7 +203,7 @@ public class AITest {
 
         ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get(), 75L);
 
-        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 1000));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.BET, 1000));
         ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
         ai.playerMadeDecision(2, new Decision(Decision.Move.FOLD));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
