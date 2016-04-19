@@ -37,6 +37,14 @@ public class AITest {
     }
 
     @Test
+    public void testAllInAsCallFollowedByAllIn() {
+        SimpleAI simpleAi = new SimpleAI(0);
+        MCTSAI mctsAi = new MCTSAI(0);
+        testAllInAsCallFollowedByAllInProperty(simpleAi);
+        testAllInAsCallFollowedByAllInProperty(mctsAi);
+    }
+
+    @Test
     public void doesNotFoldWithGreatHandHeadsUp() {
         SimpleAI simpleAi = new SimpleAI(0);
         MCTSAI mctsAi = new MCTSAI(0);
@@ -216,6 +224,52 @@ public class AITest {
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
         ai.setRiver(Card.of(2, Card.Suit.CLUBS).get(), 75L);
+    }
+
+    public void testAllInAsCallFollowedByAllInProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
+
+        HashMap<Integer, Integer> positions = new HashMap<>();
+        HashMap<Integer, String> names = new HashMap<>();
+        for (int i = 0; i < 4; i++) {
+            positions.put(i, i);
+            names.put(i, "AI-" + i);
+        }
+
+        HashMap<Integer, Long> stackSizes = new HashMap<>();
+
+        stackSizes.put(0, 10025L);
+        stackSizes.put(1, 4975L);
+        stackSizes.put(2, 5000L);
+        stackSizes.put(3, 10000L);
+
+
+        ai.setAmountOfPlayers(4);
+        ai.setStackSizes(stackSizes);
+        ai.setPlayerNames(names);
+        ai.setPositions(positions);
+        ai.setSmallBlind(smallBlind);
+        ai.setBigBlind(bigBlind);
+
+        ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, bigBlind));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.FOLD));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 150));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.RAISE, 350));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.RAISE, 850));
+
+        ai.playerMadeDecision(2, new Decision(Decision.Move.ALL_IN));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
+
+        ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get(), 75L);
+
     }
 
     @Test
