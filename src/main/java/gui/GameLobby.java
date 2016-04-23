@@ -1,5 +1,6 @@
 package gui;
 
+import com.sun.tools.javac.comp.Check;
 import gamelogic.AIType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,6 +47,7 @@ public class GameLobby {
         Button settings = ObjectStandards.makeButtonForLobbyScreen("Settings");
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         Button leaveLobby = ObjectStandards.makeButtonForLobbyScreen("Leave lobby");
+        CheckBox showAllPlayerCards = new CheckBox("Show all players cards");
 
         amountOfChips = ObjectStandards.makeLobbyLabelWhite("Chips: ", gameSettings.getStartStack() + "$");
         numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
@@ -58,7 +60,7 @@ public class GameLobby {
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener(gameController);
+            ButtonListeners.startGameButtonListener(gameController, showAllPlayerCards);
         });
 
         leaveLobby.setOnAction(e -> {
@@ -75,7 +77,7 @@ public class GameLobby {
         gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
         gameRules.setAlignment(Pos.CENTER_LEFT);
 
-        buttons.getChildren().addAll(startGame, leaveLobby, settings);
+        buttons.getChildren().addAll(startGame, leaveLobby, settings, showAllPlayerCards);
         buttons.setAlignment(Pos.CENTER_LEFT);
 
         layoutNoHeadline.getChildren().addAll(players, gameRules, buttons);

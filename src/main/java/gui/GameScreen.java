@@ -209,17 +209,19 @@ public class GameScreen {
      * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
-        assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
+        //assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
 
-        playerLayout.setCardImage(leftImage, rightImage);
+        allPlayerLayouts.get(userID).setCardImage(leftImage, rightImage);
 
-        holeCards = new ArrayList<>();
-        holeCards.add(leftCard);
-        holeCards.add(rightCard);
-        updateYourHandLabel();
+        if (userID == this.playerID) {
+            holeCards = new ArrayList<>();
+            holeCards.add(leftCard);
+            holeCards.add(rightCard);
+            updateYourHandLabel();
+        }
     }
 
     /**

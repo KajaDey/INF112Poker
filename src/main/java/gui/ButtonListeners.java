@@ -3,6 +3,7 @@ package gui;
 import gamelogic.AIType;
 import gamelogic.Statistics;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -98,8 +99,9 @@ public class ButtonListeners {
     /**
      * What happens when the startGameButton is pushed
      */
-    public static void startGameButtonListener(GameController gameController) {
-        gameController.startTournamentButtonClicked(gameSettings);
+    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
+        boolean showCards = showAllPlayerCards.isSelected();
+        gameController.startTournamentButtonClicked(gameSettings, showCards);
     }
     /**
      * What happens when the leaveLobbyButton is pushed

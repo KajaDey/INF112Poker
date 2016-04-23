@@ -19,6 +19,7 @@ public class GameController {
     public GameSettings gameSettings;
     private String name;
     private Map<Integer, String> names;
+    private boolean showAllPlayerCards;
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
@@ -45,10 +46,12 @@ public class GameController {
      * Creates a new game, creates clients and starts the game.
      *
      * @param gamesettings Game settings
+     * @param showCards
      */
-    public void startTournamentButtonClicked(GameSettings gamesettings) {
+    public void startTournamentButtonClicked(GameSettings gamesettings, boolean showCards) {
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
+        this.showAllPlayerCards = showCards;
 
         String error;
         if (((error = game.getError()) != null)) {
@@ -216,6 +219,9 @@ public class GameController {
     public void setHandForClient(int clientID, Card card1, Card card2) {
         GameClient c = clients.get(clientID);
         c.setHandForClient(clientID, card1, card2);
+
+        if (showAllPlayerCards)
+            guiClient.setHandForClient(clientID, card1, card2);
     }
 
     /**
