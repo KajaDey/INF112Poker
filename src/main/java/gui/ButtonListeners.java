@@ -2,8 +2,12 @@ package gui;
 
 import gamelogic.AIType;
 import gamelogic.Statistics;
+import gui.layouts.PlayerLayout;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -24,7 +28,7 @@ public class ButtonListeners {
     private static String savedName, savedNumOfPlayers, savedChoiceBox;
     private static GameController savedGameController;
 
-    private static SoundPlayer soundPlayer = new SoundPlayer();
+    private static long lastSpaceTap = 0;
 
     /**
      * What happens when the betButton is pushed
@@ -159,5 +163,47 @@ public class ButtonListeners {
         stats.printStatisticsToFile();
     }
 
+    /**
+     * Acts upon button released events.
+     *      Single space tap: Call (if possible)
+     *      Double space tap: Check (if possible)
+     *      Single enter tap: Bet/raise
+     *      Arrow up/down tap: Increase/decrease the amount field by 1 BB-amount
+     *      Back space tap: Fold 
+     *
+     * @param ke
+     * @param playerLayout
+     */
+    public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout) {
+        TextField tf = playerLayout.getAmounTextField();
+        try {
+            switch(ke.getCode()) {
+                case SPACE:
+                    if (System.currentTimeMillis() - lastSpaceTap <= 1000 || playerLayout.getCheckCallButtonText().equals("Call"))
+                        checkButtonListener(playerLayout.getCheckCallButtonText());
 
+                    lastSpaceTap = System.currentTimeMillis();
+                    break;
+                case ENTER:
+                    System.out.println("ENTER CLICKED");
+                    betButtonListener(tf.getText(), playerLayout.getBetRaiseButtonText());
+                    break;
+                case UP:case DOWN:
+                    int current = Integer.parseInt(tf.getText());
+                    current = (ke.getCode() == KeyCode.UP) ? current+50 : current-50;
+                    if(current > 5000) //TODO: Stack size
+                        current = 5000;
+                    else if (current < 50) //TODO: BB-value
+                        current = 50; //BB
+
+                    playerLayout.setAmountTextField(current+"");
+                    break;
+                case BACK_SPACE:
+                    foldButtonListener();
+                    break;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
 }
