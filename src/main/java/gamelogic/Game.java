@@ -17,7 +17,7 @@ public class Game {
     private GameSettings gameSettings;
 
     //Settings
-    private int numberOfPlayers = 0, finishedInPosition;
+    private int numberOfPlayers = 0, remainingPlayers = 0, finishedInPosition;
     private long startSB, startBB;
     private int handsStarted = 0;
 
@@ -64,6 +64,7 @@ public class Game {
             if (players[i] == null) {
                 players[i] = p;
                 numberOfPlayers++;
+                remainingPlayers++;
                 break;
             }
         }
@@ -119,8 +120,6 @@ public class Game {
             gameSettings.increaseBlinds();
             GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
             gameController.setBlinds();
-
-
         }
         postBlinds();
         printAllPlayerStacks();
@@ -166,7 +165,7 @@ public class Game {
     }
 
     /**
-     *   Play one complete betting round (where all players act until everyone agrees (or everyone but 1 folds))
+     *   Play one complete betting round (where all players act until everyone agree (or everyone but 1 folds))
      * @param isPreFlop  True if this is the pre flop betting round
      * @return  True if the hand continues, false if the hand is over
      */
@@ -174,7 +173,7 @@ public class Game {
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
 
-        if (!isPreFlop && numberOfPlayers == 2)
+        if (!isPreFlop && remainingPlayers == 2)
             actingPlayerIndex = 1;
         else
             actingPlayerIndex = (isPreFlop ? 2 % playersStillInCurrentHand.size() : 0);
@@ -415,6 +414,7 @@ public class Game {
                 gameController.bustClient(p.getID(), finishedInPosition);
                 rankingTable.put(p.getID(), finishedInPosition);
                 finishedInPosition--;
+                remainingPlayers--;
             }
         }
     }

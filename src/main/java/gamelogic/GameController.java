@@ -135,7 +135,7 @@ public class GameController {
     private void initClients() {
         setBlinds();
         for (Integer clientID : clients.keySet()) {
-            clients.get(clientID).setPlayerNames(names);
+            clients.get(clientID).setPlayerNames(new HashMap<>(names));
         }
     }
 

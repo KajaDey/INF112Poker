@@ -282,7 +282,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
      * @param leftImage
      * @param rightImage
      */
-    public void setCardImage(Image leftImage, Image rightImage) {
+    public synchronized void setCardImage(Image leftImage, Image rightImage) {
         DropShadow dropShadow = new DropShadow();
         leftCardImage.setImage(leftImage);
         rightCardImage.setImage(rightImage);

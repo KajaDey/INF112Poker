@@ -317,7 +317,7 @@ public class GameScreen {
      * @param ID
      * @param decision
      */
-    public void playerMadeDecision(int ID, Decision decision) {
+    public synchronized void playerMadeDecision(int ID, Decision decision) {
         //Remove player highlighting
         allPlayerLayouts.get(ID).highlightTurn(false);
 
@@ -327,7 +327,7 @@ public class GameScreen {
         //Set button texts depending on the action
         updateButtonTexts(ID, decision.move);
 
-        //Play sound
+        //Play the appropriate sound for this decision
         soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
@@ -576,12 +576,10 @@ public class GameScreen {
      * @param error
      */
     public void setErrorStateOfAmountTextField(boolean error) {
-        if (error) {
+        if (error)
             playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
-        }
-        else {
+        else
             playerLayout.setTextfieldStyle("-fx-border-color: rgb(255, 255, 255) ; -fx-border-width: 3px ;");
-        }
     }
 
     /**
@@ -642,8 +640,10 @@ public class GameScreen {
 
     /** Set the big blind */
     public void setBigBlind(long bigBlind) {
-        this.currentBigBlind = bigBlind;
+        boardLayout.setBigBlindLabel(this.currentBigBlind = bigBlind);
     }
+
+    public void setSmallBlind(long smallBlind) { boardLayout.setSmallBlindLabel(smallBlind); }
 
     /**
      *  Set the 'Best hand'-label to the players current best hand (e.g.: "Pair of 2's")

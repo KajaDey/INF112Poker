@@ -2,6 +2,7 @@ package gui;
 import gamelogic.*;
 import javafx.application.Platform;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
