@@ -60,7 +60,12 @@ public class GameScreen {
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
-        pane.setOnKeyReleased(ke ->  ButtonListeners.keyReleased(ke, playerLayout) );
+
+        //Set onKeyRelease and onMouseClick events for pane
+        pane.setOnKeyReleased(ke ->  ButtonListeners.keyReleased(ke, playerLayout));
+        pane.setOnMouseClicked((event) -> playerLayout.setFocus());
+
+        //Create the scene
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
 
         this.allPlayerLayouts = new HashMap<>();
@@ -180,14 +185,12 @@ public class GameScreen {
         textArea.setOpacity(0.9);
 
         //Add listener to listen for changes and automatically scroll to the bottom
-        textArea.textProperty().addListener(new ChangeListener<Object>() {
-            @Override
-            public void changed(ObservableValue<?> observable, Object oldValue,
-                                Object newValue) {
-                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
-            }
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
         });
 
+        //Remove highlight of textfield
+        textArea.setFocusTraversable(false);
     }
 
     /**
@@ -213,7 +216,6 @@ public class GameScreen {
      * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
-        //assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));

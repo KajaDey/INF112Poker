@@ -169,13 +169,16 @@ public class ButtonListeners {
      *      Double space tap: Check (if possible)
      *      Single enter tap: Bet/raise
      *      Arrow up/down tap: Increase/decrease the amount field by 1 BB-amount
-     *      Back space tap: Fold 
+     *      Back space tap: Fold
      *
      * @param ke
      * @param playerLayout
      */
     public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout) {
-        TextField tf = playerLayout.getAmounTextField();
+        TextField tf = playerLayout.getAmountTextField();
+        if (tf.focusedProperty().getValue())
+            return;
+
         try {
             switch(ke.getCode()) {
                 case SPACE:

@@ -241,6 +241,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         foldButton.setVisible(visible);
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
+
+        amountTextField.setFocusTraversable(false);
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
@@ -325,8 +327,17 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         return isBust;
     }
 
+    /**
+     *  Set the focus of this layout (set/remove focus amount text field)
+     */
+    public void setFocus() {
+        this.requestFocus();
+    }
     public String getCheckCallButtonText() { return checkCallButton.getText(); }
     public String getBetRaiseButtonText() { return betRaiseButton.getText(); }
-    public TextField getAmounTextField() { return amountTextField; }
-    
+    public TextField getAmountTextField() { return amountTextField; }
+
+
+
+
 }
