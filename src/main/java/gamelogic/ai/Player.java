@@ -94,6 +94,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player " + name + "(id=" + id + ", position=" + position + ", stackSize=" + stackSize + ")";
+        return "Player " + name + "(id=" + id + ", position=" + position + ",  currentBet=" + currentBet + ", stackSize=" + stackSize + ", " + (holeCards.size() == 2 ? holeCards : "") + (isAllIn ? " A" : "") + (!isInHand ? " X" : "") + ")";
     }
 }

@@ -153,7 +153,7 @@ public class GameScreen {
                 positions[4] =5;
                 break;
             default:
-                GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game");
+                GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game, cannot set positions");
                 break;
         }
 
