@@ -194,6 +194,7 @@ public class GUIClient implements GameClient {
     @Override
     public void setSmallBlind(long smallBlind) {
         this.smallBlind = smallBlind;
+        Platform.runLater(() -> gameScreen.setSmallBlind(smallBlind));
     }
 
 

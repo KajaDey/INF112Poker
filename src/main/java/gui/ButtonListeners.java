@@ -2,6 +2,7 @@ package gui;
 
 import gamelogic.AIType;
 import gamelogic.Statistics;
+import gui.layouts.BoardLayout;
 import gui.layouts.PlayerLayout;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -174,8 +175,10 @@ public class ButtonListeners {
      * @param ke
      * @param playerLayout
      */
-    public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout) {
+    public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout, BoardLayout boardLayout) {
         TextField tf = playerLayout.getAmountTextField();
+        long currentBB = boardLayout.getBB(), stackSize = playerLayout.getStackSize();
+
         if (tf.focusedProperty().getValue())
             return;
 
@@ -188,25 +191,25 @@ public class ButtonListeners {
                     lastSpaceTap = System.currentTimeMillis();
                     break;
                 case ENTER:
-                    System.out.println("ENTER CLICKED");
                     betButtonListener(tf.getText(), playerLayout.getBetRaiseButtonText());
                     break;
                 case UP:case DOWN:
-                    int current = Integer.parseInt(tf.getText());
-                    current = (ke.getCode() == KeyCode.UP) ? current+50 : current-50;
-                    if(current > 5000) //TODO: Stack size
-                        current = 5000;
-                    else if (current < 50) //TODO: BB-value
-                        current = 50; //BB
+                    if (ke.isShiftDown()) currentBB *= 10;
+                    long currentAmount = Long.parseLong(tf.getText());
+                    currentAmount = (ke.getCode() == KeyCode.UP) ? currentAmount+currentBB : currentAmount-currentBB;
+                    currentAmount = Math.max(currentAmount, currentBB);
+                    currentAmount = Math.min(currentAmount, stackSize);
 
-                    playerLayout.setAmountTextField(current+"");
+                    playerLayout.setAmountTextField(currentAmount+"");
                     break;
                 case BACK_SPACE:
                     foldButtonListener();
                     break;
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        } catch (MalformedURLException mue) {
+            mue.printStackTrace();
+        } catch (NumberFormatException nfe) {
+            tf.setText("" + currentBB);
         }
     }
 }

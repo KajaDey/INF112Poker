@@ -39,6 +39,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
     private Button betRaiseButton, checkCallButton, foldButton;
     private boolean isBust;
+    private long stackSize;
 
 
     public PlayerLayout(int playerID, String name, long stackSizeIn){
@@ -54,6 +55,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         HBox lastMoveAndChips = new HBox();
 
         //////Make all the elements I want to add to the playerLayout//////////
+        this.stackSize = stackSizeIn;
         stackLabel = ObjectStandards.makeStandardLabelWhite("", stackSizeIn + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
@@ -251,6 +253,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     public void setStackLabel(String stack) {
+        //If stack is a number, set stacksize to this number
+        try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
         stackLabel.setText(stack);
     }
 
@@ -337,7 +341,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     public String getBetRaiseButtonText() { return betRaiseButton.getText(); }
     public TextField getAmountTextField() { return amountTextField; }
 
-
-
-
+    public void setStackSize(long stackSize) { this.stackSize = stackSize; }
+    public long getStackSize() {
+        return this.stackSize;
+    }
 }
