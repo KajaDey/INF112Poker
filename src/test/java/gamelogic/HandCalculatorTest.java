@@ -1,6 +1,7 @@
 package gamelogic;
 
 import gamelogic.rules.*;
+import gui.GameSettings;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class HandCalculatorTest {
     Card card, holeCard1, holeCard2;
     HandCalculator hc;
     Card c1,c2,c3,c4,c5,c6;
+    GameSettings settings = new GameSettings(5000,25,50, 5, 0, AIType.MCTS_AI);
+
     @Before
     public void setUp() throws Exception {
 
@@ -158,9 +161,9 @@ public class HandCalculatorTest {
     @Test
     public void testThatPercentagesCalculationsWorkCorrectly() {
         ArrayList<Player> players = new ArrayList<>();
-        players.add(new Player("Bob", 5000, 0));
-        players.add(new Player("Alice", 5000, 1));
-        players.add(new Player("Kate", 5000, 2));
+        players.add(new Player("Bob", settings, 0));
+        players.add(new Player("Alice", settings, 1));
+        players.add(new Player("Kate", settings, 2));
 
         ArrayList<Card> communityCards = new ArrayList<>();
         communityCards.add(Card.of(10, Card.Suit.HEARTS).get());
