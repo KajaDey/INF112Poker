@@ -190,9 +190,11 @@ public class ButtonListeners {
 
                     lastSpaceTap = System.currentTimeMillis();
                     break;
+
                 case ENTER:
                     betButtonListener(tf.getText(), playerLayout.getBetRaiseButtonText());
                     break;
+
                 case UP:case DOWN:
                     if (ke.isShiftDown()) currentBB *= 10;
                     long currentAmount = Long.parseLong(tf.getText());
@@ -202,6 +204,7 @@ public class ButtonListeners {
 
                     playerLayout.setAmountTextField(currentAmount+"");
                     break;
+
                 case BACK_SPACE:
                     foldButtonListener();
                     break;

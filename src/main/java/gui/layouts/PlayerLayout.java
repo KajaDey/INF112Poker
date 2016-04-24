@@ -3,7 +3,6 @@ package gui.layouts;
 import gui.ButtonListeners;
 import gui.ImageViewer;
 import gui.ObjectStandards;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,11 +13,9 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 import java.io.IOException;
@@ -96,6 +93,12 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         betRaiseButton.setMinHeight(66);
 
+        //Prevent objects from being focus traversable, meaning you can't tab them into focus
+        betRaiseButton.setFocusTraversable(false);
+        checkCallButton.setFocusTraversable(false);
+        foldButton.setFocusTraversable(false);
+        amountTextField.setFocusTraversable(false);
+        slider.setFocusTraversable(false);
 
         //Actions
         betRaiseButton.setOnAction(e -> {
@@ -244,7 +247,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
 
-        amountTextField.setFocusTraversable(false);
+        this.requestFocus();
+        this.requestFocus();
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
