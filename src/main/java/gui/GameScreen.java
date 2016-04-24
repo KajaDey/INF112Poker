@@ -59,7 +59,7 @@ public class GameScreen {
         this.playerID = ID;
 
         //Set onKeyRelease and onMouseClick events for pane
-        pane.setOnKeyReleased(ke ->  ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
+        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
         pane.setOnMouseClicked((event) -> playerLayout.setFocus());
 
         //Create the scene
@@ -502,9 +502,8 @@ public class GameScreen {
         //Set opponent hands
         Image backImage = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
         allPlayerLayouts.forEach((id, layout) -> {
-            if (!layout.isBust()) {
+            if (!layout.isBust())
                 layout.setCardImage(backImage, backImage);
-            }
         });
 
         //Reset board

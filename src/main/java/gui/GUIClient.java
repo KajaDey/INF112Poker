@@ -120,19 +120,19 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
         Platform.runLater(() -> gameScreen.displayFlop(card1, card2, card3));
         newBettingRound();
     }
 
     @Override
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
         Platform.runLater(() -> gameScreen.displayTurn(turn));
         newBettingRound();
     }
 
     @Override
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
         Platform.runLater(() -> gameScreen.displayRiver(river));
         newBettingRound();
     }
@@ -237,7 +237,7 @@ public class GUIClient implements GameClient {
         Platform.runLater(() -> gameScreen.printToLogField(message));
     }
 
-    public void preShowdownWinner(int winnerID, long potsize) {
+    public void preShowdownWinner(int winnerID) {
         Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
     }
 
