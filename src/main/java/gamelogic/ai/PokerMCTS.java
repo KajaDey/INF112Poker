@@ -1,9 +1,6 @@
 package gamelogic.ai;
 
-import gamelogic.Decision;
-import gamelogic.Hand;
-import gamelogic.HandCalculator;
-import gamelogic.Pot;
+import gamelogic.*;
 import gamelogic.ai.SimpleAI.AIDecision;
 import java.util.*;
 
@@ -31,9 +28,11 @@ public class PokerMCTS {
                 .findFirst()
                 .get().position;
         this.initialGameState = gameState;
+        assert initialGameState.getNextNodeType() == GameState.NodeType.PLAYER_DECISION : "MCTSAI was asked to make a decision when next node is " + initialGameState.getNextNodeType();
+        assert initialGameState.currentPlayer.id == playerId : "MCTSAI was asked to make a decision when player to move is " + initialGameState.currentPlayer;
         int amountOfMoves = initialGameState.allDecisions().get().size();
         this.rootNode = new AINode(amountOfMoves);
-        assert amountOfMoves < 10 && rootNode.children.size() < 10;
+        assert amountOfMoves < 10 && rootNode.children.size() < 10 : "Root node has " + amountOfMoves + " moves: " + initialGameState.allDecisions().get();
     }
 
     public Decision calculateFor(long milliseconds) {
@@ -51,29 +50,31 @@ public class PokerMCTS {
 
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
-
         double[] values = new double[allDecisions.size()];
         for (int i = 0; i < values.length; i++) {
             double value = rootNode.children.get(i).get().values[playerPosition];
             int searches = rootNode.children.get(i).get().searches;
-            values[i] = value / searches;
+            values[i] = value / (double)searches;
 
             AIDecision decision = ((GameState.AIMove)allDecisions.get(i)).decision;
             //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
             switch (decision) {
                 case FOLD:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.03, 0.5);
+                    values[i] *= 1.0 / Math.pow(contemptFactor - 0.03, 0.5);
                     break;
                 case CHECK:
-                    values[i] *= 1 / Math.pow(contemptFactor - 0.03, 0.5);
+                    values[i] *= 1.0 / Math.pow(contemptFactor - 0.03, 0.5);
                     break;
                 case RAISE_HALF_POT:
                     long betSize = initialGameState.getCurrentPot() / 2 + initialGameState.currentPlayer.currentBet;
+                    values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    break;
                 case RAISE_MINIMUM:
                     betSize = initialGameState.currentPlayer.minimumRaise + initialGameState.currentPlayer.currentBet;
+                    values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
+                    break;
                 case RAISE_POT:
                     betSize = initialGameState.getCurrentPot() + initialGameState.currentPlayer.currentBet;
-                    // TODO: betsize is not set properly here. Also, it does not take all in into account when evaluating the value of a decision
                     values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
                 case CALL:
@@ -81,6 +82,7 @@ public class PokerMCTS {
                     break;
             }
         }
+        System.out.println("Values after contempt factor modification: " + Arrays.toString(values));
 
         double bestValue = 0.0;
         AIDecision bestDecision = AIDecision.FOLD;
@@ -111,7 +113,7 @@ public class PokerMCTS {
         for (int i = 0; i < allDecisions.size(); i++) {
             double value = rootNode.children.get(i).get().values[playerPosition];
             int searches = rootNode.children.get(i).get().searches;
-            System.out.printf("%-25s: %.2f%% (%.0f/%d)", allDecisions.get(i), 100.0 * value / searches, value, searches);
+            System.out.printf("%-25s: %.2f%% (%.1f/%d)", allDecisions.get(i), 100.0 * value / searches, value, searches);
             System.out.println();
         }
         System.out.println();
@@ -160,7 +162,12 @@ public class PokerMCTS {
             List<GameState.GameStateChange> allMoves = gameState.allDecisions().get();
             GameState newGameState = new GameState(gameState);
 
-            newGameState.makeGameStateChange(allMoves.get(childIndex));
+            try {
+                newGameState.makeGameStateChange(allMoves.get(childIndex));
+            } catch (IllegalDecisionException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
 
             GameState.NodeType childNodeType = newGameState.getNextNodeType();
             Optional<List<GameState.GameStateChange>> allMovesForChild = newGameState.allDecisions();
@@ -203,7 +210,12 @@ public class PokerMCTS {
 
             GameState.GameStateChange randomMove = gameState.getRandomDecision(random).get();
 
-            gameState.makeGameStateChange(randomMove);
+            try {
+                gameState.makeGameStateChange(randomMove);
+            } catch (IllegalDecisionException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
 
             AbstractNode childNode;
 
@@ -277,7 +289,12 @@ public class PokerMCTS {
                         childIndex = i;
                     }
                 }
-                newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
+                try {
+                    newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
+                } catch (IllegalDecisionException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
 
                 evals = bestNode.select(totalSearches, newGameState, random, hasPassedDecisionNode);
 
@@ -311,18 +328,22 @@ public class PokerMCTS {
      */
     private class TerminalNode extends AbstractNode {
 
+        double[] terminalEval;
+
         public TerminalNode(int numberOfMoves, GameState gameState, int totalSearches) {
             super(numberOfMoves);
             assert numberOfMoves == 0;
             //assert gameState.getPlayersAllIn() + gameState.getPlayersLeftInHand() == 1 || gameState.getPlayersGivenHoleCards() == gameState.amountOfPlayers : gameState.getPlayersGivenHoleCards() + " players given holecards but " + gameState.amountOfPlayers + " players left in hand.";
-            addValues(values, terminalEval(gameState, totalSearches));
+            terminalEval = terminalEval(gameState, totalSearches);
+            addValues(values, terminalEval);
         }
 
         @Override
         public double[] select(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             terminalNodesSelected++;
             this.searches++;
-            return values;
+            addValues(values, terminalEval);
+            return terminalEval;
         }
 
         @Override
@@ -333,7 +354,7 @@ public class PokerMCTS {
         @Override
         public double[] simulate(int totalSearches, GameState gameState, Random random, boolean hasPassedDecicionNode) {
             this.searches++;
-            return values;
+            return terminalEval;
         }
     }
 
@@ -364,7 +385,12 @@ public class PokerMCTS {
                 GameState newGameState = new GameState(gameState);
                 List<GameState.GameStateChange> moves = newGameState.allDecisions().get();
 
-                newGameState.makeGameStateChange(moves.get(randomIndex));
+                try {
+                    newGameState.makeGameStateChange(moves.get(randomIndex));
+                } catch (IllegalDecisionException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
 
                 double[] eval = children.get(randomIndex).get().select(totalSearches, newGameState, random, hasPassedDecicionNode);
                 addValues(values, eval);
@@ -416,6 +442,7 @@ public class PokerMCTS {
             for (int i = 0; i < gameState.players.size(); i++) {
                 assert gameState.players.get(i).position == i;
                 eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
+                assert eval[i] > 0 : "Everyone folded, but player " + gameState.players.get(i) + " has eval " + eval[i];
             }
             return eval;
         }

@@ -17,7 +17,7 @@ public class Game {
     private GameSettings gameSettings;
 
     //Settings
-    private int numberOfPlayers = 0, finishedInPosition;
+    private int numberOfPlayers = 0, remainingPlayers = 0, finishedInPosition;
     private long startSB, startBB;
     private int handsStarted = 0;
 
@@ -59,11 +59,12 @@ public class Game {
             return false;
         }
 
-        Player p = new Player(name, gameSettings.getStartStack(), ID);
+        Player p = new Player(name, gameSettings, ID);
         for (int i = 0; i < gameSettings.getMaxNumberOfPlayers(); i++) {
             if (players[i] == null) {
                 players[i] = p;
                 numberOfPlayers++;
+                remainingPlayers++;
                 break;
             }
         }
@@ -119,8 +120,6 @@ public class Game {
             gameSettings.increaseBlinds();
             GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
             gameController.setBlinds();
-
-
         }
         postBlinds();
         printAllPlayerStacks();
@@ -166,7 +165,7 @@ public class Game {
     }
 
     /**
-     *   Play one complete betting round (where all players act until everyone agrees (or everyone but 1 folds))
+     *   Play one complete betting round (where all players act until everyone agree (or everyone but 1 folds))
      * @param isPreFlop  True if this is the pre flop betting round
      * @return  True if the hand continues, false if the hand is over
      */
@@ -174,7 +173,7 @@ public class Game {
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
 
-        if (!isPreFlop && numberOfPlayers == 2)
+        if (!isPreFlop && remainingPlayers == 2)
             actingPlayerIndex = 1;
         else
             actingPlayerIndex = (isPreFlop ? 2 % playersStillInCurrentHand.size() : 0);
@@ -230,11 +229,11 @@ public class Game {
             String name = playerToAct.getName();
             switch(decision.move) {
                 case BET:
-                    highestAmountPutOnTable = decision.size;
+                    highestAmountPutOnTable = decision.getSize();
                     break;
                 case RAISE:
-                    highestAmountPutOnTable += decision.size;
-                    currentMinimumRaise = decision.size;
+                    highestAmountPutOnTable += decision.getSize();
+                    currentMinimumRaise = decision.getSize();
                     break;
                 case ALL_IN:
                     if(playerToAct.putOnTable() >= highestAmountPutOnTable+currentMinimumRaise) {
@@ -305,12 +304,12 @@ public class Game {
                     break;
 
                 case RAISE:
-                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.size + " when highest amount put on table was 0";
-                    if ((decision.size + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
-                        GUIMain.debugPrintln(playerToAct.getName() + " tried to raise to " + (decision.size + highestAmountPutOnTable) + " but only has " + stackSize);
+                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.getSize() + " when highest amount put on table was 0";
+                    if ((decision.getSize() + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
+                        GUIMain.debugPrintln(playerToAct.getName() + " tried to raise to " + (decision.getSize() + highestAmountPutOnTable) + " but only has " + stackSize);
                         break;
                     }
-                    if (decision.size >= currentMinimumRaise)
+                    if (decision.getSize() >= currentMinimumRaise)
                         return decision;
                     break;
                 default: GUIMain.debugPrintln("Unknown move: " + decision.move);
@@ -332,8 +331,8 @@ public class Game {
     private void postBlinds() {
         assert playersStillInCurrentHand.size() >= 2 : "Not enough players still playing to post blinds";
 
-        Decision postSB = new Decision(Decision.Move.SMALL_BLIND, gameSettings.getSmallBlind());
-        Decision postBB = new Decision(Decision.Move.BIG_BLIND, gameSettings.getBigBlind());
+        Decision postSB = new Decision(Decision.Move.SMALL_BLIND);
+        Decision postBB = new Decision(Decision.Move.BIG_BLIND);
 
         Player smallBlindPlayer, bigBlindPlayer;
         if (playersStillInCurrentHand.size() == 2) {
@@ -345,9 +344,9 @@ public class Game {
         }
 
         //If one of the players don't have enough to post their blind
-        if (smallBlindPlayer.getStackSize() <= postSB.size)
+        if (smallBlindPlayer.getStackSize() <= gameSettings.getSmallBlind())
             postSB = new Decision(Decision.Move.ALL_IN);
-        if (bigBlindPlayer.getStackSize() <= postBB.size)
+        if (bigBlindPlayer.getStackSize() <= gameSettings.getBigBlind())
             postBB = new Decision(Decision.Move.ALL_IN);
 
         //Notify GUI and AI about the posting
@@ -415,6 +414,7 @@ public class Game {
                 gameController.bustClient(p.getID(), finishedInPosition);
                 rankingTable.put(p.getID(), finishedInPosition);
                 finishedInPosition--;
+                remainingPlayers--;
             }
         }
     }
@@ -428,7 +428,7 @@ public class Game {
 
         //Hand out the pot to the remaining player in the hand
         Player winner = playersStillInCurrentHand.get(0);
-        gameController.preShowdownWinner(winner.getID(), pot.getPotSize());
+        gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         delay(3000);
     }
@@ -587,21 +587,21 @@ public class Game {
      * Tells the game controller to display the flop.
      */
     private void setFlop() {
-        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2], pot.getPotSize());
+        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
     }
 
     /**
      * Tells the game controller to display the turn.
      */
     private void setTurn() {
-        gameController.setTurn(communityCards[3], pot.getPotSize());
+        gameController.setTurn(communityCards[3]);
     }
 
     /**
      * Tells the game controller to display the river.
      */
     private void setRiver() {
-        gameController.setRiver(communityCards[4], pot.getPotSize());
+        gameController.setRiver(communityCards[4]);
     }
 
     /**

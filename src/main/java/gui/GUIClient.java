@@ -1,7 +1,7 @@
 package gui;
+
 import gamelogic.*;
 import javafx.application.Platform;
-
 import java.util.Map;
 
 /**
@@ -14,7 +14,7 @@ public class GUIClient implements GameClient {
     private GameScreen gameScreen;
 
     //Storage variables
-    private long minimumRaise = 0, highestAmountPutOnTableThisBettingRound = 0;
+    private long minimumRaise = 0, highestAmountPutOnTable = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
@@ -33,7 +33,12 @@ public class GUIClient implements GameClient {
     @Override
     public synchronized Decision getDecision(long timeToThink){
         //Make buttons visible
-        Platform.runLater(() -> gameScreen.setActionsVisible(true));
+        Decision.Move moveIfTimeRunOut = highestAmountPutOnTable == 0 ? Decision.Move.CHECK : Decision.Move.FOLD;
+        Platform.runLater(() -> {
+            gameScreen.setActionsVisible(true);
+            gameScreen.startTimer(timeToThink, moveIfTimeRunOut);
+        });
+
 
         try {
             wait();
@@ -69,7 +74,7 @@ public class GUIClient implements GameClient {
                 if (moveSize == stackSizes.get(this.id))
                     this.decision = new Decision(Decision.Move.ALL_IN);
                 else
-                    this.decision = new Decision(move, moveSize - highestAmountPutOnTableThisBettingRound);
+                    this.decision = new Decision(move, moveSize - highestAmountPutOnTable);
                 break;
             case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
         }
@@ -91,7 +96,7 @@ public class GUIClient implements GameClient {
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
-        else if (move == Decision.Move.RAISE && moveSize-highestAmountPutOnTableThisBettingRound < Math.max(bigBlind, minimumRaise) &&
+        else if (move == Decision.Move.RAISE && moveSize- highestAmountPutOnTable < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
             GUIMain.debugPrint("Raise is too small");
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
@@ -119,27 +124,27 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
         Platform.runLater(() -> gameScreen.displayFlop(card1, card2, card3));
-        newBettingRound(currentPotSize);
+        newBettingRound();
     }
 
     @Override
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
         Platform.runLater(() -> gameScreen.displayTurn(turn));
-        newBettingRound(currentPotSize);
+        newBettingRound();
     }
 
     @Override
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
         Platform.runLater(() -> gameScreen.displayRiver(river));
-        newBettingRound(currentPotSize);
+        newBettingRound();
     }
 
     @Override
     public void startNewHand() {
         Platform.runLater(() -> gameScreen.startNewHand());
-        newBettingRound(0);
+        newBettingRound();
     }
 
     @Override
@@ -166,12 +171,15 @@ public class GUIClient implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
-            case BET:case SMALL_BLIND: case BIG_BLIND:
-                highestAmountPutOnTableThisBettingRound = decision.size;
+            case SMALL_BLIND: case BIG_BLIND:
+                highestAmountPutOnTable = decision.move == Decision.Move.BIG_BLIND ? bigBlind : smallBlind;
+                break;
+            case BET:
+                highestAmountPutOnTable = decision.getSize();
                 break;
             case RAISE:
-                minimumRaise = decision.size;
-                highestAmountPutOnTableThisBettingRound += decision.size;
+                minimumRaise = decision.getSize();
+                highestAmountPutOnTable += decision.getSize();
                 break;
             case ALL_IN:
                 break;
@@ -193,6 +201,7 @@ public class GUIClient implements GameClient {
     @Override
     public void setSmallBlind(long smallBlind) {
         this.smallBlind = smallBlind;
+        Platform.runLater(() -> gameScreen.setSmallBlind(smallBlind));
     }
 
 
@@ -215,10 +224,10 @@ public class GUIClient implements GameClient {
     public void setLevelDuration(int levelDuration) {
     }
 
-    public void newBettingRound(long potSize) {
+    public void newBettingRound() {
         minimumRaise = 0;
-        highestAmountPutOnTableThisBettingRound = 0;
-        Platform.runLater(() -> gameScreen.newBettingRound(potSize));
+        highestAmountPutOnTable = 0;
+        Platform.runLater(() -> gameScreen.newBettingRound());
     }
 
 
@@ -235,8 +244,8 @@ public class GUIClient implements GameClient {
         Platform.runLater(() -> gameScreen.printToLogField(message));
     }
 
-    public void preShowdownWinner(int winnerID, long potsize) {
-        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID, potsize));
+    public void preShowdownWinner(int winnerID) {
+        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
     }
 
     public void showHoleCards(Map<Integer, Card[]> holeCards) {

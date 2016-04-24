@@ -2,7 +2,13 @@ package gui;
 
 import gamelogic.AIType;
 import gamelogic.Statistics;
+import gui.layouts.BoardLayout;
+import gui.layouts.PlayerLayout;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import gamelogic.Decision;
@@ -23,12 +29,12 @@ public class ButtonListeners {
     private static String savedName, savedNumOfPlayers, savedChoiceBox;
     private static GameController savedGameController;
 
-    private static SoundPlayer soundPlayer = new SoundPlayer();
+    private static long lastSpaceTap = 0;
 
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount, String buttonText) throws MalformedURLException {
+    public static void betButtonListener(String betAmount, String buttonText) {
         try {
             if (buttonText.equalsIgnoreCase("Raise to")) {
                 client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
@@ -43,7 +49,7 @@ public class ButtonListeners {
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(String buttonText) throws MalformedURLException {
+    public static void checkButtonListener(String buttonText){
         if (buttonText.equals("Call")) {
             client.setDecision(Decision.Move.CALL);
         } else if (buttonText.equals("Check")) {
@@ -98,8 +104,9 @@ public class ButtonListeners {
     /**
      * What happens when the startGameButton is pushed
      */
-    public static void startGameButtonListener(GameController gameController) {
-        gameController.startTournamentButtonClicked(gameSettings);
+    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
+        boolean showCards = showAllPlayerCards.isSelected();
+        gameController.startTournamentButtonClicked(gameSettings, showCards);
     }
     /**
      * What happens when the leaveLobbyButton is pushed
@@ -157,5 +164,53 @@ public class ButtonListeners {
         stats.printStatisticsToFile();
     }
 
+    /**
+     * Acts upon button released events.
+     *      Single space tap: Call (if possible)
+     *      Double space tap: Check (if possible)
+     *      Single enter tap: Bet/raise
+     *      Arrow up/down tap: Increase/decrease the amount field by 1 BB-amount
+     *      Back space tap: Fold
+     *
+     * @param ke
+     * @param playerLayout
+     */
+    public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout, BoardLayout boardLayout) {
+        TextField tf = playerLayout.getAmountTextField();
+        long currentBB = boardLayout.getBB(), stackSize = playerLayout.getStackSize();
 
+        if (tf.focusedProperty().getValue())
+            return;
+
+        try {
+            switch(ke.getCode()) {
+                case SPACE:
+                    if (System.currentTimeMillis() - lastSpaceTap <= 1000 || playerLayout.getCheckCallButtonText().equals("Call"))
+                        checkButtonListener(playerLayout.getCheckCallButtonText());
+
+                    lastSpaceTap = System.currentTimeMillis();
+                    break;
+
+                case ENTER:
+                    betButtonListener(tf.getText(), playerLayout.getBetRaiseButtonText());
+                    break;
+
+                case UP:case DOWN:
+                    if (ke.isShiftDown()) currentBB *= 10;
+                    long currentAmount = Long.parseLong(tf.getText());
+                    currentAmount = (ke.getCode() == KeyCode.UP) ? currentAmount+currentBB : currentAmount-currentBB;
+                    currentAmount = Math.max(currentAmount, boardLayout.getBB());
+                    currentAmount = Math.min(currentAmount, stackSize);
+
+                    playerLayout.setAmountTextField(currentAmount+"");
+                    break;
+
+                case BACK_SPACE:
+                    foldButtonListener();
+                    break;
+            }
+        } catch (NumberFormatException nfe) {
+            tf.setText("" + currentBB);
+        }
+    }
 }

@@ -39,13 +39,12 @@ public class NameGenerator {
         if (pathOfSeries.isEmpty() || characterNames.isEmpty())
             readNewSeries();
 
-        //choose from list and then removerino
+        //choose from list and then remove
         int randomListIndex = random.nextInt(characterNames.size());
         String randomCharacter = characterNames.get(randomListIndex).substring(0,1).toUpperCase() + characterNames.get(randomListIndex).substring(1, characterNames.get(randomListIndex).length()).toLowerCase();
         characterNames.remove(randomListIndex);
 
-        randomCharacter = randomCharacter.replaceAll("\\s", "");
-        return randomCharacter;
+        return randomCharacter.trim();
     }
 
     /**

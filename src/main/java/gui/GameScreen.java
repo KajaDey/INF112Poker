@@ -5,8 +5,6 @@ import gui.layouts.BoardLayout;
 import gui.layouts.IPlayerLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -33,12 +31,11 @@ public class GameScreen {
 
 
     private int playerID;
-    private int numberOfOpponentsAddedToTheGame = 0;
-    private int numberOfPlayers;
+    private int numberOfPlayers, opponentsAdded = 0;
 
     //Storage variables
-    private long highestAmountPutOnTable = 0;
-    private long currentBigBlind;
+    private long highestAmountPutOnTable = 0, potSize = 0;
+    private long  currentBigBlind, currentSmallBlind;
     private int [] positions;
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
@@ -56,9 +53,16 @@ public class GameScreen {
     private TextArea textArea = new TextArea();
     private SoundPlayer soundPlayer = new SoundPlayer();
 
-    public GameScreen(int ID, int numberOfPlayers) {
+    public GameScreen(int ID) {
         this.playerID = ID;
+
+        //Set onKeyRelease and onMouseClick events for pane
+        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
+        pane.setOnMouseClicked((event) -> playerLayout.setFocus());
+
+        //Create the scene
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
+
         this.allPlayerLayouts = new HashMap<>();
 
         insertLogField();
@@ -100,7 +104,7 @@ public class GameScreen {
             pane.getChildren().addAll(pLayout);
             allPlayerLayouts.put(userID, pLayout);
         } else {
-            int oppPosition = positions[numberOfOpponentsAddedToTheGame];
+            int oppPosition = positions[opponentsAdded];
             OpponentLayout oppLayout = new OpponentLayout(name, stackSize, oppPosition);
 
             //Set X/Y-layout of this opponent
@@ -108,7 +112,7 @@ public class GameScreen {
             oppLayout.setLayoutX(OpponentLayout.getLayoutX(oppPosition, width));
             oppLayout.setLayoutY(OpponentLayout.getLayoutY(oppPosition, height));
 
-            numberOfOpponentsAddedToTheGame++;
+            opponentsAdded++;
             pane.getChildren().add(oppLayout);
             allPlayerLayouts.put(userID, oppLayout);
         }
@@ -117,48 +121,22 @@ public class GameScreen {
     }
 
     /**
-     *
      * Generates an array of all the opponents positions.
      * Different amount of players give different positions.
      *
      * @return An array of all the positions.
      */
     private int[] giveOpponentPosition() {
-        int [] positions = new int[numberOfPlayers-1];
-
         switch (numberOfPlayers){
-            case 2:
-                positions[0] = 3;
-                break;
-            case 3:
-                positions[0] = 2;
-                positions[1] = 4;
-                break;
-            case 4:
-                positions[0] =2;
-                positions[1] =3;
-                positions[2] =4;
-                break;
-            case 5:
-                positions[0] =1;
-                positions[1] =2;
-                positions[2] =4;
-                positions[3] =5;
-                break;
-            case 6:
-                positions[0] =1;
-                positions[1] =2;
-                positions[2] =3;
-                positions[3] =4;
-                positions[4] =5;
-                break;
+            case 2: return new int[]{3};
+            case 3: return new int[]{2,4};
+            case 4: return new int[]{2,3,4};
+            case 5: return new int[]{1,2,4,5};
+            case 6: return new int[]{1,2,3,4,5};
             default:
                 GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game, cannot set positions");
-                break;
+                return null;
         }
-
-        return positions;
-
     }
 
     /**
@@ -176,14 +154,12 @@ public class GameScreen {
         textArea.setOpacity(0.9);
 
         //Add listener to listen for changes and automatically scroll to the bottom
-        textArea.textProperty().addListener(new ChangeListener<Object>() {
-            @Override
-            public void changed(ObservableValue<?> observable, Object oldValue,
-                                Object newValue) {
-                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
-            }
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
         });
 
+        //Remove highlight of textfield
+        textArea.setFocusTraversable(false);
     }
 
     /**
@@ -209,17 +185,18 @@ public class GameScreen {
      * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
-        assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
 
-        playerLayout.setCardImage(leftImage, rightImage);
+        allPlayerLayouts.get(userID).setCardImage(leftImage, rightImage);
 
-        holeCards = new ArrayList<>();
-        holeCards.add(leftCard);
-        holeCards.add(rightCard);
-        updateYourHandLabel();
+        if (userID == this.playerID) {
+            holeCards = new ArrayList<>();
+            holeCards.add(leftCard);
+            holeCards.add(rightCard);
+            updateYourHandLabel();
+        }
     }
 
     /**
@@ -317,7 +294,7 @@ public class GameScreen {
      * @param ID
      * @param decision
      */
-    public void playerMadeDecision(int ID, Decision decision) {
+    public synchronized void playerMadeDecision(int ID, Decision decision) {
         //Remove player highlighting
         allPlayerLayouts.get(ID).highlightTurn(false);
 
@@ -327,11 +304,11 @@ public class GameScreen {
         //Set button texts depending on the action
         updateButtonTexts(ID, decision.move);
 
-        //Play sound
+        //Play the appropriate sound for this decision
         soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
-        allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
+        allPlayerLayouts.get(ID).setStackLabel(""+stackSizes.get(ID));
     }
 
     /**
@@ -381,33 +358,33 @@ public class GameScreen {
                 break;
 
             case BET:
-                putOnTable.put(ID, decision.size);
-                newStackSize -= decision.size;
-                decisionText += (highestAmountPutOnTable = decision.size);
+                putOnTable.put(ID, decision.getSize());
+                newStackSize -= decision.getSize();
+                decisionText += (highestAmountPutOnTable = decision.getSize());
                 setAmountTextfield(highestAmountPutOnTable *2 + "");
-                printToLogField(names.get(ID) + " bet " + decision.size);
+                printToLogField(names.get(ID) + " bet " + decision.getSize());
                 break;
             case RAISE:
 
                 long theCall = highestAmountPutOnTable - putOnTable.get(ID);
-                newStackSize -= (theCall + decision.size);
-                decisionText += (highestAmountPutOnTable += decision.size);
-                setAmountTextfield((highestAmountPutOnTable + decision.size) + "");
+                newStackSize -= (theCall + decision.getSize());
+                decisionText += (highestAmountPutOnTable += decision.getSize());
+                setAmountTextfield((highestAmountPutOnTable + decision.getSize()) + "");
                 putOnTable.put(ID, highestAmountPutOnTable);
                 printToLogField(names.get(ID) + " raised to " + highestAmountPutOnTable);
                 break;
             case BIG_BLIND:
-                newStackSize -= decision.size;
-                decisionText += (highestAmountPutOnTable = decision.size);
+                newStackSize -= currentBigBlind;
+                decisionText += (highestAmountPutOnTable = currentBigBlind);
                 setAmountTextfield("" + currentBigBlind * 2);
-                putOnTable.put(ID, highestAmountPutOnTable);
+                putOnTable.put(ID, currentBigBlind);
                 printToLogField(names.get(ID) + " posted big blind");
                 break;
             case SMALL_BLIND:
-                newStackSize -= decision.size;
-                decisionText += (decision.size);
+                newStackSize -= currentSmallBlind;
+                decisionText += (currentSmallBlind);
                 setAmountTextfield("" + currentBigBlind * 2);
-                putOnTable.put(ID, decision.size);
+                putOnTable.put(ID, currentSmallBlind);
                 printToLogField(names.get(ID) + " posted small blind");
                 break;
             case ALL_IN:
@@ -450,15 +427,12 @@ public class GameScreen {
 
     /**
      * Start a new betting round and reset buttons
-     *
-     * @param potSize
      */
-    public void newBettingRound(long potSize) {
-        setPot(potSize);
+    public void newBettingRound() {
+        updatePot();
+
         //Reset everything people have put on the table
-        for (Integer i : putOnTable.keySet())
-            putOnTable.put(i, 0L);
-        highestAmountPutOnTable = 0;
+        putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
 
         this.highestAmountPutOnTable = 0;
         playerLayout.setCheckCallButton("Check");
@@ -500,14 +474,15 @@ public class GameScreen {
         //Set opponent hands
         Image backImage = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
         allPlayerLayouts.forEach((id, layout) -> {
-            if (!layout.isBust()) {
+            if (!layout.isBust())
                 layout.setCardImage(backImage, backImage);
-            }
         });
 
         //Reset board
         boardLayout.newHand();
-        setPot(0);
+        putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
+        potSize = 0;
+        updatePot();
     }
 
     /**
@@ -576,12 +551,10 @@ public class GameScreen {
      * @param error
      */
     public void setErrorStateOfAmountTextField(boolean error) {
-        if (error) {
+        if (error)
             playerLayout.setTextfieldStyle("-fx-border-color: rgba(255, 0, 0, 0.49) ; -fx-border-width: 3px ;");
-        }
-        else {
+        else
             playerLayout.setTextfieldStyle("-fx-border-color: rgb(255, 255, 255) ; -fx-border-width: 3px ;");
-        }
     }
 
     /**
@@ -642,28 +615,39 @@ public class GameScreen {
 
     /** Set the big blind */
     public void setBigBlind(long bigBlind) {
-        this.currentBigBlind = bigBlind;
+        boardLayout.setBigBlindLabel(this.currentBigBlind = bigBlind);
     }
+
+    public void setSmallBlind(long smallBlind) { boardLayout.setSmallBlindLabel(this.currentSmallBlind = smallBlind); }
 
     /**
      *  Set the 'Best hand'-label to the players current best hand (e.g.: "Pair of 2's")
      */
     private void updateYourHandLabel() {
         if (holeCards.isEmpty())
-            playerLayout.setBestHand("Your hand: ");
+            playerLayout.setBestHand("");
 
         HandCalculator hc = new HandCalculator(new Hand(holeCards.get(0), holeCards.get(1), communityCards));
-        playerLayout.setBestHand("Your hand: " + hc.getBestHandString());
+        playerLayout.setBestHand(hc.getBestHandString());
     }
 
     /**
      *   Sent if the hand is over before showdown
      * @param winnerID  The player that was left in the hand
-     * @param potSize   The amount the player won
      */
-    public void preShowdownWinner(int winnerID, long potSize) {
+    public void preShowdownWinner(int winnerID) {
+        updatePot();
         boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potSize));
         printToLogField(names.get(winnerID) + " won the pot of " + potSize);
+    }
+
+    /**
+     *
+     */
+    private void updatePot() {
+        for (Integer id : putOnTable.keySet())
+            potSize += putOnTable.get(id);
+        setPot(potSize);
     }
 
     /**
@@ -732,5 +716,13 @@ public class GameScreen {
     public void highlightPlayerTurn(int id) {
         if (allPlayerLayouts.get(id) != null)
             allPlayerLayouts.get(id).highlightTurn(true);
+    }
+
+    /**
+     *  Start the remaining time progress bar
+     * @param timeToThink
+     */
+    public void startTimer(long timeToThink, Decision.Move moveToExecute) {
+        playerLayout.startTimer(timeToThink, moveToExecute);
     }
 }
