@@ -1,6 +1,8 @@
 package gamelogic;
 
 
+import gui.GameSettings;
+
 import java.util.List;
 
 /**
@@ -11,6 +13,7 @@ import java.util.List;
 public class Player extends User {
     private int ID;
     private long stackSize;
+    private final GameSettings gameSettings;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
     private boolean allIn = false, hasActed = false;
@@ -20,9 +23,10 @@ public class Player extends User {
     private int numberOfAggressiveMoves = 0, numberOfPassiveMoves = 0;
     private Hand bestHand;
 
-    public Player(String name, long stackSize, int ID) {
+    public Player(String name, GameSettings gameSettings, int ID) {
         super(name);
-        this.stackSize = stackSize;
+        this.gameSettings = gameSettings;
+        this.stackSize = gameSettings.getStartStack();
         this.ID = ID;
     }
 
@@ -44,15 +48,15 @@ public class Player extends User {
         long amountToCall = (highestAmountPutOnTable - putOnTableThisRound);
         switch (decision.move) {
             case SMALL_BLIND: case BIG_BLIND:
-                putOnTableThisRound = decision.size;
-                stackSize -= decision.size;
-                pot.addToPot(ID, decision.size);
+                long size = decision.move == Decision.Move.SMALL_BLIND ? gameSettings.getSmallBlind() : gameSettings.getBigBlind();
+                putOnTableThisRound = size;
+                stackSize -= size;
+                pot.addToPot(ID, size);
                 break;
 
             case FOLD:
                 numberOfPassiveMoves++;
-                if (preFlop)
-                    foldsPreFlop++;
+                if (preFlop) foldsPreFlop++;
                 break;
 
             case CHECK:

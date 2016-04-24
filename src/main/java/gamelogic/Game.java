@@ -59,7 +59,7 @@ public class Game {
             return false;
         }
 
-        Player p = new Player(name, gameSettings.getStartStack(), ID);
+        Player p = new Player(name, gameSettings, ID);
         for (int i = 0; i < gameSettings.getMaxNumberOfPlayers(); i++) {
             if (players[i] == null) {
                 players[i] = p;

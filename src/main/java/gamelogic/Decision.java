@@ -62,4 +62,12 @@ public class Decision {
         }
         return "Decision{ " + move + " }";
     }
+
+    /**
+     * @return Return the size of this decision. Assertion error if this decision doesn't have a size.
+     */
+    public long getSize() {
+        assert this.size >= 0 : "Tried to get size from a " + this.move.toString() + ", size was " + this.size;
+        return size;
+    }
 }
