@@ -16,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 import java.io.IOException;
@@ -37,6 +36,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
     private Button betRaiseButton, checkCallButton, foldButton;
     private boolean isBust;
+    private long stackSize;
 
 
     public PlayerLayout(int playerID, String name, long stackSizeIn){
@@ -52,6 +52,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         HBox lastMoveAndChips = new HBox();
 
         //////Make all the elements I want to add to the playerLayout//////////
+        this.stackSize = stackSizeIn;
         stackLabel = ObjectStandards.makeStandardLabelWhite("", stackSizeIn + "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
@@ -92,6 +93,12 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         betRaiseButton = ObjectStandards.makeStandardButton("Bet");
         betRaiseButton.setMinHeight(66);
 
+        //Prevent objects from being focus traversable, meaning you can't tab them into focus
+        betRaiseButton.setFocusTraversable(false);
+        checkCallButton.setFocusTraversable(false);
+        foldButton.setFocusTraversable(false);
+        amountTextField.setFocusTraversable(false);
+        slider.setFocusTraversable(false);
 
         //Actions
         betRaiseButton.setOnAction(e -> {
@@ -239,6 +246,9 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         foldButton.setVisible(visible);
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
+
+        this.requestFocus();
+        this.requestFocus();
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
@@ -247,6 +257,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     public void setStackLabel(String stack) {
+        //If stack is a number, set stacksize to this number
+        try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
         stackLabel.setText(stack);
     }
 
@@ -323,4 +335,18 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         return isBust;
     }
 
+    /**
+     *  Set the focus of this layout (set/remove focus amount text field)
+     */
+    public void setFocus() {
+        this.requestFocus();
+    }
+    public String getCheckCallButtonText() { return checkCallButton.getText(); }
+    public String getBetRaiseButtonText() { return betRaiseButton.getText(); }
+    public TextField getAmountTextField() { return amountTextField; }
+
+    public void setStackSize(long stackSize) { this.stackSize = stackSize; }
+    public long getStackSize() {
+        return this.stackSize;
+    }
 }

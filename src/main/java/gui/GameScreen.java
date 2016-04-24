@@ -5,8 +5,6 @@ import gui.layouts.BoardLayout;
 import gui.layouts.IPlayerLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -58,7 +56,14 @@ public class GameScreen {
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
+
+        //Set onKeyRelease and onMouseClick events for pane
+        pane.setOnKeyReleased(ke ->  ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
+        pane.setOnMouseClicked((event) -> playerLayout.setFocus());
+
+        //Create the scene
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
+
         this.allPlayerLayouts = new HashMap<>();
 
         insertLogField();
@@ -176,14 +181,12 @@ public class GameScreen {
         textArea.setOpacity(0.9);
 
         //Add listener to listen for changes and automatically scroll to the bottom
-        textArea.textProperty().addListener(new ChangeListener<Object>() {
-            @Override
-            public void changed(ObservableValue<?> observable, Object oldValue,
-                                Object newValue) {
-                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
-            }
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
         });
 
+        //Remove highlight of textfield
+        textArea.setFocusTraversable(false);
     }
 
     /**
@@ -209,7 +212,6 @@ public class GameScreen {
      * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
-        //assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
@@ -333,7 +335,7 @@ public class GameScreen {
         soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
-        allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
+        allPlayerLayouts.get(ID).setStackLabel(""+stackSizes.get(ID));
     }
 
     /**

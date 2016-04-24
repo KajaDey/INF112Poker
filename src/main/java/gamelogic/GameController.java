@@ -74,7 +74,7 @@ public class GameController {
         initClients();
 
         //Print welcome message to log
-        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
+        this.printToLogField("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -327,7 +327,7 @@ public class GameController {
     /**
      * Print a message to the on screen log
      */
-    public void printToLogfield(String message) {
+    public void printToLogField(String message) {
         guiClient.printToLogField(message);
     }
 
@@ -349,6 +349,8 @@ public class GameController {
         GameClient bustedClient = clients.get(bustPlayerID);
         if (!(bustedClient instanceof GUIClient)) {
             clients.remove(bustPlayerID);
+        } else {
+            showAllPlayerCards = true;
         }
     }
 
