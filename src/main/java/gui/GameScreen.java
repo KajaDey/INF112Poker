@@ -625,10 +625,10 @@ public class GameScreen {
      */
     private void updateYourHandLabel() {
         if (holeCards.isEmpty())
-            playerLayout.setBestHand("Your hand: ");
+            playerLayout.setBestHand("");
 
         HandCalculator hc = new HandCalculator(new Hand(holeCards.get(0), holeCards.get(1), communityCards));
-        playerLayout.setBestHand("Your hand: " + hc.getBestHandString());
+        playerLayout.setBestHand(hc.getBestHandString());
     }
 
     /**
@@ -716,5 +716,13 @@ public class GameScreen {
     public void highlightPlayerTurn(int id) {
         if (allPlayerLayouts.get(id) != null)
             allPlayerLayouts.get(id).highlightTurn(true);
+    }
+
+    /**
+     *  Start the remaining time progress bar
+     * @param timeToThink
+     */
+    public void startTimer(long timeToThink, Decision.Move moveToExecute) {
+        playerLayout.startTimer(timeToThink, moveToExecute);
     }
 }
