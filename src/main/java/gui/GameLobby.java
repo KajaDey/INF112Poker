@@ -1,6 +1,5 @@
 package gui;
 
-import com.sun.tools.javac.comp.Check;
 import gamelogic.AIType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
