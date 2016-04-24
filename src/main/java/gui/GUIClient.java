@@ -122,25 +122,25 @@ public class GUIClient implements GameClient {
     @Override
     public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
         Platform.runLater(() -> gameScreen.displayFlop(card1, card2, card3));
-        newBettingRound(currentPotSize);
+        newBettingRound();
     }
 
     @Override
     public void setTurn(Card turn, long currentPotSize) {
         Platform.runLater(() -> gameScreen.displayTurn(turn));
-        newBettingRound(currentPotSize);
+        newBettingRound();
     }
 
     @Override
     public void setRiver(Card river, long currentPotSize) {
         Platform.runLater(() -> gameScreen.displayRiver(river));
-        newBettingRound(currentPotSize);
+        newBettingRound();
     }
 
     @Override
     public void startNewHand() {
         Platform.runLater(() -> gameScreen.startNewHand());
-        newBettingRound(0);
+        newBettingRound();
     }
 
     @Override
@@ -217,10 +217,10 @@ public class GUIClient implements GameClient {
     public void setLevelDuration(int levelDuration) {
     }
 
-    public void newBettingRound(long potSize) {
+    public void newBettingRound() {
         minimumRaise = 0;
         highestAmountPutOnTableThisBettingRound = 0;
-        Platform.runLater(() -> gameScreen.newBettingRound(potSize));
+        Platform.runLater(() -> gameScreen.newBettingRound());
     }
 
 
@@ -238,7 +238,7 @@ public class GUIClient implements GameClient {
     }
 
     public void preShowdownWinner(int winnerID, long potsize) {
-        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID, potsize));
+        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
     }
 
     public void showHoleCards(Map<Integer, Card[]> holeCards) {

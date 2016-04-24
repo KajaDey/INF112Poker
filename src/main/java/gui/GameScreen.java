@@ -41,6 +41,7 @@ public class GameScreen {
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
+    private long potSize = 0;
     private ArrayList<Card> holeCards, communityCards;
 
 
@@ -454,15 +455,12 @@ public class GameScreen {
 
     /**
      * Start a new betting round and reset buttons
-     *
-     * @param potSize
      */
-    public void newBettingRound(long potSize) {
-        setPot(potSize);
+    public void newBettingRound() {
+        updatePot();
+
         //Reset everything people have put on the table
-        for (Integer i : putOnTable.keySet())
-            putOnTable.put(i, 0L);
-        highestAmountPutOnTable = 0;
+        putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
 
         this.highestAmountPutOnTable = 0;
         playerLayout.setCheckCallButton("Check");
@@ -511,7 +509,9 @@ public class GameScreen {
 
         //Reset board
         boardLayout.newHand();
-        setPot(0);
+        putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
+        potSize = 0;
+        updatePot();
     }
 
     /**
@@ -663,11 +663,20 @@ public class GameScreen {
     /**
      *   Sent if the hand is over before showdown
      * @param winnerID  The player that was left in the hand
-     * @param potSize   The amount the player won
      */
-    public void preShowdownWinner(int winnerID, long potSize) {
+    public void preShowdownWinner(int winnerID) {
+        updatePot();
         boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potSize));
         printToLogField(names.get(winnerID) + " won the pot of " + potSize);
+    }
+
+    /**
+     *
+     */
+    private void updatePot() {
+        for (Integer id : putOnTable.keySet())
+            potSize += putOnTable.get(id);
+        setPot(potSize);
     }
 
     /**
