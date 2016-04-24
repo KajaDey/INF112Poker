@@ -41,8 +41,8 @@ public class ButtonListeners {
             } else if (buttonText.equalsIgnoreCase("Bet")) {
                 client.setDecision(Decision.Move.BET, Long.valueOf(betAmount));
             }
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (NumberFormatException e){
+
         }
     }
 
@@ -185,7 +185,7 @@ public class ButtonListeners {
         try {
             switch(ke.getCode()) {
                 case SPACE:
-                    if (System.currentTimeMillis() - lastSpaceTap <= 1000 || playerLayout.getCheckCallButtonText().equals("Call"))
+                    if (System.currentTimeMillis() - lastSpaceTap <= 1000 || playerLayout.getCheckCallButtonText().equalsIgnoreCase("Call"))
                         checkButtonListener(playerLayout.getCheckCallButtonText());
 
                     lastSpaceTap = System.currentTimeMillis();
