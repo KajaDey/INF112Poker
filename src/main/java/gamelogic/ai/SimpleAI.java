@@ -169,7 +169,6 @@ public class SimpleAI implements GameClient {
                 break;
 
             case CALL:
-                stackSizes.compute(playerId, (key, val) -> val -= decision.size);
                 if (playerId == this.playerId) {
                     stackSizes.compute(playerId, (key, val) -> val -= currentBet);
                     currentBet = 0;
@@ -178,18 +177,16 @@ public class SimpleAI implements GameClient {
 
             case RAISE:
             case BET:
-                stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.size));
-                if (playerId == this.playerId) {
-                }
+                stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.getSize()));
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }
                 else {
-                    currentBet += decision.size;
+                    currentBet += decision.getSize();
                 }
 
                 betHasBeenPlaced = true;
-                minimumRaise = decision.size;
+                minimumRaise = decision.getSize();
                 break;
             case FOLD:
             break;

@@ -74,16 +74,16 @@ public class Player extends User {
             case BET:
                 assert putOnTableThisRound == 0;
                 numberOfAggressiveMoves++;
-                this.putOnTableThisRound = decision.size;
-                stackSize -= decision.size;
-                pot.addToPot(ID, decision.size);
+                this.putOnTableThisRound = decision.getSize();
+                stackSize -= decision.getSize();
+                pot.addToPot(ID, decision.getSize());
                 break;
 
             case RAISE:
                 numberOfAggressiveMoves++;
-                stackSize -= (amountToCall + decision.size);
-                putOnTableThisRound = highestAmountPutOnTable + decision.size;
-                pot.addToPot(ID, amountToCall + decision.size);
+                stackSize -= (amountToCall + decision.getSize());
+                putOnTableThisRound = highestAmountPutOnTable + decision.getSize();
+                pot.addToPot(ID, amountToCall + decision.getSize());
                 break;
 
             case ALL_IN:

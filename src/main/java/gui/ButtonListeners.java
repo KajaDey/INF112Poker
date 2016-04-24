@@ -199,7 +199,7 @@ public class ButtonListeners {
                     if (ke.isShiftDown()) currentBB *= 10;
                     long currentAmount = Long.parseLong(tf.getText());
                     currentAmount = (ke.getCode() == KeyCode.UP) ? currentAmount+currentBB : currentAmount-currentBB;
-                    currentAmount = Math.max(currentAmount, currentBB);
+                    currentAmount = Math.max(currentAmount, boardLayout.getBB());
                     currentAmount = Math.min(currentAmount, stackSize);
 
                     playerLayout.setAmountTextField(currentAmount+"");

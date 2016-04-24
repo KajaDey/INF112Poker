@@ -229,11 +229,11 @@ public class Game {
             String name = playerToAct.getName();
             switch(decision.move) {
                 case BET:
-                    highestAmountPutOnTable = decision.size;
+                    highestAmountPutOnTable = decision.getSize();
                     break;
                 case RAISE:
-                    highestAmountPutOnTable += decision.size;
-                    currentMinimumRaise = decision.size;
+                    highestAmountPutOnTable += decision.getSize();
+                    currentMinimumRaise = decision.getSize();
                     break;
                 case ALL_IN:
                     if(playerToAct.putOnTable() >= highestAmountPutOnTable+currentMinimumRaise) {
@@ -304,12 +304,12 @@ public class Game {
                     break;
 
                 case RAISE:
-                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.size + " when highest amount put on table was 0";
-                    if ((decision.size + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
-                        GUIMain.debugPrintln(playerToAct.getName() + " tried to raise to " + (decision.size + highestAmountPutOnTable) + " but only has " + stackSize);
+                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.getSize() + " when highest amount put on table was 0";
+                    if ((decision.getSize() + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
+                        GUIMain.debugPrintln(playerToAct.getName() + " tried to raise to " + (decision.getSize() + highestAmountPutOnTable) + " but only has " + stackSize);
                         break;
                     }
-                    if (decision.size >= currentMinimumRaise)
+                    if (decision.getSize() >= currentMinimumRaise)
                         return decision;
                     break;
                 default: GUIMain.debugPrintln("Unknown move: " + decision.move);
@@ -344,9 +344,9 @@ public class Game {
         }
 
         //If one of the players don't have enough to post their blind
-        if (smallBlindPlayer.getStackSize() <= postSB.size)
+        if (smallBlindPlayer.getStackSize() <= gameSettings.getSmallBlind())
             postSB = new Decision(Decision.Move.ALL_IN);
-        if (bigBlindPlayer.getStackSize() <= postBB.size)
+        if (bigBlindPlayer.getStackSize() <= gameSettings.getBigBlind())
             postBB = new Decision(Decision.Move.ALL_IN);
 
         //Notify GUI and AI about the posting
