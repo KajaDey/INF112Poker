@@ -1,17 +1,70 @@
 \documentclass{article}
-
 \usepackage[utf8]{inputenc}
+\usepackage{textcomp}
 
+\title{Poker network protocol}
 \begin{document}
+\maketitle
+
+A protocol for playing poker remotely via a text interface, usually over a network. The protocol is based on passing text commands between a server and a client. Commands should be utf-8 encoded, and each command is terminated by a newline. If the client/server receives an unrecognized command, the command should be ignored, and communication should continue as normal.
+
+\section{Decision and card format}
+\subsection{Cards}
+Each card is stored as a single text token, with the suit followed by the rank. The ranks are given by the integers 2-14, the suits are given by their names (diamonds, spades, hearts, clubs). Examples: diamonds14, spades7, clubs10.
+
+\subsection{Decisions}
+A decision is stored as a single token, consisting of the type of decision and optionally the ``size'' of the decision in case of raises or bets. Possible decisions are:
+
+\begin{itemize}
+\item fold
+\item check
+\item call
+\item smallBlind
+\item bigBlindbet
+\item bet\textlangle{}amount\textrangle{} 
+\item raise\textlangle{}amount\textrangle{} Raises \textit{by} the amount given, not \textit{to} the amount.
+\item allIn
+\end{itemize}
 
 \section{Server to client}
 
-\subsection{upi}
-Used to initialize communication over the protocol, and tell the client to use the unviersal poker interface.
+\subsection{upiok \textlangle{}version\textrangle{}}
+Sent after it receives the initial upi command from client, to complete the init handshake.
+
+\subsection{getName}
+Requests the client name, to which it expects a name command in return.
 
 \subsection{newgame}
-Tells the client that a whole new game is being started, with new players and new stack sizes
+Tells the client that a whole new game is being played, with new players and new stack sizes. This is not necessarily the start of the game, if the client joins the table mid-way through a game.
 
-\subsection{amountOfPlayers <n>}
+\subsection{amountOfPlayers \textlangle{}n\textrangle{}}
+Sends the number of players on the table, including the client itself. This should be sent immediately after a newgame command, and before other information (stack sizes, blinds, names, etc) are sent.
+
+\subsection{clientId \textlangle{}id\textrangle{}}
+Sends the client's ID in the game. Every player on the table has a unique non-negative ID, which is used when sending names, positions, etc.
+
+\subsection{playerNames \textlangle{}id1 name1\textrangle{} \textlangle{}id2 name2\textrangle{} ... }
+Sends the names of all the players. This should be sent These are not used by the protocol, but are for the client to display.
+
+\subsection{playerPositions \textlangle{}id1 position1\textrangle{} \textlangle{}id2 position2\textrangle{} ... }
+Sends the position for all players' IDs. The position is sent as a non-negative integer, where position 0 is small blind, position 1 is big blind, position 2 is UTG, etc.
+
+\subsection{stackSizes \textlangle{}id1 stackSize1\textrangle{} \textlangle{}id2 stackSize2\textrangle{} ... }
+Sends the stackSizes for all players' IDs.
+
+\subsection{getDecision \textlangle{}timeToThink\textrangle{}}
+It's the client's turn, and the server is asking for a decision. The server expect a decision command in return. The timeToThink field is the time the client has to think, in milliseconds. If the client does not return a decision in time, the server may give the client a ``default'' decision, or otherwise override the client's wishes.
+
+\section{Client to server}
+
+\subsection{upi \textlangle{}version\textrangle{}}
+Used to initialize communication over the protocol, and tell the client server that it is using unviersal poker interface. The version parameter is a sequence-based identifier. (like 1.0.0)
+
+\subsection{name \textlangle{}name\textrangle{}}
+Sends the client's name to the server. Should only be sent after the server requests it with a getName command. The name field may be empty, in which case the server may assign a name to the client. The name cannot contain whitespace characters.
+
+\subsection{decision \textlangle{}decision\textrangle{}}
+Sends the client's decision to the server. See section ``decision are card formats'' for the format for decisions.
 
 \end{document}
+ 
