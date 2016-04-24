@@ -243,12 +243,11 @@ public class GameController {
      * @param card1 Card one in the flop
      * @param card2 Card two in the flop
      * @param card3 Card three in the flop
-     * @param currentPotSize Current amount in the pot
      */
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setFlop(card1, card2, card3, currentPotSize);
+            c.setFlop(card1, card2, card3);
         }
     }
 
@@ -256,12 +255,11 @@ public class GameController {
      * Informs each client about the turn card and current pot size
      *
      * @param turn Card displayed in the turn
-     * @param currentPotSize Current amount in the pot
      */
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setTurn(turn, currentPotSize);
+            c.setTurn(turn);
         }
     }
 
@@ -269,12 +267,11 @@ public class GameController {
      * Informs each client about the river card and current pot size
      *
      * @param river Card displayed in the river
-     * @param currentPotSize Current amount in the pot
      */
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setRiver(river, currentPotSize);
+            c.setRiver(river);
         }
     }
 
@@ -335,8 +332,8 @@ public class GameController {
      *  Called every time a hand is won before showdown (everyone but 1 player folded)
      *  Prints a text showing who won the pot and how much it was. Also prints to logfield
      */
-    public void preShowdownWinner(int winnerID, long potSize) {
-        guiClient.preShowdownWinner(winnerID, potSize);
+    public void preShowdownWinner(int winnerID) {
+        guiClient.preShowdownWinner(winnerID);
     }
     /**
      * Called every time a player is bust to inform all clients

@@ -31,17 +31,15 @@ public class GameScreen {
 
 
     private int playerID;
-    private int numberOfOpponentsAddedToTheGame = 0;
-    private int numberOfPlayers;
+    private int numberOfPlayers, opponentsAdded = 0;
 
     //Storage variables
-    private long highestAmountPutOnTable = 0;
-    private long currentBigBlind;
+    private long highestAmountPutOnTable = 0, potSize = 0;
+    private long  currentBigBlind, currentSmallBlind;
     private int [] positions;
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
-    private long potSize = 0;
     private ArrayList<Card> holeCards, communityCards;
 
 
@@ -106,7 +104,7 @@ public class GameScreen {
             pane.getChildren().addAll(pLayout);
             allPlayerLayouts.put(userID, pLayout);
         } else {
-            int oppPosition = positions[numberOfOpponentsAddedToTheGame];
+            int oppPosition = positions[opponentsAdded];
             OpponentLayout oppLayout = new OpponentLayout(name, stackSize, oppPosition);
 
             //Set X/Y-layout of this opponent
@@ -114,7 +112,7 @@ public class GameScreen {
             oppLayout.setLayoutX(OpponentLayout.getLayoutX(oppPosition, width));
             oppLayout.setLayoutY(OpponentLayout.getLayoutY(oppPosition, height));
 
-            numberOfOpponentsAddedToTheGame++;
+            opponentsAdded++;
             pane.getChildren().add(oppLayout);
             allPlayerLayouts.put(userID, oppLayout);
         }
@@ -123,48 +121,22 @@ public class GameScreen {
     }
 
     /**
-     *
      * Generates an array of all the opponents positions.
      * Different amount of players give different positions.
      *
      * @return An array of all the positions.
      */
     private int[] giveOpponentPosition() {
-        int [] positions = new int[numberOfPlayers-1];
-
         switch (numberOfPlayers){
-            case 2:
-                positions[0] = 3;
-                break;
-            case 3:
-                positions[0] = 2;
-                positions[1] = 4;
-                break;
-            case 4:
-                positions[0] =2;
-                positions[1] =3;
-                positions[2] =4;
-                break;
-            case 5:
-                positions[0] =1;
-                positions[1] =2;
-                positions[2] =4;
-                positions[3] =5;
-                break;
-            case 6:
-                positions[0] =1;
-                positions[1] =2;
-                positions[2] =3;
-                positions[3] =4;
-                positions[4] =5;
-                break;
+            case 2: return new int[]{3};
+            case 3: return new int[]{2,4};
+            case 4: return new int[]{2,3,4};
+            case 5: return new int[]{1,2,4,5};
+            case 6: return new int[]{1,2,3,4,5};
             default:
                 GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game, cannot set positions");
-                break;
+                return null;
         }
-
-        return positions;
-
     }
 
     /**
@@ -402,17 +374,17 @@ public class GameScreen {
                 printToLogField(names.get(ID) + " raised to " + highestAmountPutOnTable);
                 break;
             case BIG_BLIND:
-                newStackSize -= decision.size;
-                decisionText += (highestAmountPutOnTable = decision.size);
+                newStackSize -= currentBigBlind;
+                decisionText += (highestAmountPutOnTable = currentBigBlind);
                 setAmountTextfield("" + currentBigBlind * 2);
-                putOnTable.put(ID, highestAmountPutOnTable);
+                putOnTable.put(ID, currentBigBlind);
                 printToLogField(names.get(ID) + " posted big blind");
                 break;
             case SMALL_BLIND:
-                newStackSize -= decision.size;
-                decisionText += (decision.size);
+                newStackSize -= currentSmallBlind;
+                decisionText += (currentSmallBlind);
                 setAmountTextfield("" + currentBigBlind * 2);
-                putOnTable.put(ID, decision.size);
+                putOnTable.put(ID, currentSmallBlind);
                 printToLogField(names.get(ID) + " posted small blind");
                 break;
             case ALL_IN:
@@ -646,7 +618,7 @@ public class GameScreen {
         boardLayout.setBigBlindLabel(this.currentBigBlind = bigBlind);
     }
 
-    public void setSmallBlind(long smallBlind) { boardLayout.setSmallBlindLabel(smallBlind); }
+    public void setSmallBlind(long smallBlind) { boardLayout.setSmallBlindLabel(this.currentSmallBlind = smallBlind); }
 
     /**
      *  Set the 'Best hand'-label to the players current best hand (e.g.: "Pair of 2's")

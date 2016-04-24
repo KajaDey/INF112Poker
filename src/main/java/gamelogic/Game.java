@@ -331,8 +331,8 @@ public class Game {
     private void postBlinds() {
         assert playersStillInCurrentHand.size() >= 2 : "Not enough players still playing to post blinds";
 
-        Decision postSB = new Decision(Decision.Move.SMALL_BLIND, gameSettings.getSmallBlind());
-        Decision postBB = new Decision(Decision.Move.BIG_BLIND, gameSettings.getBigBlind());
+        Decision postSB = new Decision(Decision.Move.SMALL_BLIND);
+        Decision postBB = new Decision(Decision.Move.BIG_BLIND);
 
         Player smallBlindPlayer, bigBlindPlayer;
         if (playersStillInCurrentHand.size() == 2) {
@@ -428,7 +428,7 @@ public class Game {
 
         //Hand out the pot to the remaining player in the hand
         Player winner = playersStillInCurrentHand.get(0);
-        gameController.preShowdownWinner(winner.getID(), pot.getPotSize());
+        gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         delay(3000);
     }
@@ -587,21 +587,21 @@ public class Game {
      * Tells the game controller to display the flop.
      */
     private void setFlop() {
-        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2], pot.getPotSize());
+        gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
     }
 
     /**
      * Tells the game controller to display the turn.
      */
     private void setTurn() {
-        gameController.setTurn(communityCards[3], pot.getPotSize());
+        gameController.setTurn(communityCards[3]);
     }
 
     /**
      * Tells the game controller to display the river.
      */
     private void setRiver() {
-        gameController.setRiver(communityCards[4], pot.getPotSize());
+        gameController.setRiver(communityCards[4]);
     }
 
     /**
