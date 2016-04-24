@@ -25,7 +25,6 @@ import java.net.MalformedURLException;
  */
 
 public class PlayerLayout extends VBox implements IPlayerLayout {
-
     private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private Slider slider = new Slider(0,0,0);
@@ -87,9 +86,9 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         slider.setMinorTickCount(0);
         slider.setSnapToTicks(false);
 
-        sliderAndBestHandBox.setMinWidth(250);
+        sliderAndBestHandBox.setMinWidth(200);
         progressBar = new RemainingTimeBar();
-        progressBar.prefWidthProperty().bind(sliderAndBestHandBox.widthProperty().subtract(100));
+        progressBar.prefWidthProperty().bind(sliderAndBestHandBox.widthProperty().subtract(50));
 
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
@@ -107,19 +106,10 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         //Actions
         betRaiseButton.setOnAction(e -> {
             if(!amountTextField.getText().equals("")) {
-                if (amountTextField.getText().equals("All in")) {
-                    try {
-                        ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
-                    } catch (MalformedURLException e1) {
-                        e1.printStackTrace();
-                    }
-                }
+                if (amountTextField.getText().equals("All in"))
+                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
                 else
-                    try {
-                        ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
-                    } catch (MalformedURLException e1) {
-                        e1.printStackTrace();
-                    }
+                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
                 updateSliderValues(stackSizeIn);
             }
         });
@@ -127,27 +117,15 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         amountTextField.setOnAction(e -> {
             if (!amountTextField.getText().equals("")) {
                 if (amountTextField.getText().equals("All in"))
-                    try {
-                        ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
-                    } catch (MalformedURLException e1) {
-                        e1.printStackTrace();
-                    }
+                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
                 else
-                    try {
-                        ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
-                    } catch (MalformedURLException e1) {
-                        e1.printStackTrace();
-                    }
+                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
                 updateSliderValues(stackSizeIn);
             }
         });
 
         checkCallButton.setOnAction(e -> {
-            try {
-                ButtonListeners.checkButtonListener(checkCallButton.getText());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            ButtonListeners.checkButtonListener(checkCallButton.getText());
             updateSliderValues(stackSizeIn);
         });
 

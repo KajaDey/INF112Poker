@@ -34,7 +34,7 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount, String buttonText) throws MalformedURLException {
+    public static void betButtonListener(String betAmount, String buttonText) {
         try {
             if (buttonText.equalsIgnoreCase("Raise to")) {
                 client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
@@ -49,7 +49,7 @@ public class ButtonListeners {
     /**
      * What happens when the checkButton is pushed
      */
-    public static void checkButtonListener(String buttonText) throws MalformedURLException {
+    public static void checkButtonListener(String buttonText){
         if (buttonText.equals("Call")) {
             client.setDecision(Decision.Move.CALL);
         } else if (buttonText.equals("Check")) {
@@ -209,8 +209,6 @@ public class ButtonListeners {
                     foldButtonListener();
                     break;
             }
-        } catch (MalformedURLException mue) {
-            mue.printStackTrace();
         } catch (NumberFormatException nfe) {
             tf.setText("" + currentBB);
         }
