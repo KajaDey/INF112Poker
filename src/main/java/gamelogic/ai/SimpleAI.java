@@ -222,17 +222,17 @@ public class SimpleAI implements GameClient {
     public void setLevelDuration(int levelDuration) { }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
         newBettingRound();
     }
 
     @Override
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
         newBettingRound();
     }
 
     @Override
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
         newBettingRound();
     }
 

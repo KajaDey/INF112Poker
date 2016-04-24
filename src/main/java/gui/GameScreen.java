@@ -5,8 +5,6 @@ import gui.layouts.BoardLayout;
 import gui.layouts.IPlayerLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -43,6 +41,7 @@ public class GameScreen {
     private Map<Integer, String> names = new HashMap<>();
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
+    private long potSize = 0;
     private ArrayList<Card> holeCards, communityCards;
 
 
@@ -58,7 +57,14 @@ public class GameScreen {
 
     public GameScreen(int ID, int numberOfPlayers) {
         this.playerID = ID;
+
+        //Set onKeyRelease and onMouseClick events for pane
+        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
+        pane.setOnMouseClicked((event) -> playerLayout.setFocus());
+
+        //Create the scene
         scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
+
         this.allPlayerLayouts = new HashMap<>();
 
         insertLogField();
@@ -176,14 +182,12 @@ public class GameScreen {
         textArea.setOpacity(0.9);
 
         //Add listener to listen for changes and automatically scroll to the bottom
-        textArea.textProperty().addListener(new ChangeListener<Object>() {
-            @Override
-            public void changed(ObservableValue<?> observable, Object oldValue,
-                                Object newValue) {
-                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
-            }
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
         });
 
+        //Remove highlight of textfield
+        textArea.setFocusTraversable(false);
     }
 
     /**
@@ -209,7 +213,6 @@ public class GameScreen {
      * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
-        //assert userID == playerID : "Player " + playerID + " was sent someone elses cards";
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
@@ -333,7 +336,7 @@ public class GameScreen {
         soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
-        allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
+        allPlayerLayouts.get(ID).setStackLabel(""+stackSizes.get(ID));
     }
 
     /**
@@ -452,15 +455,12 @@ public class GameScreen {
 
     /**
      * Start a new betting round and reset buttons
-     *
-     * @param potSize
      */
-    public void newBettingRound(long potSize) {
-        setPot(potSize);
+    public void newBettingRound() {
+        updatePot();
+
         //Reset everything people have put on the table
-        for (Integer i : putOnTable.keySet())
-            putOnTable.put(i, 0L);
-        highestAmountPutOnTable = 0;
+        putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
 
         this.highestAmountPutOnTable = 0;
         playerLayout.setCheckCallButton("Check");
@@ -502,14 +502,15 @@ public class GameScreen {
         //Set opponent hands
         Image backImage = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
         allPlayerLayouts.forEach((id, layout) -> {
-            if (!layout.isBust()) {
+            if (!layout.isBust())
                 layout.setCardImage(backImage, backImage);
-            }
         });
 
         //Reset board
         boardLayout.newHand();
-        setPot(0);
+        putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
+        potSize = 0;
+        updatePot();
     }
 
     /**
@@ -661,11 +662,20 @@ public class GameScreen {
     /**
      *   Sent if the hand is over before showdown
      * @param winnerID  The player that was left in the hand
-     * @param potSize   The amount the player won
      */
-    public void preShowdownWinner(int winnerID, long potSize) {
+    public void preShowdownWinner(int winnerID) {
+        updatePot();
         boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potSize));
         printToLogField(names.get(winnerID) + " won the pot of " + potSize);
+    }
+
+    /**
+     *
+     */
+    private void updatePot() {
+        for (Integer id : putOnTable.keySet())
+            potSize += putOnTable.get(id);
+        setPot(potSize);
     }
 
     /**
