@@ -1,14 +1,13 @@
 package gui.layouts;
 
+import gamelogic.Decision;
 import gui.ButtonListeners;
 import gui.ImageViewer;
 import gui.ObjectStandards;
+import gui.RemainingTimeBar;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -31,6 +30,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextField;
+    private RemainingTimeBar progressBar;
 
     private long currentSmallBlind, currentBigBlind;
 
@@ -58,7 +58,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
-        bestHand = ObjectStandards.makeStandardLabelWhite("Your hand:","");
+        bestHand = ObjectStandards.makeStandardLabelWhite("","");
+        bestHand.setFont(Font.font("Areal", FontWeight.BOLD, 15));
 
         Image backOfCards = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.PLAYER);
@@ -86,6 +87,9 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         slider.setMinorTickCount(0);
         slider.setSnapToTicks(false);
 
+        sliderAndBestHandBox.setMinWidth(250);
+        progressBar = new RemainingTimeBar();
+        progressBar.prefWidthProperty().bind(sliderAndBestHandBox.widthProperty().subtract(100));
 
         //Buttons in the VBox
         checkCallButton = ObjectStandards.makeStandardButton("Check");
@@ -183,8 +187,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
         slider.setMaxWidth(150);
 
-        sliderAndBestHandBox.getChildren().addAll(bestHand,slider);
-        sliderAndBestHandBox.setAlignment(Pos.CENTER_LEFT);
+        sliderAndBestHandBox.getChildren().addAll(bestHand,slider, progressBar);
+        sliderAndBestHandBox.setAlignment(Pos.CENTER);
         sliderAndBestHandBox.setPadding(new Insets(0,0,0,8));
 
         fullBox.getChildren().addAll(stats, leftCardImage, rightCardImage, inputAndButtons, twoButtonsRight, sliderAndBestHandBox);
@@ -246,8 +250,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         foldButton.setVisible(visible);
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
+        progressBar.setVisible(visible);
 
-        this.requestFocus();
         this.requestFocus();
     }
 
@@ -257,7 +261,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     public void setStackLabel(String stack) {
-        //If stack is a number, set stacksize to this number
+        //If stack is a number, set stackSize to this number
         try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
         stackLabel.setText(stack);
     }
@@ -348,5 +352,13 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     public void setStackSize(long stackSize) { this.stackSize = stackSize; }
     public long getStackSize() {
         return this.stackSize;
+    }
+
+    /**
+     *  Reset the time to think progress bar
+     * @param timeToThink
+     */
+    public void startTimer(long timeToThink, Decision.Move moveToExecute) {
+        progressBar.setTimer(timeToThink, moveToExecute);
     }
 }
