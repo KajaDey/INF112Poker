@@ -157,26 +157,26 @@ public class GameState {
                     if (!(decision.move == Decision.Move.BET || communityCards.size() == 0 || currentPlayer.currentBet > 0)) {
                         throw new IllegalDecisionException("Received bet decision with " + communityCards.size() + " community cards and currentBet " + currentPlayer.currentBet);
                     }
-                    if (decision.size < currentPlayer.minimumRaise) {
+                    if (decision.getSize() < currentPlayer.minimumRaise) {
                         throw new IllegalDecisionException(currentPlayer + " made " + decision + " from " + move + ", but minimum raise was " + currentPlayer.minimumRaise);
                     }
-                    if (decision.size + currentPlayer.currentBet > currentPlayer.stackSize) {
+                    if (decision.getSize() + currentPlayer.currentBet > currentPlayer.stackSize) {
                         throw new IllegalDecisionException(currentPlayer + " tried " + decision + " on currentBet " + currentPlayer.currentBet + ", but had stackSize " + currentPlayer.stackSize);
                     }
-                    if (decision.size <= 0) {
-                        throw new IllegalDecisionException(currentPlayer + " tried to bet/raise " + decision.size);
+                    if (decision.getSize() <= 0) {
+                        throw new IllegalDecisionException(currentPlayer + " tried to bet/raise " + decision.getSize());
                     }
                     playersToMakeDecision = playersLeftInHand - 1;
 
-                    currentPlayer.putInPot(currentPlayer.currentBet + decision.size);
+                    currentPlayer.putInPot(currentPlayer.currentBet + decision.getSize());
 
                     for (Player player : players) {
                         if (player.id != currentPlayer.id) {
-                            player.currentBet += decision.size;
-                            player.minimumRaise = decision.size;
+                            player.currentBet += decision.getSize();
+                            player.minimumRaise = decision.getSize();
                         }
                     }
-                    currentPlayer.minimumRaise = decision.size;
+                    currentPlayer.minimumRaise = decision.getSize();
                     currentPlayer.currentBet = 0;
                     break;
                 case ALL_IN:

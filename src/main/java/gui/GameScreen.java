@@ -358,18 +358,18 @@ public class GameScreen {
                 break;
 
             case BET:
-                putOnTable.put(ID, decision.size);
-                newStackSize -= decision.size;
-                decisionText += (highestAmountPutOnTable = decision.size);
+                putOnTable.put(ID, decision.getSize());
+                newStackSize -= decision.getSize();
+                decisionText += (highestAmountPutOnTable = decision.getSize());
                 setAmountTextfield(highestAmountPutOnTable *2 + "");
-                printToLogField(names.get(ID) + " bet " + decision.size);
+                printToLogField(names.get(ID) + " bet " + decision.getSize());
                 break;
             case RAISE:
 
                 long theCall = highestAmountPutOnTable - putOnTable.get(ID);
-                newStackSize -= (theCall + decision.size);
-                decisionText += (highestAmountPutOnTable += decision.size);
-                setAmountTextfield((highestAmountPutOnTable + decision.size) + "");
+                newStackSize -= (theCall + decision.getSize());
+                decisionText += (highestAmountPutOnTable += decision.getSize());
+                setAmountTextfield((highestAmountPutOnTable + decision.getSize()) + "");
                 putOnTable.put(ID, highestAmountPutOnTable);
                 printToLogField(names.get(ID) + " raised to " + highestAmountPutOnTable);
                 break;

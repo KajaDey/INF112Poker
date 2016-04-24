@@ -19,7 +19,7 @@ public class Decision {
      **/
 
     public final Move move;
-    public final long size;
+    private final long size;
 
     /*
     Constructs a decision to raise or bet a certain amount or small/big blind

@@ -167,12 +167,15 @@ public class GUIClient implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         switch (decision.move) {
-            case BET:case SMALL_BLIND: case BIG_BLIND:
-                highestAmountPutOnTableThisBettingRound = decision.size;
+            case SMALL_BLIND: case BIG_BLIND:
+                highestAmountPutOnTableThisBettingRound = decision.move == Decision.Move.BIG_BLIND ? bigBlind : smallBlind;
+                break;
+            case BET:
+                highestAmountPutOnTableThisBettingRound = decision.getSize();
                 break;
             case RAISE:
-                minimumRaise = decision.size;
-                highestAmountPutOnTableThisBettingRound += decision.size;
+                minimumRaise = decision.getSize();
+                highestAmountPutOnTableThisBettingRound += decision.getSize();
                 break;
             case ALL_IN:
                 break;
