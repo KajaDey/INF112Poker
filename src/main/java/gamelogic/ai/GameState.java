@@ -19,6 +19,7 @@ public class GameState {
 
     public Player currentPlayer;
 
+    public final long smallBlindAmount;
     public final long bigBlindAmount;
     public final long allChipsOnTable;
     private int playersGivenHoleCards = 0;
@@ -40,7 +41,8 @@ public class GameState {
     }
 
     public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
-                     Map<Integer, String> names, long bigBlindAmount) {
+                     Map<Integer, String> names, long smallBlindAmount, long bigBlindAmount) {
+        this.smallBlindAmount = smallBlindAmount;
         this.bigBlindAmount = bigBlindAmount;
         assert amountOfPlayers == positions.size();
 
@@ -65,6 +67,7 @@ public class GameState {
      * Copy constructor for doing a deep clone of the old GameState
      */
     public GameState(GameState oldState) {
+        this.smallBlindAmount = oldState.smallBlindAmount;
         this.bigBlindAmount = oldState.bigBlindAmount;
         this.deck = new ArrayList<>(oldState.deck);
         this.amountOfPlayers = oldState.amountOfPlayers;
@@ -197,38 +200,40 @@ public class GameState {
                     break;
                 case SMALL_BLIND:
                     for (Player player : players) {
-                        player.currentBet = decision.size;
-                        player.minimumRaise = decision.size;
+                        player.currentBet = smallBlindAmount;
+                        player.minimumRaise = smallBlindAmount;
                     }
 
                     currentPlayer.currentBet = 0;
-                    currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
+                    currentPlayer.putInPot(Math.min(smallBlindAmount, currentPlayer.stackSize));
                     if (currentPlayer.stackSize == 0) {
                         playersAllIn++;
                         playersToMakeDecision--;
                         playersLeftInHand--;
                     }
+                    assert currentPlayer.stackSize >= 0;
                     break;
                 case BIG_BLIND:
                     for (Player player : players) {
 
                         // If is small blind
                         if (player.currentBet == 0) {
-                            player.currentBet = decision.size - currentPlayer.currentBet;
+                            player.currentBet = bigBlindAmount - currentPlayer.currentBet;
                         }
                         else {
-                            player.currentBet = decision.size;
+                            player.currentBet = bigBlindAmount;
                         }
-                        player.minimumRaise = decision.size;
+                        player.minimumRaise = bigBlindAmount;
                     }
 
                     currentPlayer.currentBet = 0;
-                    currentPlayer.putInPot(Math.min(decision.size, currentPlayer.stackSize));
+                    currentPlayer.putInPot(Math.min(bigBlindAmount, currentPlayer.stackSize));
                     if (currentPlayer.stackSize == 0) {
                         playersAllIn++;
                         playersToMakeDecision--;
                         playersLeftInHand--;
                     }
+                    assert currentPlayer.stackSize >= 0;
                     break;
 
             }
