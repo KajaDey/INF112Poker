@@ -9,10 +9,10 @@
 A protocol for playing poker remotely via a text interface, usually over a network. The protocol is based on passing text commands between a server and a client. Commands should be utf-8 encoded, and each command is terminated by a newline. If the client or server receives an unrecognized command, the whole line should be ignored, and communication should continue as normal afterwards.
 
 \section{Decision and card format}
-\subsection{Cards}
+\subsection*{Cards}
 Each card is stored as a single text token (no whitespace characters), represented as the suit followed by the rank. The ranks are given by the integers 2-14, the suits are given by their names (diamonds, spades, hearts, clubs). Examples: diamonds14, spades7, clubs10.
 
-\subsection{Decisions}
+\subsection*{Decisions}
 A decision is stored as a single token (no whitespace characters), consisting of the type of decision and optionally the ``size'' of the decision in case of raises or bets. Possible decisions are:
 
 \begin{itemize}
@@ -28,54 +28,77 @@ A decision is stored as a single token (no whitespace characters), consisting of
 
 \section{Server to client}
 
-\subsection{upiok \textlangle{}version\textrangle{}}
-Sent after it receives the initial upi command from client, to complete the initialization handshake.
+\subsection*{upiok \textlangle{}version\textrangle{}}
+Sent after it receives the initial upi command from client, to complete the initialization handshake. After receiving this, the client should wait for further input.
 
-\subsection{getName}
+\subsection*{getName}
 Requests the client's name, to which it expects a name command in return.
 
-\subsection{newGame}
+\subsection*{newGame}
 Tells the client that a whole new game is being played, with new players and new stack sizes. 
 
-\subsection{amountOfPlayers \textlangle{}n\textrangle{}}
+\subsection*{amountOfPlayers \textlangle{}n\textrangle{}}
 Sends the number of players on the table, including the client itself. This should be sent immediately after a newgame command, and before other information (stack sizes, blinds, names, etc) is sent.
 
-\subsection{clientId \textlangle{}id\textrangle{}}
+\subsection*{clientId \textlangle{}id\textrangle{}}
 Sends the client's ID in the game. Each player on the table has a unique non-negative ID, which is used when sending names, positions, etc.
 
-\subsection{playerNames \textlangle{}id1 name1\textrangle{} \textlangle{}id2 name2\textrangle{} ... }
+\subsection*{playerNames \textlangle{}id1 name1\textrangle{} \textlangle{}id2 name2\textrangle{} ... }
 Sends the names of all the players. This should be sent at the start of each game. These are not used by the protocol, but are for the client to display.
 
-\subsection{playerPositions \textlangle{}id1 position1\textrangle{} \textlangle{}id2 position2\textrangle{} ... }
+\subsection*{playerPositions \textlangle{}id1 position1\textrangle{} \textlangle{}id2 position2\textrangle{} ... }
 Sends the position for all players' IDs. This is sent at the start of each hand, i.e. when the positions change. The position is sent as a non-negative integer, where position 0 is small blind, position 1 is big blind, position 2 is UTG, etc.
 
-\subsection{stackSizes \textlangle{}id1 stackSize1\textrangle{} \textlangle{}id2 stackSize2\textrangle{} ... }
+\subsection*{stackSizes \textlangle{}id1 stackSize1\textrangle{} \textlangle{}id2 stackSize2\textrangle{} ... }
 Sends the stackSizes for all players' IDs. This is sent at the start of each hand, and also at the end of the final hand.
 
-\subsection{setFlop \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}  \textlangle{}card3\textrangle{}}
+\subsection*{setFlop \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}  \textlangle{}card3\textrangle{}}
 Sends the flop cards to the client. See section ``decision and card formats'' for the format for cards.
 
-\subsection{setTurn \textlangle{}card\textrangle{}}
+\subsection*{setTurn \textlangle{}card\textrangle{}}
 Sends the turn card to the client. See section ``decision and card formats'' for the format for cards.
 
-\subsection{setRiver \textlangle{}card\textrangle{}}
+\subsection*{setRiver \textlangle{}card\textrangle{}}
 Sends the river card to the client. See section ``decision and card formats'' for the format for cards.
 
-\subsection{getDecision \textlangle{}timeToThink\textrangle{}}
+\subsection*{getDecision \textlangle{}timeToThink\textrangle{}}
 It's the client's turn, and the server is asking for a decision. The server expect a decision command in return. The timeToThink field is the time the client has to think, in milliseconds. If the client does not return a decision in time, the server may give the client a ``default'' decision, or otherwise override the client's wishes.
+
+\subsection*{playerMadeDecision \textlangle{}id\textrangle{} \textlangle{}decision\textrangle{}}
+Sent to every client whenever any player makes a decision in the game. Clients are also sent their own decisions this way. See section ``decision and card formats'' for the format for decisions.
 
 \section{Client to server}
 
-\subsection{upi \textlangle{}version\textrangle{}}
+\subsection*{upi \textlangle{}version\textrangle{}}
 Used to initialize communication over the protocol, and tell the client server that it is using unviersal poker interface. The version parameter is a sequence-based identifier (like 1.0.0). The client should wait for a ``upiok'' command to complete the handshake.
 
-\subsection{name \textlangle{}name\textrangle{}}
+\subsection*{name \textlangle{}name\textrangle{}}
 Sends the client's name to the server. Should only be sent after the server requests it with a getName command. The name field may be empty, in which case the server may assign a name to the client. The name cannot contain whitespace characters.
 
-\subsection{decision \textlangle{}decision\textrangle{}}
+\subsection*{decision \textlangle{}decision\textrangle{}}
 Sends the client's decision to the server. See section ``decision and card formats'' for the format for decisions.
 
 \section{Example playthrough}
+\texttt{
+\begin{description}
+\item [Client] upi
+\item [Server] upiok
+\item [Server] getName
+\item [Client] name Doyle
+\item [Server] newGame
+\item [Server] setId 2
+\item [Server] amountOfPlayers 3
+\item [Server] playerNames 0 Morten 1 Kristian 2 Doyle
+\item [Server] playerPosition 0 0 1 1 2 2
+\item [Server] stackSizes 0 5000 1 5000 2 5000
+\item [Server] playerMadeDecision 0 smallBlind
+\item [Server] playerMadeDecision 1 bigBlind
+\item [Server] getDecision 5000
+\item [Client] decision call
+\item [Server] playerMadeDecision 0 fold
+\item [Server] playerMadeDecision 1 check
+\end{description}
+}
 
 \end{document}
  
