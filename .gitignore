@@ -8,6 +8,14 @@
 # YED
 *.graphml
 
+# EMACS TEMP FILES
+*~
+
+# LATEXMK
+*.aux
+*.fdb_latexmk
+*.fls
+
 # FROM MAC
 *.DS_STORE
 
