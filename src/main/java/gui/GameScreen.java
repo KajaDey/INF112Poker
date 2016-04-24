@@ -55,7 +55,7 @@ public class GameScreen {
     private TextArea textArea = new TextArea();
     private SoundPlayer soundPlayer = new SoundPlayer();
 
-    public GameScreen(int ID, int numberOfPlayers) {
+    public GameScreen(int ID) {
         this.playerID = ID;
 
         //Set onKeyRelease and onMouseClick events for pane
