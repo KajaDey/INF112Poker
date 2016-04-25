@@ -256,11 +256,12 @@ public class ObjectStandards {
 
         MenuItem quit = new MenuItem("Quit");
         MenuItem restart = new MenuItem("Restart");
+        MenuItem mute = new MenuItem("Mute Sound");
 
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);
-        file.getItems().addAll(quit,restart);
+        file.getItems().addAll(quit,restart, mute);
 
         //Adding all menus to the menu bar
         menuBar.getMenus().addAll(file,about);
@@ -282,6 +283,13 @@ public class ObjectStandards {
         quit.setOnAction(event -> System.exit(0));
 
         MenuBarScreens menuBarScreens = new MenuBarScreens();
+        mute.setOnAction(event ->{
+            new SoundPlayer().muteSound();
+            if (new SoundPlayer().getMutedValue())
+                mute.setText("Unmute Sound");
+            else mute.setText("Mute Sound");
+        });
+
 
         softwareLicense.setOnAction(event -> {
             try {
@@ -320,6 +328,7 @@ public class ObjectStandards {
 
         quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
         restart.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+        mute.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.SHORTCUT_DOWN));
 
         File[] files = new File(System.getProperty("user.dir")).listFiles();
         restart.setOnAction(event -> {

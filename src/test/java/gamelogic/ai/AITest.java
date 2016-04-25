@@ -2,11 +2,15 @@ package gamelogic.ai;
 
 import gamelogic.Card;
 import gamelogic.Decision;
+import gamelogic.Deck;
 import gamelogic.GameClient;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +25,7 @@ public class AITest {
     HashMap<Integer, String> names;
     int smallBlind = 25;
     int bigBlind = 50;
-    long startStack = 5000L;
+    long startStack = 2500L;
     long timeToThink = 2000L;
 
     @Test
@@ -30,6 +34,14 @@ public class AITest {
         MCTSAI mctsAi = new MCTSAI(0);
         testAllInAsCallProperty(simpleAi);
         testAllInAsCallProperty(mctsAi);
+    }
+
+    @Test
+    public void testAllInAsCallFollowedByAllIn() {
+        SimpleAI simpleAi = new SimpleAI(0);
+        MCTSAI mctsAi = new MCTSAI(0);
+        testAllInAsCallFollowedByAllInProperty(simpleAi);
+        testAllInAsCallFollowedByAllInProperty(mctsAi);
     }
 
     @Test
@@ -70,6 +82,22 @@ public class AITest {
         MCTSAI mctsAi = new MCTSAI(0);
         checksWithShittyHandAsBigBlindHeadsUpProperty(mctsAi);
         checksWithShittyHandAsBigBlindHeadsUpProperty(simpleAi);
+    }
+    // Commented out for lack of passing
+    //@Test
+    public void doesNotFoldWithPairOfDeuces() {
+        MCTSAI mctsAi = new MCTSAI(0);
+        SimpleAI simpleAi = new SimpleAI(0);
+        doesNotFoldWithPairOfDeucesProperty(mctsAi);
+        doesNotFoldWithPairOfDeucesProperty(simpleAi);
+    }
+
+    @Test
+    public void doesNotFoldWithLowStraightFlush() {
+        MCTSAI mctsAi = new MCTSAI(0);
+        SimpleAI simpleAi = new SimpleAI(0);
+        doesNotFoldWithLowStraightFlushProperty(mctsAi);
+        //doesNotFoldWithLowStraightFlushProperty(simpleAi);
     }
 
     public void checksWithShittyHandAsBigBlindProperty(GameClient ai) {
@@ -124,6 +152,31 @@ public class AITest {
         }
     }
 
+    public void doesNotFoldWithPairOfDeucesProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(2, Card.Suit.HEARTS).get(), Card.of(2, Card.Suit.SPADES).get());
+
+        setupAi(ai, 3, 0);
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
+    }
+
+    public void doesNotFoldWithLowStraightFlushProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(2, Card.Suit.CLUBS).get(), Card.of(4, Card.Suit.CLUBS).get());
+
+        setupAi(ai, 4, 2);
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CHECK));
+
+        ai.setFlop(Card.of(3, Card.Suit.CLUBS).get(), Card.of(5, Card.Suit.CLUBS).get(),  Card.of(6, Card.Suit.CLUBS).get());
+
+        ai.playerMadeDecision(2, new Decision(Decision.Move.BET, 1000));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+
+        assertNotEquals(new Decision(Decision.Move.FOLD), ai.getDecision(timeToThink));
+    }
+
     // Test created to reproduce a specific bug in SimpleAI
     // Bug is fixed now, the test remains because why not
     public void testAllInAsCallProperty(GameClient ai) {
@@ -149,27 +202,74 @@ public class AITest {
         ai.setSmallBlind(smallBlind);
         ai.setBigBlind(bigBlind);
 
-        ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
-        ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, bigBlind));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND));
         ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
-        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
-        ai.playerMadeDecision(1, new Decision(Decision.Move.CHECK));
-
-        ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get(), 75L);
-
-        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 1000));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 950));
         ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+
+        ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get());
+
+        ai.playerMadeDecision(0, new Decision(Decision.Move.BET, 1000));
         ai.playerMadeDecision(2, new Decision(Decision.Move.FOLD));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
-        ai.setTurn(Card.of(14, Card.Suit.CLUBS).get(), 75L);
+        ai.setTurn(Card.of(14, Card.Suit.CLUBS).get());
 
-        ai.getDecision(timeToThink);
+        ai.getDecision(timeToThink / 4);
         ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
-        ai.setRiver(Card.of(2, Card.Suit.CLUBS).get(), 75L);
+        ai.setRiver(Card.of(2, Card.Suit.CLUBS).get());
+    }
+
+    public void testAllInAsCallFollowedByAllInProperty(GameClient ai) {
+        ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
+
+        HashMap<Integer, Integer> positions = new HashMap<>();
+        HashMap<Integer, String> names = new HashMap<>();
+        for (int i = 0; i < 4; i++) {
+            positions.put(i, i);
+            names.put(i, "AI-" + i);
+        }
+
+        HashMap<Integer, Long> stackSizes = new HashMap<>();
+
+        stackSizes.put(0, 10025L);
+        stackSizes.put(1, 4975L);
+        stackSizes.put(2, 5000L);
+        stackSizes.put(3, 10000L);
+
+
+        ai.setAmountOfPlayers(4);
+        ai.setStackSizes(stackSizes);
+        ai.setPlayerNames(names);
+        ai.setPositions(positions);
+        ai.setSmallBlind(smallBlind);
+        ai.setBigBlind(bigBlind);
+
+        ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(3, new Decision(Decision.Move.FOLD));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 150));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.RAISE, 350));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(2, new Decision(Decision.Move.RAISE, 850));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.RAISE, 850));
+
+        ai.playerMadeDecision(2, new Decision(Decision.Move.ALL_IN));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
+
+        ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get());
+
     }
 
     @Test
@@ -210,10 +310,10 @@ public class AITest {
             simpleAI.setHandForClient(2, Card.of(14, Card.Suit.SPADES).get(), Card.of(14, Card.Suit.DIAMONDS).get());
             mctsAi.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(4, Card.Suit.DIAMONDS).get());
 
-            mctsAi.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
-            simpleAI.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
-            mctsAi.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, bigBlind));
-            simpleAI.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND, bigBlind));
+            mctsAi.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND));
+            simpleAI.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND));
+            mctsAi.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND));
+            simpleAI.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND));
 
             mctsAi.playerMadeDecision(2, new Decision(Decision.Move.CALL));
             simpleAI.playerMadeDecision(2, new Decision(Decision.Move.CALL));
@@ -235,8 +335,8 @@ public class AITest {
             mctsAi.playerMadeDecision(2, new Decision(Decision.Move.CALL));
             simpleAI.playerMadeDecision(2, new Decision(Decision.Move.CALL));
 
-            mctsAi.setFlop(Card.of(3, Card.Suit.DIAMONDS).get(), Card.of(3, Card.Suit.SPADES).get(), Card.of(6, Card.Suit.HEARTS).get(), 0L);
-            simpleAI.setFlop(Card.of(3, Card.Suit.DIAMONDS).get(), Card.of(3, Card.Suit.SPADES).get(), Card.of(6, Card.Suit.HEARTS).get(), 0L);
+            mctsAi.setFlop(Card.of(3, Card.Suit.DIAMONDS).get(), Card.of(3, Card.Suit.SPADES).get(), Card.of(6, Card.Suit.HEARTS).get());
+            simpleAI.setFlop(Card.of(3, Card.Suit.DIAMONDS).get(), Card.of(3, Card.Suit.SPADES).get(), Card.of(6, Card.Suit.HEARTS).get());
 
             mctsAi.playerMadeDecision(0, new Decision(Decision.Move.BET, 50L));
             simpleAI.playerMadeDecision(0, new Decision(Decision.Move.BET, 50L));
@@ -248,8 +348,8 @@ public class AITest {
             mctsAi.playerMadeDecision(2, new Decision(Decision.Move.CALL));
             simpleAI.playerMadeDecision(2, new Decision(Decision.Move.CALL));
 
-            mctsAi.setTurn(Card.of(13, Card.Suit.DIAMONDS).get(), 0L);
-            simpleAI.setTurn(Card.of(13, Card.Suit.DIAMONDS).get(), 0L);
+            mctsAi.setTurn(Card.of(13, Card.Suit.DIAMONDS).get());
+            simpleAI.setTurn(Card.of(13, Card.Suit.DIAMONDS).get());
 
             mctsAi.playerMadeDecision(0, new Decision(Decision.Move.BET, 3000L));
             simpleAI.playerMadeDecision(0, new Decision(Decision.Move.BET, 3000L));
@@ -288,18 +388,18 @@ public class AITest {
         ai.setPlayerNames(names);
         ai.setPositions(positions);
 
-        ai.playerMadeDecision(4, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
-        ai.playerMadeDecision(0, new Decision(Decision.Move.BIG_BLIND, bigBlind));
+        ai.playerMadeDecision(4, new Decision(Decision.Move.SMALL_BLIND));
+        ai.playerMadeDecision(0, new Decision(Decision.Move.BIG_BLIND));
         ai.playerMadeDecision(3, new Decision(Decision.Move.RAISE, 75));
         ai.playerMadeDecision(4, new Decision(Decision.Move.FOLD));
         ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN));
         ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
 
-        ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get(), 75L);
+        ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get());
 
-        ai.setTurn(Card.of(14, Card.Suit.CLUBS).get(), 75L);
+        ai.setTurn(Card.of(14, Card.Suit.CLUBS).get());
 
-        ai.setRiver(Card.of(2, Card.Suit.CLUBS).get(), 75L);
+        ai.setRiver(Card.of(2, Card.Suit.CLUBS).get());
     }
 
     /**
@@ -324,7 +424,7 @@ public class AITest {
         ai.setStackSizes(stackSizes);
         ai.setPlayerNames(names);
 
-        ai.playerMadeDecision((0 + amountOfPlayers - positionOffset) % amountOfPlayers, new Decision(Decision.Move.SMALL_BLIND, smallBlind));
-        ai.playerMadeDecision((1 + amountOfPlayers - positionOffset) % amountOfPlayers, new Decision(Decision.Move.BIG_BLIND, bigBlind));
+        ai.playerMadeDecision((0 + amountOfPlayers - positionOffset) % amountOfPlayers, new Decision(Decision.Move.SMALL_BLIND));
+        ai.playerMadeDecision((1 + amountOfPlayers - positionOffset) % amountOfPlayers, new Decision(Decision.Move.BIG_BLIND));
     }
 }

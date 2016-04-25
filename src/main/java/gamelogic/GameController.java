@@ -19,6 +19,7 @@ public class GameController {
     public GameSettings gameSettings;
     private String name;
     private Map<Integer, String> names;
+    private boolean showAllPlayerCards;
 
     public GameController(GUIMain gui) {
         this.mainGUI = gui;
@@ -45,10 +46,12 @@ public class GameController {
      * Creates a new game, creates clients and starts the game.
      *
      * @param gamesettings Game settings
+     * @param showCards
      */
-    public void startTournamentButtonClicked(GameSettings gamesettings) {
+    public void startTournamentButtonClicked(GameSettings gamesettings, boolean showCards) {
         //Make a new Game object and validate
         game = new Game(gamesettings, this);
+        this.showAllPlayerCards = showCards;
 
         String error;
         if (((error = game.getError()) != null)) {
@@ -71,7 +74,7 @@ public class GameController {
         initClients();
 
         //Print welcome message to log
-        this.printToLogfield("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
+        this.printToLogField("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
 
         Thread gameThread = new Thread("GameThread") {
             @Override
@@ -135,7 +138,7 @@ public class GameController {
     private void initClients() {
         setBlinds();
         for (Integer clientID : clients.keySet()) {
-            clients.get(clientID).setPlayerNames(names);
+            clients.get(clientID).setPlayerNames(new HashMap<>(names));
         }
     }
 
@@ -216,6 +219,9 @@ public class GameController {
     public void setHandForClient(int clientID, Card card1, Card card2) {
         GameClient c = clients.get(clientID);
         c.setHandForClient(clientID, card1, card2);
+
+        if (showAllPlayerCards)
+            guiClient.setHandForClient(clientID, card1, card2);
     }
 
     /**
@@ -237,12 +243,11 @@ public class GameController {
      * @param card1 Card one in the flop
      * @param card2 Card two in the flop
      * @param card3 Card three in the flop
-     * @param currentPotSize Current amount in the pot
      */
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setFlop(card1, card2, card3, currentPotSize);
+            c.setFlop(card1, card2, card3);
         }
     }
 
@@ -250,12 +255,11 @@ public class GameController {
      * Informs each client about the turn card and current pot size
      *
      * @param turn Card displayed in the turn
-     * @param currentPotSize Current amount in the pot
      */
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setTurn(turn, currentPotSize);
+            c.setTurn(turn);
         }
     }
 
@@ -263,12 +267,11 @@ public class GameController {
      * Informs each client about the river card and current pot size
      *
      * @param river Card displayed in the river
-     * @param currentPotSize Current amount in the pot
      */
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.setRiver(river, currentPotSize);
+            c.setRiver(river);
         }
     }
 
@@ -321,7 +324,7 @@ public class GameController {
     /**
      * Print a message to the on screen log
      */
-    public void printToLogfield(String message) {
+    public void printToLogField(String message) {
         guiClient.printToLogField(message);
     }
 
@@ -329,8 +332,8 @@ public class GameController {
      *  Called every time a hand is won before showdown (everyone but 1 player folded)
      *  Prints a text showing who won the pot and how much it was. Also prints to logfield
      */
-    public void preShowdownWinner(int winnerID, long potSize) {
-        guiClient.preShowdownWinner(winnerID, potSize);
+    public void preShowdownWinner(int winnerID) {
+        guiClient.preShowdownWinner(winnerID);
     }
     /**
      * Called every time a player is bust to inform all clients
@@ -343,6 +346,8 @@ public class GameController {
         GameClient bustedClient = clients.get(bustPlayerID);
         if (!(bustedClient instanceof GUIClient)) {
             clients.remove(bustPlayerID);
+        } else {
+            showAllPlayerCards = true;
         }
     }
 

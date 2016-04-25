@@ -17,6 +17,7 @@ public class BoardLayout extends VBox {
 
     private Label currentBBLabel, currentSBLabel,  potLabel, winnerLabel;
     private ImageView[] communityCards = new ImageView[5];
+    private long currentBigBlind;
 
     public BoardLayout(long smallBlind, long bigBlind){
         DropShadow dropShadow = new DropShadow();
@@ -29,8 +30,9 @@ public class BoardLayout extends VBox {
         HBox cardLayout = new HBox();
         VBox statsLayout = new VBox();
 
-        currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB:", bigBlind + "$");
-        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SB:", smallBlind + "$");
+        this.currentBigBlind = bigBlind;
+        currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB: ", bigBlind + "$");
+        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SB: ", smallBlind + "$");
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
         currentBBLabel.setMinWidth(115);
         currentSBLabel.setMinWidth(115);
@@ -108,4 +110,16 @@ public class BoardLayout extends VBox {
 
         setWinnerLabel("");
     }
+
+    public void setBigBlindLabel(long bigBlind) {
+        this.currentBigBlind = bigBlind;
+        this.currentBBLabel.setText("Current BB: " + bigBlind + "$");
+    }
+
+    public void setSmallBlindLabel(long smallBlind) {
+        this.currentSBLabel.setText("Current SB: " + smallBlind + " $");
+    }
+
+    public long getBB() { return currentBigBlind; }
+
 }

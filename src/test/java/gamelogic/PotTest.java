@@ -1,5 +1,6 @@
 package gamelogic;
 
+import gui.GameSettings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,13 +15,15 @@ import static org.junit.Assert.*;
 public class PotTest {
 
     ArrayList<Player> players;
+    GameSettings settings;
     Pot pot;
 
     @Before
     public void setup() {
+        settings = new GameSettings(0, 50, 25, 5, 10, AIType.MCTS_AI);
         players = new ArrayList<>();
         for (int i = 0; i < 5; i++)
-            players.add(new Player("Player" + i, 0, i));
+            players.add(new Player("Player" + i, settings , i));
 
         pot = new Pot();
     }
