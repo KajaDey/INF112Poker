@@ -23,6 +23,7 @@ public class LobbyScreen {
     static GameController gameController;
     static GameSettings gameSettings;
 
+    static VBox settings;
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
 
@@ -109,12 +110,17 @@ public class LobbyScreen {
         changeSettings.setMinWidth(150);
         changeSettings.setOnAction(event -> ButtonListeners.settingsButtonListener(gameController));
 
-        VBox settings = generateSettingsBox(gameSettings);
+        Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
+        startGame.setLayoutX(50);
+        startGame.setLayoutY(425);
+        startGame.setOnAction(e -> ButtonListeners.startGameButtonListener(gameController));
+
+        settings = generateSettingsBox(gameSettings);
 
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        gameInfo.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName,addPlayerOnBoard(),addPlayerOnBoard());
+        gameInfo.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName, startGame, addPlayerOnBoard(),addPlayerOnBoard());
         fullLayout.getChildren().remove(1);
         fullLayout.getChildren().add(gameInfo);
 
@@ -183,4 +189,11 @@ public class LobbyScreen {
         sideMenu.getChildren().add(0, addGames("default", "1/6"));
         displayGameInfo();
     }
+
+    public static void updateLabels(GameSettings newSettings){
+        gameSettings = newSettings;
+        displayGameInfo();
+
+    }
+
 }
