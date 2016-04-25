@@ -159,4 +159,12 @@ public class ButtonListeners {
     public static void moreInfoButtonListener() {
         LobbyScreen.displayGameInfo();
     }
+
+    public static void MakeNewLobbyButtonListener() {
+        LobbyScreen.makeNewLobby();
+    }
+
+    public static void takeASeatButtonListener() {
+
+    }
 }

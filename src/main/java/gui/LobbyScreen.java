@@ -16,9 +16,7 @@ import java.util.ArrayList;
  */
 public class LobbyScreen {
 
-    //static Label name,name2,players,players2;
-
-    static String styling = "-fx-border-color: #65ff1c ";
+    static String styling = "-fx-border-color: black; -fx-background-color: #362626";
 
     static ArrayList<Integer> emptyPositions = new ArrayList<>();
 
@@ -34,19 +32,19 @@ public class LobbyScreen {
         gameSettings = gs;
 
         Pane pane = new Pane();
+        Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
+        newLobby.setOnAction(event -> ButtonListeners.MakeNewLobbyButtonListener());
 
-        sideMenu.getChildren().addAll(addGames("Ady's lobby", "2/4"), addGames("Jos's lobby", "3/6"));
+        sideMenu.getChildren().addAll(addGames("Ady's lobby", "2/4"), addGames("Jos's lobby", "3/6"),newLobby);
         sideMenu.setLayoutX(1000);
         sideMenu.setLayoutY(100);
-        sideMenu.setStyle(styling);
         sideMenu.setMinHeight(500);
         sideMenu.setMinWidth(150);
-        //sideMenu = ImageViewer.setBackground(("listbackground"),sideMenu,150,500);
-        sideMenu.setStyle("-fx-background-color: lightgray");
+        sideMenu.setAlignment(Pos.TOP_CENTER);
+        sideMenu.setStyle("-fx-background-color: #241414");
 
-        fullLayout.setStyle("-fx-background-color: dimgray");
+        fullLayout.setStyle("-fx-background-color: #602121");
         fullLayout.getChildren().addAll(sideMenu, pane);
-
 
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
@@ -61,10 +59,6 @@ public class LobbyScreen {
         Label player = ObjectStandards.makeStandardLabelWhite(players,"");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
-        names.setAlignment(Pos.TOP_LEFT);
-        player.setAlignment(Pos.TOP_RIGHT);
-        moreInfo.setAlignment(Pos.CENTER);
-
         vBox.setStyle(styling);
         hBox.getChildren().addAll(names, player);
 
@@ -75,6 +69,8 @@ public class LobbyScreen {
 
         moreInfo.setOnAction(event -> ButtonListeners.moreInfoButtonListener());
 
+        vBox.setStyle(styling);
+
         return vBox;
     }
 
@@ -83,11 +79,11 @@ public class LobbyScreen {
         for(int i=0;i<6;i++)
             emptyPositions.add(i);
 
-        Pane pane = new Pane();
-        pane.setLayoutX(150);
-        pane.setLayoutY(110);
-        pane.setMinHeight(500);
-        pane.setMinWidth(850);
+        Pane gameInfo = new Pane();
+        gameInfo.setLayoutX(150);
+        gameInfo.setLayoutY(110);
+        gameInfo.setMinHeight(500);
+        gameInfo.setMinWidth(850);
 
         Label gameName = ObjectStandards.makeLabelForHeadLine("Andy's game!");
         gameName.setLayoutX(325);
@@ -104,6 +100,7 @@ public class LobbyScreen {
 
         takeASeat.setLayoutX(200);
         takeASeat.setLayoutY(425);
+        takeASeat.setOnAction(e -> ButtonListeners.takeASeatButtonListener());
 
         Button changeSettings = ObjectStandards.makeButtonForLobbyScreen("Change settings");
 
@@ -117,9 +114,9 @@ public class LobbyScreen {
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        pane.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName,addPlayerOnBoard(),addPlayerOnBoard());
+        gameInfo.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName,addPlayerOnBoard(),addPlayerOnBoard());
         fullLayout.getChildren().remove(1);
-        fullLayout.getChildren().add(pane);
+        fullLayout.getChildren().add(gameInfo);
 
     }
 
@@ -182,4 +179,8 @@ public class LobbyScreen {
         return vBox;
     }
 
+    public static void makeNewLobby() {
+        sideMenu.getChildren().add(0, addGames("default", "1/6"));
+        displayGameInfo();
+    }
 }
