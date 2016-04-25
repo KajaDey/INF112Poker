@@ -113,7 +113,7 @@ public class LobbyScreen {
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         startGame.setLayoutX(50);
         startGame.setLayoutY(425);
-        //startGame.setOnAction(e -> ButtonListeners.startGameButtonListener(gameController));
+        startGame.setOnAction(e -> ButtonListeners.startGameButtonListener(gameController, null));
 
         settings = generateSettingsBox(gameSettings);
 

@@ -106,7 +106,7 @@ public class ButtonListeners {
      * What happens when the startGameButton is pushed
      */
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
-        boolean showCards = showAllPlayerCards.isSelected();
+        boolean showCards = false;
         gameController.startTournamentButtonClicked(gameSettings, showCards);
     }
 
