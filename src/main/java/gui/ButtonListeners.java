@@ -109,6 +109,7 @@ public class ButtonListeners {
         boolean showCards = showAllPlayerCards.isSelected();
         gameController.startTournamentButtonClicked(gameSettings, showCards);
     }
+
     /**
      * What happens when the leaveLobbyButton is pushed
      */
