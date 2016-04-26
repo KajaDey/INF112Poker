@@ -215,15 +215,35 @@ public class ButtonListeners {
             tf.setText("" + currentBB);
         }
     }
+
+    /**
+     * Displays the info of the selected game
+     */
     public static void moreInfoButtonListener() {
         LobbyScreen.displayGameInfo();
     }
 
+
+    /**
+     * Generates a new lobby and adds it to the list of games (unless its private)
+     */
     public static void MakeNewLobbyButtonListener() {
         LobbyScreen.makeNewLobby();
     }
 
+    /**
+     * Add the player to the chosen game
+     */
     public static void takeASeatButtonListener() {
+
+    }
+
+    /**
+     * Check if the game is private or not
+     *
+     * @param checked
+     */
+    public static void privateGameCheckboxListener(boolean checked) {
 
     }
 }

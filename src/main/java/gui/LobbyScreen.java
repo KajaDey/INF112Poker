@@ -3,6 +3,7 @@ package gui;
 import gamelogic.GameController;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -57,7 +58,7 @@ public class LobbyScreen {
         HBox hBox = new HBox();
 
         Label names = ObjectStandards.makeStandardLabelWhite(name,"");
-        Label player = ObjectStandards.makeStandardLabelWhite(players,"");
+        Label player = ObjectStandards.makeStandardLabelWhite(players, "");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
         vBox.setStyle(styling);
@@ -71,6 +72,8 @@ public class LobbyScreen {
         moreInfo.setOnAction(event -> ButtonListeners.moreInfoButtonListener());
 
         vBox.setStyle(styling);
+        vBox.setAlignment(Pos.CENTER);
+        hBox.setAlignment(Pos.CENTER);
 
         return vBox;
     }
@@ -85,6 +88,11 @@ public class LobbyScreen {
         gameInfo.setLayoutY(110);
         gameInfo.setMinHeight(500);
         gameInfo.setMinWidth(850);
+
+        CheckBox privateGameCheckbox = new CheckBox("Private game");
+        privateGameCheckbox.setFont(new Font("Areal", 15));
+        privateGameCheckbox.setStyle("-fx-text-fill: white");
+        privateGameCheckbox.setOnAction(e -> ButtonListeners.privateGameCheckboxListener(privateGameCheckbox.isSelected()));
 
         Label gameName = ObjectStandards.makeLabelForHeadLine("Andy's game!");
         gameName.setLayoutX(325);
@@ -120,7 +128,7 @@ public class LobbyScreen {
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        gameInfo.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName, startGame, addPlayerOnBoard(),addPlayerOnBoard());
+        gameInfo.getChildren().addAll(settings, privateGameCheckbox, takeASeat, imageView, changeSettings, gameName, startGame, addPlayerOnBoard(),addPlayerOnBoard());
         fullLayout.getChildren().remove(1);
         fullLayout.getChildren().add(gameInfo);
 
