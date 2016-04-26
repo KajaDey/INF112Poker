@@ -28,6 +28,13 @@ public class LobbyScreen {
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
 
+    /**
+     * Displays the lobbyScreen.
+     *
+     * @param gs
+     * @param gc
+     * @param names
+     */
     public static void createScreenForGameLobby(GameSettings gs, GameController gc, String names){
 
         gameController = gc;
@@ -52,6 +59,13 @@ public class LobbyScreen {
 
     }
 
+    /**
+     * Add more games to the game list
+     *
+     * @param name
+     * @param players
+     * @return VBox with a new game
+     */
     public static VBox addGames(String name, String players){
 
         VBox vBox = new VBox();
@@ -78,6 +92,9 @@ public class LobbyScreen {
         return vBox;
     }
 
+    /**
+     * Show the game info on the screen
+     */
     public static void displayGameInfo() {
 
         for(int i=0;i<6;i++)
@@ -134,6 +151,10 @@ public class LobbyScreen {
 
     }
 
+    /**
+     * Add a player to the board in the lobby
+     * @return Label with the players name
+     */
     public static Label addPlayerOnBoard(){
 
         emptyPositions.sort(null);
@@ -179,6 +200,12 @@ public class LobbyScreen {
         return label;
     }
 
+    /**
+     * Generates a setting box that displays the right settings.
+     *
+     * @param gameSettings
+     * @return
+     */
     public static VBox generateSettingsBox(GameSettings gameSettings){
         VBox vBox = new VBox();
 
@@ -193,11 +220,19 @@ public class LobbyScreen {
         return vBox;
     }
 
+    /**
+     * Makes a new lobby and adds it to the layout
+     */
     public static void makeNewLobby() {
         sideMenu.getChildren().add(0, addGames("default", "1/6"));
         displayGameInfo();
     }
 
+    /**
+     * uppdates all the labels in in the game info
+     *
+     * @param newSettings
+     */
     public static void updateLabels(GameSettings newSettings){
         gameSettings = newSettings;
         displayGameInfo();
