@@ -18,15 +18,11 @@ public class GUIClient implements GameClient {
     private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
-    private int numberOfPlayers;
-
     private int id;
 
-    public GUIClient(int id, GameScreen gameScreen, int maxNumberOfPlayers) {
+    public GUIClient(int id, GameScreen gameScreen) {
         this.id = id;
         this.gameScreen = gameScreen;
-        this.numberOfPlayers = maxNumberOfPlayers;
-        Platform.runLater(() -> gameScreen.setNumberOfPlayers(numberOfPlayers));
     }
 
 
@@ -228,11 +224,6 @@ public class GUIClient implements GameClient {
         minimumRaise = 0;
         highestAmountPutOnTable = 0;
         Platform.runLater(() -> gameScreen.newBettingRound());
-    }
-
-
-    public int getID() {
-        return id;
     }
 
     /**

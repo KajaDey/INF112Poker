@@ -51,11 +51,6 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public int getID() {
-        return playerId;
-    }
-
-    @Override
     public void startNewHand() {
         gameState = Optional.empty();
         stackSizes = Optional.empty();
@@ -84,8 +79,6 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        assert this.getID() == userID;
-
         holeCards = new ArrayList<>(2);
         assert holeCards.size() == 0;
         holeCards.add(card1);

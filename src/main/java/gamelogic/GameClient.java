@@ -14,8 +14,6 @@ public interface GameClient {
      */
     Decision getDecision(long timeToThink);
 
-    int getID();
-
     /**
      * Sends the names of all players, as a map indexed by the players' IDs
      * Sent once on game start

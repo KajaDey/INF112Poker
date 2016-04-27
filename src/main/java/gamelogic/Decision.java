@@ -8,9 +8,11 @@ public class Decision {
     public enum Move {FOLD, CHECK, BET, RAISE, CALL, BIG_BLIND, SMALL_BLIND, ALL_IN;
         public String toString() {
             return this == FOLD ? "Fold" : this == CHECK ? "Check" : this == BET ? "Bet" : this == CALL ? "Call":
-                    this == RAISE ? "Raise" : this == BIG_BLIND ? "Big blind" : this == SMALL_BLIND ? "Small blind" : "All in";
+                    this == RAISE ? "Raise" : this == BIG_BLIND ? "Bigblind" : this == SMALL_BLIND ? "Smallblind" : "Allin";
         }
-    } ;
+    }
+
+    public static final Decision fold = new Decision(Move.FOLD);
 
     /**
      * FOLD, CHECK, CALL, ALL_IN and BLINDS have a size of -1

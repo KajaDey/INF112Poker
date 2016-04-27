@@ -38,11 +38,14 @@ Requests the client's name, to which it expects a name command in return.
 \subsection*{newGame}
 Tells the client that a whole new game is being played, with new players and new stack sizes. 
 
-\subsection*{amountOfPlayers \textlangle{}n\textrangle{}}
-Sends the number of players on the table, including the client itself. This should be sent immediately after a newgame command, and before other information (stack sizes, blinds, names, etc) is sent.
+\subsection*{newHand}
+Tells the client that a new hand is starting.
 
 \subsection*{clientId \textlangle{}id\textrangle{}}
-Sends the client's ID in the game. Each player on the table has a unique non-negative ID, which is used when sending names, positions, etc.
+Sends the client's ID in the game. Each player on the table has a unique non-negative ID, which is used when sending names, positions, etc. This should be sent immediately after a newgame command, before amountOfPlayers and other information about the players.
+
+\subsection*{amountOfPlayers \textlangle{}n\textrangle{}}
+Sends the number of players on the table, including the client itself. This should be sent after clientId, but before any information about the other players (stack sizes, blinds, names, etc) is sent.
 
 \subsection*{playerNames \textlangle{}id1 name1\textrangle{} \textlangle{}id2 name2\textrangle{} ... }
 Sends the names of all the players. This should be sent at the start of each game. These are not used by the protocol, but are for the client to display.
@@ -52,6 +55,18 @@ Sends the position for all players' IDs. This is sent at the start of each hand,
 
 \subsection*{stackSizes \textlangle{}id1 stackSize1\textrangle{} \textlangle{}id2 stackSize2\textrangle{} ... }
 Sends the stackSizes for all players' IDs. This is sent at the start of each hand, and also at the end of the final hand.
+
+\subsection*{smallBlind \textlangle{}n\textrangle{}}
+Sends the small blind.
+
+\subsection*{bigBlind \textlangle{}n\textrangle{}}
+Sends the big blind.
+
+\subsection*{levelDuration \textlangle{}n\textrangle{}}
+Sends the duration of each blind level, in minutes.
+
+\subsection*{setHand \textlangle{}id\textrangle{} \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}}
+Sends the hole cards of the player's id. The client's own hole cards are sent at the start of each hand; other players' hole cards are sent during showdown, or when reviewing games.
 
 \subsection*{setFlop \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}  \textlangle{}card3\textrangle{}}
 Sends the flop cards to the client. See section ``decision and card formats'' for the format for cards.

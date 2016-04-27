@@ -20,13 +20,13 @@ import static org.junit.Assert.*;
 public class AITest {
 
     static final int N = 1; // Amount of times to do each test
-    HashMap<Integer, Integer> positions;
-    HashMap<Integer, Long> stackSizes;
-    HashMap<Integer, String> names;
-    int smallBlind = 25;
-    int bigBlind = 50;
-    long startStack = 2500L;
-    long timeToThink = 2000L;
+    static HashMap<Integer, Integer> positions;
+    static HashMap<Integer, Long> stackSizes;
+    static HashMap<Integer, String> names;
+    static int smallBlind = 25;
+    static int bigBlind = 50;
+    static long startStack = 2500L;
+    static long timeToThink = 2000L;
 
     @Test
     public void testAllInAsCall() {
@@ -407,7 +407,7 @@ public class AITest {
      * Also gives blinds
      * @param positionOffset Determines the positions of the AIs. If 0, id=0 -> position=0. If 2, id=0 -> position=2. etc
      */
-    public void setupAi(GameClient ai, int amountOfPlayers, int positionOffset) {
+    public static void setupAi(GameClient ai, int amountOfPlayers, int positionOffset) {
         positions = new HashMap<>();
         stackSizes = new HashMap<>();
         names = new HashMap<>();
