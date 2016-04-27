@@ -10,9 +10,11 @@ import javafx.scene.control.ProgressBar;
 public class RemainingTimeBar extends ProgressBar {
 
     private Thread countDown;
+    private static String playerName;
 
-    public RemainingTimeBar() {
-        this.minHeight(75       );
+    public RemainingTimeBar(String playerName) {
+        this.playerName = playerName;
+        this.minHeight(100);
         this.setProgress(1.0);
     }
 
@@ -52,6 +54,8 @@ public class RemainingTimeBar extends ProgressBar {
                 else if (moveToExecute == Decision.Move.CHECK)
                     ButtonListeners.checkButtonListener("Check");
 
+                GameScreen.printToLogField(playerName + " timed out.");
+
                 return true;
             }
         };
@@ -74,5 +78,11 @@ public class RemainingTimeBar extends ProgressBar {
         });
     }
 
-
+    /**
+     * Interrupt the count down thread
+     */
+    public void stopTimer() {
+        if (countDown != null && !countDown.isInterrupted())
+            countDown.interrupt();
+    }
 }

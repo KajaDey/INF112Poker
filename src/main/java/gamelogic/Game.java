@@ -189,7 +189,7 @@ public class Game {
         //Check if all players are all in and betting round should be skipped
         if (skipBettingRound()) {
             displayHoleCards();
-            delay(2000);
+            delay(4000);
             return true;
         }
 
@@ -226,7 +226,6 @@ public class Game {
             gameController.setDecisionForClient(playerToAct.getID(), decision);
 
             //Update players left in hand and number of players that have acted since the last aggressor
-            String name = playerToAct.getName();
             switch(decision.move) {
                 case BET:
                     highestAmountPutOnTable = decision.getSize();
@@ -248,7 +247,7 @@ public class Game {
                     break;
             }
 
-            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision +  ", stacksize = " + playerToAct.getStackSize());
+            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision +  ", stack size = " + playerToAct.getStackSize());
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1)
