@@ -56,7 +56,7 @@ public class MainScreen {
         Insets largePadding = new Insets(15);
         int standardButton = 75;
 
-        HBox horisontalFull = new HBox();
+        HBox horizontalFull = new HBox();
         VBox verticalButtonAndChoiceBox = new VBox();
 
         //Top-text
@@ -75,14 +75,15 @@ public class MainScreen {
         verticalButtonAndChoiceBox.getChildren().addAll(titleText,infoText);
         verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
-        horisontalFull.setAlignment(Pos.CENTER);
-        horisontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
+        horizontalFull.setAlignment(Pos.CENTER);
+        horizontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
 
         TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Name");
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
-        Button enter = ObjectStandards.makeStandardButton("Enter");
-        enter.setMinWidth(2 * standardButton);
+        Button singlePlayer = ObjectStandards.makeStandardButton("Single player");
+        Button multiPlayer = ObjectStandards.makeStandardButton("Multi player");
+        singlePlayer.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
         choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
@@ -99,9 +100,14 @@ public class MainScreen {
                 "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
         choiceBox.getStylesheets().addAll("file:resources/choiceBoxStyling.css");
 
-        enter.setOnAction(e ->{
+        singlePlayer.setOnAction(e ->{
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+        });
+
+        multiPlayer.setOnAction(e -> {
+            window.close();
+            ButtonListeners.multiPlayerLobby(nameIn.getText());
         });
 
         numOfPlayersIn.setOnAction(e -> {
@@ -109,9 +115,9 @@ public class MainScreen {
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
 
-        verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, numOfPlayersIn, enter);
+        verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, numOfPlayersIn, singlePlayer, multiPlayer);
 
-        return horisontalFull;
+        return horizontalFull;
     }
 
     public static Stage getStage(){

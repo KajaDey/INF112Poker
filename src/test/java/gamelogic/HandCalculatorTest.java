@@ -4,10 +4,8 @@ import gamelogic.rules.*;
 import gui.GameSettings;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -174,7 +172,10 @@ public class HandCalculatorTest {
         players.get(1).setHoleCards(Card.of(13, Card.Suit.SPADES).get(), Card.of(14, Card.Suit.CLUBS).get()); // ~62%
         players.get(2).setHoleCards(Card.of(4, Card.Suit.CLUBS).get(), Card.of(5, Card.Suit.DIAMONDS).get()); // 0%
 
-        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(players, communityCards);
+        Map<Integer, Card[]> holeCards = new HashMap<>();
+        players.stream().forEach(p -> holeCards.put(p.getID(), p.getHoleCards()));
+
+        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(holeCards, communityCards);
 
         assertEquals(0.38, percentages.get(0), 0.03);
         assertEquals(0.62, percentages.get(1), 0.03);

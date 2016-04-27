@@ -25,7 +25,7 @@ import java.net.MalformedURLException;
  */
 
 public class PlayerLayout extends VBox implements IPlayerLayout {
-    private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand;
+    private Label stackLabel, positionLabel, lastMoveLabel, nameLabel, bestHand, percentLabel;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private Slider slider = new Slider(0,0,0);
     private TextField amountTextField;
@@ -57,8 +57,10 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
+        percentLabel = ObjectStandards.makeStandardLabelWhite("","");
         bestHand = ObjectStandards.makeStandardLabelWhite("","");
         bestHand.setFont(Font.font("Areal", FontWeight.BOLD, 15));
+
 
         Image backOfCards = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.PLAYER);
@@ -87,7 +89,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         slider.setSnapToTicks(false);
 
         sliderAndBestHandBox.setMinWidth(200);
-        progressBar = new RemainingTimeBar();
+        progressBar = new RemainingTimeBar(name);
         progressBar.prefWidthProperty().bind(sliderAndBestHandBox.widthProperty().subtract(50));
 
         //Buttons in the VBox
@@ -105,23 +107,13 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
         //Actions
         betRaiseButton.setOnAction(e -> {
-            if(!amountTextField.getText().equals("")) {
-                if (amountTextField.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
-                else
-                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
-                updateSliderValues(stackSizeIn);
-            }
+            ButtonListeners.betButtonListener(amountTextField, betRaiseButton.getText());
+            updateSliderValues(stackSizeIn);
         });
 
         amountTextField.setOnAction(e -> {
-            if (!amountTextField.getText().equals("")) {
-                if (amountTextField.getText().equals("All in"))
-                    ButtonListeners.betButtonListener(String.valueOf((int) slider.getMax()), betRaiseButton.getText());
-                else
-                    ButtonListeners.betButtonListener(amountTextField.getText(), betRaiseButton.getText());
-                updateSliderValues(stackSizeIn);
-            }
+            ButtonListeners.betButtonListener(amountTextField, betRaiseButton.getText());
+            updateSliderValues(stackSizeIn);
         });
 
         checkCallButton.setOnAction(e -> {
@@ -151,7 +143,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
 
         //Add objects to the boxes
-        stats.getChildren().addAll(dealerButtonBox, nameLabel, stackLabel, positionLabel);
+        stats.getChildren().addAll(dealerButtonBox, nameLabel, stackLabel, positionLabel, percentLabel);
         stats.setAlignment(Pos.CENTER);
         stats.setMinWidth(175);
 
@@ -241,6 +233,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     public void setStackLabel(String stack) {
         //If stack is a number, set stackSize to this number
         try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
+        if (stack.equals("0")) stack = "All in";
         stackLabel.setText(stack);
     }
 
@@ -292,6 +285,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
     public void bustPlayer(String bustedText) {
         setLastMove("", null);
+        setPercentLabel("");
         setStackLabel(bustedText);
         setPositionLabel("", null);
         setCardImage(null, null);
@@ -310,6 +304,11 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     @Override
     public void highlightTurn(boolean highlight) {
         //Nothing for now
+    }
+
+    @Override
+    public void setPercentLabel(String s) {
+        this.percentLabel.setText(s);
     }
 
     @Override
@@ -338,5 +337,9 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
      */
     public void startTimer(long timeToThink, Decision.Move moveToExecute) {
         progressBar.setTimer(timeToThink, moveToExecute);
+    }
+
+    public void stopTimer() {
+        progressBar.stopTimer();
     }
 }

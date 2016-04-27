@@ -115,33 +115,36 @@ public class HandCalculator {
         return rule.toString();
     }
 
-    public static Map<Integer, Double> getWinningPercentages(List<Player> playersInHand, List<Card> communityCards) {
+    public static Map<Integer, Double> getWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards) {
         assert communityCards.size() >= 3 : "Computing percentages before the flop is displayed takes too much time";
 
         Map<Integer, Double> percentages = new HashMap<>();
         Map<Integer, Integer> scenariosWon = new HashMap<>();
-        playersInHand.stream().forEach(p -> scenariosWon.put(p.getID(), 0));
+        holeCards.forEach((id, hc) -> scenariosWon.put(id, 0));
 
         ArrayList<Card> usedCards = new ArrayList<>(communityCards);
-        playersInHand.stream().forEach(p -> usedCards.addAll(Arrays.asList(p.getHoleCards())));
+        holeCards.forEach((id, hc) -> usedCards.addAll(Arrays.asList(hc)));
 
-        addMoreCards(playersInHand, new ArrayList<>(communityCards), scenariosWon, new ArrayList<>(usedCards));
+        addMoreCards(holeCards, new ArrayList<>(communityCards), scenariosWon, new ArrayList<>(usedCards));
 
         double totalScenarios = 0;
         for (Integer i : scenariosWon.keySet())
             totalScenarios += scenariosWon.get(i);
 
-        for (Player p : playersInHand)
-            percentages.put(p.getID(), (double)scenariosWon.get(p.getID()) / totalScenarios);
+        final double tot = totalScenarios;
+        holeCards.forEach((id, hc) -> percentages.put(id, (double)scenariosWon.get(id) / tot));
 
         return percentages;
     }
 
-    private static void addMoreCards(List<Player> playersInHand, ArrayList<Card> communityCards, Map<Integer, Integer> scenariosWon, ArrayList<Card> usedCards) {
+    private static void addMoreCards(Map<Integer, Card[]> holeCards, ArrayList<Card> communityCards, Map<Integer, Integer> scenariosWon, ArrayList<Card> usedCards) {
         if (communityCards.size() == 5) {
-            Comparator<Player> comp = (p1, p2) -> p1.getHand(communityCards).compareTo(p2.getHand(communityCards));
-            Player winner = playersInHand.stream().max(comp).get();
-            scenariosWon.put(winner.getID(), scenariosWon.get(winner.getID())+1);
+            Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
+            Card[] max = Collections.max(holeCards.values(), comp);
+            holeCards.forEach((id, hc) -> {
+                if (hc.equals(max))
+                    scenariosWon.put(id, scenariosWon.get(id)+1);
+            });
             return;
         }
 
@@ -154,7 +157,7 @@ public class HandCalculator {
 
             communityCards.add(card);
             usedCards.add(card);
-            addMoreCards(playersInHand, communityCards, scenariosWon, usedCards);
+            addMoreCards(holeCards, communityCards, scenariosWon, usedCards);
             communityCards.remove(card);
             usedCards.remove(card);
         }

@@ -1,7 +1,6 @@
 package gui;
 
-import gamelogic.AIType;
-import gamelogic.Statistics;
+import gamelogic.*;
 import gui.layouts.BoardLayout;
 import gui.layouts.PlayerLayout;
 import javafx.scene.Scene;
@@ -11,8 +10,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import gamelogic.Decision;
-import gamelogic.GameController;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,15 +31,17 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount, String buttonText) {
+    public static void betButtonListener(TextField amountTextField, String buttonText) {
+        String betAmount = amountTextField.getText();
         try {
-            if (buttonText.equalsIgnoreCase("Raise to")) {
+            if (betAmount.equalsIgnoreCase("all in"))
+                client.setDecision(Decision.Move.ALL_IN);
+            else if (buttonText.equalsIgnoreCase("Raise to"))
                 client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
-            } else if (buttonText.equalsIgnoreCase("Bet")) {
+            else if (buttonText.equalsIgnoreCase("Bet"))
                 client.setDecision(Decision.Move.BET, Long.valueOf(betAmount));
-            }
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (NumberFormatException nfe){
+            amountTextField.clear();
         }
     }
 
@@ -185,14 +184,14 @@ public class ButtonListeners {
         try {
             switch(ke.getCode()) {
                 case SPACE:
-                    if (System.currentTimeMillis() - lastSpaceTap <= 1000 || playerLayout.getCheckCallButtonText().equals("Call"))
+                    if (System.currentTimeMillis() - lastSpaceTap <= 1000 || playerLayout.getCheckCallButtonText().equalsIgnoreCase("Call"))
                         checkButtonListener(playerLayout.getCheckCallButtonText());
 
                     lastSpaceTap = System.currentTimeMillis();
                     break;
 
                 case ENTER:
-                    betButtonListener(tf.getText(), playerLayout.getBetRaiseButtonText());
+                    betButtonListener(tf, playerLayout.getBetRaiseButtonText());
                     break;
 
                 case UP:case DOWN:
@@ -212,5 +211,11 @@ public class ButtonListeners {
         } catch (NumberFormatException nfe) {
             tf.setText("" + currentBB);
         }
+    }
+
+    public static void multiPlayerLobby(String name) {
+        //Handshake with server
+        ServerLobbyCommunicator serverLobbyCommunicator = new ServerLobbyCommunicator(name);
+
     }
 }

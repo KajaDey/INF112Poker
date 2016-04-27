@@ -32,7 +32,6 @@ public class GameLobby {
      * @param gameController
      */
     public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController, String name){
-
         Stage window = new Stage();
 
         //Boxes
@@ -93,6 +92,29 @@ public class GameLobby {
         pane.setTop(menuBar);
         SceneBuilder.showCurrentScene(pane, "Lobby Screen");
 
+    }
+
+    public void createMultiPlayerLobbyScreen() {
+        //Boxes
+        VBox buttons = new VBox();
+        VBox fullLayout = new VBox();
+
+        //Objects
+        Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
+
+        //ActionListeners
+        startGame.setOnAction(e -> {});
+
+        //Put objects in boxes
+        buttons.getChildren().addAll(startGame);
+        buttons.setAlignment(Pos.CENTER);
+
+        fullLayout.getChildren().add(buttons);
+        fullLayout.setAlignment(Pos.CENTER);
+
+        BorderPane pane = new BorderPane();
+        pane.setCenter(fullLayout);
+        SceneBuilder.showCurrentScene(pane, "Multi player lobby screen");
     }
 
     /**

@@ -35,7 +35,6 @@ public class GUIClient implements GameClient {
             gameScreen.startTimer(timeToThink, moveIfTimeRunOut);
         });
 
-
         try {
             wait();
         } catch (Exception e) {
@@ -43,7 +42,10 @@ public class GUIClient implements GameClient {
         }
 
         //Make buttons invisible
-        Platform.runLater(() -> gameScreen.setActionsVisible(false));
+        Platform.runLater(() -> {
+            gameScreen.setActionsVisible(false);
+            gameScreen.stopTimer();
+        });
 
         //Return decision
         return decision;
@@ -72,7 +74,7 @@ public class GUIClient implements GameClient {
                 else
                     this.decision = new Decision(move, moveSize - highestAmountPutOnTable);
                 break;
-            case CALL:case CHECK:case FOLD: this.decision = new Decision(move);
+            case CALL:case CHECK:case FOLD:case ALL_IN: this.decision = new Decision(move);
         }
 
         Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(false));

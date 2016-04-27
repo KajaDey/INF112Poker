@@ -41,6 +41,8 @@ public class GameScreen {
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
     private ArrayList<Card> holeCards, communityCards;
+    private Map<Integer, Card[]> allHoleCards;
+    private boolean holeCardsShown = false;
 
 
     //GUI-elements
@@ -50,7 +52,7 @@ public class GameScreen {
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
     private Label endGameScreen;
-    private TextArea textArea = new TextArea();
+    private static TextArea textArea = new TextArea();
     private SoundPlayer soundPlayer = new SoundPlayer();
 
     public GameScreen(int ID) {
@@ -166,7 +168,7 @@ public class GameScreen {
      * Adds text to the previously made log field.
      * @param printInfo The text to add to the field.
      */
-    public void printToLogField(String printInfo){
+    public static void printToLogField(String printInfo){
         textArea.appendText("\n" + printInfo);
     }
 
@@ -246,6 +248,7 @@ public class GameScreen {
         communityCards.add(card2);
         communityCards.add(card3);
         updateYourHandLabel();
+        showPercentages();
 
         new SoundPlayer().playDealCardSound();
         printToLogField("Flop " + card1 + " " + card2 + " " + card3);
@@ -260,6 +263,7 @@ public class GameScreen {
         boardLayout.showTurn(turnImage);
         communityCards.add(turnCard);
         updateYourHandLabel();
+        showPercentages();
 
         printToLogField("Turn " + turnCard);
         soundPlayer.playDealCardSound();
@@ -276,6 +280,7 @@ public class GameScreen {
         communityCards.add(riverCard);
         updateYourHandLabel();
         soundPlayer.playDealCardSound();
+        showPercentages();
 
         printToLogField("River " + riverCard);
     }
@@ -388,9 +393,8 @@ public class GameScreen {
                 printToLogField(names.get(ID) + " posted small blind");
                 break;
             case ALL_IN:
-                if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) { //If raise is valid
+                if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) //If raise is valid
                     highestAmountPutOnTable = putOnTable.get(ID) + stackSizes.get(ID);
-                }
                 putOnTable.put(ID, putOnTable.get(ID) + stackSizes.get(ID));
                 newStackSize = 0;
                 decisionText += putOnTable.get(ID);
@@ -476,7 +480,12 @@ public class GameScreen {
         allPlayerLayouts.forEach((id, layout) -> {
             if (!layout.isBust())
                 layout.setCardImage(backImage, backImage);
+            layout.setPercentLabel("");
         });
+
+        //Reset hole cards
+        this.holeCardsShown = false;
+        this.allHoleCards = null;
 
         //Reset board
         boardLayout.newHand();
@@ -671,6 +680,9 @@ public class GameScreen {
 
             allPlayerLayouts.get(id).setCardImage(leftCard, rightCard);
         });
+
+        this.allHoleCards = holeCards;
+        this.holeCardsShown = true;
     }
 
     /**
@@ -724,5 +736,20 @@ public class GameScreen {
      */
     public void startTimer(long timeToThink, Decision.Move moveToExecute) {
         playerLayout.startTimer(timeToThink, moveToExecute);
+    }
+    public void stopTimer() {
+        playerLayout.stopTimer();
+    }
+
+    /**
+     * If hole cards are shown, calculate percentages for all players
+     */
+    private void showPercentages() {
+        if (!holeCardsShown || allHoleCards == null || communityCards.size() < 3)
+            return;
+
+        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(allHoleCards, communityCards);
+
+        percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int)(pcnt*100) + "%"));
     }
 }
