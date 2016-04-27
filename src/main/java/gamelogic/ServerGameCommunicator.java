@@ -1,14 +1,10 @@
 package gamelogic;
 
 import gamelogic.ai.MCTSAI;
-import gamelogic.ai.SimpleAI;
-import gui.GUIClient;
 import gui.GameScreen;
 
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -17,18 +13,18 @@ import java.util.Optional;
  * Created by morten on 27.04.16.
  */
 public class ServerGameCommunicator {
-    static final int timeOut = 5000;
     private final Socket socket;
     private final GameScreen gameScreen;
     private final String playerName;
     private Optional<GameClient> guiClient = Optional.empty();
 
     /**
-     * Creates a new ServerGameCommunicator to the given ip, but does not open a connection to it
-     * @throws IOException If it failed to open the socket
-     * @throws SocketTimeoutException
+     * * Creates a new ServerGameCommunicator to the given ip, but does not start communcation
+     * @param socket A TCP connetion to the server. This is expected to already be open
+     * @param playerName The player's chosen name
+     * @param gameScreen The gameScreen of the GUI being played on
      */
-    public ServerGameCommunicator(Socket socket, String playerName, GameScreen gameScreen) throws IOException {
+    public ServerGameCommunicator(Socket socket, String playerName, GameScreen gameScreen) {
         this.socket = socket;
         this.gameScreen = gameScreen;
         this.playerName = playerName;
@@ -46,17 +42,14 @@ public class ServerGameCommunicator {
         BufferedReader socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         BufferedWriter socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
-        System.out.println("Starting upi communcation");
         socketOutput.write("upi 0.1\n");
         socketOutput.flush();
-        System.out.println("Sent handshake");
+
         String input = socketInput.readLine();
-        if (input.equals("upiok")) {
-            System.out.println("Received upiok handshake from server");
-        }
-        else {
+        if (!input.equals("upiok")) {
             throw new IOException("Received " + input + " from server, expected upiok");
         }
+
         while (true) {
             input = socketInput.readLine();
             String[] tokens = input.split("\\s+");
@@ -66,6 +59,10 @@ public class ServerGameCommunicator {
             switch (tokens[0]) {
                 case "getName":
                     socketOutput.write("name " + playerName + "\n");
+                    break;
+                case "newHand":
+                    assert guiClient.isPresent();
+                    guiClient.get().startNewHand();
                     break;
                 case "newGame":
                     // TODO: Figure out what needs to be done here

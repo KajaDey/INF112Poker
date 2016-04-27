@@ -28,8 +28,8 @@ public class PokerMCTS {
                 .findFirst()
                 .get().position;
         this.initialGameState = gameState;
+        assert initialGameState.currentPlayer.id == playerId : initialGameState.players.get(playerPosition) + "(MCTSAI) was asked to make a decision when player to move is " + initialGameState.currentPlayer;
         assert initialGameState.getNextNodeType() == GameState.NodeType.PLAYER_DECISION : "MCTSAI was asked to make a decision when next node is " + initialGameState.getNextNodeType();
-        assert initialGameState.currentPlayer.id == playerId : "MCTSAI was asked to make a decision when player to move is " + initialGameState.currentPlayer;
         int amountOfMoves = initialGameState.allDecisions().get().size();
         this.rootNode = new AINode(amountOfMoves);
         assert amountOfMoves < 10 && rootNode.children.size() < 10 : "Root node has " + amountOfMoves + " moves: " + initialGameState.allDecisions().get();
