@@ -6,7 +6,8 @@
 \begin{document}
 \maketitle
 
-A protocol for playing poker remotely via a text interface, usually over a network. The protocol is based on passing text commands between a server and a client. Commands should be utf-8 encoded, and each command is terminated by a newline. If the client or server receives an unrecognized command, the whole line should be ignored, and communication should continue as normal afterwards.
+\section{Introduction}
+A protocol for playing poker remotely via a text interface, usually (but not necessarily) over a network. The protocol is based on passing text commands between the server and a client. Each command is terminated by a newline, and commands are separated into tokens delimited by one or more whitespace characters. The first token is always the command name. If the client or server receives a command with an unknown command name, the whole command should be ignored, and communication should continue as normal afterwards. If a known command is illegally formatted, however, the client should show an error.
 
 \section{Decision and card format}
 \subsection*{Cards}
