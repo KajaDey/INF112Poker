@@ -180,7 +180,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
      * @param rightCard
      */
     @Override
-    public void setCardImage(Image leftCard,Image rightCard) {
+    public synchronized void setCardImage(Image leftCard,Image rightCard) {
         leftCardImage.setImage(leftCard);
         rightCardImage.setImage(rightCard);
 
@@ -205,7 +205,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
      * Gray out cards
      */
     @Override
-    public void foldPlayer() {
+    public synchronized void foldPlayer() {
         ColorAdjust adjust = new ColorAdjust();
         adjust.setBrightness(-0.5);
         folded = true;
@@ -219,7 +219,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
      * @param bustedText
      */
     @Override
-    public void bustPlayer(String bustedText) {
+    public synchronized void bustPlayer(String bustedText) {
         isBust = true;
         setLastMove("", null);
         setStackLabel(bustedText);
@@ -232,7 +232,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         return isBust;
     }
 
-    public void highlightTurn(boolean highlight) {
+    public synchronized void highlightTurn(boolean highlight) {
         if (!(leftCardImage != null && rightCardImage != null))
             return;
 
@@ -260,7 +260,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             case 4:case 5:
                 return width - 320;
             default:
-                GUIMain.debugPrintln("** Cannot place opponent" + pos + " **\n");
+                GUIMain.debugPrintln("** Cannot place opponent in pos " + pos + " **\n");
                 return 0.0;
         }
     }
@@ -282,7 +282,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             case 3:
                 return !os.isEmpty() ? 20 : !os.startsWith("Mac") ? 30 : 20;
             default:
-                GUIMain.debugPrintln("** Cannot place opponent" + pos + " **\n");
+                GUIMain.debugPrintln("** Cannot place opponent in pos " + pos + " **\n");
                 return 0.0;
         }
     }

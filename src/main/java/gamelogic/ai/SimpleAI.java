@@ -16,6 +16,8 @@ public class SimpleAI implements GameClient {
     private final int playerId;
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
+    private List<Card> communityCards = new ArrayList<>();
+    private long smallBlindAmount;
     private long bigBlindAmount;
 
     // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
@@ -49,26 +51,26 @@ public class SimpleAI implements GameClient {
         assert stackSizes.get(playerId).equals(stackSizes.get(this.playerId)) :
                 "AI: stacksize mismatch: " + stackSizes.get(playerId) + " != " + stackSizes.get(this.playerId);
 
-        double handQuality = HandEstimator.handQuality(holeCards.get(0), holeCards.get(1), new ArrayList<>(0)) * Math.pow(0.95, amountOfPlayers);;
+        double handQuality = HandEstimator.handQuality(holeCards.get(0), holeCards.get(1), communityCards) * Math.pow(0.95, amountOfPlayers);;
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
         AIDecision aiDecision;
 
-        if (randomModifier * (handQuality / 18.0) > 1 / contemptFactor) {
+        if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) {
             // If the hand is considered "good", raise or bet if no one else has done it
             if (currentBet == 0) {
                 aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, contemptFactor);
             }
             // If someone has already raised, raise anyway if the hand is really good
-            else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) {
+            else if (randomModifier * (handQuality / 23.0) > 1 / contemptFactor) {
                 aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, contemptFactor);
             }
             else {
                 aiDecision = AIDecision.CALL;
             }
         }
-        else if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is decent
+        else if (randomModifier * (handQuality / 15.0) > 1 / contemptFactor) { // If the hand is decent
             if (currentBet == 0) {
                 aiDecision = AIDecision.CHECK;
             }
@@ -154,20 +156,20 @@ public class SimpleAI implements GameClient {
 
             case BIG_BLIND:
             case SMALL_BLIND:
+                long size = decision.move == Decision.Move.BIG_BLIND ? bigBlindAmount : smallBlindAmount;
                 betHasBeenPlaced = true;
-                minimumRaise = decision.size;
+                minimumRaise = size;
 
-                stackSizes.compute(playerId, (key, val) -> val -= decision.size);
+                stackSizes.compute(playerId, (key, val) -> val -= size);
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }
                 else {
-                    currentBet = decision.size;
+                    currentBet = size;
                 }
                 break;
 
             case CALL:
-                stackSizes.compute(playerId, (key, val) -> val -= decision.size);
                 if (playerId == this.playerId) {
                     stackSizes.compute(playerId, (key, val) -> val -= currentBet);
                     currentBet = 0;
@@ -176,18 +178,16 @@ public class SimpleAI implements GameClient {
 
             case RAISE:
             case BET:
-                stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.size));
-                if (playerId == this.playerId) {
-                }
+                stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.getSize()));
                 if (playerId == this.playerId) {
                     currentBet = 0;
                 }
                 else {
-                    currentBet += decision.size;
+                    currentBet += decision.getSize();
                 }
 
                 betHasBeenPlaced = true;
-                minimumRaise = decision.size;
+                minimumRaise = decision.getSize();
                 break;
             case FOLD:
             break;
@@ -203,7 +203,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void setSmallBlind(long smallBlind) {
+    public void setSmallBlind(long smallBlind) { this.smallBlindAmount = smallBlind;
     }
 
     @Override
@@ -222,17 +222,22 @@ public class SimpleAI implements GameClient {
     public void setLevelDuration(int levelDuration) { }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
+        communityCards.add(card1);
+        communityCards.add(card2);
+        communityCards.add(card3);
         newBettingRound();
     }
 
     @Override
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
+        communityCards.add(turn);
         newBettingRound();
     }
 
     @Override
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
+        communityCards.add(river);
         newBettingRound();
     }
 

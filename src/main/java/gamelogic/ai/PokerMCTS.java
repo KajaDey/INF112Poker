@@ -1,9 +1,6 @@
 package gamelogic.ai;
 
-import gamelogic.Decision;
-import gamelogic.Hand;
-import gamelogic.HandCalculator;
-import gamelogic.Pot;
+import gamelogic.*;
 import gamelogic.ai.SimpleAI.AIDecision;
 import java.util.*;
 
@@ -165,7 +162,12 @@ public class PokerMCTS {
             List<GameState.GameStateChange> allMoves = gameState.allDecisions().get();
             GameState newGameState = new GameState(gameState);
 
-            newGameState.makeGameStateChange(allMoves.get(childIndex));
+            try {
+                newGameState.makeGameStateChange(allMoves.get(childIndex));
+            } catch (IllegalDecisionException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
 
             GameState.NodeType childNodeType = newGameState.getNextNodeType();
             Optional<List<GameState.GameStateChange>> allMovesForChild = newGameState.allDecisions();
@@ -208,7 +210,12 @@ public class PokerMCTS {
 
             GameState.GameStateChange randomMove = gameState.getRandomDecision(random).get();
 
-            gameState.makeGameStateChange(randomMove);
+            try {
+                gameState.makeGameStateChange(randomMove);
+            } catch (IllegalDecisionException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
 
             AbstractNode childNode;
 
@@ -282,7 +289,12 @@ public class PokerMCTS {
                         childIndex = i;
                     }
                 }
-                newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
+                try {
+                    newGameState.makeGameStateChange(gameState.allDecisions().get().get(childIndex));
+                } catch (IllegalDecisionException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
 
                 evals = bestNode.select(totalSearches, newGameState, random, hasPassedDecisionNode);
 
@@ -373,7 +385,12 @@ public class PokerMCTS {
                 GameState newGameState = new GameState(gameState);
                 List<GameState.GameStateChange> moves = newGameState.allDecisions().get();
 
-                newGameState.makeGameStateChange(moves.get(randomIndex));
+                try {
+                    newGameState.makeGameStateChange(moves.get(randomIndex));
+                } catch (IllegalDecisionException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
 
                 double[] eval = children.get(randomIndex).get().select(totalSearches, newGameState, random, hasPassedDecicionNode);
                 addValues(values, eval);

@@ -12,6 +12,7 @@ public class MCTSAI implements GameClient {
     public final double contemptFactor;
     private final int playerId;
     private int amountOfPlayers;
+    private long smallBlindAmount;
     private long bigBlindAmount;
     private List<Card> holeCards = new ArrayList<>();
 
@@ -41,7 +42,7 @@ public class MCTSAI implements GameClient {
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), bigBlindAmount));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
@@ -107,12 +108,18 @@ public class MCTSAI implements GameClient {
         assert names.get().size() == amountOfPlayers;
         assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), bigBlindAmount));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id
                 : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
-        gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
+        try {
+            gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+            System.out.println("Error: AI received illegal decision.");
+            System.exit(1);
+        }
     }
 
     @Override
@@ -126,7 +133,7 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void setSmallBlind(long smallBlind) {
+    public void setSmallBlind(long smallBlind) { smallBlindAmount = smallBlind;
     }
 
     @Override
@@ -147,31 +154,50 @@ public class MCTSAI implements GameClient {
     public void setLevelDuration(int levelDuration) { }
 
     @Override
-    public void setFlop(Card card1, Card card2, Card card3, long currentPotSize) {
+    public void setFlop(Card card1, Card card2, Card card3) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.isEmpty() : "MCTS received flop card when it had " + gameState.get().communityCards.size();
         assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received flop cards when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
-        gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card1));
-        assert gameState.get().getPlayersToMakeDecision() == 0;
-        gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card2));
-        assert gameState.get().getPlayersToMakeDecision() == 0;
-        gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card3));
+        try {
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card1));
+            assert gameState.get().getPlayersToMakeDecision() == 0;
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card2));
+            assert gameState.get().getPlayersToMakeDecision() == 0;
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card3));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+            System.out.println("Error: AI received illegal decision.");
+            System.exit(1);
+        }
+
     }
 
     @Override
-    public void setTurn(Card turn, long currentPotSize) {
+    public void setTurn(Card turn) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 3 : "MCTS received turn card when it had " + gameState.get().communityCards.size();
         assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received turn card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
-        gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
+        try {
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+            System.out.println("Error: AI received illegal decision.");
+            System.exit(1);
+        }
     }
 
     @Override
-    public void setRiver(Card river, long currentPotSize) {
+    public void setRiver(Card river) {
         assert gameState.isPresent();
         assert gameState.get().communityCards.size() == 4 : "MCTS received river card when it had " + gameState.get().communityCards.size();
         assert gameState.get().getPlayersToMakeDecision() == 0 : "MCTS received river card when " + gameState.get().getPlayersToMakeDecision() + " players still need to make decisions (currentPlayer=" + gameState.get().currentPlayer + ")";
-        gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
+        try {
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+            System.out.println("Error: AI received illegal decision.");
+            System.exit(1);
+        }
 
     }
 }
