@@ -13,7 +13,8 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 
 /**
- * Created by ady on 18/04/16.
+ * This class holds all the information about the lobby.
+ * @author André Dyrstad
  */
 public class LobbyScreen {
 
@@ -109,6 +110,8 @@ public class LobbyScreen {
         CheckBox privateGameCheckbox = new CheckBox("Private game");
         privateGameCheckbox.setFont(new Font("Areal", 15));
         privateGameCheckbox.setStyle("-fx-text-fill: white");
+        privateGameCheckbox.setLayoutX(660);
+        privateGameCheckbox.setLayoutY(350);
         privateGameCheckbox.setOnAction(e -> ButtonListeners.privateGameCheckboxListener(privateGameCheckbox.isSelected()));
 
         Label gameName = ObjectStandards.makeLabelForHeadLine("Andy's game!");
@@ -131,7 +134,7 @@ public class LobbyScreen {
         Button changeSettings = ObjectStandards.makeButtonForLobbyScreen("Change settings");
 
         changeSettings.setLayoutX(670);
-        changeSettings.setLayoutY(350);
+        changeSettings.setLayoutY(400);
         changeSettings.setMinWidth(150);
         changeSettings.setOnAction(event -> ButtonListeners.settingsButtonListener(gameController));
 
@@ -229,7 +232,7 @@ public class LobbyScreen {
     }
 
     /**
-     * uppdates all the labels in in the game info
+     * updates all the labels in in the game info
      *
      * @param newSettings
      */
