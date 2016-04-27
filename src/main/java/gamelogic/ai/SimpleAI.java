@@ -16,6 +16,7 @@ public class SimpleAI implements GameClient {
     private final int playerId;
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
+    private List<Card> communityCards = new ArrayList<>();
     private long smallBlindAmount;
     private long bigBlindAmount;
 
@@ -50,26 +51,26 @@ public class SimpleAI implements GameClient {
         assert stackSizes.get(playerId).equals(stackSizes.get(this.playerId)) :
                 "AI: stacksize mismatch: " + stackSizes.get(playerId) + " != " + stackSizes.get(this.playerId);
 
-        double handQuality = HandEstimator.handQuality(holeCards.get(0), holeCards.get(1), new ArrayList<>(0)) * Math.pow(0.95, amountOfPlayers);;
+        double handQuality = HandEstimator.handQuality(holeCards.get(0), holeCards.get(1), communityCards) * Math.pow(0.95, amountOfPlayers);;
 
         // Random modifier between 0.5 and 1.5
         double randomModifier = (Math.random() + Math.random()) / 2 + 0.5;
         AIDecision aiDecision;
 
-        if (randomModifier * (handQuality / 18.0) > 1 / contemptFactor) {
+        if (randomModifier * (handQuality / 20.0) > 1 / contemptFactor) {
             // If the hand is considered "good", raise or bet if no one else has done it
             if (currentBet == 0) {
                 aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, contemptFactor);
             }
             // If someone has already raised, raise anyway if the hand is really good
-            else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) {
+            else if (randomModifier * (handQuality / 23.0) > 1 / contemptFactor) {
                 aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, contemptFactor);
             }
             else {
                 aiDecision = AIDecision.CALL;
             }
         }
-        else if (randomModifier * (handQuality / 14.0) > 1 / contemptFactor) { // If the hand is decent
+        else if (randomModifier * (handQuality / 15.0) > 1 / contemptFactor) { // If the hand is decent
             if (currentBet == 0) {
                 aiDecision = AIDecision.CHECK;
             }
@@ -222,16 +223,21 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setFlop(Card card1, Card card2, Card card3) {
+        communityCards.add(card1);
+        communityCards.add(card2);
+        communityCards.add(card3);
         newBettingRound();
     }
 
     @Override
     public void setTurn(Card turn) {
+        communityCards.add(turn);
         newBettingRound();
     }
 
     @Override
     public void setRiver(Card river) {
+        communityCards.add(river);
         newBettingRound();
     }
 
