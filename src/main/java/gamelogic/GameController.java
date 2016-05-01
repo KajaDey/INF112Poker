@@ -34,7 +34,7 @@ public class GameController {
      */
     public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
         //Tell GUI to display Lobby
-        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, aiType);
+        gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
         if (numPlayers >=2 && numPlayers <= 6) {
             mainGUI.displayLobbyScreen(name, gameSettings);
             this.name = name;

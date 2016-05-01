@@ -12,11 +12,13 @@ import gamelogic.GameController;
  */
 public class GameSettings {
 
-    private final long startStack;
+    public final static GameSettings DEFAULT_SETTINGS = new GameSettings(5000, 50, 25, 6, 10, AIType.MCTS_AI);
+
+    private long startStack;
     private long bigBlind;
     private long smallBlind;
-    private final int maxNumberOfPlayers;
-    private final int levelDuration;
+    private int maxNumberOfPlayers;
+    private int levelDuration;
     private AIType aiType;
 
     /**
@@ -38,6 +40,15 @@ public class GameSettings {
         this.aiType = aiType;
     }
 
+    public GameSettings(GameSettings oldSetting) {
+        startStack = oldSetting.startStack;
+        bigBlind = oldSetting.bigBlind;
+        smallBlind = oldSetting.smallBlind;
+        maxNumberOfPlayers = oldSetting.maxNumberOfPlayers;
+        levelDuration = oldSetting.levelDuration;
+        aiType = oldSetting.aiType;
+    }
+
     /**
      * Doubles the blinds
      */
@@ -46,6 +57,30 @@ public class GameSettings {
         bigBlind *= 2;
     }
 
+
+    public void setStartStack(long startStack) {
+        this.startStack = startStack;
+    }
+
+    public void setBigBlind(long bigBlind) {
+        this.bigBlind = bigBlind;
+    }
+
+    public void setSmallBlind(long smallBlind) {
+        this.smallBlind = smallBlind;
+    }
+
+    public void setMaxNumberOfPlayers(int maxNumberOfPlayers) {
+        this.maxNumberOfPlayers = maxNumberOfPlayers;
+    }
+
+    public void setLevelDuration(int levelDuration) {
+        this.levelDuration = levelDuration;
+    }
+
+    public void setAiType(AIType aiType) {
+        this.aiType = aiType;
+    }
     /**
      * @return startStack
      */

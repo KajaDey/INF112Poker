@@ -32,14 +32,13 @@ public class NetworkClientTest {
 
         Runnable serverThread = () -> {
             for (int i = 0; i < amountOfPlayers; i++) {
-                int i2 = i;
                 try {
 
                     Socket serverSocket = socketListener.accept();
 
-                    GameClient gameClient = new NetworkClient(serverSocket, i2);
+                    GameClient gameClient = new NetworkClient(serverSocket, i);
                     players.add(gameClient);
-                    gameClient.setHandForClient(i2, deck.draw().get(), deck.draw().get());
+                    gameClient.setHandForClient(i, deck.draw().get(), deck.draw().get());
 
                     AITest.setupAi(gameClient, amountOfPlayers, 2);
 
