@@ -58,7 +58,7 @@ public class ServerGameCommunicator {
             }
             switch (tokens[0]) {
                 case "getName":
-                    socketOutput.write("name " + playerName + "\n");
+                    socketOutput.write("playerName " + playerName + "\n");
                     break;
                 case "newHand":
                     assert gameClient.isPresent();

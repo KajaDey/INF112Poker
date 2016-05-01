@@ -72,7 +72,7 @@ public class Card implements Comparable<Card> {
 
     /**
      *
-     * @return a name that the GUI can use to display cards.
+     * @return a playerName that the GUI can use to display cards.
      */
     public String getCardNameForGui(){
 

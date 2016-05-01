@@ -14,7 +14,7 @@ public abstract class User {
 
     /**
      * Getter
-     * @return user name
+     * @return user playerName
      */
     public String getName() {
         return name;

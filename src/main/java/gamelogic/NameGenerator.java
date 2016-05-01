@@ -31,7 +31,7 @@ public class NameGenerator {
     }
 
     /**
-     *  Get a random name from a randomly selected theme series
+     *  Get a random playerName from a randomly selected theme series
      *  Guarantees no duplicates, removes all white spaces
      *  @return
      */
