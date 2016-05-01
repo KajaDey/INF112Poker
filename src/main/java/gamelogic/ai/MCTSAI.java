@@ -87,7 +87,7 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        assert stackSizes.size() == amountOfPlayers;
+        assert stackSizes.size() == amountOfPlayers : "Received stacksizes for " + stackSizes.size() + " players, but there are " + amountOfPlayers + " playing.";
         this.stackSizes = Optional.of(stackSizes);
     }
 

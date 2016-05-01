@@ -7,9 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by Jostein on 09.04.2016.
@@ -59,7 +57,7 @@ public class MenuBarScreens {
 
     public String licenseReader(String fileName) throws IOException {
 
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
         String out = "";
         while (true){
             String line = bufferedReader.readLine();

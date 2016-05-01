@@ -1,24 +1,31 @@
 package gamelogic;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created by morten on 27.04.16.
+ * An implementation of upi (universal poker interface) (Specification on the docs)
+ * wrapped around the GameClient interface.
+ *
+ * Although this object is technically on the server-side of the network,
+ * the GameController sees it as another client, hence the name NetworkClient
  */
 public class NetworkClient implements GameClient {
 
-    final int playerId;
-    Socket socket;
-    BufferedReader socketInput;
-    BufferedWriter socketOutput;
+    private final int playerId;
+    private Socket socket;
+    private BufferedReader socketInput;
+    private BufferedWriter socketOutput;
 
-
+    /**
+     * Initializes the network client, and does the upi handshake with the remote client
+     * @param socket A TCP socket to the client, which is expected to already have an open connection
+     * @param playerId ID of the player
+     * @throws IOException
+     */
     public NetworkClient(Socket socket, int playerId) throws IOException {
         this.socket = socket;
         this.playerId = playerId;
@@ -28,14 +35,12 @@ public class NetworkClient implements GameClient {
 
         String input = socketInput.readLine();
         if (input.startsWith("upi")) {
-            System.out.println("Received handshake upi");
-            writeToSocket("upiok\n");
+            writeToSocket("upiok");
         }
         else {
-            System.out.println("Wrong handshake " + input);
+            throw new IOException("Wrong handshake " + input);
         }
         writeToSocket("clientId " + playerId);
-
     }
 
     @Override
@@ -64,6 +69,7 @@ public class NetworkClient implements GameClient {
                 e.printStackTrace();
             }
         }
+        System.out.println("Couldn't get decision from client, returning fold");
         return Decision.fold;
     }
 
@@ -149,6 +155,17 @@ public class NetworkClient implements GameClient {
 
     }
 
+    public void closeSocket() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Writes the output to the socket, terminating the line and flushing the socket
+     */
     private void writeToSocket(String output) {
         try {
             socketOutput.write(output + "\n");
@@ -158,13 +175,18 @@ public class NetworkClient implements GameClient {
         }
     }
 
-
+    /**
+     * Converts a list of cards into a upi-compatible string
+     */
     public static String cardsToString(Card ... cards) {
         return Arrays.stream(cards)
                 .map(card -> card.suit.name().toLowerCase() + card.rank + " ")
                 .reduce("", String::concat);
     }
 
+    /**
+     * Converts a map into a upi-compatible string
+     */
     public static <K, V> String mapToString(Map<K, V> map) {
         return map.keySet().stream()
                     .map(key -> key.toString() + " " + map.get(key).toString() + " ")

@@ -20,8 +20,10 @@ import static org.junit.Assert.*;
  */
 public class NetworkClientTest {
 
+    final long timeToThink = 500L;
+
     @Test
-    public void stuffWorks() throws IOException {
+    public void playFlopOverNetwork() throws IOException {
 
         int amountOfPlayers = 4;
         Deck deck = new Deck();
@@ -29,43 +31,86 @@ public class NetworkClientTest {
         List<GameClient> players = new ArrayList<>();
 
         Runnable serverThread = () -> {
+            for (int i = 0; i < amountOfPlayers; i++) {
+                int i2 = i;
+                try {
 
-            try {
-
-                for (int i = 0; i < 1; i++) {
-                    System.out.println("Listening on port 39100");
                     Socket serverSocket = socketListener.accept();
-                    System.out.println("Got connected");
 
-                    GameClient gameClient = new NetworkClient(serverSocket, i);
+                    GameClient gameClient = new NetworkClient(serverSocket, i2);
                     players.add(gameClient);
-                    gameClient.setHandForClient(i, deck.draw().get(), deck.draw().get());
-                    AITest.setupAi(gameClient, amountOfPlayers, 2);
-                }
-                for (GameClient client : players) {
-                    System.out.println(client.getDecision(1000L));
-                    for (int i = 0; i < amountOfPlayers; i++) {
-                        //players.get(i).playerMadeDecision();
-                    }
-                }
+                    gameClient.setHandForClient(i2, deck.draw().get(), deck.draw().get());
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                    AITest.setupAi(gameClient, amountOfPlayers, 2);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            System.out.println("Connected to all " + amountOfPlayers + " clients.");
+
         };
         new Thread(serverThread).start();
 
-        System.out.println("Opening socket");
-        Socket clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
-        System.out.println("Opened socket");
-        //GameScreen gameScreen = new GameScreen(0);
-        //gameScreen.createSceneForGameScreen(new GameSettings(1000L, 50L, 25L, 2, 10, AIType.MCTS_AI));
-        ServerGameCommunicator communicator = new ServerGameCommunicator(clientSocket, "Morten", null);
+        try {
+            Thread.sleep(200L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        
-        //communicator.startUpi();
+        for (int i = 0; i < amountOfPlayers; i++) {
+            int i2 = i;
+            Runnable r = () -> {
+                try {
+                    Socket clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
+                    ServerGameCommunicator communicator = new ServerGameCommunicator(clientSocket, "Morten-" + i2, null);
+                    communicator.startUpi();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            };
+            new Thread(r).start();
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
+        for (int i = 0; i < amountOfPlayers; i++) {
+            System.out.println(players.get(i).getDecision(timeToThink));
 
+            for (int j = 0; j < amountOfPlayers; j++) {
+                players.get(j).playerMadeDecision(i, new Decision(Decision.Move.CALL));
+            }
+            try {
+                Thread.sleep(200L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        for (int j = 0; j < amountOfPlayers; j++) {
+            players.get(j).setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
+        }
+
+        for (int i = 0; i < amountOfPlayers; i++) {
+            int playerId = (i + 2) % amountOfPlayers;
+            System.out.println("Asking player " + playerId + " for a decision");
+            System.out.println(players.get(playerId).getDecision(timeToThink));
+
+            for (int j = 0; j < amountOfPlayers; j++) {
+                players.get(j).playerMadeDecision(playerId, new Decision(Decision.Move.CHECK));
+            }
+            try {
+                Thread.sleep(200L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        // Close all the sockets
+        for (GameClient client : players) {
+            ((NetworkClient)client).closeSocket();
+        }
     }
 
     @Test
