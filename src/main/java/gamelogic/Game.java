@@ -20,6 +20,7 @@ public class Game {
     private int numberOfPlayers = 0, remainingPlayers = 0, finishedInPosition;
     private long startSB, startBB;
     private int handsStarted = 0;
+    private long lastBlindRaiseTime = 0;
 
     //Indexes
     private int smallBlindIndex = 0;
@@ -79,6 +80,7 @@ public class Game {
      * Plays a game until a player has won.
      */
     public void playGame() {
+        lastBlindRaiseTime = System.currentTimeMillis();
 
         Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
@@ -115,12 +117,21 @@ public class Game {
         boolean preFlop = true;
         handsStarted++;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
+
         GUIMain.debugPrintln("\nBLINDS");
-        if (handsStarted % gameSettings.getLevelDuration() == 0) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - (gameSettings.getLevelDuration()*60*1000) > lastBlindRaiseTime) {
             gameSettings.increaseBlinds();
             GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
             gameController.setBlinds();
+            lastBlindRaiseTime = currentTime;
         }
+
+//        if (handsStarted % gameSettings.getLevelDuration() == 0) {
+//            gameSettings.increaseBlinds();
+//            GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
+//            gameController.setBlinds();
+//        }
         postBlinds();
         printAllPlayerStacks();
 
@@ -163,6 +174,7 @@ public class Game {
         //Showdown
         showDown();
     }
+
 
     /**
      *   Play one complete betting round (where all players act until everyone agree (or everyone but 1 folds))

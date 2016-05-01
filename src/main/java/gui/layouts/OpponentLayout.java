@@ -45,7 +45,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         rightCardImage.setVisible(false);
         chipImage.setVisible(true);
 
-        glow.setColor(Color.WHITE);
+        glow.setColor(Color.web("cyan", 0.5));
         glow.setHeight(50);
         glow.setWidth(50);
 
@@ -66,7 +66,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         dealerButtonImage = new ImageView();
         dealerButtonImage.setImage(ImageViewer.getChipImage(null));
         dealerButtonImage.setPreserveRatio(true);
-        dealerButtonImage.setFitWidth(32);
+        dealerButtonImage.setFitWidth(38);
         HBox dealerButtonBox = new HBox();
         dealerButtonBox.getChildren().addAll(dealerButtonImage);
         dealerButtonBox.setMinSize(32,35);
@@ -136,9 +136,10 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         percentLabel.setMinWidth(150);
 
         this.setMinWidth(300);
+        this.setMaxWidth(300);
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
-        cards.setSpacing(10);
+        cards.setSpacing(1);
 
     }
 

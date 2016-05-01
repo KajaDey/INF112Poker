@@ -107,6 +107,10 @@ public class NetworkClientTest {
                 e.printStackTrace();
             }
         }
+        // Close all the sockets
+        for (GameClient client : players) {
+            ((NetworkClient)client).closeSocket();
+        }
     }
 
     @Test

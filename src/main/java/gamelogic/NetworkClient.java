@@ -155,6 +155,14 @@ public class NetworkClient implements GameClient {
 
     }
 
+    public void closeSocket() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Writes the output to the socket, terminating the line and flushing the socket
      */
