@@ -7,9 +7,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import gamelogic.GameController;
 import gamelogic.AIType;
+
+import java.io.File;
 
 /**
  * This purpose of this class is to create the full screen that is seen when the application is started.
@@ -39,7 +42,7 @@ public class MainScreen {
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
         mainScreenLayout.setTop(ObjectStandards.createMenuBar());
-        SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
+        SceneBuilder.showCurrentScene(mainScreenLayout, "Welcome to The Game!");
     }
 
     public static void refreshSceneForMainScreen() {
@@ -66,13 +69,27 @@ public class MainScreen {
                "Enter your name, and start playing!";
 
 
+        ////////////////////////////////////
+
+        VBox playGameBox = new VBox();
+        VBox watchGameBox = new VBox();
+
+        Button playGame = ObjectStandards.makeMainScreenButton("Play game");
+        Button watchReplay = ObjectStandards.makeMainScreenButton("Watch game");
+        Button exit = ObjectStandards.makeMainScreenButton("Exit");
+        Button selectFile = ObjectStandards.makeButtonForLobbyScreen("Select file");
+        Button watchNow = ObjectStandards.makeButtonForLobbyScreen("Watch now");
+        Label selectedFile = ObjectStandards.makeStandardLabelWhite("No file chosen", "");
+
+        ///////////////////////////////////
+
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 
         Label infoText = ObjectStandards.makeStandardLabelWhite(info,"");
         infoText.setPadding(largePadding);
         infoText.setFont(new Font("Areal", 15));
 
-        verticalButtonAndChoiceBox.getChildren().addAll(titleText,infoText);
+        verticalButtonAndChoiceBox.getChildren().addAll(titleText);
         verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
         horisontalFull.setAlignment(Pos.CENTER);
@@ -99,7 +116,7 @@ public class MainScreen {
                 "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
         choiceBox.getStylesheets().addAll("file:resources/choiceBoxStyling.css");
 
-        enter.setOnAction(e ->{
+        enter.setOnAction(e -> {
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
@@ -109,7 +126,41 @@ public class MainScreen {
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
 
-        verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, numOfPlayersIn, enter);
+        playGame.setOnAction(e -> {
+            verticalButtonAndChoiceBox.getChildren().clear();
+            verticalButtonAndChoiceBox.getChildren().addAll(titleText, playGame, playGameBox, watchReplay, exit);
+
+        });
+
+        watchReplay.setOnAction(e -> {
+            verticalButtonAndChoiceBox.getChildren().clear();
+            verticalButtonAndChoiceBox.getChildren().addAll(titleText, playGame, watchReplay, watchGameBox, exit);
+
+        });
+
+        selectFile.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+            File fileSelected = fileChooser.showOpenDialog(null);
+
+            if(fileSelected != null)
+                selectedFile.setText(fileSelected.getName());
+            else
+                selectedFile.setText("File is not valid");
+
+        });
+
+        exit.setOnAction(e -> System.exit(0));
+
+        playGameBox.getChildren().addAll(choiceBox, nameIn, enter);
+        playGameBox.setAlignment(Pos.CENTER);
+        playGameBox.setPadding(new Insets(10, 10, 10, 10));
+        watchGameBox.getChildren().addAll(selectFile, selectedFile, watchNow);
+        watchGameBox.setAlignment(Pos.CENTER);
+        watchGameBox.setPadding(new Insets(10, 10, 10, 10));
+
+        verticalButtonAndChoiceBox.getChildren().addAll(playGame, watchReplay, exit);
+        verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
         return horisontalFull;
     }

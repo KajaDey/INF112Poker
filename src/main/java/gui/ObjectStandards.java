@@ -71,6 +71,15 @@ public class ObjectStandards {
         return button;
     }
 
+    public static Button makeMainScreenButton(String name){
+        Button button = new Button(name);
+        button.setMinWidth(200);
+        button.setMinHeight(50);
+
+        button.setStyle(styling);
+        return button;
+    }
+
     /**
      * Makes a button for the lobby screen
      * @param name The name of the button
@@ -360,4 +369,5 @@ public class ObjectStandards {
         }
 
     }
+
 }
