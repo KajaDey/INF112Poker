@@ -80,6 +80,8 @@ public class MainScreen {
         Button selectFile = ObjectStandards.makeButtonForLobbyScreen("Select file");
         Button watchNow = ObjectStandards.makeButtonForLobbyScreen("Watch now");
         Label selectedFile = ObjectStandards.makeStandardLabelWhite("No file chosen", "");
+        selectedFile.setFont(new Font("Areal",20));
+
 
         ///////////////////////////////////
 
@@ -102,8 +104,8 @@ public class MainScreen {
         enter.setMinWidth(2 * standardButton);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
-        choiceBox.setValue(AIType.MCTS_AI.toString());
+        choiceBox.getItems().addAll("Single player", "Multi player");
+        choiceBox.setValue("Single player");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
 

@@ -40,9 +40,13 @@ public class GUIMain extends Application{
      * Displays the lobby screen
      * @param gameSettings The settings to be displayed
      */
-    public void displayLobbyScreen(String name, GameSettings gameSettings){
-        //GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
-        LobbyScreen.createScreenForGameLobby(gameSettings,gameController,name);
+    public void displaySinglePlayerScreen(String name, GameSettings gameSettings){
+        GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
+
+    }
+
+    public void displayMultiPlayerScreen(String name, GameSettings gameSettings) {
+        LobbyScreen.createScreenForGameLobby(gameSettings, gameController, name);
     }
 
     /**
@@ -65,7 +69,7 @@ public class GUIMain extends Application{
         ButtonListeners.setClient(client);
 
         //Create initial screen, empty
-        SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings),"GameScreen");
+        SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings), "GameScreen");
 
         return client;
     }
@@ -78,7 +82,7 @@ public class GUIMain extends Application{
      * @return The game screen containing the new player
      */
     public void insertPlayer(int userID, String name, long stackSize) {
-        Platform.runLater(()->gameScreen.insertPlayer(userID, name, stackSize));
+        Platform.runLater(() -> gameScreen.insertPlayer(userID, name, stackSize));
     }
 
     /**

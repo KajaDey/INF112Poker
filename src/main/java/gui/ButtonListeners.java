@@ -126,10 +126,9 @@ public class ButtonListeners {
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null) {
-                AIType type = AIType.fromString(choiceBox);
+            if (!name.isEmpty()) {
 
-                gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), type);
+                gameController.enterButtonClicked(name, choiceBox);
                 gameSettings = gameController.gameSettings;
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
