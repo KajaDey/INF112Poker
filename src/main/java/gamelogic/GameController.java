@@ -170,7 +170,7 @@ public class GameController {
         if (client instanceof SimpleAI || client instanceof MCTSAI)
             return getAIDecision(client);
         else
-            return client.getDecision(10000L);
+            return client.getDecision(20000L);
 
     }
 

@@ -195,10 +195,10 @@ public class HandEstimator {
      * @param randomModifier Modifier that gets multipled by the handquality
      */
     public static SimpleAI.AIDecision getRaiseAmount(double randomModifier, double handQuality, double contemptFactor) {
-        if (randomModifier * (handQuality / 26.0) > 1 / contemptFactor) { // If the hand is really good
+        if (randomModifier * (handQuality / 30.0) > 1 / contemptFactor) { // If the hand is really good
             return SimpleAI.AIDecision.RAISE_POT;
         }
-        else if (randomModifier * (handQuality / 22.0) > 1 / contemptFactor) { // If the hand is really good
+        else if (randomModifier * (handQuality / 24.0) > 1 / contemptFactor) { // If the hand is really good
             return SimpleAI.AIDecision.RAISE_HALF_POT;
         }
         else {

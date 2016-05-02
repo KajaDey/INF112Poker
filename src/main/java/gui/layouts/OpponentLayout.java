@@ -46,7 +46,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         rightCardImage.setVisible(false);
         chipImage.setVisible(true);
 
-        glow.setColor(Color.WHITE);
+        glow.setColor(Color.web("cyan", 0.5));
         glow.setHeight(50);
         glow.setWidth(50);
 
@@ -66,7 +66,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         dealerButtonImage = new ImageView();
         dealerButtonImage.setImage(ImageViewer.getChipImage(null));
         dealerButtonImage.setPreserveRatio(true);
-        dealerButtonImage.setFitWidth(32);
+        dealerButtonImage.setFitWidth(38);
         HBox dealerButtonBox = new HBox();
         dealerButtonBox.getChildren().addAll(dealerButtonImage);
         dealerButtonBox.setMinSize(32,35);
@@ -130,16 +130,17 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
 
-        nameLabel.setMinWidth(150);
-        stackSizeLabel.setMinWidth(150);
-        positionLabel.setMinWidth(150);
+        nameLabel.setMinWidth(140);
+        stackSizeLabel.setMinWidth(140);
+        positionLabel.setMinWidth(140);
 
         this.setMinWidth(300);
+        this.setMaxWidth(300);
         opponentStats.setSpacing(5);
         opponentStats.setAlignment(Pos.CENTER);
-        cards.setSpacing(10);
+        cards.setSpacing(1);
 
-    };
+    }
 
     /**
      * Set last move label for opponent (e.g.: "CALL 50" or "ALL IN")
