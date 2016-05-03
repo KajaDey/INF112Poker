@@ -48,17 +48,22 @@ public class GameController {
     /**
      * Called when the enter button is clicked.
      * Checks valid number of players, then makes GUI show the lobby screen
-     * @param name Name of the player
-     * @param numPlayers Number of players
+     * @param name
+     * @param numPlayers
      * @param aiType Type of AI (Simple or MCTS)
      */
-    public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
+    public void enterButtonClicked(String name, String gameStyle) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
-        if (numPlayers >=2 && numPlayers <= 6) {
-            mainGUI.displayLobbyScreen(name, gameSettings);
-            this.name = name;
-        }
+
+        if(gameStyle.equals("Single player"))
+            mainGUI.displaySinglePlayerScreen(name, gameSettings);
+        else
+            mainGUI.displayMultiPlayerScreen(name, gameSettings);
+
+
+        this.name = name;
+
     }
 
     /**

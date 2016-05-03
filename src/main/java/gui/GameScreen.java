@@ -63,7 +63,7 @@ public class GameScreen {
         pane.setOnMouseClicked((event) -> playerLayout.setFocus());
 
         //Create the scene
-        scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
+        scene = new Scene(ImageViewer.setBackground("table&background", pane, 1920, 1080), 1280, 720);
 
         this.allPlayerLayouts = new HashMap<>();
 

@@ -56,6 +56,24 @@ public class ImageViewer {
     }
 
     /**
+     * Sets an image as a background for a given BorderPane
+     * @param imageIn The image to be set as background
+     * @param pane The new pane. Contains the background
+     * @return The new BorderPane
+     */
+    public static VBox setBackground(String imageIn, VBox pane, int sizeX, int sizeY){
+        Image image = new Image(returnURLPathForImages(imageIn));
+
+        BackgroundSize backgroundSize = new BackgroundSize(sizeX,sizeY, false, false, true, true);
+
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        Background background = new Background(backgroundImage);
+        pane.setBackground(background);
+
+        return pane;
+    }
+
+    /**
      * Returns an empty image view, with the correct image size.
      * @param type The type of player. Either a PLAYER or OPPONENT.
      * @return The total image view.
