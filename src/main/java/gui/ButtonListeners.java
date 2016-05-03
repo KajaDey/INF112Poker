@@ -26,6 +26,7 @@ public class ButtonListeners {
     private static GameController savedGameController;
 
     private static long lastSpaceTap = 0;
+    private static LobbyScreen lobby;
 
     /**
      * What happens when the betButton is pushed
@@ -85,7 +86,7 @@ public class ButtonListeners {
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
 
             //GameLobby.updateLabels(gameSettings);
-            LobbyScreen.updateLabels(gameSettings);
+            lobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             window.close();
 
@@ -217,7 +218,7 @@ public class ButtonListeners {
      * Displays the info of the selected game
      */
     public static void moreInfoButtonListener() {
-        LobbyScreen.displayGameInfo();
+        lobby.displayGameInfo();
     }
 
 
@@ -225,7 +226,7 @@ public class ButtonListeners {
      * Generates a new lobby and adds it to the list of games (unless its private)
      */
     public static void MakeNewLobbyButtonListener() {
-        LobbyScreen.makeNewLobby();
+        lobby.makeNewLobby();
     }
 
     /**
@@ -244,4 +245,7 @@ public class ButtonListeners {
 
     }
 
+    public static void setLobby(LobbyScreen lobby) {
+        ButtonListeners.lobby = lobby;
+    }
 }

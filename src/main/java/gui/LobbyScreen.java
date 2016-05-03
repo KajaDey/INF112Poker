@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -23,25 +24,24 @@ public class LobbyScreen {
 
     static ArrayList<Integer> emptyPositions = new ArrayList<>();
 
-    static GameController gameController;
-    static GameSettings gameSettings;
+    GameController gameController;
+    GameSettings gameSettings;
 
     static VBox settings;
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
-    private static ServerLobbyCommunicator serverLobbyCommunicator;
+    private ServerLobbyCommunicator serverLobbyCommunicator;
 
-    /**
-     * Displays the lobbyScreen.
-     *
-     * @param gs
-     * @param gc
-     * @param names
-     */
-    public static void createScreenForGameLobby(GameSettings gs, GameController gc, String names){
-        //serverLobbyCommunicator = new ServerLobbyCommunicator(names, this);
-        gameController = gc;
-        gameSettings = gs;
+    public LobbyScreen(GameSettings gameSettings, GameController gameController, String name) {
+        try {
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this);
+            GUIMain.debugPrintln("Connected successfully to server!");
+        } catch (IOException e) {
+            GUIMain.debugPrintln("Error: Could not connect to server");
+            e.printStackTrace();
+        }
+        this.gameController = gameController;
+        this.gameSettings = gameSettings;
 
         Pane pane = new Pane();
         Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
@@ -59,7 +59,6 @@ public class LobbyScreen {
         fullLayout.getChildren().addAll(sideMenu, pane);
 
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
-
     }
 
     /**
@@ -69,7 +68,7 @@ public class LobbyScreen {
      * @param players
      * @return VBox with a new game
      */
-    public static VBox addGames(String name, String players){
+    public VBox addGames(String name, String players){
 
         VBox vBox = new VBox();
         HBox hBox = new HBox();
@@ -98,7 +97,7 @@ public class LobbyScreen {
     /**
      * Show the game info on the screen
      */
-    public static void displayGameInfo() {
+    public void displayGameInfo() {
 
         for(int i=0;i<6;i++)
             emptyPositions.add(i);
@@ -153,14 +152,13 @@ public class LobbyScreen {
         gameInfo.getChildren().addAll(settings, privateGameCheckbox, takeASeat, imageView, changeSettings, gameName, startGame, addPlayerOnBoard(),addPlayerOnBoard());
         fullLayout.getChildren().remove(1);
         fullLayout.getChildren().add(gameInfo);
-
     }
 
     /**
      * Add a player to the board in the lobby
      * @return Label with the players name
      */
-    public static Label addPlayerOnBoard(){
+    public Label addPlayerOnBoard(){
 
         emptyPositions.sort(null);
         Label label = new Label("Simple AI");
@@ -211,7 +209,7 @@ public class LobbyScreen {
      * @param gameSettings
      * @return
      */
-    public static VBox generateSettingsBox(GameSettings gameSettings){
+    public VBox generateSettingsBox(GameSettings gameSettings){
         VBox vBox = new VBox();
 
         Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",gameSettings.getStartStack()+"");
@@ -228,7 +226,7 @@ public class LobbyScreen {
     /**
      * Makes a new lobby and adds it to the layout
      */
-    public static void makeNewLobby() {
+    public void makeNewLobby() {
         sideMenu.getChildren().add(0, addGames("default", "1/6"));
         displayGameInfo();
     }
@@ -238,10 +236,9 @@ public class LobbyScreen {
      *
      * @param newSettings
      */
-    public static void updateLabels(GameSettings newSettings){
+    public void updateLabels(GameSettings newSettings){
         gameSettings = newSettings;
         displayGameInfo();
-
     }
 
 }

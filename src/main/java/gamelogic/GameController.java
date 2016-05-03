@@ -59,9 +59,7 @@ public class GameController {
         else
             mainGUI.displayMultiPlayerScreen(name, gameSettings);
 
-
         this.name = name;
-
     }
 
     /**

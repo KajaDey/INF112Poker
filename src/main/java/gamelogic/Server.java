@@ -118,7 +118,10 @@ public class Server {
                         sendLobbyInfo();
 
                         while(true) {
-                            String [] tokens = reader.readLine().split("\\s+");
+                            String line = reader.readLine();
+                            if (line == null)
+                                break;
+                            String [] tokens = line.split("\\s+");
 
                             switch (tokens[0]) {
                                 case "quit":
@@ -128,8 +131,8 @@ public class Server {
                                 case "takeseat": {
                                     int tableID = Integer.parseInt(tokens[1]);
                                     if (lobbyTables.containsKey(tableID)) {
-                                        lobbyTables.get(tableID).seatPlayer(this);
-                                        broadcastMessage("playerJoinedTable " + this.id + " " + tableID);
+                                        if(lobbyTables.get(tableID).seatPlayer(this))
+                                            broadcastMessage("playerJoinedTable " + this.id + " " + tableID);
                                     }
                                     break;
                                 }
@@ -170,7 +173,6 @@ public class Server {
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                         removeClient(id);
-                        return;
                     }
 
             };

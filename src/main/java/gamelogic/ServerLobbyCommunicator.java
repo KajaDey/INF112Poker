@@ -54,13 +54,13 @@ public class ServerLobbyCommunicator {
         // Receive all information about the lobby
         getInit: while (true) {
             String input = socketReader.readLine();
-            String[] tokens = input.split("\\r+");
+            String[] tokens = input.split("\\s+");
 
             switch (tokens[0]) {
                 case "lobbySent":
                     break getInit;
                 case "playerNames":
-                    for (int i = 1; i < tokens.length; i++)
+                    for (int i = 1; i < tokens.length; i+=2)
                         names.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
                     break;
                 case "table":
@@ -94,29 +94,33 @@ public class ServerLobbyCommunicator {
                     e.printStackTrace();
                     return;
                 }
-                String[] tokens = input.split("\\r+");
+                String[] tokens = input.split("\\s+");
                 switch (tokens[0]) {
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
+                        System.out.println("Player joined lobby, name" + tokens[1] + " " + tokens[2]);
                         break;
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));
+                        System.out.println("Player left lobby, p.id: " + tokens[1]);
                         break;
                     case "playerJoinedTable":
+                        System.out.println("Player joined table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "playerLeftTable":
+                        System.out.println("Player left table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "tableCreated":
                         //Make new table with default settings, tableSettings will follow shortly after this command anyway
+                        System.out.println("New table created, tableID: " + tokens[1]);
                         break;
                     case "tableSettings":
                         int tableID = Integer.parseInt(tokens[1]);
                         updateSettings(tableID, tokens);
-
                         break;
                     case "tableDeleted":
+                        System.out.println("Table deleted, tableID: " + tokens[1]);
                         break;
-
                     default:
                         System.out.println("Unknown command " + tokens[0] + ", ignoring...");
                 }
