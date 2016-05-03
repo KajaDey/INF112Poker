@@ -94,29 +94,6 @@ public class GameLobby {
 
     }
 
-    public void createMultiPlayerLobbyScreen() {
-        //Boxes
-        VBox buttons = new VBox();
-        VBox fullLayout = new VBox();
-
-        //Objects
-        Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
-
-        //ActionListeners
-        startGame.setOnAction(e -> {});
-
-        //Put objects in boxes
-        buttons.getChildren().addAll(startGame);
-        buttons.setAlignment(Pos.CENTER);
-
-        fullLayout.getChildren().add(buttons);
-        fullLayout.setAlignment(Pos.CENTER);
-
-        BorderPane pane = new BorderPane();
-        pane.setCenter(fullLayout);
-        SceneBuilder.showCurrentScene(pane, "Multi player lobby screen");
-    }
-
     /**
      *
      * Creates a layout for the settingsScreen and displays it

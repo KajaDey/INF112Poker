@@ -46,9 +46,7 @@ public class GUIMain extends Application{
     }
 
     public void displayMultiPlayerScreen(String name, GameSettings gameSettings) {
-        LobbyScreen lobby = new LobbyScreen(gameSettings, gameController, name);
-        ButtonListeners.setLobby(lobby);
-
+        new LobbyScreen(gameController, name);
     }
 
     /**

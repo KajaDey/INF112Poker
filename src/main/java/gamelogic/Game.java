@@ -519,6 +519,7 @@ public class Game {
      * @return The total number of players with chips left (in the game, not the hand)
      */
     public int numberOfPlayersWithChipsLeft(){
+        assert players != null : "List of players was null";
         int count = 0;
         for (Player p : players) {
             if (p.getStackSize() > 0)

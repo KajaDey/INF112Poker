@@ -1,6 +1,7 @@
 package gamelogic;
 
 import gamelogic.ai.MCTSAI;
+import gui.GUIClient;
 import gui.GameScreen;
 
 import java.io.*;
@@ -31,7 +32,7 @@ public class ServerGameCommunicator {
     }
 
     /**
-     * Starts upi communcation with the server
+     * Starts upi communication with the server
      * Does not return until the game ends
      * @throws IOException
      */
@@ -73,7 +74,7 @@ public class ServerGameCommunicator {
                     break;
                 case "clientId":
                     assert !gameClient.isPresent() : "Server sent clientId twice";
-                    gameClient = Optional.of(new MCTSAI(Integer.parseInt(tokens[1]), 2.0));
+                    gameClient = Optional.of(new GUIClient(Integer.parseInt(tokens[1]), gameScreen));
                     break;
                 case "playerNames":
                     assert gameClient.isPresent();

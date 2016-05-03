@@ -1,8 +1,10 @@
 package gui;
 
 import gamelogic.GameController;
+import gamelogic.ServerGameCommunicator;
 import gamelogic.ServerLobbyCommunicator;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -10,9 +12,12 @@ import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class holds all the information about the lobby.
@@ -22,32 +27,27 @@ public class LobbyScreen {
 
     static String styling = "-fx-border-color: black; -fx-background-color: #362626";
 
-    static ArrayList<Integer> emptyPositions = new ArrayList<>();
-
     GameController gameController;
-    GameSettings gameSettings;
 
     static VBox settings;
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
+    static Pane gameInfo;
     private ServerLobbyCommunicator serverLobbyCommunicator;
+    private Map<Integer, LobbyTable> tables;
+    private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
+    private int ID;
 
-    public LobbyScreen(GameSettings gameSettings, GameController gameController, String name) {
-        try {
-            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this);
-            GUIMain.debugPrintln("Connected successfully to server!");
-        } catch (IOException e) {
-            GUIMain.debugPrintln("Error: Could not connect to server");
-            e.printStackTrace();
-        }
+    public LobbyScreen(GameController gameController, String name) {
         this.gameController = gameController;
-        this.gameSettings = gameSettings;
+        this.tables = new HashMap<>();
+        this.tableBoxes = new HashMap<>();
 
         Pane pane = new Pane();
         Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
-        newLobby.setOnAction(event -> ButtonListeners.MakeNewLobbyButtonListener());
+        newLobby.setOnAction(event -> makeNewLobbyButtonListener());
 
-        sideMenu.getChildren().addAll(addGames("Ady's lobby", "2/4"), addGames("Jos's lobby", "3/6"),newLobby);
+        sideMenu.getChildren().addAll(newLobby);
         sideMenu.setLayoutX(1000);
         sideMenu.setLayoutY(100);
         sideMenu.setMinHeight(500);
@@ -55,26 +55,37 @@ public class LobbyScreen {
         sideMenu.setAlignment(Pos.TOP_CENTER);
         sideMenu.setStyle("-fx-background-color: #241414");
 
+        gameInfo = new Pane();
+        gameInfo.setLayoutX(150);
+        gameInfo.setLayoutY(110);
+        gameInfo.setMinHeight(500);
+        gameInfo.setMinWidth(850);
+
         fullLayout.setStyle("-fx-background-color: #602121");
-        fullLayout.getChildren().addAll(sideMenu, pane);
+        fullLayout.getChildren().addAll(sideMenu, pane, gameInfo);
 
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
+
+        try {
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this);
+            GUIMain.debugPrintln("Connected successfully to server!");
+        } catch (IOException e) {
+            GUIMain.debugPrintln("Error: Could not connect to server");
+            e.printStackTrace();
+        }
     }
 
     /**
      * Add more games to the game list
-     *
-     * @param name
-     * @param players
      * @return VBox with a new game
      */
-    public VBox addGames(String name, String players){
+    public VBox makeTableBox(LobbyTable table){
 
         VBox vBox = new VBox();
         HBox hBox = new HBox();
 
-        Label names = ObjectStandards.makeStandardLabelWhite(name,"");
-        Label player = ObjectStandards.makeStandardLabelWhite(players, "");
+        Label names = ObjectStandards.makeStandardLabelWhite("Table " + table.id,"");
+        Label player = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
         vBox.setStyle(styling);
@@ -85,7 +96,7 @@ public class LobbyScreen {
 
         vBox.getChildren().addAll(hBox, moreInfo);
 
-        moreInfo.setOnAction(event -> ButtonListeners.moreInfoButtonListener());
+        moreInfo.setOnAction(event -> moreInfoButtonListener(table));
 
         vBox.setStyle(styling);
         vBox.setAlignment(Pos.CENTER);
@@ -97,23 +108,15 @@ public class LobbyScreen {
     /**
      * Show the game info on the screen
      */
-    public void displayGameInfo() {
-
-        for(int i=0;i<6;i++)
-            emptyPositions.add(i);
-
-        Pane gameInfo = new Pane();
-        gameInfo.setLayoutX(150);
-        gameInfo.setLayoutY(110);
-        gameInfo.setMinHeight(500);
-        gameInfo.setMinWidth(850);
+    public void displayGameInfo(LobbyTable table) {
+        gameInfo.getChildren().clear();
 
         CheckBox privateGameCheckbox = new CheckBox("Private game");
         privateGameCheckbox.setFont(new Font("Areal", 15));
         privateGameCheckbox.setStyle("-fx-text-fill: white");
         privateGameCheckbox.setLayoutX(660);
         privateGameCheckbox.setLayoutY(350);
-        privateGameCheckbox.setOnAction(e -> ButtonListeners.privateGameCheckboxListener(privateGameCheckbox.isSelected()));
+        privateGameCheckbox.setOnAction(e -> privateGameCheckboxListener(privateGameCheckbox.isSelected()));
 
         Label gameName = ObjectStandards.makeLabelForHeadLine("Andy's game!");
         gameName.setLayoutX(325);
@@ -130,115 +133,156 @@ public class LobbyScreen {
 
         takeASeat.setLayoutX(200);
         takeASeat.setLayoutY(425);
-        takeASeat.setOnAction(e -> ButtonListeners.takeASeatButtonListener());
+        takeASeat.setOnAction(e -> takeASeatButtonListener(table));
 
         Button changeSettings = ObjectStandards.makeButtonForLobbyScreen("Change settings");
 
         changeSettings.setLayoutX(670);
         changeSettings.setLayoutY(400);
         changeSettings.setMinWidth(150);
-        changeSettings.setOnAction(event -> ButtonListeners.settingsButtonListener(gameController));
+        changeSettings.setOnAction(event -> settingsButtonListener(table));
 
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         startGame.setLayoutX(50);
         startGame.setLayoutY(425);
-        startGame.setOnAction(e -> ButtonListeners.startGameButtonListener(gameController, null));
+        startGame.setOnAction(e -> startGameButtonListener(table));
 
-        settings = generateSettingsBox(gameSettings);
+        settings = displayTableSettings(table);
 
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        gameInfo.getChildren().addAll(settings, privateGameCheckbox, takeASeat, imageView, changeSettings, gameName, startGame, addPlayerOnBoard(),addPlayerOnBoard());
-        fullLayout.getChildren().remove(1);
-        fullLayout.getChildren().add(gameInfo);
+        gameInfo.getChildren().addAll(settings, privateGameCheckbox, takeASeat, imageView, changeSettings, gameName, startGame);
+        seatPlayersOnTable(table, gameInfo);
     }
 
     /**
-     * Add a player to the board in the lobby
-     * @return Label with the players name
+     *  Get all the seated players and paint them in the GUI based on their seat
      */
-    public Label addPlayerOnBoard(){
+    public void seatPlayersOnTable(LobbyTable table, Pane gameInfo){
+        int seat = 0;
 
-        emptyPositions.sort(null);
-        Label label = new Label("Simple AI");
-        label.setStyle("-fx-text-fill: white");
-        label.setFont(new Font("Areal",20));
+        for (Integer playerID : table.playerIds) {
+            Label nameLabel = new Label(serverLobbyCommunicator.getName(playerID));
+            nameLabel.setStyle("-fx-text-fill: white");
+            nameLabel.setFont(new Font("Areal", 20));
 
-        switch (emptyPositions.get(0)){
-            case 0:
-                label.setLayoutX(270);
-                label.setLayoutY(367);
-                emptyPositions.remove(0);
-                break;
-            case 1:
-                label.setLayoutX(0);
-                label.setLayoutY(300);
-                emptyPositions.remove(0);
-                break;
-            case 2:
-                label.setLayoutX(0);
-                label.setLayoutY(175);
-                emptyPositions.remove(0);
-                break;
-            case 3:
-                label.setLayoutX(270);
-                label.setLayoutY(113);
-                emptyPositions.remove(0);
-                break;
-            case 4:
-                label.setLayoutX(510);
-                label.setLayoutY(175);
-                emptyPositions.remove(0);
-                break;
-            case 5:
-                label.setLayoutX(510);
-                label.setLayoutY(300);
-                emptyPositions.remove(0);
-                break;
-            default:
-                GUIMain.debugPrint("Lobby is full");
-                break;
+            switch (seat) {
+                case 0:
+                    nameLabel.setLayoutX(270);
+                    nameLabel.setLayoutY(367);
+                    break;
+                case 1:
+                    nameLabel.setLayoutX(0);
+                    nameLabel.setLayoutY(300);
+                    break;
+                case 2:
+                    nameLabel.setLayoutX(0);
+                    nameLabel.setLayoutY(175);
+                    break;
+                case 3:
+                    nameLabel.setLayoutX(270);
+                    nameLabel.setLayoutY(113);
+                    break;
+                case 4:
+                    nameLabel.setLayoutX(510);
+                    nameLabel.setLayoutY(175);
+                    break;
+                case 5:
+                    nameLabel.setLayoutX(510);
+                    nameLabel.setLayoutY(300);
+                    break;
+                default:
+                    GUIMain.debugPrint("Lobby is full");
+                    break;
+            }
+            gameInfo.getChildren().add(nameLabel);
+            seat++;
         }
-        return label;
     }
 
     /**
-     * Generates a setting box that displays the right settings.
+     *  A VBox with all the settings of the given table
      *
-     * @param gameSettings
-     * @return
+     * @param table The table to display the settings for
+     * @return A VBox with all the settings
      */
-    public VBox generateSettingsBox(GameSettings gameSettings){
+    public VBox displayTableSettings(LobbyTable table){
         VBox vBox = new VBox();
 
-        Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",gameSettings.getStartStack()+"");
-        Label numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ",gameSettings.getMaxNumberOfPlayers()+"");
-        Label bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ",gameSettings.getBigBlind()+"");
-        Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", gameSettings.getSmallBlind()+"");
-        Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",gameSettings.getLevelDuration()+"");
-        Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",gameSettings.getAiType()+"");
+        Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",table.settings.getStartStack()+"");
+        Label numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ",table.settings.getMaxNumberOfPlayers()+"");
+        Label bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ",table.settings.getBigBlind()+"");
+        Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", table.settings.getSmallBlind()+"");
+        Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",table.settings.getLevelDuration()+"");
+        Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",table.settings.getAiType()+"");
 
         vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, aIDifficulty);
         return vBox;
     }
 
-    /**
-     * Makes a new lobby and adds it to the layout
-     */
-    public void makeNewLobby() {
-        sideMenu.getChildren().add(0, addGames("default", "1/6"));
-        displayGameInfo();
+    //Button listeners//
+    private void startGameButtonListener(LobbyTable table) {
+        serverLobbyCommunicator.startGame(table.id);
+    }
+
+    private void makeNewLobbyButtonListener() {
+        serverLobbyCommunicator.makeNewTable();
+    }
+
+    private void takeASeatButtonListener(LobbyTable table) {
+        serverLobbyCommunicator.takeSeat(table.id);
+    }
+
+    private void moreInfoButtonListener(LobbyTable table) {
+        this.displayGameInfo(table);
+    }
+
+    private void privateGameCheckboxListener(boolean selected) {
+
     }
 
     /**
-     * updates all the labels in in the game info
-     *
-     * @param newSettings
+     * Add a new table to the GUI
+     * @param table The table to add
      */
-    public void updateLabels(GameSettings newSettings){
-        gameSettings = newSettings;
-        displayGameInfo();
+    public void addTable(LobbyTable table) {
+        assert table != null : "Table was null";
+        assert tables != null : "Tables was null";
+
+        tables.put(table.id, table);
+        VBox tableBox = makeTableBox(table);
+        tableBoxes.put(table.id, tableBox);
+        sideMenu.getChildren().add(0, tableBox);
+        //displayGameInfo(table);
+
+        GUIMain.debugPrintln("Added new table, id " + table.id);
     }
 
+    public LobbyTable getTable(int tableID) {
+        assert tables.get(tableID) != null : "Tried to get table from LobbyScreen, but table " + tableID + " did not exist";
+        return tables.get(tableID);
+    }
+
+    public void refreshTableSettings(int tableID) {
+        displayTableSettings(tables.get(tableID));
+    }
+
+    public void settingsButtonListener(LobbyTable table) {
+        //Implement
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+    public int getID() { return ID; }
+
+    public void addPlayer(int tableID, int playerID) {
+        getTable(tableID).addPlayer(playerID);
+        displayGameInfo(tables.get(tableID));
+    }
+
+    public void removePlayer(int tableID, int playerID) {
+        getTable(tableID).removePlayer(playerID);
+    }
 }

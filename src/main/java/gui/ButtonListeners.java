@@ -26,7 +26,6 @@ public class ButtonListeners {
     private static GameController savedGameController;
 
     private static long lastSpaceTap = 0;
-    private static LobbyScreen lobby;
 
     /**
      * What happens when the betButton is pushed
@@ -86,7 +85,6 @@ public class ButtonListeners {
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
 
             //GameLobby.updateLabels(gameSettings);
-            lobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             window.close();
 
@@ -212,40 +210,5 @@ public class ButtonListeners {
         } catch (NumberFormatException nfe) {
             tf.setText("" + currentBB);
         }
-    }
-
-    /**
-     * Displays the info of the selected game
-     */
-    public static void moreInfoButtonListener() {
-        lobby.displayGameInfo();
-    }
-
-
-    /**
-     * Generates a new lobby and adds it to the list of games (unless its private)
-     */
-    public static void MakeNewLobbyButtonListener() {
-        lobby.makeNewLobby();
-    }
-
-    /**
-     * Add the player to the chosen game
-     */
-    public static void takeASeatButtonListener() {
-
-    }
-
-    /**
-     * Check if the game is private or not
-     *
-     * @param checked
-     */
-    public static void privateGameCheckboxListener(boolean checked) {
-
-    }
-
-    public static void setLobby(LobbyScreen lobby) {
-        ButtonListeners.lobby = lobby;
     }
 }

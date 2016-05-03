@@ -1,5 +1,6 @@
 package gamelogic;
 
+import gui.GUIMain;
 import gui.GameSettings;
 
 import java.io.*;
@@ -81,8 +82,8 @@ public class Server {
 
         lobbyPlayers.forEach(p -> {
             p.write("tableCreated " + tableID);
-            p.write("tableSettings " + table.settingsToString());
-            p.write("playerJoinedTable " + host.id + " " + tableID);
+            p.write("tableSettings " + tableID + " " + table.settingsToString());
+            p.write("playerJoinedTable " + tableID + " " + host.id);
         });
     }
 
@@ -115,7 +116,10 @@ public class Server {
 
                         playerName = input.substring("lobby".length());
 
+                        write("yourId " + id);
                         sendLobbyInfo();
+
+                        broadcastMessage("playerJoinedLobby " + id + " " + playerName);
 
                         while(true) {
                             String line = reader.readLine();
@@ -131,17 +135,18 @@ public class Server {
                                 case "takeseat": {
                                     int tableID = Integer.parseInt(tokens[1]);
                                     if (lobbyTables.containsKey(tableID)) {
-                                        if(lobbyTables.get(tableID).seatPlayer(this))
-                                            broadcastMessage("playerJoinedTable " + this.id + " " + tableID);
+                                        if(lobbyTables.get(tableID).seatPlayer(this)) {
+                                            broadcastMessage("playerJoinedTable " + tableID + " " + this.id);
+                                        }
                                     }
                                     break;
                                 }
                                 case "createtable":
-                                    long stack = Long.parseLong(tokens[1]),
-                                            smallBlind = Long.parseLong(tokens[2]),
-                                            bigBlind = Long.parseLong(tokens[3]);
-                                    int maxPlayers = Integer.parseInt(tokens[4]),
-                                            levelDuration = Integer.parseInt(tokens[5]);
+                                    long stack = Long.parseLong(tokens[2]),
+                                            smallBlind = Long.parseLong(tokens[4]),
+                                            bigBlind = Long.parseLong(tokens[6]);
+                                    int maxPlayers = Integer.parseInt(tokens[8]),
+                                            levelDuration = Integer.parseInt(tokens[10]);
 
                                     GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
                                     addNewTable(settings, this);
@@ -167,6 +172,8 @@ public class Server {
                                         broadcastMessage("tableDeleted " + tableID);
                                     }
                                     break;
+                                default:
+                                    System.out.println("Unknown command, " + tokens[0]);
                             }
                         }
 
@@ -243,6 +250,10 @@ public class Server {
 
         public boolean seatPlayer(LobbyPlayer player) {
             if (seatedPlayers.size() > settings.getMaxNumberOfPlayers()) {
+                GUIMain.debugPrintln(player.playerName + " tried to join full table, id " + tableID);
+                return false;
+            } else if (seatedPlayers.contains(player)) {
+                GUIMain.debugPrintln(player.playerName + " is already seated at table " + tableID);
                 return false;
             } else {
                 seatedPlayers.add(player);
