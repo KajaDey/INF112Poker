@@ -143,7 +143,7 @@ public class Server {
                                     GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
                                     addNewTable(settings, this);
                                     break;
-                                case "changesetting":
+                                case "changesettings":
                                     changeSetting(tokens);
                                     break;
                                 case "startgame": {
@@ -216,6 +216,7 @@ public class Server {
         public void write(String msg) {
             try {
                 writer.write(msg + "\n");
+                writer.flush();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

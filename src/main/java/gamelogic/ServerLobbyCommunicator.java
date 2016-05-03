@@ -2,6 +2,7 @@ package gamelogic;
 
 import gui.GameLobby;
 import gui.GameSettings;
+import gui.LobbyScreen;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -23,13 +24,15 @@ public class ServerLobbyCommunicator {
     final private BufferedWriter socketWriter;
     final private Map<Integer, String> names;
     final private Map<Integer, Table> tables;
+    final private LobbyScreen lobbyScreen;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
      * receives information about all the players from the server
      * @param name Name of the player
      */
-    public ServerLobbyCommunicator(String name) throws IOException {
+    public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen) throws IOException {
+        this.lobbyScreen = lobbyScreen;
 
         clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -126,6 +129,15 @@ public class ServerLobbyCommunicator {
 
     }
 
+    public void startGame(int tableID) {
+        writeToSocket("startgame " + tableID);
+    }
+
+    public void setNewSettings(GameSettings newSettings, int tableID) {
+        writeToSocket("changesettings " + tableID + " " + settingsToString(newSettings));
+    }
+
+
     private void updateSettings(int tableID, String[] tokens) {
         assert tables.containsKey(tableID) : "Trying to edit settings on table " + tableID + " that does not exist.";
 
@@ -186,6 +198,10 @@ public class ServerLobbyCommunicator {
         }
     }
 
+    /**
+     * Write to socket (adds new line)
+     * @param output Message to write
+     */
     private void writeToSocket(String output) {
         try {
             socketWriter.write(output + "\n");
@@ -193,5 +209,15 @@ public class ServerLobbyCommunicator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Convert settings of this table to a string matching the Lobby Protocol
+     * @return <<setting1, value1> <setting2, value2> ... >
+     */
+    public static String settingsToString(GameSettings settings) {
+        return String.format("maxNumberOfPlayers %d startStack %d smallBlind %d bigBlind %d levelDuration %d",
+                settings.getMaxNumberOfPlayers(), settings.getStartStack(), settings.getSmallBlind(), settings.getBigBlind(),
+                settings.getLevelDuration()).trim();
     }
 }

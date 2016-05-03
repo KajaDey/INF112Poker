@@ -1,6 +1,7 @@
 package gui;
 
 import gamelogic.GameController;
+import gamelogic.ServerLobbyCommunicator;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -28,6 +29,7 @@ public class LobbyScreen {
     static VBox settings;
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
+    private static ServerLobbyCommunicator serverLobbyCommunicator;
 
     /**
      * Displays the lobbyScreen.
@@ -37,7 +39,7 @@ public class LobbyScreen {
      * @param names
      */
     public static void createScreenForGameLobby(GameSettings gs, GameController gc, String names){
-
+        //serverLobbyCommunicator = new ServerLobbyCommunicator(names, this);
         gameController = gc;
         gameSettings = gs;
 
