@@ -116,10 +116,10 @@ public class Game {
     private void playHand() {
         boolean preFlop = true;
         handsStarted++;
-        //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
         GUIMain.debugPrintln("\nBLINDS");
         long currentTime = System.currentTimeMillis();
+        // Increase blinds
         if (currentTime - (gameSettings.getLevelDuration()*60*1000) > lastBlindRaiseTime) {
             gameSettings.increaseBlinds();
             GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
@@ -127,11 +127,7 @@ public class Game {
             lastBlindRaiseTime = currentTime;
         }
 
-//        if (handsStarted % gameSettings.getLevelDuration() == 0) {
-//            gameSettings.increaseBlinds();
-//            GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
-//            gameController.setBlinds();
-//        }
+        //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
         postBlinds();
         printAllPlayerStacks();
 
@@ -346,14 +342,8 @@ public class Game {
         Decision postSB = new Decision(Decision.Move.SMALL_BLIND);
         Decision postBB = new Decision(Decision.Move.BIG_BLIND);
 
-        Player smallBlindPlayer, bigBlindPlayer;
-        if (playersStillInCurrentHand.size() == 2) {
-            smallBlindPlayer = playersStillInCurrentHand.get(0);
-            bigBlindPlayer = playersStillInCurrentHand.get(1);
-        } else {
-            smallBlindPlayer = playersStillInCurrentHand.get(0);
-            bigBlindPlayer = playersStillInCurrentHand.get(1);
-        }
+        Player smallBlindPlayer = playersStillInCurrentHand.get(0);
+        Player bigBlindPlayer = playersStillInCurrentHand.get(1);
 
         //If one of the players don't have enough to post their blind
         if (smallBlindPlayer.getStackSize() <= gameSettings.getSmallBlind())
