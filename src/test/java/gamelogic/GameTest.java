@@ -6,8 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -27,7 +32,7 @@ public class GameTest {
      */
     private void createMockGameController() {
         gameController = mock(GameController.class);
-        Mockito.doReturn(new Decision(Decision.Move.ALL_IN)).when(gameController).getDecisionFromClient(anyInt());
+        PowerMockito.doReturn(new Decision(Decision.Move.ALL_IN)).when(gameController).getDecisionFromClient(anyInt());
     }
 
     /**
@@ -37,10 +42,12 @@ public class GameTest {
         gameController = new GameController(guiMain);
         gameControllerSpy = spy(gameController);
 
-        Mockito.doNothing().when(gameControllerSpy).startNewHand();
-        Mockito.doNothing().when(gameControllerSpy).setBlinds();
+        Mockito.doNothing().when(gameControllerSpy).showHoleCards(anyObject());
+        Mockito.doNothing().when(gameControllerSpy).preShowdownWinner(anyInt());
+
+
+
         Mockito.doNothing().when(gameControllerSpy).setDecisionForClient(anyInt(), anyObject());
-        Mockito.doNothing().when(gameControllerSpy).setPositions(anyObject());
 
     }
 
@@ -50,6 +57,8 @@ public class GameTest {
     private void createGameSpy() {
         game = new Game(gameSettings, gameController);
         gameSpy = spy(game);
+
+        Mockito.doNothing().when(gameSpy).
     }
 
     @Before
@@ -72,6 +81,20 @@ public class GameTest {
     public void testSpyTwoAIPlayers() {
         createSpyGameController();
         createGameSpy();
+
+        // add client:
+            // gameControllerSpy.addClient()
+        // set blinds:
+            //  clients.get(clientID).setBigBlind(gameSettings.getBigBlind());
+            //  clients.get(clientID).setSmallBlind(gameSettings.getSmallBlind());
+        // set names:
+            //  clients.get(clientID).setPlayerNames(new HashMap<>(names));
+
+
+
+
+
+
     }
 
 }
