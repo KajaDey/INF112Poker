@@ -75,9 +75,15 @@ public class Server {
     }
 
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
-        LobbyTable table = new LobbyTable(tableIdCounter, settings, host);
-        lobbyTables.put(tableIdCounter, table);
-        tableIdCounter++;
+        int tableID = tableIdCounter++;
+        LobbyTable table = new LobbyTable(tableID, settings, host);
+        lobbyTables.put(tableID, table);
+
+        lobbyPlayers.forEach(p -> {
+            p.write("tableCreated " + tableID);
+            p.write("tableSettings " + table.settingsToString());
+            p.write("playerJoinedTable " + host.id + " " + tableID);
+        });
     }
 
     class LobbyPlayer {
@@ -100,14 +106,16 @@ public class Server {
                         String input = reader.readLine();
 
                         if (input.startsWith("lobby")) {
-                            writer.write("lobbyok\n");
+                            write("lobbyok");
                         } else {
-                            writer.write("lobbynotok\n");
+                            write("lobbynotok");
                             removeClient(id);
                             return;
                         }
 
                         playerName = input.substring("lobby".length());
+
+                        sendLobbyInfo();
 
                         while(true) {
                             String [] tokens = reader.readLine().split("\\s+");
@@ -135,7 +143,20 @@ public class Server {
                                 case "changesetting":
                                     changeSetting(tokens);
                                     break;
-                                case "":
+                                case "startgame": {
+                                    int tableID = Integer.parseInt(tokens[1]);
+                                    if (lobbyTables.containsKey(tableID)) {
+                                        lobbyTables.get(tableID).startGame();
+                                        
+                                    }
+                                    break;
+                                }
+                                case "deletetable":
+                                    int tableID = Integer.parseInt(tokens[1]);
+                                    if (lobbyTables.containsKey(tableID)) {
+                                        lobbyTables.get(tableID).delete();
+                                        lobbyTables.remove(tableID);
+                                    }
                                     break;
                             }
                         }
@@ -151,14 +172,42 @@ public class Server {
             listener.start();
         }
 
+        /**
+         * Send lobby info to client (specified in Lobby Protocol)
+         */
+        private void sendLobbyInfo() {
+            //Send all player names: playerNames <id1 name1> osv.
+            String allPlayerNames = "playerNames ";
+            for (LobbyPlayer p : lobbyPlayers)
+                allPlayerNames += p.id + " " + p.playerName + " ";
+
+            //Send all tables: table <id> settings <<setting1, value1> ...> players <<id1><id2>..>
+            ArrayList<String> allTables = new ArrayList<>();
+            lobbyTables.forEach((id, table) -> allTables.add(table.toString()));
+
+            //Send lobbySent
+            write(allPlayerNames);
+            allTables.forEach(this::write);
+            write("lobbySent");
+        }
+
         private void changeSetting(String [] tokens) {
             int tableID = Integer.parseInt(tokens[1]);
-            if (!lobbyTables.containsKey(tableID) || !lobbyTables.get(tableID).host.equals(this)) {
-                //If the table does not exist, or the player is not the host, don't change the settings
-                return;
-            } else {
+            if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
                 //TODO: Change settings for this table based on the tokens[2] value
                 GameSettings s = lobbyTables.get(tableID).settings;
+            }
+        }
+
+        /**
+         * Use to write to socket (adds newline)
+         * @param msg The message to write, without \n
+         */
+        public void write(String msg) {
+            try {
+                writer.write(msg + "\n");
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
         }
     }
@@ -168,6 +217,7 @@ public class Server {
         ArrayList<LobbyPlayer> seatedPlayers;
         LobbyPlayer host;
         GameSettings settings;
+        GameController gameController;
 
         public LobbyTable(int id, GameSettings settings, LobbyPlayer host) {
             this.tableID = id;
@@ -175,6 +225,7 @@ public class Server {
             this.seatedPlayers = new ArrayList<>();
             this.seatedPlayers.add(host);
             this.host = host;
+            this.gameController = new GameController(settings);
         }
 
         public boolean seatPlayer(LobbyPlayer player) {
@@ -182,8 +233,53 @@ public class Server {
                 return false;
             } else {
                 seatedPlayers.add(player);
+                try {
+                    GameClient client = new NetworkClient(player.socket, player.id);
+                    gameController.addClient(player.id, client, player.playerName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
                 return true;
             }
+        }
+
+        public void startGame() {
+            //TODO: Probably have to do way more stuff here
+            this.gameController.startGame();
+        }
+
+        public void delete() {
+            //TODO: Tell players that they were removed from this table
+        }
+
+
+        /**
+         * Convert settings of this table to a string matching the Lobby Protocol
+         * @return <<setting1, value1> <setting2, value2> ... >
+         */
+        public String settingsToString() {
+            return String.format("maxNumberOfPlayers %d startStack %d smallBlind %d bigBlind %d levelDuration %d",
+                    settings.getMaxNumberOfPlayers(), settings.getStartStack(), settings.getSmallBlind(), settings.getBigBlind(),
+                    settings.getLevelDuration()).trim();
+        }
+
+        /**
+         *  Return a string of all the players seated at this table, matching the Lobby Protocol
+         * @return <<id1<id2> ... >
+         */
+        public String playerIDsString() {
+            String allPlayerIDs = "";
+            for (LobbyPlayer p : seatedPlayers)
+                allPlayerIDs += p.id + " ";
+            return allPlayerIDs.trim();
+        }
+
+        /**
+         * @return Return a string confirming to the Lobby Protocol (used when sending table info to clients)
+         */
+        public String toString() {
+            return ("table " + tableID + " settings " + settingsToString() + " players " + playerIDsString()).trim();
         }
     }
 

@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 /**
  * Created by ady on 07/03/16.
@@ -105,7 +104,7 @@ public class ButtonListeners {
      */
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
         boolean showCards = showAllPlayerCards.isSelected();
-        gameController.startTournamentButtonClicked(gameSettings, showCards);
+        gameController.startSinglePlayer(gameSettings, showCards);
     }
     /**
      * What happens when the leaveLobbyButton is pushed

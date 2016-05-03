@@ -21,8 +21,28 @@ public class GameController {
     private Map<Integer, String> names;
     private boolean showAllPlayerCards;
 
+
+    /**
+     * Used by GUI to create a new single player game
+     */
     public GameController(GUIMain gui) {
+        this();
         this.mainGUI = gui;
+    }
+
+    /**
+     * Used by Server to create a new GameController for a network game
+     */
+    public GameController(GameSettings settings) {
+        this();
+        this.gameSettings = settings;
+        this.game = new Game(settings, this);
+    }
+
+    public GameController() {
+        //Empty maps of clients/names
+        clients = new HashMap<>();
+        names = new HashMap<>();
     }
 
     /**
@@ -45,12 +65,12 @@ public class GameController {
      * Called when the start tournament button is clicked.
      * Creates a new game, creates clients and starts the game.
      *
-     * @param gamesettings Game settings
-     * @param showCards
+     * @param gameSettings Game settings
+     * @param showCards If all players hole cards should be visible or not
      */
-    public void startTournamentButtonClicked(GameSettings gamesettings, boolean showCards) {
+    public void startSinglePlayer(GameSettings gameSettings, boolean showCards) {
         //Make a new Game object and validate
-        game = new Game(gamesettings, this);
+        game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
 
         String error;
@@ -59,23 +79,26 @@ public class GameController {
             return;
         }
 
-        //Empty maps of clients/names
-        clients = new HashMap<>();
-        names = new HashMap<>();
-
         //Create GUI-GameClient
-        createGUIClient(gamesettings);
+        createGUIClient(gameSettings);
 
         //Create AI-GameClients
-        int numberOfAIClients = gameSettings.getMaxNumberOfPlayers() - 1;
-        createAIClients(numberOfAIClients, gamesettings);
+        int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers() - 1;
+        createAIClients(numberOfAIClients, gameSettings);
 
         //Set initial blind values for clients
         initClients();
 
         //Print welcome message to log
-        this.printToLogField("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
+        this.printToLogField("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!");
 
+        startGame();
+    }
+
+    /**
+     * Method to start the game (in a separate thread)
+     */
+    public void startGame() {
         Thread gameThread = new Thread("GameThread") {
             @Override
             public void run() {
@@ -131,6 +154,19 @@ public class GameController {
             GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
     }
+
+    /**
+     * @param id The id of this integer
+     * @param client Network or AI client
+     * @param name Name of the client
+     */
+    public void addClient(int id, GameClient client, String name) {
+        this.clients.put(id, client);
+        game.addPlayer(name, id);
+        client.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
+        names.put(id, name);
+    }
+
 
     /**
      * Informs each client about the small and big blind amount
