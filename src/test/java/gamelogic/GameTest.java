@@ -58,7 +58,7 @@ public class GameTest {
         game = new Game(gameSettings, gameController);
         gameSpy = spy(game);
 
-        Mockito.doNothing().when(gameSpy).
+//        Mockito.doNothing().when(gameSpy).
     }
 
     @Before
