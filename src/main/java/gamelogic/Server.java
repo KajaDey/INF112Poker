@@ -123,11 +123,14 @@ public class Server {
                             switch (tokens[0]) {
                                 case "quit":
                                     removeClient(id);
+                                    broadcastMessage("playerLeftLobby " + id);
                                     return;
                                 case "takeseat": {
                                     int tableID = Integer.parseInt(tokens[1]);
-                                    if (lobbyTables.containsKey(tableID))
+                                    if (lobbyTables.containsKey(tableID)) {
                                         lobbyTables.get(tableID).seatPlayer(this);
+                                        broadcastMessage("playerJoinedTable " + this.id + " " + tableID);
+                                    }
                                     break;
                                 }
                                 case "createtable":
@@ -146,8 +149,10 @@ public class Server {
                                 case "startgame": {
                                     int tableID = Integer.parseInt(tokens[1]);
                                     if (lobbyTables.containsKey(tableID)) {
-                                        lobbyTables.get(tableID).startGame();
-                                        
+                                        LobbyTable t = lobbyTables.get(tableID);
+                                        t.startGame();
+                                        broadcastMessage("tableDeleted " + tableID);
+                                        t.seatedPlayers.forEach(p -> broadcastMessage("playerLeftLobby " + p.id));
                                     }
                                     break;
                                 }
@@ -156,6 +161,7 @@ public class Server {
                                     if (lobbyTables.containsKey(tableID)) {
                                         lobbyTables.get(tableID).delete();
                                         lobbyTables.remove(tableID);
+                                        broadcastMessage("tableDeleted " + tableID);
                                     }
                                     break;
                             }
@@ -170,6 +176,10 @@ public class Server {
             };
             listener = new Thread(task);
             listener.start();
+        }
+
+        private void broadcastMessage(String message) {
+            lobbyPlayers.forEach(p -> p.write(message));
         }
 
         /**

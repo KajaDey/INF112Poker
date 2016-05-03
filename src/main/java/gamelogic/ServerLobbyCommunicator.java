@@ -12,6 +12,9 @@ import java.util.Map;
 
 /**
  * Created by Kristian Rosland on 27.04.2016.
+ *
+ * This class acts as a communicator between the LobbyScreen and the Server.
+ *
  */
 public class ServerLobbyCommunicator {
 
@@ -19,21 +22,20 @@ public class ServerLobbyCommunicator {
     final private BufferedReader socketReader;
     final private BufferedWriter socketWriter;
     final private Map<Integer, String> names;
-    final private Map<Integer, Table> lobbies;
+    final private Map<Integer, Table> tables;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
-     * receives informations about all the players from the server
-     * @param name
+     * receives information about all the players from the server
+     * @param name Name of the player
      */
     public ServerLobbyCommunicator(String name) throws IOException {
-
-        //Handshake
 
         clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
         socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
+        //Establish handshake with server
         writeToSocket("lobby " + name);
         {
             String input = socketReader.readLine();
@@ -45,7 +47,7 @@ public class ServerLobbyCommunicator {
         }
 
         names = new HashMap<>();
-        lobbies = new HashMap<>();
+        tables = new HashMap<>();
         // Receive all information about the lobby
         getInit: while (true) {
             String input = socketReader.readLine();
@@ -55,14 +57,13 @@ public class ServerLobbyCommunicator {
                 case "lobbySent":
                     break getInit;
                 case "playerNames":
-                    for (int i = 1; i < tokens.length; i++) {
+                    for (int i = 1; i < tokens.length; i++)
                         names.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
-                    }
                     break;
                 case "table":
                     int id = Integer.parseInt(tokens[1]);
                     Table table = new Table(id);
-                    lobbies.put((id), table);
+                    tables.put((id), table);
                     if (!tokens[2].equals("settings")) {
                         throw new IOException();
                     }
@@ -98,9 +99,23 @@ public class ServerLobbyCommunicator {
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));
                         break;
+                    case "playerJoinedTable":
+                        break;
+                    case "playerLeftTable":
+                        break;
+                    case "tableCreated":
+                        //Make new table with default settings, tableSettings will follow shortly after this command anyway
+                        break;
+                    case "tableSettings":
+                        int tableID = Integer.parseInt(tokens[1]);
+                        updateSettings(tableID, tokens);
+
+                        break;
+                    case "tableDeleted":
+                        break;
+
                     default:
                         System.out.println("Unknown command " + tokens[0] + ", ignoring...");
-                    //TODO: Implement more commands
                 }
             }
         };
@@ -110,6 +125,24 @@ public class ServerLobbyCommunicator {
         lobby.createMultiPlayerLobbyScreen();
 
     }
+
+    private void updateSettings(int tableID, String[] tokens) {
+        assert tables.containsKey(tableID) : "Trying to edit settings on table " + tableID + " that does not exist.";
+
+        Table table = tables.get(tableID);
+        for (int i = 0; i < tokens.length; i++) {
+            switch(tokens[i]) {
+                case "maxNumberOfPlayers":
+                case "startStack":
+                case "smallBlind":
+                case "bigBlind":
+                case "levelDuration":
+                    table.parseSetting(tokens[i], tokens[i+1]);
+                    break;
+            }
+        }
+    }
+
     private class Table {
         final int id;
         final GameSettings settings;
@@ -123,13 +156,23 @@ public class ServerLobbyCommunicator {
         public void parseSetting(String name, String value) {
             switch (name) {
                 case "smallBlind":
-                    settings.setSmallBlind(Integer.parseInt(value));
+                    settings.setSmallBlind(Long.parseLong(value));
                     break;
-                //TODO: Implement more settings
+                case "bigBlind":
+                    settings.setBigBlind(Long.parseLong(value));
+                    break;
+                case "maxNumberOfPlayers":
+                    settings.setMaxNumberOfPlayers(Integer.parseInt(value));
+                    break;
+                case "startStack":
+                    settings.setStartStack(Long.parseLong(value));
+                    break;
+                case "levelDuration":
+                    settings.setLevelDuration(Integer.parseInt(value));
+                    break;
                 default:
                     System.out.println("Received unknown table setting " + name + ", ignoring...");
             }
-
         }
     }
 
