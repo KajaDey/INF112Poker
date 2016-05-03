@@ -84,7 +84,8 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
 
-            GameLobby.updateLabels(gameSettings);
+            //GameLobby.updateLabels(gameSettings);
+            LobbyScreen.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             window.close();
 
@@ -103,9 +104,10 @@ public class ButtonListeners {
      * What happens when the startGameButton is pushed
      */
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
-        boolean showCards = showAllPlayerCards.isSelected();
-        gameController.startSinglePlayer(gameSettings, showCards);
+        boolean showCards = false;
+        gameController.startTournamentButtonClicked(gameSettings, showCards);
     }
+
     /**
      * What happens when the leaveLobbyButton is pushed
      */
@@ -122,10 +124,9 @@ public class ButtonListeners {
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null) {
-                AIType type = AIType.fromString(choiceBox);
+            if (!name.isEmpty()) {
 
-                gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), type);
+                gameController.enterButtonClicked(name, choiceBox);
                 gameSettings = gameController.gameSettings;
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
@@ -212,9 +213,35 @@ public class ButtonListeners {
         }
     }
 
-    public static void multiPlayerLobby(String name) {
-        //Handshake with server
-        ServerLobbyCommunicator serverLobbyCommunicator = new ServerLobbyCommunicator(name);
+    /**
+     * Displays the info of the selected game
+     */
+    public static void moreInfoButtonListener() {
+        LobbyScreen.displayGameInfo();
+    }
+
+
+    /**
+     * Generates a new lobby and adds it to the list of games (unless its private)
+     */
+    public static void MakeNewLobbyButtonListener() {
+        LobbyScreen.makeNewLobby();
+    }
+
+    /**
+     * Add the player to the chosen game
+     */
+    public static void takeASeatButtonListener() {
 
     }
+
+    /**
+     * Check if the game is private or not
+     *
+     * @param checked
+     */
+    public static void privateGameCheckboxListener(boolean checked) {
+
+    }
+
 }

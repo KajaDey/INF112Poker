@@ -48,17 +48,20 @@ public class GameController {
     /**
      * Called when the enter button is clicked.
      * Checks valid number of players, then makes GUI show the lobby screen
-     * @param name Name of the player
-     * @param numPlayers Number of players
-     * @param aiType Type of AI (Simple or MCTS)
+     * @param name
      */
-    public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
+    public void enterButtonClicked(String name, String gameStyle) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
-        if (numPlayers >=2 && numPlayers <= 6) {
-            mainGUI.displayLobbyScreen(name, gameSettings);
-            this.name = name;
-        }
+
+        if(gameStyle.equals("Single player"))
+            mainGUI.displaySinglePlayerScreen(name, gameSettings);
+        else
+            mainGUI.displayMultiPlayerScreen(name, gameSettings);
+
+
+        this.name = name;
+
     }
 
     /**
@@ -68,7 +71,7 @@ public class GameController {
      * @param gameSettings Game settings
      * @param showCards If all players hole cards should be visible or not
      */
-    public void startSinglePlayer(GameSettings gameSettings, boolean showCards) {
+    public void startTournamentButtonClicked(GameSettings gameSettings, boolean showCards) {
         //Make a new Game object and validate
         game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
