@@ -5,7 +5,7 @@ import gui.GameScreen;
 import gui.GameSettings;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -62,7 +62,9 @@ public class NetworkClientTest {
             Runnable r = () -> {
                 try {
                     Socket clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
-                    ServerGameCommunicator communicator = new ServerGameCommunicator(clientSocket, "Morten-" + i2, null);
+                    BufferedReader socketInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
+                    BufferedWriter socketOutput = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
+                    ServerGameCommunicator communicator = new ServerGameCommunicator(socketOutput, socketInput, "Morten-" + i2, null);
                     communicator.startUpi();
                 } catch (IOException e) {
                     e.printStackTrace();

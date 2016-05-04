@@ -101,7 +101,7 @@ public class ServerLobbyCommunicator {
                         break;
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
-                        System.out.println("Player joined lobby, name" + tokens[1] + " " + tokens[2]);
+                        System.out.println("Player joined lobby, id: " + tokens[1] + " name" + tokens[2]);
                         break;
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));
@@ -126,7 +126,7 @@ public class ServerLobbyCommunicator {
                         break;
                     case "tableDeleted":
                         System.out.println("Table deleted, tableID: " + tokens[1]);
-                        lobbyScreen.removeTable(Integer.parseInt(tokens[1]));
+                        Platform.runLater(()->lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
                         break;
                     default:
                         System.out.println("Unknown command " + tokens[0] + ", ignoring...");
@@ -210,10 +210,13 @@ public class ServerLobbyCommunicator {
         writeToSocket("createtable " + settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
     }
 
+    /**
+     *  Called when the server tell the client to start a game
+     */
     public void goToGameScreen() {
         int id = lobbyScreen.getID();
         GameScreen gameScreen = new GameScreen(id);
-        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(clientSocket, names.get(id), gameScreen);
+        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id), gameScreen);
 
         SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(new GameSettings(GameSettings.DEFAULT_SETTINGS)), "Poker Game");
         try {

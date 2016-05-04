@@ -14,19 +14,22 @@ import java.util.Optional;
  * Created by morten on 27.04.16.
  */
 public class ServerGameCommunicator {
-    private final Socket socket;
     private final GameScreen gameScreen;
     private final String playerName;
     private Optional<GameClient> gameClient = Optional.empty();
+    private final BufferedReader socketInput;
+    private final BufferedWriter socketOutput;
 
     /**
      * * Creates a new ServerGameCommunicator to the given ip, but does not start communcation
-     * @param socket A TCP connetion to the server. This is expected to already be open
+     * @param out An open output stream to the Server TCP socket
+     * @param in An open input stream from the Server TCP socket
      * @param playerName The player's chosen name
      * @param gameScreen The gameScreen of the GUI being played on
      */
-    public ServerGameCommunicator(Socket socket, String playerName, GameScreen gameScreen) {
-        this.socket = socket;
+    public ServerGameCommunicator(BufferedWriter out, BufferedReader in, String playerName, GameScreen gameScreen) {
+        this.socketInput = in;
+        this.socketOutput = out;
         this.gameScreen = gameScreen;
         this.playerName = playerName;
     }
@@ -37,12 +40,6 @@ public class ServerGameCommunicator {
      * @throws IOException
      */
     public void startUpi() throws IOException {
-
-        assert socket.isConnected();
-
-        BufferedReader socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-        BufferedWriter socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
-
         socketOutput.write("upi 0.1\n");
         socketOutput.flush();
 
