@@ -57,22 +57,35 @@ public class Server {
         server.start();
     }
 
-    public void addNewClientSocket(Socket socket) {
+    public synchronized void addNewClientSocket(Socket socket) {
         lobbyPlayers.add(new LobbyPlayer(socket, playerIdCounter++));
     }
 
+
+    /**
+     * Removes a client from the game, closing sockets and doing the necessary cleanup
+     * @param id
+     */
     private synchronized void removeClient(int id) {
         Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
         if (op.isPresent()) {
-            try {
-                op.get().socket.close();
-                lobbyPlayers.remove(op.get());
-            } catch (IOException e) {
-                e.printStackTrace();
+            LobbyPlayer player = op.get();
+            lobbyPlayers.remove(player);
+            ClientBroadcasts.playerLeftLobby(this, player);
+            if (!player.socket.isClosed()) {
+                try {
+                    player.socket.close();
+                } catch (IOException e) {
+                    System.out.println("Failed to close socket for " + player + "");
+                }
+            }
+            else {
+                System.out.println("Warning: Tried to remove player " + player + ", but socket was already closed");
             }
         }
-
-        //TODO: If player is seated, remove from table
+        else {
+            System.out.println("Warning: Tried to remove player id " + id + ", but player was not found");
+        }
     }
 
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
@@ -85,6 +98,24 @@ public class Server {
             p.write("tableSettings " + tableID + " " + table.settingsToString());
             p.write("playerJoinedTable " + tableID + " " + host.id);
         });
+    }
+
+    public static int parseIntToken(String input) throws PokerProtocolException {
+        try {
+            return Integer.parseInt(input);
+        }
+        catch (NumberFormatException e) {
+            throw new PokerProtocolException("Error parsing " + input + " to int");
+        }
+    }
+
+    public static long parseLongToken(String input) throws PokerProtocolException {
+        try {
+            return Long.parseLong(input);
+        }
+        catch (NumberFormatException e) {
+            throw new PokerProtocolException("Error parsing " + input + " to long");
+        }
     }
 
     class LobbyPlayer {
@@ -100,96 +131,123 @@ public class Server {
             this.id = id;
 
             Runnable task = () -> {
+                try {
+                    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                } catch (IOException e) {
+                    failedToReadFromPlayer(this);
+                    return;
+                }
+
+                String input;
+                try {
+                    input = reader.readLine();
+                } catch (IOException e) {
+                    failedToReadFromPlayer(this);
+                    return;
+                }
+
+                if (input.startsWith("lobby")) {
+                    write("lobbyok");
+                } else {
+                    write("lobbynotok");
+                    removeClient(id);
+                    return;
+                }
+
+                playerName = input.substring("lobby".length());
+
+                write("yourId " + id);
+                sendLobbyInfo();
+                ClientBroadcasts.playedJoinedLobby(Server.this, this);
+
+                while(true) {
+                    String line;
                     try {
-                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-                        String input = reader.readLine();
-
-                        if (input.startsWith("lobby")) {
-                            write("lobbyok");
-                        } else {
-                            write("lobbynotok");
-                            removeClient(id);
-                            return;
-                        }
-
-                        playerName = input.substring("lobby".length());
-
-                        write("yourId " + id);
-                        sendLobbyInfo();
-
-                        broadcastMessage("playerJoinedLobby " + id + " " + playerName);
-
-                        while(true) {
-                            String line = reader.readLine();
-                            if (line == null)
-                                break;
-                            String [] tokens = line.split("\\s+");
-
-                            switch (tokens[0]) {
-                                case "quit":
-                                    removeClient(id);
-                                    broadcastMessage("playerLeftLobby " + id);
-                                    return;
-                                case "takeseat": {
-                                    int tableID = Integer.parseInt(tokens[1]);
+                        line = reader.readLine();
+                    } catch (IOException e) {
+                        failedToReadFromPlayer(this);
+                        return;
+                    }
+                    if (line == null)
+                        break;
+                    String [] tokens = line.split("\\s+");
+                    try {
+                        switch (tokens[0]) {
+                            case "quit":
+                                removeClient(id);
+                                return;
+                            case "takeseat": {
+                                int tableID = parseIntToken(tokens[1]);
+                                synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
-                                        if(lobbyTables.get(tableID).seatPlayer(this)) {
-                                            broadcastMessage("playerJoinedTable " + tableID + " " + this.id);
+                                        if (lobbyTables.get(tableID).seatPlayer(this)) {
+                                            ClientBroadcasts.playerJoinedTable(Server.this, this, lobbyTables.get(tableID));
                                         }
                                     }
-                                    break;
                                 }
-                                case "createtable":
-                                    long stack = Long.parseLong(tokens[2]),
-                                            smallBlind = Long.parseLong(tokens[4]),
-                                            bigBlind = Long.parseLong(tokens[6]);
-                                    int maxPlayers = Integer.parseInt(tokens[8]),
-                                            levelDuration = Integer.parseInt(tokens[10]);
+                                break;
+                            }
+                            case "createtable":
+                                long stack = parseLongToken(tokens[2]),
+                                        smallBlind = parseLongToken(tokens[4]),
+                                        bigBlind = parseLongToken(tokens[6]);
+                                int maxPlayers = parseIntToken(tokens[8]),
+                                        levelDuration = parseIntToken(tokens[10]);
 
-                                    GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
+                                GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
+                                synchronized (Server.this) {
                                     addNewTable(settings, this);
-                                    break;
-                                case "changesettings":
-                                    changeSetting(tokens);
-                                    break;
-                                case "startgame": {
-                                    int tableID = Integer.parseInt(tokens[1]);
+                                }
+                                break;
+                            case "changesettings":
+                                try {
+                                    synchronized (Server.this) {
+                                        changeSetting(tokens);
+                                    }
+                                } catch (PokerProtocolException e) {
+                                    receivedIllegalCommandFrom(this, line);
+                                }
+                                break;
+                            case "startgame": {
+                                int tableID = parseIntToken(tokens[1]);
+                                synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
                                         LobbyTable t = lobbyTables.get(tableID);
                                         t.startGame();
-                                        broadcastMessage("tableDeleted " + tableID);
-                                        t.seatedPlayers.forEach(p -> broadcastMessage("playerLeftLobby " + p.id));
+                                        t.delete();
                                     }
-                                    break;
                                 }
-                                case "deletetable":
-                                    int tableID = Integer.parseInt(tokens[1]);
+                                break;
+                            }
+                            case "deletetable":
+                                int tableID = parseIntToken(tokens[1]);
+                                synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
                                         lobbyTables.get(tableID).delete();
                                         lobbyTables.remove(tableID);
-                                        broadcastMessage("tableDeleted " + tableID);
                                     }
-                                    break;
-                                default:
-                                    System.out.println("Unknown command, " + tokens[0]);
-                            }
+                                }
+                                break;
+                            default:
+                                System.out.println("Unknown command, " + tokens[0]);
                         }
-
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                        removeClient(id);
                     }
+                    catch (PokerProtocolException e) {
+                        receivedIllegalCommandFrom(this, input);
+                    }
+                }
+
+
 
             };
             listener = new Thread(task);
             listener.start();
         }
 
-        private void broadcastMessage(String message) {
+        /*private void broadcastMessage(String message) {
             lobbyPlayers.forEach(p -> p.write(message));
-        }
+        }*/
 
         /**
          * Send lobby info to client (specified in Lobby Protocol)
@@ -210,8 +268,8 @@ public class Server {
             write("lobbySent");
         }
 
-        private void changeSetting(String [] tokens) {
-            int tableID = Integer.parseInt(tokens[1]);
+        private void changeSetting(String [] tokens) throws PokerProtocolException {
+            int tableID = parseIntToken(tokens[1]);
             if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
                 //TODO: Change settings for this table based on the tokens[2] value
                 GameSettings s = lobbyTables.get(tableID).settings;
@@ -225,10 +283,74 @@ public class Server {
         public void write(String msg) {
             try {
                 writer.write(msg + "\n");
-                writer.flush();
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
             }
+            catch (IOException e) {
+                failedToWriteToPlayer(this, msg + "\n");
+            }
+            try {
+                writer.flush();
+            } catch (IOException e) {
+                System.out.println("Failed to flush socket of " + this + ", removing player");
+                removeClient(this.id);
+            }
+        }
+    }
+
+    /**
+     * Called whenever a write to a player fails. For now, this drops the player from the server,
+     * but in the future this should probably buffer up outstanding writes, and try to send them
+     * again for a while.
+     * @param player
+     * @param message
+     */
+    private void failedToWriteToPlayer(LobbyPlayer player, String message) {
+        System.out.println("Failed to write to client " + player + ", dropping player.");
+        this.removeClient(player.id);
+    }
+
+    /**
+     * Called whenever a read from a player fails. This usually means that the socket has been closed,
+     * and the client will be disconnected
+     * @param player
+     */
+    private void failedToReadFromPlayer(LobbyPlayer player) {
+        System.out.println("Failed to read from client " + player + ", dropping player.");
+        this.removeClient(player.id);
+    }
+
+
+    private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
+        System.out.println("Received illegal command from client, ignoring command \"" + command + "\"");
+    }
+
+    static class ClientBroadcasts {
+        private static void broadCast(Server server, String string) {
+            synchronized (server) {
+                for (LobbyPlayer player : server.lobbyPlayers) {
+                    player.write(string);
+                }
+            }
+        }
+        public static void playedJoinedLobby(Server server, LobbyPlayer player) {
+            broadCast(server, "playerJoinedLobby " + player.id + " " + player.playerName);
+        }
+        public static void playerLeftLobby(Server server, LobbyPlayer player) {
+            broadCast(server, "playerLeftLobby " + player.id);
+        }
+        public static void playerJoinedTable(Server server, LobbyPlayer player, LobbyTable table) {
+            broadCast(server, "playerJoinedTable " + player.id + " " + table.tableID);
+        }
+        public static void playerLeftTable(Server server, LobbyPlayer player, LobbyTable table) {
+            broadCast(server, "playerJoinedTable " + player.id + " " + table.tableID);
+        }
+        public static void tableCreated(Server server, LobbyTable table) {
+            broadCast(server, "tableCreated " + table.tableID);
+        }
+        public static void tableDeleted(Server server, LobbyTable table) {
+            broadCast(server, "tableDeleted " + table.tableID);
+        }
+        public static void tableSettings(Server server, LobbyTable table) {
+            broadCast(server, "tableSettings " + table + table.settingsToString());
         }
     }
 
@@ -275,7 +397,11 @@ public class Server {
         }
 
         public void delete() {
-            //TODO: Tell players that they were removed from this table
+            for (LobbyPlayer player : seatedPlayers) {
+                ClientBroadcasts.playerLeftTable(Server.this, player, this);
+            }
+            ClientBroadcasts.tableDeleted(Server.this, this);
+            Server.this.lobbyTables.remove(this);
         }
 
 
@@ -308,5 +434,22 @@ public class Server {
         }
     }
 
+    /**
+     * Exception for when illegally formatted commands are received
+     */
+    public static class PokerProtocolException extends IOException {
+        public PokerProtocolException() {
+            super();
+        }
+        public PokerProtocolException(String message) {
+            super(message);
+        }
+        public PokerProtocolException(String message, Throwable cause) {
+            super (message, cause);
+        }
+        public PokerProtocolException(Throwable cause) {
+            super(cause);
+        }
+    }
 
 }
