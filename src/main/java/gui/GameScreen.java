@@ -52,7 +52,7 @@ public class GameScreen {
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
     private Label endGameScreen;
-    private static TextArea textArea = new TextArea();
+    private TextArea textArea = new TextArea();
     private SoundPlayer soundPlayer = new SoundPlayer();
 
     public GameScreen(int ID) {
@@ -168,7 +168,7 @@ public class GameScreen {
      * Adds text to the previously made log field.
      * @param printInfo The text to add to the field.
      */
-    public static void printToLogField(String printInfo){
+    public void printToLogField(String printInfo){
         textArea.appendText("\n" + printInfo);
     }
 
@@ -735,7 +735,7 @@ public class GameScreen {
      * @param timeToThink
      */
     public void startTimer(long timeToThink, Decision.Move moveToExecute) {
-        playerLayout.startTimer(timeToThink, moveToExecute);
+        playerLayout.startTimer(this, timeToThink, moveToExecute);
     }
     public void stopTimer() {
         playerLayout.stopTimer();

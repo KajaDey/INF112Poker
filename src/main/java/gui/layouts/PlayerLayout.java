@@ -1,10 +1,7 @@
 package gui.layouts;
 
 import gamelogic.Decision;
-import gui.ButtonListeners;
-import gui.ImageViewer;
-import gui.ObjectStandards;
-import gui.RemainingTimeBar;
+import gui.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -335,8 +332,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
      *  Reset the time to think progress bar
      * @param timeToThink
      */
-    public void startTimer(long timeToThink, Decision.Move moveToExecute) {
-        progressBar.setTimer(timeToThink, moveToExecute);
+    public void startTimer(GameScreen gameScreen, long timeToThink, Decision.Move moveToExecute) {
+        progressBar.setTimer(gameScreen, timeToThink, moveToExecute);
     }
 
     public void stopTimer() {
