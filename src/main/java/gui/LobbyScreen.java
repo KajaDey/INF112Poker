@@ -76,7 +76,7 @@ public class LobbyScreen {
     }
 
     /**
-     * Add more games to the game list
+     * Make a new table box (for the left hand menu)
      * @return VBox with a new game
      */
     public VBox makeTableBox(LobbyTable table){
@@ -106,7 +106,8 @@ public class LobbyScreen {
     }
 
     /**
-     * Show the game info on the screen
+     * Display info for the selected game (table, players, settings and buttons)
+     * @param table The table to display
      */
     public void displayGameInfo(LobbyTable table) {
         gameInfo.getChildren().clear();
@@ -157,9 +158,12 @@ public class LobbyScreen {
     }
 
     /**
-     *  Get all the seated players and paint them in the GUI based on their seat
+     *  Get all the seated players and paint them in the GUI based on their seat.
+     *  Called every time the displayGameInfo()-method is called
+     *  @param table The selected table
+     *  @param gameInfo A GUI pane that contains all the components for a table
      */
-    public void seatPlayersOnTable(LobbyTable table, Pane gameInfo){
+    private void seatPlayersOnTable(LobbyTable table, Pane gameInfo){
         int seat = 0;
 
         for (Integer playerID : table.playerIds) {
@@ -225,25 +229,25 @@ public class LobbyScreen {
     private void startGameButtonListener(LobbyTable table) {
         serverLobbyCommunicator.startGame(table.id);
     }
-
     private void makeNewLobbyButtonListener() {
         serverLobbyCommunicator.makeNewTable();
     }
-
     private void takeASeatButtonListener(LobbyTable table) {
         serverLobbyCommunicator.takeSeat(table.id);
     }
-
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);
     }
-
     private void privateGameCheckboxListener(boolean selected) {
 
     }
+    public void settingsButtonListener(LobbyTable table) {
+        //Implement
+    }
 
     /**
-     * Add a new table to the GUI
+     * Add a new table to the GUI.
+     * Adds the table to the tables-map and puts it in the sideMenu
      * @param table The table to add
      */
     public void addTable(LobbyTable table) {
@@ -259,17 +263,22 @@ public class LobbyScreen {
         GUIMain.debugPrintln("Added new table, id " + table.id);
     }
 
+    /**
+     * Get a table (used by ServerLobbyCommunicator)
+     * @param tableID Id of the table
+     * @return The table
+     */
     public LobbyTable getTable(int tableID) {
         assert tables.get(tableID) != null : "Tried to get table from LobbyScreen, but table " + tableID + " did not exist";
         return tables.get(tableID);
     }
 
+    /**
+     * Update the current table settings
+     * @param tableID The table id
+     */
     public void refreshTableSettings(int tableID) {
         displayTableSettings(tables.get(tableID));
-    }
-
-    public void settingsButtonListener(LobbyTable table) {
-        //Implement
     }
 
     public void setID(int ID) {

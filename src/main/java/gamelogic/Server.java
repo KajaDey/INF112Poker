@@ -257,13 +257,14 @@ public class Server {
                 return false;
             } else {
                 seatedPlayers.add(player);
+                /*
                 try {
                     GameClient client = new NetworkClient(player.socket, player.id);
                     gameController.addClient(player.id, client, player.playerName);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return false;
-                }
+                }*/
                 return true;
             }
         }
