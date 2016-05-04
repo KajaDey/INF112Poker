@@ -330,7 +330,7 @@ public class LobbyScreen {
         VBox layout = new VBox();
         layout.setPadding(new Insets(10, 10, 10, 10));
 
-        Label label = new Label("Can't connect to network");
+        Label label = ObjectStandards.makeLobbyLabelWhite("Can't connect to network","");
         label.setFont(new Font("Areal", 25));
 
         Button backToMainMenu = ObjectStandards.makeStandardButton("Return to the main menu");
