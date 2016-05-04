@@ -16,6 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class LobbyScreen {
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
         try {
-            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this);
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getLocalHost());
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
             GUIMain.debugPrintln("Error: Could not connect to server");

@@ -5,6 +5,7 @@ import javafx.application.Platform;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +29,30 @@ public class ServerLobbyCommunicator {
      * receives information about all the players from the server
      * @param name Name of the player
      */
-    public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen) throws IOException {
+    public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen, InetAddress serverAddress) throws IOException {
         this.lobbyScreen = lobbyScreen;
-
-        clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
+        Socket tempSocket = new Socket();
+        for (int i = 0; i < 20; i++) {
+            try {
+                tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
+                tempSocket.connect(new InetSocketAddress(serverAddress, 39100), 1000);
+                break;
+            }
+            catch (IOException e) {
+                System.out.println("Failed to connect to " + serverAddress + ". Retrying...");
+                try {
+                    Thread.sleep(2000L);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        if (tempSocket.isConnected()) {
+            clientSocket = tempSocket;
+        }
+        else {
+            throw new IOException("Failed to connect to " + serverAddress);
+        }
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
         socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
