@@ -172,12 +172,20 @@ public class Server {
                     if (line == null)
                         break;
                     String [] tokens = line.split("\\s+");
+                    if (tokens.length <= 0) {
+                        receivedIllegalCommandFrom(this, line);
+                        continue;
+                    }
                     try {
                         switch (tokens[0]) {
                             case "quit":
                                 removeClient(id);
                                 return;
                             case "takeseat": {
+                                if (tokens.length <= 1) {
+                                    receivedIllegalCommandFrom(this, line);
+                                    break;
+                                }
                                 int tableID = parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
@@ -189,6 +197,10 @@ public class Server {
                                 break;
                             }
                             case "createtable":
+                                if (tokens.length <= 10) {
+                                    receivedIllegalCommandFrom(this, line);
+                                    break;
+                                }
                                 long stack = parseLongToken(tokens[2]),
                                         smallBlind = parseLongToken(tokens[4]),
                                         bigBlind = parseLongToken(tokens[6]);
@@ -210,6 +222,10 @@ public class Server {
                                 }
                                 break;
                             case "startgame": {
+                                if (tokens.length <= 1) {
+                                    receivedIllegalCommandFrom(this, line);
+                                    break;
+                                }
                                 int tableID = parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
@@ -221,6 +237,10 @@ public class Server {
                                 break;
                             }
                             case "deletetable":
+                                if (tokens.length <= 1) {
+                                    receivedIllegalCommandFrom(this, line);
+                                    break;
+                                }
                                 int tableID = parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
@@ -269,6 +289,9 @@ public class Server {
         }
 
         private void changeSetting(String [] tokens) throws PokerProtocolException {
+            if (tokens.length <= 1) {
+                throw new PokerProtocolException();
+            }
             int tableID = parseIntToken(tokens[1]);
             if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
                 //TODO: Change settings for this table based on the tokens[2] value
