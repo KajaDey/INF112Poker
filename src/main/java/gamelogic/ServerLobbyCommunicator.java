@@ -126,6 +126,7 @@ public class ServerLobbyCommunicator {
                         break;
                     case "tableDeleted":
                         System.out.println("Table deleted, tableID: " + tokens[1]);
+                        lobbyScreen.removeTable(Integer.parseInt(tokens[1]));
                         break;
                     default:
                         System.out.println("Unknown command " + tokens[0] + ", ignoring...");

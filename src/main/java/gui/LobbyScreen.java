@@ -264,6 +264,17 @@ public class LobbyScreen {
     }
 
     /**
+     *  Remove a table from the GUI and the tables-map and re-paint.
+     * @param tableID Id of the table to remove
+     */
+    public void removeTable(int tableID) {
+        assert tables.get(tableID) != null;
+        tables.remove(tableID);
+        sideMenu.getChildren().remove(tableBoxes.get(tableID));
+        tableBoxes.remove(tableID);
+    }
+
+    /**
      * Get a table (used by ServerLobbyCommunicator)
      * @param tableID Id of the table
      * @return The table
@@ -286,12 +297,23 @@ public class LobbyScreen {
     }
     public int getID() { return ID; }
 
+    /**
+     * Add a player to a given table and re-paint the table
+     * @param tableID The table id
+     * @param playerID The players id
+     */
     public void addPlayer(int tableID, int playerID) {
         getTable(tableID).addPlayer(playerID);
         displayGameInfo(tables.get(tableID));
     }
 
+    /**
+     *  Remove a player from the given table and re-paint the table
+     * @param tableID The table id
+     * @param playerID The players id
+     */
     public void removePlayer(int tableID, int playerID) {
         getTable(tableID).removePlayer(playerID);
+        displayGameInfo(tables.get(tableID));
     }
 }
