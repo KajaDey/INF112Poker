@@ -321,6 +321,10 @@ public class GUIClient implements GameClient {
         // This is now done via setHandForClient()
     }
 
+    /**
+     * Highlights the next player to make a move
+     * @param id ID of the acting player
+     */
     public void highlightPlayerTurn(int id) {
         //gameScreen.highlightPlayerTurn(id);
         // This now done in playerMadeDecision()

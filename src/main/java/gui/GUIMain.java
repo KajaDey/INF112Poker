@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.util.Optional;
 
 /**
@@ -47,8 +48,8 @@ public class GUIMain extends Application{
 
     }
 
-    public void displayMultiPlayerScreen(String name, GameSettings gameSettings) {
-        new LobbyScreen(gameController, name);
+    public void displayMultiPlayerScreen(String name, InetAddress IPAddress, GameSettings gameSettings) {
+        new LobbyScreen(gameController, name, IPAddress);
     }
 
     /**
