@@ -288,6 +288,8 @@ public class Game {
             //Get a decision for playerToAct from GameController
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
 
+            GUIMain.replayLogPrint("\n" + playerToAct.getID() +" "+ decision);
+
             //Test if decision is valid
             switch(decision.move) {
                 case FOLD: case ALL_IN:
@@ -325,6 +327,7 @@ public class Game {
                     break;
                 default: GUIMain.debugPrintln("Unknown move: " + decision.move);
             }
+
 
             GUIMain.debugPrintln("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**");
 
@@ -589,9 +592,14 @@ public class Game {
      * @return Array of community cards
      */
     private Card[] generateCommunityCards(Deck deck) {
+        GUIMain.replayLogPrint("\n");
+        GUIMain.replayLogPrint("COMMUNITY CARDS");
         Card[] commCards = new Card[5];
-        for (int i = 0; i < commCards.length; i++)
+        for (int i = 0; i < commCards.length; i++) {
             commCards[i] = deck.draw().get();
+            GUIMain.replayLogPrint("\n"+commCards[i].toString());
+        }
+        GUIMain.replayLogPrint("\n");
         return commCards;
     }
 
@@ -623,12 +631,15 @@ public class Game {
      * @param playersStillPlaying Players still in the game
      */
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
+        GUIMain.replayLogPrint("\nCARDS");
         for (Player p : playersStillPlaying) {
             Card[] cards = {deck.draw().get(), deck.draw().get()};
             p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
+            GUIMain.replayLogPrint("\n" + p.getID()+ " " + cards[0].toString() + " " + cards[1].toString());
         }
+        GUIMain.replayLogPrint("\n");
     }
 
     /**

@@ -132,7 +132,7 @@ public class GameSettings {
         String str;
 
         str = startStack+ "\n" + bigBlind + "\n" + smallBlind + "\n" + maxNumberOfPlayers + "\n" +
-                levelDuration + "\n" + aiType + "\n" + playerClock;
+                levelDuration + "\n" + aiType + "\n" + playerClock + "\n";
 
         return str;
     }
