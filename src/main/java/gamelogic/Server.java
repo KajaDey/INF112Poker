@@ -63,7 +63,7 @@ public class Server {
 
 
     /**
-     * Removes a client from the game, closing sockets and doing the necessary cleanup
+     * Removes a client from the lobby, closing sockets and broadcasting their leaving to the other clients
      * @param id
      */
     private synchronized void removeClient(int id) {
@@ -88,6 +88,23 @@ public class Server {
         }
     }
 
+    /**
+     * Removes a client from the lobby and broadcasts their leaving to the other client,
+     * but does not close the socket
+     * @param id
+     */
+    private synchronized void playerStartedGame(int id) {
+        Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
+        if (op.isPresent()) {
+            LobbyPlayer player = op.get();
+            lobbyPlayers.remove(player);
+            ClientBroadcasts.playerLeftLobby(this, player);
+        }
+        else {
+            System.out.println("Warning: Player id " + id + " tried to start game, but player was not found in lobby");
+        }
+    }
+
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
@@ -100,6 +117,12 @@ public class Server {
         });
     }
 
+    /**
+     * Like Integer.parseInt,except that it throws a checked exception if it fails
+     * @param input
+     * @return
+     * @throws PokerProtocolException
+     */
     public static int parseIntToken(String input) throws PokerProtocolException {
         try {
             return Integer.parseInt(input);
@@ -109,6 +132,12 @@ public class Server {
         }
     }
 
+    /**
+     * Like Long.parseLong,except that it throws a checked exception if it fails
+     * @param input
+     * @return
+     * @throws PokerProtocolException
+     */
     public static long parseLongToken(String input) throws PokerProtocolException {
         try {
             return Long.parseLong(input);
@@ -257,17 +286,10 @@ public class Server {
                         receivedIllegalCommandFrom(this, input);
                     }
                 }
-
-
-
             };
             listener = new Thread(task);
             listener.start();
         }
-
-        /*private void broadcastMessage(String message) {
-            lobbyPlayers.forEach(p -> p.write(message));
-        }*/
 
         /**
          * Send lobby info to client (specified in Lobby Protocol)
@@ -341,9 +363,14 @@ public class Server {
         this.removeClient(player.id);
     }
 
-
+    /**
+     * Called whenever the server receives an illegally formatted command from a client
+     * For now, this just skips the command in question, and keeps the client
+     * @param player
+     * @param command
+     */
     private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
-        System.out.println("Received illegal command from client, ignoring command \"" + command + "\"");
+        System.out.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"");
     }
 
     static class ClientBroadcasts {
