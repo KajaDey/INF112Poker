@@ -68,6 +68,7 @@ public class Game {
             }
         }
 
+
         stackSizes.put(ID, gameSettings.getStartStack());
         names.put(ID, name);
 

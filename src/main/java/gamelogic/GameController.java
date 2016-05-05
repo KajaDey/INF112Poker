@@ -84,7 +84,7 @@ public class GameController {
      *
      * @param showCards If all players hole cards should be visible or not
      */
-    public void initGame(boolean showCards, List<Socket> clientSockets) throws Game.InvalidGameSettingsException {
+    public Thread initGame(boolean showCards, List<Socket> clientSockets) throws Game.InvalidGameSettingsException {
         //Make a new Game object and validate
         game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
@@ -117,13 +117,13 @@ public class GameController {
         //Print welcome message to log
         this.printToLogField("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!");
 
-        startGame();
+        return startGame();
     }
 
     /**
      * Method to start the game (in a separate thread)
      */
-    public void startGame() {
+    public Thread startGame() {
         Thread gameThread = new Thread("GameThread") {
             @Override
             public void run() {
@@ -131,6 +131,7 @@ public class GameController {
             }
         };
         gameThread.start();
+        return gameThread;
     }
 
     /**
@@ -289,11 +290,22 @@ public class GameController {
         long timeToTake = 500L + (long)(Math.random() * 2000.0);
         Decision decision = aiClient.getDecision(timeToTake);
         long timeTaken = System.currentTimeMillis() - startTime;
-        try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
+
+        delay(timeToTake - timeTaken);
+
+        return decision;
+    }
+
+    /**
+     * Sleeps the thread for given amount of time
+     * @param delayTime
+     */
+    public void delay(long delayTime) {
+        System.out.println("Delay");
+        try { Thread.sleep(Math.max(0, delayTime)); }
         catch (InterruptedException e) {
             System.out.println("Sleeping thread interrupted");
         }
-        return decision;
     }
 
     /**
@@ -402,8 +414,11 @@ public class GameController {
      * Makes each client start a new hand.
      */
     public void startNewHand() {
+        System.out.println("Clients: "+clients);
         for (Integer clientID : clients.keySet()) {
+            System.out.println("Start new hand for client nr "+clientID);
             GameClient client = clients.get(clientID);
+            System.out.println("Client: "+client);
             client.startNewHand();
         }
     }

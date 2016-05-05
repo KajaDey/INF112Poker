@@ -1,18 +1,21 @@
 package gamelogic;
 
-import gui.GUIMain;
-import gui.GameSettings;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import gui.GUIMain;
+import gui.GameSettings;
+import org.mockito.MockitoAnnotations;
+import org.powermock.reflect.Whitebox;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
 
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 import static org.powermock.api.support.membermodification.MemberMatcher.method;
 
 
@@ -25,11 +28,6 @@ import static org.powermock.api.support.membermodification.MemberMatcher.method;
 public class GameTest {
     private GameController gameController, gameControllerSpy;
     private Game game, gameSpy;
-    private GameSettings gameSettings = new GameSettings(5000, 25, 50, 2, 10, AIType.MCTS_AI);
-
-    // mocked object
-    private GUIMain guiMain = PowerMockito.mock(GUIMain.class);
-
 
     /**
      * Creates a mock game controller for use when testing hard coded decision
@@ -43,28 +41,17 @@ public class GameTest {
      * Creates a game controller spy for use when there are AI players
      */
     private void createGameControllerSpy() {
-        gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), guiMain);
-        gameControllerSpy = PowerMockito.spy(gameController);
-
-        doNothing().when(gameControllerSpy).showHoleCards(anyObject());
-        doNothing().when(gameControllerSpy).preShowdownWinner(anyInt());
-
-        doNothing().when(gameControllerSpy).setDecisionForClient(anyInt(), anyObject());
+        gameController = spy(new GameController());
     }
 
     /**
      * Creates a game spy so we can run playGame()
      */
     private void createGameSpy() throws Exception {
-        game = new Game(gameSettings, gameController);
-        gameSpy = PowerMockito.spy(game);
+        game = new Game(new GameSettings(5000, 50, 25, 2, 10, AIType.MCTS_AI), gameController);
+        gameSpy = spy(game);
 
         doNothing().when(gameSpy, "delay", anyLong());
-    }
-
-    @Before
-    public void inititalizeMockito() {
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -73,27 +60,35 @@ public class GameTest {
         createGameSpy();
 
         gameSpy.addPlayer("Ragnhild", 0);
-        System.out.println("Added one player");
         gameSpy.addPlayer("Kristian", 1);
-        System.out.println("added two players");
 
         gameSpy.playGame();
     }
     @Test
-    public void testSpyTwoAIPlayers() throws Exception {
-        createGameControllerSpy();
-        createGameSpy();
+    public void testPlayGameWithSixSimpleAIs() throws Exception {
+        GameSettings gameSettings = new GameSettings(5000, 50, 25, 6, 10, AIType.SIMPLE_AI);
+        gameController = new GameController(gameSettings);
+        gameSpy = spy(new Game(gameSettings, gameController));
+        doNothing().when(gameSpy, "delay", anyLong());
 
+        whenNew(Game.class).withArguments(any(GameSettings.class), any(GameController.class)).thenReturn(gameSpy);
 
-        // add client:
-            // gameControllerSpy.addClient()
-        // set blinds:
-            //  clients.get(clientID).setBigBlind(gameSettings.getBigBlind());
-            //  clients.get(clientID).setSmallBlind(gameSettings.getSmallBlind());
-        // set names:
-            //  clients.get(clientID).setPlayerNames(new HashMap<>(names));
+        Thread gameThread = gameController.initGame(false, new ArrayList<>());
+        gameThread.join();
+    }
 
+    @Test
+    public void testPlayGameWithSixMCTSAIs() throws Exception {
+        gameControllerSpy = spy(new GameController());
+//        doNothing().when(gameControllerSpy, "delay", anyLong());
+        doNothing().when(gameControllerSpy).delay(anyLong());
 
-        gameSpy.playGame();
+        gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy));
+        doNothing().when(gameSpy, "delay", anyLong());
+
+        whenNew(Game.class).withArguments(any(GameSettings.class), any(GameController.class)).thenReturn(gameSpy);
+
+        Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
+        gameThread.join();
     }
 }
