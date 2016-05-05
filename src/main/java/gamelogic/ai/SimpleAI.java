@@ -134,8 +134,6 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        assert this.getID() == userID : "SimpleAI received cards for id " + userID + ", but AI's id is " + this.getID();
-
         holeCards = new ArrayList<>(2);
         assert holeCards.size() == 0;
         newBettingRound();
