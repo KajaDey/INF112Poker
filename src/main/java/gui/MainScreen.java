@@ -124,6 +124,11 @@ public class MainScreen {
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
 
+        nameIn.setOnAction(e -> {
+            window.close();
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+        });
+
         numOfPlayersIn.setOnAction(e -> {
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
