@@ -52,7 +52,9 @@ public class GameScreen {
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
     private Label endGameScreen;
-    private static TextArea textArea = new TextArea();
+    private static TextArea logField = new TextArea();
+    private static TextField chatField = new TextField();
+    private static Button sendTextButton = new Button();
     private SoundPlayer soundPlayer = new SoundPlayer();
 
     public GameScreen(int ID) {
@@ -68,6 +70,7 @@ public class GameScreen {
         this.allPlayerLayouts = new HashMap<>();
 
         insertLogField();
+        insertChatField();
         addMenuBarToGameScreen();
     }
 
@@ -146,22 +149,54 @@ public class GameScreen {
      * It is put in the lower, left corner.
      */
     public void insertLogField(){
-        textArea.setMaxWidth(300);
-        textArea.setMaxHeight(100);
-        textArea.setEditable(false);
-        textArea.setLayoutX(5);
-        textArea.setLayoutY(scene.getHeight() - 105);
-        textArea.setWrapText(true);
-        pane.getChildren().add(textArea);
-        textArea.setOpacity(0.9);
+        logField.setMaxWidth(300);
+        logField.setMaxHeight(100);
+        logField.setEditable(false);
+        logField.setLayoutX(5);
+        logField.setLayoutY(scene.getHeight() - 140);
+        logField.setWrapText(true);
+        pane.getChildren().add(logField);
+        logField.setOpacity(0.9);
 
         //Add listener to listen for changes and automatically scroll to the bottom
-        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+        logField.textProperty().addListener((observable, oldValue, newValue) -> {
+            logField.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
         });
 
         //Remove highlight of textfield
-        textArea.setFocusTraversable(false);
+        logField.setFocusTraversable(false);
+    }
+
+
+    /**
+     * Inserts an input field and a button for chatting with the other players
+     */
+    public void insertChatField(){
+        chatField = ObjectStandards.makeTextFieldForGameScreen("");
+        chatField.setMinWidth(225);
+        chatField.setMaxWidth(300);
+        chatField.setLayoutX(5);
+        chatField.setLayoutY(scene.getHeight() - 40);
+        chatField.setOpacity(0.9);
+
+        sendTextButton = ObjectStandards.makeStandardButton("Send");
+        sendTextButton.setLayoutX(230);
+        sendTextButton.setLayoutY(scene.getHeight() - 40);
+
+        pane.getChildren().addAll(chatField, sendTextButton);
+
+        //Listener for when a user presses "enter" on the keyboard
+        chatField.setOnAction(event -> {
+            ButtonListeners.chatListener(chatField.getText());
+            chatField.setText("");
+        });
+
+        //Listener for when a user presses the button in the game
+        sendTextButton.setOnAction(event -> {
+            ButtonListeners.chatListener(chatField.getText());
+            chatField.setText("");
+        });
+
     }
 
     /**
@@ -169,7 +204,7 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public static void printToLogField(String printInfo){
-        textArea.appendText("\n" + printInfo);
+        logField.appendText("\n" + printInfo);
     }
 
     public void addMenuBarToGameScreen(){
@@ -313,7 +348,7 @@ public class GameScreen {
         soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
-        allPlayerLayouts.get(ID).setStackLabel(""+stackSizes.get(ID));
+        allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
     }
 
     /**
@@ -750,6 +785,6 @@ public class GameScreen {
 
         Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(allHoleCards, communityCards);
 
-        percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int)(pcnt*100) + "%"));
+        percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
     }
 }

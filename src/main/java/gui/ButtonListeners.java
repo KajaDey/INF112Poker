@@ -211,4 +211,8 @@ public class ButtonListeners {
             tf.setText("" + currentBB);
         }
     }
+
+    public static void chatListener(String text) {
+
+    }
 }
