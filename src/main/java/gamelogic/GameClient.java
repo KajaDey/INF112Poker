@@ -15,6 +15,13 @@ public interface GameClient {
     Decision getDecision(long timeToThink);
 
     /**
+     * Asks for the client's name. If the client returns an empty string, the game controller
+     * may choose a name for the client
+     * @return
+     */
+    String getName();
+
+    /**
      * Sends the names of all players, as a map indexed by the players' IDs
      * Sent once on game start
      */
@@ -109,4 +116,17 @@ public interface GameClient {
      * @param winnerID ID of winner
      */
     void gameOver(Statistics winnerID);
+
+    /**
+     * Sends log output to the client, which the client may display to the user
+     * @param output
+     */
+    void printToLogField(String output);
+
+    /**
+     * Sent if somebody wins pre-showdown (everybody else folds)
+     * Not clear why this is needed
+     * @param winnerID
+     */
+    void preShowdownWinner(int winnerID);
 }

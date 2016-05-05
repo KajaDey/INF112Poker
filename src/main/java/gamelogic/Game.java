@@ -18,8 +18,6 @@ public class Game {
 
     //Settings
     private int numberOfPlayers = 0, remainingPlayers = 0, finishedInPosition;
-    private long startSB, startBB;
-    private int handsStarted = 0;
     private long lastBlindRaiseTime = 0;
 
     //Indexes
@@ -70,6 +68,7 @@ public class Game {
             }
         }
 
+
         stackSizes.put(ID, gameSettings.getStartStack());
         names.put(ID, name);
 
@@ -86,12 +85,15 @@ public class Game {
         while(numberOfPlayersWithChipsLeft() > 1) {
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
-            gameController.startNewHand();
-            pot = new Pot();
             refreshAllStackSizes();
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
+            gameController.startNewHand();
+            refreshAllStackSizes();
+            gameController.setPositions(positions);
+
+            pot = new Pot();
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
@@ -115,7 +117,6 @@ public class Game {
      */
     private void playHand() {
         boolean preFlop = true;
-        handsStarted++;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
         GUIMain.debugPrintln("\nBLINDS");
@@ -133,6 +134,7 @@ public class Game {
 //            gameController.setBlinds();
 //        }
         postBlinds();
+        refreshAllStackSizes();
         printAllPlayerStacks();
 
         //First betting round (preflop)
@@ -524,9 +526,11 @@ public class Game {
     public int numberOfPlayersWithChipsLeft(){
         assert players != null : "List of players was null";
         int count = 0;
-        for (Player p : players) {
-            if (p.getStackSize() > 0)
+        for (int i = 0; i < players.length; i++) {
+            assert players[i] != null : "Player " + i + " in players was null";
+            if (players[i].getStackSize() > 0)
                 count++;
+
         }
         return count;
     }
@@ -676,6 +680,10 @@ public class Game {
         }
     }
 
+    public static class InvalidGameSettingsException extends Exception {
+        public InvalidGameSettingsException(String message) { super(message); }
+    }
+
     /**
      *  Checks for errors in the game settings
      *  @return The appropriate error message if there is an error, null otherwise
@@ -684,11 +692,11 @@ public class Game {
         String error = null;
         if (gameSettings.getStartStack() < 0) {
             error = "Start stack must be a positive whole number";
-        } else if (gameSettings.getStartStack() < startBB * 10){
-            error = "Start stack must be at least 10 times the big blind";
-        } else if(startBB < 0 || startSB < 0) {
+        } else if (gameSettings.getStartStack() < gameSettings.getBigBlind() * 10){
+            error = "Start stack must be at least 10 times the big blind, is " + gameSettings.getStartStack() + " with big blind " + gameSettings.getBigBlind();
+        } else if(gameSettings.getBigBlind() < 0 || gameSettings.getSmallBlind() < 0) {
             error = "All blinds must be positive whole numbers";
-        } else if (startBB < startSB * 2) {
+        } else if (gameSettings.getBigBlind() < gameSettings.getSmallBlind() * 2) {
             error = "Big blind must be at least twice the size of the small blind";
         } else if(gameSettings.getMaxNumberOfPlayers() < 2 || gameSettings.getMaxNumberOfPlayers() > 6) {
             error = "Number of players must be between 2-6";
