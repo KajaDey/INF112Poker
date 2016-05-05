@@ -25,7 +25,9 @@ import static org.powermock.api.support.membermodification.MemberMatcher.method;
 public class GameTest {
     private GameController gameController, gameControllerSpy;
     private Game game, gameSpy;
-    private GameSettings gameSettings = new GameSettings(5000, 25, 50, 2, 10, AIType.MCTS_AI);
+
+    private GUIMain guiMain = mock(GUIMain.class);
+    private GameSettings gameSettings = new GameSettings(5000, 25, 50, 2, 10, AIType.MCTS_AI,30);
 
     // mocked object
     private GUIMain guiMain = PowerMockito.mock(GUIMain.class);
@@ -96,4 +98,5 @@ public class GameTest {
 
         gameSpy.playGame();
     }
+
 }

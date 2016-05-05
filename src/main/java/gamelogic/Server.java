@@ -230,14 +230,16 @@ public class Server {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
                                 }
-                                long stack = parseLongToken(tokens[2]),
-                                        smallBlind = parseLongToken(tokens[4]),
-                                        bigBlind = parseLongToken(tokens[6]);
-                                int maxPlayers = parseIntToken(tokens[8]),
-                                        levelDuration = parseIntToken(tokens[10]);
+                                case "createtable":
+                                    long stack = Long.parseLong(tokens[2]),
+                                            smallBlind = Long.parseLong(tokens[4]),
+                                            bigBlind = Long.parseLong(tokens[6]);
+                                    int maxPlayers = Integer.parseInt(tokens[8]),
+                                            levelDuration = Integer.parseInt(tokens[10]);
+                                    //TODO: Add a token for playerClock when
+                                    int playerClock = Integer.parseInt("30");
 
-                                GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
-                                synchronized (Server.this) {
+                                    GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
                                     addNewTable(settings, this);
                                 }
                                 break;

@@ -19,7 +19,7 @@ public class HandCalculatorTest {
     Card card, holeCard1, holeCard2;
     HandCalculator hc;
     Card c1,c2,c3,c4,c5,c6;
-    GameSettings settings = new GameSettings(5000,25,50, 5, 0, AIType.MCTS_AI);
+    GameSettings settings = new GameSettings(5000,25,50, 5, 0, AIType.MCTS_AI,30);
 
     @Before
     public void setUp() throws Exception {

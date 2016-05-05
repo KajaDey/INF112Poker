@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 public class GameLobby {
 
-    private static Label amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, headLine;
+    private static Label amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, headLine, playerClock;
     private static ChoiceBox<String> choiceBox;
 
     /**
@@ -52,6 +52,7 @@ public class GameLobby {
         bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
         smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
+        playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",gameSettings.getPlayerClock() + "sec");
         headLine = ObjectStandards.makeLabelForHeadLine("Game Lobby");
 
         //ActionListeners
@@ -72,7 +73,7 @@ public class GameLobby {
 
         //Put objects in boxes
 
-        gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
+        gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, playerClock);
         gameRules.setAlignment(Pos.CENTER_LEFT);
 
         buttons.getChildren().addAll(startGame, leaveLobby, settings, showAllPlayerCards);
@@ -115,12 +116,14 @@ public class GameLobby {
         Label smallBlind = ObjectStandards.makeLabelForSettingsScreen("Small blind:");
         Label levelDuration = ObjectStandards.makeLabelForSettingsScreen("Level duration:");
         Label aIDifficulty = ObjectStandards.makeLabelForSettingsScreen("AI difficulty:");
+        Label playerClock = ObjectStandards.makeLabelForSettingsScreen("Player clock:");
 
         TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField bigBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField smallBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField levelDurationTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField playerClockTF = ObjectStandards.makeTextFieldForSettingsScreen();
 
         amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
         numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
@@ -145,14 +148,14 @@ public class GameLobby {
 
 
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue(), playerClockTF.getText()));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
-        levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
+        //levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                //bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
 
-        labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration,aIDifficulty ,accept);
-        textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF,choiceBox,cancel);
+        labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration ,playerClock ,aIDifficulty ,accept);
+        textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF ,playerClockTF ,choiceBox,cancel);
 
         labelBox.setAlignment(Pos.CENTER);
         textFieldBox.setAlignment(Pos.CENTER);

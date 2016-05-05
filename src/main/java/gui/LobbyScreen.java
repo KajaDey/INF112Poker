@@ -3,11 +3,13 @@ package gui;
 import gamelogic.GameController;
 import gamelogic.ServerGameCommunicator;
 import gamelogic.ServerLobbyCommunicator;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -71,6 +73,7 @@ public class LobbyScreen {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getLocalHost());
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
+            displayErrorMessage(e.toString());
             GUIMain.debugPrintln("Error: Could not connect to server");
             e.printStackTrace();
         }
@@ -221,8 +224,9 @@ public class LobbyScreen {
         Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", table.settings.getSmallBlind()+"");
         Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",table.settings.getLevelDuration()+"");
         Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",table.settings.getAiType()+"");
+        Label playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",table.settings.getPlayerClock()+"");
 
-        vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, aIDifficulty);
+        vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, playerClock, aIDifficulty);
         return vBox;
     }
 
@@ -316,5 +320,37 @@ public class LobbyScreen {
     public void removePlayer(int tableID, int playerID) {
         getTable(tableID).removePlayer(playerID);
         displayGameInfo(tables.get(tableID));
+    }
+
+    public void displayErrorMessage(String error){
+
+
+        System.err.println("Cant connect to server");
+
+        Stage errorMessage = new Stage();
+
+        VBox layout = new VBox();
+        layout.setPadding(new Insets(10, 10, 10, 10));
+
+        Label label = ObjectStandards.makeLobbyLabelWhite("Can't connect to network","");
+        label.setFont(new Font("Areal", 25));
+
+        Button backToMainMenu = ObjectStandards.makeStandardButton("Return to the main menu");
+        backToMainMenu.setOnAction(e -> {
+            ButtonListeners.returnToMainMenuButtonListener();
+            errorMessage.close();
+        });
+
+        layout.getChildren().addAll(label, backToMainMenu);
+        layout.setAlignment(Pos.CENTER);
+
+        layout.setStyle("-fx-background-color:#602121");
+
+        errorMessage.initModality(Modality.APPLICATION_MODAL);
+        errorMessage.setTitle("Error");
+        Scene scene = new Scene(layout);
+        errorMessage.setScene(scene);
+        errorMessage.show();
+
     }
 }
