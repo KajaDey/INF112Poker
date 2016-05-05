@@ -51,6 +51,11 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
     public void startNewHand() {
         gameState = Optional.empty();
         stackSizes = Optional.empty();

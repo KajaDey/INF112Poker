@@ -15,6 +15,13 @@ public interface GameClient {
     Decision getDecision(long timeToThink);
 
     /**
+     * Asks for the client's name. If the client returns an empty string, the game controller
+     * may choose a name for the client
+     * @return
+     */
+    String getName();
+
+    /**
      * Sends the names of all players, as a map indexed by the players' IDs
      * Sent once on game start
      */

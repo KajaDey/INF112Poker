@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by ady on 07/03/16.
@@ -104,7 +105,7 @@ public class ButtonListeners {
      */
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
-        gameController.startGame(showCards);
+        gameController.initGame(showCards, new ArrayList<>());
 
     }
 

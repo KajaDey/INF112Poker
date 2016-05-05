@@ -4,6 +4,8 @@ import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.*;
 
 /**
@@ -82,7 +84,7 @@ public class GameController {
      *
      * @param showCards If all players hole cards should be visible or not
      */
-    public void startGame(boolean showCards) throws Game.InvalidGameSettingsException {
+    public void initGame(boolean showCards, List<Socket> clientSockets) throws Game.InvalidGameSettingsException {
         //Make a new Game object and validate
         game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
@@ -96,11 +98,17 @@ public class GameController {
             createGUIClient(gameSettings);
         }
 
+        System.out.println("Creating " + clientSockets.size() + " network clients");
+        // Create network clients
+        createNetworkClients(clientSockets);
+
+        System.out.println("Creating ai clients");
         //Create AI-GameClients
         int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers();
         if (guiMain.isPresent()) {
             numberOfAIClients--;
         }
+        numberOfAIClients -= clientSockets.size();
         createAIClients(numberOfAIClients, gameSettings);
 
         //Set initial blind values for clients
@@ -138,6 +146,49 @@ public class GameController {
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
 
+    private void createNetworkClients(List<Socket> clientSockets) {
+        ArrayList<Thread> clientThreads = new ArrayList<>();
+        for (int i = clients.size(); i < clientSockets.size(); i++) {
+            int id = i;
+            Runnable r = () -> {
+                GameClient networkClient;
+                try {
+                    Socket socket = clientSockets.get(guiMain.isPresent() ? id - 1 : id);
+                    System.out.println("Creating network client");
+                    networkClient = new NetworkClient(socket, id);
+                } catch (IOException e) {
+                    System.out.println("Failed to connect to a client, dropping client");
+                    return;
+                }
+                System.out.println("Connected to network client");
+                networkClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
+                String name = networkClient.getName();
+                synchronized (this) {
+                    clients.put(id, networkClient);
+
+                    game.addPlayer(name, id);
+                    if (guiMain.isPresent()) {
+                        guiMain.get().insertPlayer(id, name, gameSettings.getStartStack());
+                    }
+                    assert !names.containsKey(id);
+                    names.put(id, name);
+                    GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
+                }
+
+            };
+            clientThreads.add(new Thread(r));
+            System.out.println("Connecting to client...");
+            clientThreads.get(clientThreads.size() - 1).start();
+        }
+        // Wait for all clients to finish initialization
+        for (Thread thread : clientThreads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * Create a given number of AI-clients to correspond to Player's in Game
      */
@@ -146,7 +197,7 @@ public class GameController {
 
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
-            int AI_id = guiMain.isPresent() ? i + 1 : i;
+            int AI_id = clients.size();
 
             GameClient aiClient;
             double contemptFactor = 1.00;
@@ -169,6 +220,7 @@ public class GameController {
             if (guiMain.isPresent()) {
                 guiMain.get().insertPlayer(AI_id, aiName, settings.getStartStack());
             }
+            assert !names.containsKey(AI_id) : "Name list already has a name for " + AI_id;
             names.put(AI_id, aiName);
             GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }

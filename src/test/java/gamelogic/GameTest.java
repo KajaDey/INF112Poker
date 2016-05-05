@@ -43,7 +43,7 @@ public class GameTest {
      * Creates a game controller spy for use when there are AI players
      */
     private void createGameControllerSpy() {
-        gameController = new GameController(guiMain);
+        gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), guiMain);
         gameControllerSpy = PowerMockito.spy(gameController);
 
         doNothing().when(gameControllerSpy).showHoleCards(anyObject());

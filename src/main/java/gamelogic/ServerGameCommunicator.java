@@ -43,6 +43,7 @@ public class ServerGameCommunicator {
         socketOutput.write("upi 0.1\n");
         socketOutput.flush();
 
+        System.out.println("Waiting for upiok");
         String input = socketInput.readLine();
         if (!input.equals("upiok")) {
             throw new IOException("Received " + input + " from server, expected upiok");
@@ -57,6 +58,7 @@ public class ServerGameCommunicator {
             switch (tokens[0]) {
                 case "getName":
                     socketOutput.write("playerName " + playerName + "\n");
+                    socketOutput.flush();
                     break;
                 case "newHand":
                     assert gameClient.isPresent();

@@ -6,10 +6,8 @@ import gui.GameSettings;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Kristian Rosland on 27.04.2016.
@@ -444,8 +442,11 @@ public class Server {
             System.out.println("Warning: Forcing default settings");
             this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
+
+            this.seatedPlayers.forEach(player -> player.write("startGame"));
+            List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
             try {
-                gameController.startGame(false);
+                gameController.initGame(false, sockets);
                 this.delete();
             } catch (Game.InvalidGameSettingsException e) {
                 System.out.println("Error while starting game");

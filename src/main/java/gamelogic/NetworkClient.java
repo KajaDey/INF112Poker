@@ -33,6 +33,7 @@ public class NetworkClient implements GameClient {
         socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
+        System.out.println("Waiting for upi handshake");
         String input = socketInput.readLine();
         if (input.startsWith("upi")) {
             writeToSocket("upiok");
@@ -71,6 +72,24 @@ public class NetworkClient implements GameClient {
         }
         System.out.println("Couldn't get decision from client, returning fold");
         return Decision.fold;
+    }
+
+    @Override
+    public String getName() {
+        writeToSocket("getName");
+        String input;
+        try {
+            input = socketInput.readLine();
+        } catch (IOException e) {
+            System.out.println("Failed to get name from client, returning blank");
+            return "";
+        }
+        String[] tokens = input.split("\\s+");
+        if (tokens.length < 1 || !tokens[0].equals("name")) {
+            System.out.println("Got illegal name command \"" + input + "\" from client, returning blank");
+            return "";
+        }
+        return tokens[1];
     }
 
     @Override

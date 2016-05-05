@@ -236,11 +236,13 @@ public class ServerLobbyCommunicator {
      *  Called when the server tell the client to start a game
      */
     public void goToGameScreen() {
+        System.out.println("Going to game screen");
         int id = lobbyScreen.getID();
         GameScreen gameScreen = new GameScreen(id);
         ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id), gameScreen);
 
-        SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(new GameSettings(GameSettings.DEFAULT_SETTINGS)), "Poker Game");
+        System.out.println("Starting upi communcation");
+        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(new GameSettings(GameSettings.DEFAULT_SETTINGS)), "Poker Game"));
         try {
             serverGameCommunicator.startUpi();
         } catch (IOException e) {

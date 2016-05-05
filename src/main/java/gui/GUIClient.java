@@ -66,6 +66,11 @@ public class GUIClient implements GameClient {
         return decision;
     }
 
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("GUI-clients don't have their own names");
+    }
+
     /**
      * Called from ButtonListeners-class to notify the client that a decision has been made
      *

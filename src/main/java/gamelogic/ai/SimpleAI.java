@@ -92,6 +92,11 @@ public class SimpleAI implements GameClient {
         return aiDecision.toRealDecision(currentBet, minimumRaise, stackSizes.get(playerId), 2 * minimumRaise, false, betHasBeenPlaced);
     }
 
+    @Override
+    public String getName() {
+        return "";
+    }
+
     /**
      * Called whenever there is a new round, after the SimpleAI has gotten its new hole cards
      */
