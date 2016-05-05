@@ -70,7 +70,7 @@ public class GUIMain extends Application{
         ButtonListeners.setClient(client);
 
         //Create initial screen, empty
-        SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings), "GameScreen");
+        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings), "GameScreen"));
 
         return client;
     }

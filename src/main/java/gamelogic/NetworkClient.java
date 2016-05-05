@@ -94,6 +94,12 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
+        for (Integer key : names.keySet()) {
+            if (names.get(key).contains(" ")) {
+                System.out.println("Found name containing space, removing space");
+                names.put(key, names.get(key).replace(" ", ""));
+            }
+        }
         writeToSocket("playerNames " + mapToString(names));
 
     }
