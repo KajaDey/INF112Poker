@@ -22,7 +22,7 @@ public class NetworkClientTest {
 
     final long timeToThink = 500L;
 
-    @Test
+    //@Test
     public void playFlopOverNetwork() throws IOException {
 
         int amountOfPlayers = 4;
