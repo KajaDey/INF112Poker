@@ -172,6 +172,9 @@ public class ServerGameCommunicator {
     }
 
     public static Optional<Decision> parseDecision(String string) {
+        if (string == null) {
+            return Optional.empty();
+        }
         int firstDigitIndex = 0;
         for (int i = 0; i < string.length(); i++) {
             if (Character.isDigit(string.charAt(i))) {
