@@ -18,8 +18,6 @@ public class Game {
 
     //Settings
     private int numberOfPlayers = 0, remainingPlayers = 0, finishedInPosition;
-    private long startSB, startBB;
-    private int handsStarted = 0;
     private long lastBlindRaiseTime = 0;
 
     //Indexes
@@ -69,6 +67,8 @@ public class Game {
                 break;
             }
         }
+
+
         stackSizes.put(ID, gameSettings.getStartStack());
         names.put(ID, name);
 
@@ -85,12 +85,15 @@ public class Game {
         while(numberOfPlayersWithChipsLeft() > 1) {
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
-            gameController.startNewHand();
-            pot = new Pot();
             refreshAllStackSizes();
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
+            gameController.startNewHand();
+            refreshAllStackSizes();
+            gameController.setPositions(positions);
+
+            pot = new Pot();
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
@@ -114,7 +117,6 @@ public class Game {
      */
     private void playHand() {
         boolean preFlop = true;
-        handsStarted++;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
         GUIMain.debugPrintln("\nBLINDS");
@@ -127,6 +129,7 @@ public class Game {
         }
 
         postBlinds();
+        refreshAllStackSizes();
         printAllPlayerStacks();
 
         //First betting round (preflop)
@@ -282,6 +285,8 @@ public class Game {
             //Get a decision for playerToAct from GameController
             Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
 
+            GUIMain.replayLogPrint("\n" + playerToAct.getID() +" "+ decision);
+
             //Test if decision is valid
             switch(decision.move) {
                 case FOLD: case ALL_IN:
@@ -319,6 +324,7 @@ public class Game {
                     break;
                 default: GUIMain.debugPrintln("Unknown move: " + decision.move);
             }
+
 
             GUIMain.debugPrintln("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**");
 
@@ -516,9 +522,11 @@ public class Game {
     public int numberOfPlayersWithChipsLeft(){
         assert players != null : "List of players was null";
         int count = 0;
-        for (Player p : players) {
-            if (p.getStackSize() > 0)
+        for (int i = 0; i < players.length; i++) {
+            assert players[i] != null : "Player " + i + " in players was null";
+            if (players[i].getStackSize() > 0)
                 count++;
+
         }
         return count;
     }
@@ -584,9 +592,12 @@ public class Game {
      * @return Array of community cards
      */
     private Card[] generateCommunityCards(Deck deck) {
+        GUIMain.replayLogPrint("\nCOMMUNITY CARDS");
         Card[] commCards = new Card[5];
-        for (int i = 0; i < commCards.length; i++)
+        for (int i = 0; i < commCards.length; i++) {
             commCards[i] = deck.draw().get();
+            GUIMain.replayLogPrint("\n"+commCards[i].toString());
+        }
         return commCards;
     }
 
@@ -618,12 +629,15 @@ public class Game {
      * @param playersStillPlaying Players still in the game
      */
     private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
+        GUIMain.replayLogPrint("\nCARDS");
         for (Player p : playersStillPlaying) {
             Card[] cards = {deck.draw().get(), deck.draw().get()};
             p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
+            GUIMain.replayLogPrint("\n" + p.getID()+ " " + cards[0].toString() + " " + cards[1].toString());
         }
+        GUIMain.replayLogPrint("\nDECISIONS");
     }
 
     /**
@@ -662,6 +676,10 @@ public class Game {
         }
     }
 
+    public static class InvalidGameSettingsException extends Exception {
+        public InvalidGameSettingsException(String message) { super(message); }
+    }
+
     /**
      *  Checks for errors in the game settings
      *  @return The appropriate error message if there is an error, null otherwise
@@ -670,11 +688,11 @@ public class Game {
         String error = null;
         if (gameSettings.getStartStack() < 0) {
             error = "Start stack must be a positive whole number";
-        } else if (gameSettings.getStartStack() < startBB * 10){
-            error = "Start stack must be at least 10 times the big blind";
-        } else if(startBB < 0 || startSB < 0) {
+        } else if (gameSettings.getStartStack() < gameSettings.getBigBlind() * 10){
+            error = "Start stack must be at least 10 times the big blind, is " + gameSettings.getStartStack() + " with big blind " + gameSettings.getBigBlind();
+        } else if(gameSettings.getBigBlind() < 0 || gameSettings.getSmallBlind() < 0) {
             error = "All blinds must be positive whole numbers";
-        } else if (startBB < startSB * 2) {
+        } else if (gameSettings.getBigBlind() < gameSettings.getSmallBlind() * 2) {
             error = "Big blind must be at least twice the size of the small blind";
         } else if(gameSettings.getMaxNumberOfPlayers() < 2 || gameSettings.getMaxNumberOfPlayers() > 6) {
             error = "Number of players must be between 2-6";

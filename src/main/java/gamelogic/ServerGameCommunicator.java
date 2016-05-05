@@ -2,7 +2,9 @@ package gamelogic;
 
 import gamelogic.ai.MCTSAI;
 import gui.GUIClient;
+import gui.GUIMain;
 import gui.GameScreen;
+import gui.GameSettings;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,7 +16,6 @@ import java.util.Optional;
  * Created by morten on 27.04.16.
  */
 public class ServerGameCommunicator {
-    private final GameScreen gameScreen;
     private final String playerName;
     private Optional<GameClient> gameClient = Optional.empty();
     private final BufferedReader socketInput;
@@ -25,12 +26,10 @@ public class ServerGameCommunicator {
      * @param out An open output stream to the Server TCP socket
      * @param in An open input stream from the Server TCP socket
      * @param playerName The player's chosen name
-     * @param gameScreen The gameScreen of the GUI being played on
      */
-    public ServerGameCommunicator(BufferedWriter out, BufferedReader in, String playerName, GameScreen gameScreen) {
+    public ServerGameCommunicator(BufferedWriter out, BufferedReader in, String playerName) {
         this.socketInput = in;
         this.socketOutput = out;
-        this.gameScreen = gameScreen;
         this.playerName = playerName;
     }
 
@@ -43,6 +42,7 @@ public class ServerGameCommunicator {
         socketOutput.write("upi 0.1\n");
         socketOutput.flush();
 
+        System.out.println("Waiting for upiok");
         String input = socketInput.readLine();
         if (!input.equals("upiok")) {
             throw new IOException("Received " + input + " from server, expected upiok");
@@ -50,6 +50,7 @@ public class ServerGameCommunicator {
 
         while (true) {
             input = socketInput.readLine();
+            System.out.println("Received command " + input);
             String[] tokens = input.split("\\s+");
             if (tokens.length == 0) {
                 throw new IOException("Received empty command \"" + input + "\" from server");
@@ -57,6 +58,7 @@ public class ServerGameCommunicator {
             switch (tokens[0]) {
                 case "getName":
                     socketOutput.write("playerName " + playerName + "\n");
+                    socketOutput.flush();
                     break;
                 case "newHand":
                     assert gameClient.isPresent();
@@ -71,13 +73,24 @@ public class ServerGameCommunicator {
                     break;
                 case "clientId":
                     assert !gameClient.isPresent() : "Server sent clientId twice";
-                    gameClient = Optional.of(new GUIClient(Integer.parseInt(tokens[1]), gameScreen));
+                    GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+                    gameClient = Optional.of(GUIMain.guiMain.displayGameScreen(settings, Integer.parseInt(tokens[1])));
+                    try { // Wait for a bit for the GUI to get ready
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) { }
                     break;
                 case "playerNames":
                     assert gameClient.isPresent();
                     HashMap<Integer, String> playerNames = new HashMap<>();
-                    for (int i = 1; i < tokens.length; i += 2) {
-                        playerNames.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
+                    try {
+                        for (int i = 1; i < tokens.length; i += 2) {
+                            playerNames.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
+                        }
+                    }
+                    catch (RuntimeException e) {
+                        System.out.println(e.getMessage());
+                        System.out.println("Failed to parse " + input);
+                        break;
                     }
                     gameClient.get().setPlayerNames(playerNames);
                     break;
@@ -159,6 +172,9 @@ public class ServerGameCommunicator {
     }
 
     public static Optional<Decision> parseDecision(String string) {
+        if (string == null) {
+            return Optional.empty();
+        }
         int firstDigitIndex = 0;
         for (int i = 0; i < string.length(); i++) {
             if (Character.isDigit(string.charAt(i))) {
@@ -190,6 +206,8 @@ public class ServerGameCommunicator {
                 return Optional.of(Decision.Move.SMALL_BLIND);
             case "bigBlind":
                 return Optional.of(Decision.Move.BIG_BLIND);
+            case "allin":
+                return Optional.of(Decision.Move.ALL_IN);
             default:
                 try {
                     return Optional.of(Decision.Move.valueOf(string.toUpperCase()));

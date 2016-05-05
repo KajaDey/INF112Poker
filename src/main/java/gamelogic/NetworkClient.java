@@ -33,6 +33,7 @@ public class NetworkClient implements GameClient {
         socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
+        System.out.println("Waiting for upi handshake");
         String input = socketInput.readLine();
         if (input.startsWith("upi")) {
             writeToSocket("upiok");
@@ -74,7 +75,31 @@ public class NetworkClient implements GameClient {
     }
 
     @Override
+    public String getName() {
+        writeToSocket("getName");
+        String input;
+        try {
+            input = socketInput.readLine();
+        } catch (IOException e) {
+            System.out.println("Failed to get name from client, returning blank");
+            return "";
+        }
+        String[] tokens = input.split("\\s+");
+        if (tokens.length < 1 || !tokens[0].equals("name")) {
+            System.out.println("Got illegal name command \"" + input + "\" from client, returning blank");
+            return "";
+        }
+        return tokens[1];
+    }
+
+    @Override
     public void setPlayerNames(Map<Integer, String> names) {
+        for (Integer key : names.keySet()) {
+            if (names.get(key).contains(" ")) {
+                System.out.println("Found name containing space, removing space");
+                names.put(key, names.get(key).replace(" ", ""));
+            }
+        }
         writeToSocket("playerNames " + mapToString(names));
 
     }
@@ -153,6 +178,16 @@ public class NetworkClient implements GameClient {
     @Override
     public void gameOver(Statistics winnerID) {
 
+    }
+
+    @Override
+    public void printToLogField(String output) {
+        //TODO: Implement
+    }
+
+    @Override
+    public void preShowdownWinner(int winnerID) {
+        //TODO: Maybe implement
     }
 
     public void closeSocket() {

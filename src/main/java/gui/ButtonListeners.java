@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by ady on 07/03/16.
@@ -104,9 +105,10 @@ public class ButtonListeners {
     /**
      * What happens when the startGameButton is pushed
      */
-    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
+    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
-        gameController.startTournamentButtonClicked(gameSettings, showCards);
+        gameController.initGame(showCards, new ArrayList<>());
+
     }
 
     /**
@@ -128,7 +130,7 @@ public class ButtonListeners {
             if (!name.isEmpty()) {
 
                 gameController.enterButtonClicked(name, choiceBox);
-                gameSettings = gameController.gameSettings;
+                gameSettings = gameController.getGameSettings();
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
         }catch (NumberFormatException e){
@@ -216,5 +218,9 @@ public class ButtonListeners {
 
     public static void chatListener(String text) {
 
+    }
+
+    public static void watchNowButtonListener(File file) {
+        ReplayReader.readFile(file);
     }
 }
