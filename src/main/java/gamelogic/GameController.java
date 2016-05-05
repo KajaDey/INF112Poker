@@ -21,7 +21,6 @@ public class GameController {
     private Map<Integer, String> names;
     private boolean showAllPlayerCards;
 
-
     /**
      * Used by GUI to create a new single player game
      */
@@ -73,6 +72,8 @@ public class GameController {
         //Make a new Game object and validate
         game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
+
+        GUIMain.replayLogPrint("SETTINGS\n" + gameSettings.toString());
 
         String error;
         if (((error = game.getError()) != null)) {

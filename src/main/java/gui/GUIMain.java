@@ -19,6 +19,7 @@ public class GUIMain extends Application{
     private static final boolean PRINT_DEBUG_TO_STDOUT = true;
     private static final boolean PRINT_DEBUG_LOG = true;
     private static Optional<PrintWriter> logWriter = Optional.empty();
+    private static Optional<PrintWriter> replayWriter = Optional.empty();
 
     private GameController gameController;
     private GameScreen gameScreen;
@@ -119,6 +120,29 @@ public class GUIMain extends Application{
                     e.printStackTrace();
                     System.exit(1);
                 }
+            }
+        }
+    }
+
+    public static void replayLogPrint(String message){
+
+        if (replayWriter.isPresent()) {
+            replayWriter.get().print(message);
+            replayWriter.get().flush();
+        }
+        else {
+            try {
+                File replayFile = new File("replays/poker" + System.currentTimeMillis() / 1000 + ".log");
+                new File("replays").mkdir();
+                replayWriter = replayWriter.of(new PrintWriter(replayFile, "UTF-8"));
+                replayWriter.get().print(message);
+                replayWriter.get().flush();
+            } catch (FileNotFoundException e) {
+                // If creating the log file fails, do not write to it
+                System.out.println(e);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                System.exit(1);
             }
         }
     }
