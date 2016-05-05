@@ -120,7 +120,8 @@ public class ServerLobbyCommunicator {
                 switch (tokens[0]) {
                     case "startGame":
                         goToGameScreen();
-                        break;
+                        // Stop listening for the server here
+                        return;
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
                         System.out.println("Player joined lobby, id: " + tokens[1] + " name" + tokens[2]);
@@ -238,11 +239,11 @@ public class ServerLobbyCommunicator {
     public void goToGameScreen() {
         System.out.println("Going to game screen");
         int id = lobbyScreen.getID();
-        GameScreen gameScreen = new GameScreen(id);
-        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id), gameScreen);
+        //GameScreen gameScreen = new GameScreen(id);
+        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id));
 
         System.out.println("Starting upi communcation");
-        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(new GameSettings(GameSettings.DEFAULT_SETTINGS)), "Poker Game"));
+        //Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(new GameSettings(GameSettings.DEFAULT_SETTINGS)), "Poker Game"));
         try {
             serverGameCommunicator.startUpi();
         } catch (IOException e) {

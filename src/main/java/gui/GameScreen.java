@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -578,8 +579,16 @@ public class GameScreen {
      */
     public void setPositions(Map<Integer, Integer> positions) {
         for (Integer id : positions.keySet()) {
-            String pos = getPositionName(positions.get(id), numberOfPlayers);
-            allPlayerLayouts.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
+            int position = positions.get(id);
+            String pos = getPositionName(position, numberOfPlayers);
+            assert pos != null;
+            //Image image = getButtonImage(0, position);
+            System.out.println("Warning: Dealer button hardcoded");
+            Image image = ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
+            assert image != null;
+            assert pos != null;
+            allPlayerLayouts.get(id)
+                    .setPositionLabel(pos, image);
         }
     }
 

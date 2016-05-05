@@ -85,12 +85,15 @@ public class Game {
         while(numberOfPlayersWithChipsLeft() > 1) {
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
-            gameController.startNewHand();
-            pot = new Pot();
             refreshAllStackSizes();
 
             //Get an ordered list of players in the current hand (order BTN, SB, BB...)
             playersStillInCurrentHand = getOrderedListOfPlayersStillPlaying();
+            gameController.startNewHand();
+            refreshAllStackSizes();
+            gameController.setPositions(positions);
+
+            pot = new Pot();
 
             //Deal all hole cards and save community cards for later use
             Deck deck = new Deck();
@@ -131,6 +134,7 @@ public class Game {
 //            gameController.setBlinds();
 //        }
         postBlinds();
+        refreshAllStackSizes();
         printAllPlayerStacks();
 
         //First betting round (preflop)

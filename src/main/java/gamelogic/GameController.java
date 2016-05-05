@@ -92,6 +92,7 @@ public class GameController {
         if ((game.getError() != null)) {
             throw new Game.InvalidGameSettingsException(game.getError());
         }
+        NameGenerator.readNewSeries();
 
         //Create GUI-GameClient
         if (guiMain.isPresent()) {
@@ -164,6 +165,9 @@ public class GameController {
                 System.out.println("Connected to network client");
                 networkClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
                 String name = networkClient.getName();
+                if (name.equals("")) {
+                    name = NameGenerator.getRandomName();
+                }
                 synchronized (this) {
                     clients.put(id, networkClient);
 
@@ -194,7 +198,6 @@ public class GameController {
      * Create a given number of AI-clients to correspond to Player's in Game
      */
     private void createAIClients(int numberOfAIs, GameSettings settings) {
-        NameGenerator.readNewSeries();
 
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
@@ -248,6 +251,9 @@ public class GameController {
         for (Integer clientID : clients.keySet()) {
             clients.get(clientID).setPlayerNames(new HashMap<>(names));
         }
+        game.refreshAllStackSizes();
+        //setPositions(game.);
+
     }
 
     /**

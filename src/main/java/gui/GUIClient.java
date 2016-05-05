@@ -38,10 +38,7 @@ public class GUIClient implements GameClient {
     @Override
     public synchronized Decision getDecision(long timeToThink){
         if (!gameState.isPresent()) {
-            Map<Integer, Long> clonedStackSizes = new HashMap<>();
-            stackSizes.forEach((id, stackSize) -> clonedStackSizes.put(id, stackSize));
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(),
-                    clonedStackSizes, names.get(), smallBlind, bigBlind));
+            initGameState();
         }
         //Make buttons visible
         Decision.Move moveIfTimeRunOut = highestAmountPutOnTable == 0 ? Decision.Move.CHECK : Decision.Move.FOLD;
@@ -198,22 +195,38 @@ public class GUIClient implements GameClient {
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
-        Platform.runLater(() -> {
-            gameScreen.updateStackSizes(stackSizes);
+        if (gameState.isPresent()) {
+            Platform.runLater(() -> {
+                gameScreen.updateStackSizes(stackSizes);
 
-            //Updates the values of the slider
-            gameScreen.updateSliderValues();
-        });
+                //Updates the values of the slider
+                gameScreen.updateSliderValues();
+            });
+        }
+    }
+
+    public void initGameState() {
+        assert !gameState.isPresent();
+        assert names.isPresent() : "GUI was sent a decision without receving names";
+        assert positions.isPresent() : "GUI was sent a decision without receving positions";
+        assert stackSizes != null : "GUI was sent a decision without receiving stackSizes";
+
+        Map<Integer, Long> clonedStackSizes = new HashMap<>();
+        stackSizes.forEach(clonedStackSizes::put);
+        Platform.runLater(() -> names.get().forEach((id, name) -> gameScreen.insertPlayer(id, name, stackSizes.get(id))));
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) { }
+
+        gameState = Optional.of(new GameState(amountOfPlayers, positions.get(),
+                clonedStackSizes, names.get(), smallBlind, bigBlind));
     }
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
 
         if (!gameState.isPresent()) {
-            Map<Integer, Long> clonedStackSizes = new HashMap<>();
-            stackSizes.forEach((id, stackSize) -> clonedStackSizes.put(id, stackSize));
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(),
-                    clonedStackSizes, names.get(), smallBlind, bigBlind));
+            initGameState();
         }
 
         switch (decision.move) {
@@ -284,6 +297,9 @@ public class GUIClient implements GameClient {
     public void newBettingRound() {
         minimumRaise = 0;
         highestAmountPutOnTable = 0;
+        if (!gameState.isPresent()) {
+            initGameState();
+        }
         Platform.runLater(() -> gameScreen.newBettingRound());
     }
 

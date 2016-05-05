@@ -261,7 +261,7 @@ public class Server {
                                         t.delete();
                                     }
                                 }
-                                break;
+                                return;
                             }
                             case "deletetable":
                                 if (tokens.length <= 1) {
