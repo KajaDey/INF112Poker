@@ -69,7 +69,7 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,250);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,300);
         settings.setScene(scene);
         settings.show();
     }
@@ -77,12 +77,14 @@ public class ButtonListeners {
      * What happens when the acceptSettingsButton is pushed
      */
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
-                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aiChoice) {
+                                             String smallBlindText, String levelDurationText, Stage window,
+                                                    GameController gameController,String aiChoice, String playerClock) {
 
         AIType aiType = AIType.fromString(aiChoice);
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
-                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
+                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),
+                    Integer.valueOf(levelDurationText),aiType,Integer.parseInt(playerClock));
 
             //GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
@@ -210,5 +212,9 @@ public class ButtonListeners {
         } catch (NumberFormatException nfe) {
             tf.setText("" + currentBB);
         }
+    }
+
+    public static void chatListener(String text) {
+
     }
 }

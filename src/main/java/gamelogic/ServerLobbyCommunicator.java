@@ -32,6 +32,7 @@ public class ServerLobbyCommunicator {
     public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen, InetAddress serverAddress) throws IOException {
         this.lobbyScreen = lobbyScreen;
         Socket tempSocket = new Socket();
+        // Attempt to connect to server up to 20 times before giving up
         for (int i = 0; i < 20; i++) {
             try {
                 tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
@@ -41,7 +42,7 @@ public class ServerLobbyCommunicator {
             catch (IOException e) {
                 System.out.println("Failed to connect to " + serverAddress + ". Retrying...");
                 try {
-                    Thread.sleep(2000L);
+                    Thread.sleep(1500L);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
@@ -129,11 +130,11 @@ public class ServerLobbyCommunicator {
                         System.out.println("Player left lobby, p.id: " + tokens[1]);
                         break;
                     case "playerJoinedTable":
-                        Platform.runLater(()->lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        Platform.runLater(()->lobbyScreen.addPlayer(Integer.parseInt(tokens[2]), Integer.parseInt(tokens[1])));
                         System.out.println("Player joined table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "playerLeftTable":
-                        Platform.runLater(()->lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        Platform.runLater(()->lobbyScreen.removePlayer(Integer.parseInt(tokens[2]), Integer.parseInt(tokens[1])));
                         System.out.println("Player left table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "tableCreated":
@@ -150,7 +151,7 @@ public class ServerLobbyCommunicator {
                         Platform.runLater(()->lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
                         break;
                     default:
-                        System.out.println("Unknown command " + tokens[0] + ", ignoring...");
+                        System.out.println("Unknown command \"" + tokens[0] + "\", ignoring...");
                 }
             }
         };

@@ -20,7 +20,7 @@ public class PotTest {
 
     @Before
     public void setup() {
-        settings = new GameSettings(0, 50, 25, 5, 10, AIType.MCTS_AI);
+        settings = new GameSettings(0, 50, 25, 5, 10, AIType.MCTS_AI,30);
         players = new ArrayList<>();
         for (int i = 0; i < 5; i++)
             players.add(new Player("Player" + i, settings , i));

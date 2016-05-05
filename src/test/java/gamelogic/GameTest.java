@@ -31,7 +31,8 @@ import org.powermock.reflect.Whitebox;
 public class GameTest {
     private GameController gameController, gameControllerSpy;
     private Game game, gameSpy;
-    private GameSettings gameSettings = new GameSettings(5000, 25, 50, 2, 10, AIType.MCTS_AI);
+
+    private GameSettings gameSettings = new GameSettings(5000, 25, 50, 2, 10, AIType.MCTS_AI,30);
 
     // mocked object
     private GUIMain guiMain = PowerMockito.mock(GUIMain.class);
@@ -114,4 +115,5 @@ public class GameTest {
 
         // override gc.getDecisionFromClient()......
     }
+
 }
