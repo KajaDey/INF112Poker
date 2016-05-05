@@ -245,6 +245,10 @@ public class GUIClient implements GameClient {
         Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
     }
 
+    /**
+     * Highlights the next player to make a move
+     * @param id ID of the acting player
+     */
     public void highlightPlayerTurn(int id) {
         gameScreen.highlightPlayerTurn(id);
     }

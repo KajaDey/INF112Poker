@@ -69,7 +69,6 @@ public class Game {
                 break;
             }
         }
-
         stackSizes.put(ID, gameSettings.getStartStack());
         names.put(ID, name);
 
@@ -127,11 +126,6 @@ public class Game {
             lastBlindRaiseTime = currentTime;
         }
 
-//        if (handsStarted % gameSettings.getLevelDuration() == 0) {
-//            gameSettings.increaseBlinds();
-//            GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
-//            gameController.setBlinds();
-//        }
         postBlinds();
         printAllPlayerStacks();
 
@@ -441,6 +435,7 @@ public class Game {
         Player winner = playersStillInCurrentHand.get(0);
         gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
+        GUIMain.debugPrintln("\n"+winner.getName()+" won the hand");
         delay(3000);
     }
 
