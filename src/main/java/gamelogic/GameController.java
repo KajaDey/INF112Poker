@@ -65,11 +65,11 @@ public class GameController {
      * Checks valid number of players, then makes GUI show the lobby screen
      * @param name
      */
-    public void enterButtonClicked(String name, InetAddress IPAddress, String gameStyle) {
+    public void enterButtonClicked(String name, InetAddress IPAddress, MainScreen.GameType gameType) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
 
-        if(gameStyle.equals("Single player"))
+        if(gameType == MainScreen.GameType.SINGLE_PLAYER)
             guiMain.get().displaySinglePlayerScreen(name, gameSettings);
         else
             guiMain.get().displayMultiPlayerScreen(name, IPAddress, gameSettings);

@@ -32,7 +32,7 @@ public class GameTest {
      * @throws Exception
      */
     private void setupGameWithAIs(AIType aiType, int numPlayers) throws Exception {
-        GameSettings gameSettings = new GameSettings(5000, 500, 250, numPlayers, 10, aiType);
+        GameSettings gameSettings = new GameSettings(5000, 500, 250, numPlayers, 10, aiType, 30);
         gameControllerSpy = spy(new GameController(gameSettings));
         gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy));
 
@@ -57,7 +57,7 @@ public class GameTest {
         gameControllerMock = mock(GameController.class);
         PowerMockito.doReturn(new Decision(Decision.Move.ALL_IN)).when(gameControllerMock).getDecisionFromClient(anyInt());
 
-        gameSpy = spy(new Game(new GameSettings(5000, 50, 25, 2, 10, AIType.MCTS_AI), gameControllerMock));
+        gameSpy = spy(new Game(new GameSettings(5000, 50, 25, 2, 10, AIType.MCTS_AI, 30), gameControllerMock));
         doNothing().when(gameSpy, "delay", anyLong());
 
         gameSpy.addPlayer("Ragnhild", 0);

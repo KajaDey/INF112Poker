@@ -122,14 +122,13 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, String choiceBox, GameController gameController){
+    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, MainScreen.GameType gameType, GameController gameController){
         savedName = name;
-        savedChoiceBox = choiceBox;
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
             if (!name.isEmpty()) {
-                gameController.enterButtonClicked(name, IPAddress, choiceBox);
+                gameController.enterButtonClicked(name, IPAddress, gameType);
                 gameSettings = gameController.getGameSettings();
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
