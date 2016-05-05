@@ -54,18 +54,18 @@ public class GameTest {
 
         doNothing().when(gameControllerSpy).preShowdownWinner(anyInt());
 
-        doAnswer(new Answer<Decision>() {
-            @Override
-            public Decision answer(InvocationOnMock ID) throws Throwable {
-                //Ask for decision from client
-                GameClient client = gameControllerSpy.clients.get(ID);
-                if (client instanceof SimpleAI || client instanceof MCTSAI)
-                    return gameControllerSpy.getAIDecision(client);
-                else
-                    return client.getDecision(20000L);
-            }
-
-        }).when(gameControllerSpy).getDecisionFromClient(anyInt());
+//        doAnswer(new Answer<Decision>() {
+//            @Override
+//            public Decision answer(InvocationOnMock ID) throws Throwable {
+//                //Ask for decision from client
+//                GameClient client = gameControllerSpy.clients.get(ID);
+//                if (client instanceof SimpleAI || client instanceof MCTSAI)
+//                    return gameControllerSpy.getAIDecision(client);
+//                else
+//                    return client.getDecision(20000L);
+//            }
+//
+//        }).when(gameControllerSpy).getDecisionFromClient(anyInt());
 
 
 
@@ -99,17 +99,17 @@ public class GameTest {
     }
     @Test
     public void testSpyTwoAIPlayers() throws Exception {
-        createGameControllerSpy();
-        createGameSpy();
-
-        // Add clients
-        gameControllerSpy.addClient(0, new MCTSAI(0), "Ragnhild");
-        gameControllerSpy.addClient(1, new MCTSAI(1), "Morten");
-
-        // set blinds and names, this invokes the private method initClients:
-        Whitebox.invokeMethod(gameControllerSpy, "initClients");
-
-        gameSpy.playGame();
+//        createGameControllerSpy();
+//        createGameSpy();
+//
+//        // Add clients
+//        gameControllerSpy.addClient(0, new MCTSAI(0), "Ragnhild");
+//        gameControllerSpy.addClient(1, new MCTSAI(1), "Morten");
+//
+//        // set blinds and names, this invokes the private method initClients:
+//        Whitebox.invokeMethod(gameControllerSpy, "initClients");
+//
+//        gameSpy.playGame();
 
 
         // override gc.getDecisionFromClient()......
