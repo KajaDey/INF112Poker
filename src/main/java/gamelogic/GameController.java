@@ -95,7 +95,10 @@ public class GameController {
         }
 
         //Create AI-GameClients
-        int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers() - 1;
+        int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers();
+        if (guiMain.isPresent()) {
+            numberOfAIClients--;
+        }
         createAIClients(numberOfAIClients, gameSettings);
 
         //Set initial blind values for clients

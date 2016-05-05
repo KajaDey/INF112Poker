@@ -518,9 +518,11 @@ public class Game {
     public int numberOfPlayersWithChipsLeft(){
         assert players != null : "List of players was null";
         int count = 0;
-        for (Player p : players) {
-            if (p.getStackSize() > 0)
+        for (int i = 0; i < players.length; i++) {
+            assert players[i] != null : "Player " + i + " in players was null";
+            if (players[i].getStackSize() > 0)
                 count++;
+
         }
         return count;
     }
@@ -677,7 +679,7 @@ public class Game {
         if (gameSettings.getStartStack() < 0) {
             error = "Start stack must be a positive whole number";
         } else if (gameSettings.getStartStack() < gameSettings.getBigBlind() * 10){
-            error = "Start stack must be at least 10 times the big blind";
+            error = "Start stack must be at least 10 times the big blind, is " + gameSettings.getStartStack() + " with big blind " + gameSettings.getBigBlind();
         } else if(gameSettings.getBigBlind() < 0 || gameSettings.getSmallBlind() < 0) {
             error = "All blinds must be positive whole numbers";
         } else if (gameSettings.getBigBlind() < gameSettings.getSmallBlind() * 2) {

@@ -409,7 +409,6 @@ public class Server {
         ArrayList<LobbyPlayer> seatedPlayers;
         LobbyPlayer host;
         GameSettings settings;
-        GameController gameController;
 
         public LobbyTable(int id, GameSettings settings, LobbyPlayer host) {
             this.tableID = id;
@@ -417,7 +416,6 @@ public class Server {
             this.seatedPlayers = new ArrayList<>();
             this.seatedPlayers.add(host);
             this.host = host;
-            this.gameController = new GameController(settings);
         }
 
         public boolean seatPlayer(LobbyPlayer player) {
@@ -443,7 +441,18 @@ public class Server {
 
         public void startGame() {
             //TODO: Probably have to do way more stuff here
-            this.gameController.startGame();
+            System.out.println("Warning: Forcing default settings");
+            this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+            GameController gameController = new GameController(this.settings);
+            try {
+                gameController.startTournamentButtonClicked(this.settings, false);
+                this.delete();
+            } catch (Game.InvalidGameSettingsException e) {
+                System.out.println("Error while starting game");
+                System.out.println(e.getMessage());
+                System.out.println("Game was not started");
+                return;
+            }
         }
 
         public void delete() {
