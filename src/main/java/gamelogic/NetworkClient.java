@@ -35,7 +35,9 @@ public class NetworkClient implements GameClient {
 
         System.out.println("Waiting for upi handshake");
         String input = socketInput.readLine();
-        if (input.startsWith("upi")) {
+
+        if (input != null && input.startsWith("upi")) {
+            System.out.println("Got upi from player " + playerId);
             writeToSocket("upiok");
         }
         else {
