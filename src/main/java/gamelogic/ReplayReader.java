@@ -1,12 +1,13 @@
 package gamelogic;
 
+import gui.GameSettings;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Queue;
 
 /**
  * Created by ady on 05/05/16.
@@ -67,11 +68,8 @@ public class ReplayReader {
                             default:
                                 break;
                         }
-
                         break;
-
                 }
-
             }
         }
         catch (IOException e){
@@ -85,6 +83,23 @@ public class ReplayReader {
         settings.forEach(System.out::println);
         System.out.println("\n");
         decisions.forEach(System.out::println);
-
     }
+
+    public static String getNextDecision(){
+        return decisions.pop();
+    }
+
+    public static String getNextHold(){
+        return holdCards.pop();
+    }
+
+    public static String getNextCommunity(){
+        return communityCards.pop();
+    }
+
+    /*public static GameSettings getSettings(){
+        GameSettings gameSettings = new GameSettings();
+
+        return gameSettings;
+    }*/
 }
