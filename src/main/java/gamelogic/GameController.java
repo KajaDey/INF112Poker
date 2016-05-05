@@ -5,6 +5,7 @@ import gamelogic.ai.SimpleAI;
 import gui.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.*;
 
@@ -65,14 +66,14 @@ public class GameController {
      * Checks valid number of players, then makes GUI show the lobby screen
      * @param name
      */
-    public void enterButtonClicked(String name, String gameStyle) {
+    public void enterButtonClicked(String name, InetAddress IPAddress, String gameStyle) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
 
         if(gameStyle.equals("Single player"))
             guiMain.get().displaySinglePlayerScreen(name, gameSettings);
         else
-            guiMain.get().displayMultiPlayerScreen(name, gameSettings);
+            guiMain.get().displayMultiPlayerScreen(name, IPAddress, gameSettings);
 
         this.name = name;
     }

@@ -7,12 +7,9 @@ import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import gui.GUIMain;
 import gui.GameSettings;
-import org.powermock.reflect.Whitebox;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
-
 import java.util.ArrayList;
-import java.util.concurrent.ThreadFactory;
 
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;

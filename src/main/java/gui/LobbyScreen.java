@@ -39,7 +39,7 @@ public class LobbyScreen {
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
     private int ID;
 
-    public LobbyScreen(GameController gameController, String name) {
+    public LobbyScreen(GameController gameController, String name, InetAddress IPAddress) {
         this.gameController = gameController;
         this.tables = new HashMap<>();
         this.tableBoxes = new HashMap<>();
@@ -68,7 +68,7 @@ public class LobbyScreen {
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
         try {
-            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getByName("129.177.118.43"));
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
 //            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getLocalHost());
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
