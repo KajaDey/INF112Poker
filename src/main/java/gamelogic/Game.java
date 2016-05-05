@@ -18,8 +18,6 @@ public class Game {
 
     //Settings
     private int numberOfPlayers = 0, remainingPlayers = 0, finishedInPosition;
-    private long startSB, startBB;
-    private int handsStarted = 0;
     private long lastBlindRaiseTime = 0;
 
     //Indexes
@@ -115,7 +113,6 @@ public class Game {
      */
     private void playHand() {
         boolean preFlop = true;
-        handsStarted++;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
         GUIMain.debugPrintln("\nBLINDS");
@@ -667,6 +664,10 @@ public class Game {
         }
     }
 
+    public static class InvalidGameSettingsException extends Exception {
+        public InvalidGameSettingsException(String message) { super(message); }
+    }
+
     /**
      *  Checks for errors in the game settings
      *  @return The appropriate error message if there is an error, null otherwise
@@ -675,11 +676,11 @@ public class Game {
         String error = null;
         if (gameSettings.getStartStack() < 0) {
             error = "Start stack must be a positive whole number";
-        } else if (gameSettings.getStartStack() < startBB * 10){
+        } else if (gameSettings.getStartStack() < gameSettings.getBigBlind() * 10){
             error = "Start stack must be at least 10 times the big blind";
-        } else if(startBB < 0 || startSB < 0) {
+        } else if(gameSettings.getBigBlind() < 0 || gameSettings.getSmallBlind() < 0) {
             error = "All blinds must be positive whole numbers";
-        } else if (startBB < startSB * 2) {
+        } else if (gameSettings.getBigBlind() < gameSettings.getSmallBlind() * 2) {
             error = "Big blind must be at least twice the size of the small blind";
         } else if(gameSettings.getMaxNumberOfPlayers() < 2 || gameSettings.getMaxNumberOfPlayers() > 6) {
             error = "Number of players must be between 2-6";

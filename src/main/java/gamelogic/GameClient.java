@@ -109,4 +109,17 @@ public interface GameClient {
      * @param winnerID ID of winner
      */
     void gameOver(Statistics winnerID);
+
+    /**
+     * Sends log output to the client, which the client may display to the user
+     * @param output
+     */
+    void printToLogField(String output);
+
+    /**
+     * Sent if somebody wins pre-showdown (everybody else folds)
+     * Not clear why this is needed
+     * @param winnerID
+     */
+    void preShowdownWinner(int winnerID);
 }

@@ -14,9 +14,9 @@ import java.util.*;
 public class GameController {
     private Game game;
     private Map<Integer, GameClient> clients;
-    private GUIClient guiClient;
-    private GUIMain mainGUI;
-    public GameSettings gameSettings;
+
+    private GameSettings gameSettings;
+    private final Optional<GUIMain> guiMain;
     private String name;
     private Map<Integer, String> names;
     private boolean showAllPlayerCards;
@@ -25,24 +25,35 @@ public class GameController {
     /**
      * Used by GUI to create a new single player game
      */
-    public GameController(GUIMain gui) {
-        this();
-        this.mainGUI = gui;
+    public GameController(GUIMain guiMain) {
+        this.guiMain = Optional.of(guiMain);
+
+        clients = new HashMap<>();
+        names = new HashMap<>();
     }
 
     /**
      * Used by Server to create a new GameController for a network game
      */
     public GameController(GameSettings settings) {
-        this();
         this.gameSettings = settings;
         this.game = new Game(settings, this);
+
+        clients = new HashMap<>();
+        names = new HashMap<>();
+        this.guiMain = Optional.empty();
     }
 
     public GameController() {
-        //Empty maps of clients/names
-        clients = new HashMap<>();
-        names = new HashMap<>();
+        this(new GameSettings(GameSettings.DEFAULT_SETTINGS));
+    }
+
+    /**
+     * Returns a deep copy of the game's settings
+     * @return
+     */
+    public GameSettings getGameSettings() {
+        return new GameSettings(gameSettings);
     }
 
     /**
@@ -55,9 +66,9 @@ public class GameController {
         gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
 
         if(gameStyle.equals("Single player"))
-            mainGUI.displaySinglePlayerScreen(name, gameSettings);
+            guiMain.get().displaySinglePlayerScreen(name, gameSettings);
         else
-            mainGUI.displayMultiPlayerScreen(name, gameSettings);
+            guiMain.get().displayMultiPlayerScreen(name, gameSettings);
 
         this.name = name;
     }
@@ -69,19 +80,19 @@ public class GameController {
      * @param gameSettings Game settings
      * @param showCards If all players hole cards should be visible or not
      */
-    public void startTournamentButtonClicked(GameSettings gameSettings, boolean showCards) {
+    public void startTournamentButtonClicked(GameSettings gameSettings, boolean showCards) throws Game.InvalidGameSettingsException {
         //Make a new Game object and validate
         game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
 
-        String error;
-        if (((error = game.getError()) != null)) {
-            mainGUI.displayErrorMessageToLobby(error);
-            return;
+        if ((game.getError() != null)) {
+            throw new Game.InvalidGameSettingsException(game.getError());
         }
 
         //Create GUI-GameClient
-        createGUIClient(gameSettings);
+        if (guiMain.isPresent()) {
+            createGUIClient(gameSettings);
+        }
 
         //Create AI-GameClients
         int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers() - 1;
@@ -113,10 +124,10 @@ public class GameController {
      * Create a GUI-client with initial values
      */
     private void createGUIClient(GameSettings settings) {
-        guiClient = mainGUI.displayGameScreen(settings, 0);
+        GameClient guiClient = guiMain.get().displayGameScreen(settings, 0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
-        mainGUI.insertPlayer(0, this.name, settings.getStartStack());
+        guiMain.get().insertPlayer(0, this.name, settings.getStartStack());
         guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
         names.put(0, name);
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
@@ -130,7 +141,7 @@ public class GameController {
 
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
-            int AI_id = i + 1;
+            int AI_id = guiMain.isPresent() ? i + 1 : i;
 
             GameClient aiClient;
             double contemptFactor = 1.00;
@@ -150,7 +161,9 @@ public class GameController {
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
-            mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
+            if (guiMain.isPresent()) {
+                guiMain.get().insertPlayer(AI_id, aiName, settings.getStartStack());
+            }
             names.put(AI_id, aiName);
             GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
@@ -197,7 +210,8 @@ public class GameController {
      */
     public Decision getDecisionFromClient(int ID) {
         //Tell the GUI-client to highlight the players turn
-        guiClient.highlightPlayerTurn(ID);
+        //guiClient.highlightPlayerTurn(ID);
+        // guiClient now does this by itself
 
         //Ask for decision from client
         GameClient client = clients.get(ID);
@@ -254,11 +268,13 @@ public class GameController {
      * @param card2 Card two in the hand
      */
     public void setHandForClient(int clientID, Card card1, Card card2) {
-        GameClient c = clients.get(clientID);
-        c.setHandForClient(clientID, card1, card2);
-
-        if (showAllPlayerCards)
-            guiClient.setHandForClient(clientID, card1, card2);
+        if (showAllPlayerCards) { // Send everyone's hole cards to everyone
+            clients.forEach((id, client) -> client.setHandForClient(id, card1, card2));
+        }
+        else {
+            GameClient c = clients.get(clientID);
+            c.setHandForClient(clientID, card1, card2);
+        }
     }
 
     /**
@@ -359,10 +375,10 @@ public class GameController {
     }
 
     /**
-     * Print a message to the on screen log
+     * Print a message to all clients' logs
      */
     public void printToLogField(String message) {
-        guiClient.printToLogField(message);
+        clients.forEach((id, client) -> client.printToLogField(message));
     }
 
     /**
@@ -370,7 +386,7 @@ public class GameController {
      *  Prints a text showing who won the pot and how much it was. Also prints to logfield
      */
     public void preShowdownWinner(int winnerID) {
-        guiClient.preShowdownWinner(winnerID);
+        clients.forEach((id, client) -> client.preShowdownWinner(winnerID));
     }
     /**
      * Called every time a player is bust to inform all clients
@@ -393,6 +409,9 @@ public class GameController {
      * @param holeCards Hole cards of the players to show, indexed by playerIDs
      */
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        guiClient.showHoleCards(holeCards);
+        //guiClient.showHoleCards(holeCards); This method has been removed
+        clients.forEach((clientId, client) -> {
+            holeCards.forEach((id, cards) -> client.setHandForClient(id, cards[0], cards[1]));
+        });
     }
 }

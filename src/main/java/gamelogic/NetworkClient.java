@@ -155,6 +155,16 @@ public class NetworkClient implements GameClient {
 
     }
 
+    @Override
+    public void printToLogField(String output) {
+        //TODO: Implement
+    }
+
+    @Override
+    public void preShowdownWinner(int winnerID) {
+        //TODO: Maybe implement
+    }
+
     public void closeSocket() {
         try {
             socket.close();

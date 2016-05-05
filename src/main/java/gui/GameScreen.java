@@ -41,7 +41,7 @@ public class GameScreen {
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
     private ArrayList<Card> holeCards, communityCards;
-    private Map<Integer, Card[]> allHoleCards;
+    private Map<Integer, Card[]> allHoleCards = new HashMap<>();
     private boolean holeCardsShown = false;
 
 
@@ -198,6 +198,12 @@ public class GameScreen {
             holeCards.add(leftCard);
             holeCards.add(rightCard);
             updateYourHandLabel();
+        }
+        allHoleCards.put(userID, new Card[]{leftCard, rightCard });
+
+        // If you are sent hole cards for another player, assume all hole cards will be sent soon
+        if (userID != this.playerID) {
+            holeCardsShown = true;
         }
     }
 
@@ -485,7 +491,7 @@ public class GameScreen {
 
         //Reset hole cards
         this.holeCardsShown = false;
-        this.allHoleCards = null;
+        this.allHoleCards = new HashMap<>();
 
         //Reset board
         boardLayout.newHand();
@@ -672,18 +678,21 @@ public class GameScreen {
     /**
      *  Show the hole cards of players remaining in the hand
      * @param holeCards  Map from a player's ID to his hole cards
-     */
+
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
         holeCards.forEach((id, cards) -> {
+            setHandForUser(id, cards[0], cards[1]);
+
             Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
             Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
 
             allPlayerLayouts.get(id).setCardImage(leftCard, rightCard);
+
         });
 
         this.allHoleCards = holeCards;
         this.holeCardsShown = true;
-    }
+    */
 
     /**
      *  Get the correct image for this decision (based ont the decision and the amount)

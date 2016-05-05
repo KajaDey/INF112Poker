@@ -114,6 +114,16 @@ public class SimpleAI implements GameClient {
     public void gameOver(Statistics stats) { }
 
     @Override
+    public void printToLogField(String output) {
+
+    }
+
+    @Override
+    public void preShowdownWinner(int winnerID) {
+
+    }
+
+    @Override
     public void setPlayerNames(Map<Integer, String> names) {
         assert names.size() == amountOfPlayers : "SimpleAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players playing.";
     }

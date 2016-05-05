@@ -102,9 +102,10 @@ public class ButtonListeners {
     /**
      * What happens when the startGameButton is pushed
      */
-    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
+    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
         gameController.startTournamentButtonClicked(gameSettings, showCards);
+
     }
 
     /**
@@ -126,7 +127,7 @@ public class ButtonListeners {
             if (!name.isEmpty()) {
 
                 gameController.enterButtonClicked(name, choiceBox);
-                gameSettings = gameController.gameSettings;
+                gameSettings = gameController.getGameSettings();
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
         }catch (NumberFormatException e){

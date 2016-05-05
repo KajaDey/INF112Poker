@@ -19,6 +19,7 @@ public class GUIMain extends Application{
     private static final boolean PRINT_DEBUG_TO_STDOUT = true;
     private static final boolean PRINT_DEBUG_LOG = true;
     private static Optional<PrintWriter> logWriter = Optional.empty();
+    public static GUIMain guiMain;
 
     private GameController gameController;
     private GameScreen gameScreen;
@@ -29,7 +30,7 @@ public class GUIMain extends Application{
     }
 
     public static void main(String[] args) {
-        GUIMain gui = new GUIMain();
+        guiMain = new GUIMain();
         launch(args);
     }
     public void displayErrorMessageToLobby(String message){
@@ -41,7 +42,7 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displaySinglePlayerScreen(String name, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
+        GameLobby.createScreenForGameLobby(this, gameSettings, gameController, name);
 
     }
 
