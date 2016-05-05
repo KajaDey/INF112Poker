@@ -147,8 +147,10 @@ public class Server {
                                             bigBlind = Long.parseLong(tokens[6]);
                                     int maxPlayers = Integer.parseInt(tokens[8]),
                                             levelDuration = Integer.parseInt(tokens[10]);
+                                    //TODO: Add a token for playerClock when
+                                    int playerClock = Integer.parseInt("30");
 
-                                    GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI);
+                                    GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI, playerClock);
                                     addNewTable(settings, this);
                                     break;
                                 case "changesettings":

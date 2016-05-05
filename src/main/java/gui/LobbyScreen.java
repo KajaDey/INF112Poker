@@ -223,8 +223,9 @@ public class LobbyScreen {
         Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", table.settings.getSmallBlind()+"");
         Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",table.settings.getLevelDuration()+"");
         Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",table.settings.getAiType()+"");
+        Label playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",table.settings.getPlayerClock()+"");
 
-        vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, aIDifficulty);
+        vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, playerClock, aIDifficulty);
         return vBox;
     }
 

@@ -12,7 +12,7 @@ import gamelogic.GameController;
  */
 public class GameSettings {
 
-    public final static GameSettings DEFAULT_SETTINGS = new GameSettings(5000, 50, 25, 6, 10, AIType.MCTS_AI);
+    public final static GameSettings DEFAULT_SETTINGS = new GameSettings(5000, 50, 25, 6, 10, AIType.MCTS_AI,30);
 
     private long startStack;
     private long bigBlind;
@@ -20,6 +20,7 @@ public class GameSettings {
     private int maxNumberOfPlayers;
     private int levelDuration;
     private AIType aiType;
+    private int playerClock;
 
     /**
      *
@@ -31,13 +32,14 @@ public class GameSettings {
      * @param aiType The type of AI (Simple/MCTS)
      */
 
-    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType) {
+    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType, int playerClock) {
         this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
         this.aiType = aiType;
+        this.playerClock = playerClock;
     }
 
     public GameSettings(GameSettings oldSetting) {
@@ -122,4 +124,7 @@ public class GameSettings {
     public AIType getAiType(){
         return aiType; }
 
+    public int getPlayerClock(){
+        return playerClock;
+    }
 }
