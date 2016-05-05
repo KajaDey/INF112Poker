@@ -68,7 +68,8 @@ public class LobbyScreen {
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
         try {
-            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getLocalHost());
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getByName("129.177.118.43"));
+//            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getLocalHost());
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
             GUIMain.debugPrintln("Error: Could not connect to server");

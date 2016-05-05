@@ -46,7 +46,6 @@ public class GameController {
 
         clients = new HashMap<>();
         names = new HashMap<>();
-
     }
 
     public GameController() {
@@ -420,11 +419,8 @@ public class GameController {
      * Makes each client start a new hand.
      */
     public void startNewHand() {
-        System.out.println("Clients: "+clients);
         for (Integer clientID : clients.keySet()) {
-            System.out.println("Start new hand for client nr "+clientID);
             GameClient client = clients.get(clientID);
-            System.out.println("Client: "+client);
             client.startNewHand();
         }
     }
