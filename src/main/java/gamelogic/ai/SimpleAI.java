@@ -134,11 +134,13 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        holeCards = new ArrayList<>(2);
-        assert holeCards.size() == 0;
-        newBettingRound();
-        holeCards.add(card1);
-        holeCards.add(card2);
+        if (userID == this.getID()) {
+            holeCards = new ArrayList<>(2);
+            assert holeCards.size() == 0;
+            newBettingRound();
+            holeCards.add(card1);
+            holeCards.add(card2);
+        }
     }
 
     @Override
