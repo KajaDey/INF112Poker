@@ -26,7 +26,7 @@ public class GUIMain extends Application{
     private GUIClient client;
 
     public GUIMain() {
-            this.gameController = new  GameController(this);
+            this.gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), this);
     }
 
     public static void main(String[] args) {

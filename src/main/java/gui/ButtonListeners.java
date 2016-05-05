@@ -104,7 +104,7 @@ public class ButtonListeners {
      */
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
-        gameController.startTournamentButtonClicked(gameSettings, showCards);
+        gameController.startGame(showCards);
 
     }
 

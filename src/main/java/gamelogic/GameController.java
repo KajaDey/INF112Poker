@@ -25,8 +25,10 @@ public class GameController {
     /**
      * Used by GUI to create a new single player game
      */
-    public GameController(GUIMain guiMain) {
+    public GameController(GameSettings settings, GUIMain guiMain) {
         this.guiMain = Optional.of(guiMain);
+        this.gameSettings = settings;
+        this.game = new Game(settings, this);
 
         clients = new HashMap<>();
         names = new HashMap<>();
@@ -36,12 +38,13 @@ public class GameController {
      * Used by Server to create a new GameController for a network game
      */
     public GameController(GameSettings settings) {
+        this.guiMain = Optional.empty();
         this.gameSettings = settings;
         this.game = new Game(settings, this);
 
         clients = new HashMap<>();
         names = new HashMap<>();
-        this.guiMain = Optional.empty();
+
     }
 
     public GameController() {
@@ -77,10 +80,9 @@ public class GameController {
      * Called when the start tournament button is clicked.
      * Creates a new game, creates clients and starts the game.
      *
-     * @param gameSettings Game settings
      * @param showCards If all players hole cards should be visible or not
      */
-    public void startTournamentButtonClicked(GameSettings gameSettings, boolean showCards) throws Game.InvalidGameSettingsException {
+    public void startGame(boolean showCards) throws Game.InvalidGameSettingsException {
         //Make a new Game object and validate
         game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;

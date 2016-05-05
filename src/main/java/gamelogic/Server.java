@@ -445,7 +445,7 @@ public class Server {
             this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
             try {
-                gameController.startTournamentButtonClicked(this.settings, false);
+                gameController.startGame(false);
                 this.delete();
             } catch (Game.InvalidGameSettingsException e) {
                 System.out.println("Error while starting game");
