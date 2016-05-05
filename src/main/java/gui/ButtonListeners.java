@@ -217,4 +217,8 @@ public class ButtonListeners {
     public static void chatListener(String text) {
 
     }
+
+    public static void watchNowButtonListener(File file) {
+        ReplayReader.readFile(file);
+    }
 }

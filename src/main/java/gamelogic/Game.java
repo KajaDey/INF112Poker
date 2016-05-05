@@ -592,14 +592,12 @@ public class Game {
      * @return Array of community cards
      */
     private Card[] generateCommunityCards(Deck deck) {
-        GUIMain.replayLogPrint("\n");
-        GUIMain.replayLogPrint("COMMUNITY CARDS");
+        GUIMain.replayLogPrint("\nCOMMUNITY CARDS");
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++) {
             commCards[i] = deck.draw().get();
             GUIMain.replayLogPrint("\n"+commCards[i].toString());
         }
-        GUIMain.replayLogPrint("\n");
         return commCards;
     }
 
@@ -639,7 +637,7 @@ public class Game {
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
             GUIMain.replayLogPrint("\n" + p.getID()+ " " + cards[0].toString() + " " + cards[1].toString());
         }
-        GUIMain.replayLogPrint("\n");
+        GUIMain.replayLogPrint("\nDECISIONS");
     }
 
     /**

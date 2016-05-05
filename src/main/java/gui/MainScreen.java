@@ -26,6 +26,7 @@ public class MainScreen {
     private static String imgName;
     private static GameController gc;
     private static Stage window;
+    private static File chosenFile;
 
     /**
      * Creates the sceen for the initial (main) screen
@@ -118,7 +119,7 @@ public class MainScreen {
                 "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
         choiceBox.getStylesheets().addAll("file:resources/choiceBoxStyling.css");
 
-        enter.setOnAction(e ->{
+        enter.setOnAction(e -> {
             window.close();
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
@@ -145,12 +146,16 @@ public class MainScreen {
             fileChooser.setTitle("Open Resource File");
             File fileSelected = fileChooser.showOpenDialog(null);
 
-            if(fileSelected != null)
+            if(fileSelected != null) {
                 selectedFile.setText(fileSelected.getName());
+                chosenFile = fileSelected;
+            }
             else
                 selectedFile.setText("File is not valid");
 
         });
+
+        watchNow.setOnAction(event -> ButtonListeners.watchNowButtonListener(chosenFile));
 
         exit.setOnAction(e -> System.exit(0));
 
