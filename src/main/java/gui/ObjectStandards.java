@@ -90,8 +90,8 @@ public class ObjectStandards {
         Insets padding = new Insets(5,5,5,5);
         button.setPadding(padding);
         button.setFont(new Font("Areal", 15));
-        button.setMinWidth(120);
-        button.setMaxWidth(120);
+        button.setMinWidth(220);
+        button.setMaxWidth(220);
         button.setMinHeight(50);
         button.setMaxHeight(50);
 

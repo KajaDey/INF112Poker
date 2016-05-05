@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
@@ -121,20 +122,19 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox, GameController gameController){
+    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, String choiceBox, GameController gameController){
         savedName = name;
         savedChoiceBox = choiceBox;
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
             if (!name.isEmpty()) {
-
-                gameController.enterButtonClicked(name, choiceBox);
+                gameController.enterButtonClicked(name, IPAddress, choiceBox);
                 gameSettings = gameController.getGameSettings();
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
         }catch (NumberFormatException e){
-
+            System.out.println(e.getMessage());
         }
     }
 

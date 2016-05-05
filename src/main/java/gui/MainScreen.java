@@ -13,6 +13,8 @@ import gamelogic.GameController;
 import gamelogic.AIType;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * This purpose of this class is to create the full screen that is seen when the application is started.
@@ -99,6 +101,7 @@ public class MainScreen {
         horizontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
 
         TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Name");
+        TextField IPIn = ObjectStandards.makeTextFieldForMainScreen("IP address");
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
         Button enter = ObjectStandards.makeStandardButton("Enter");
@@ -109,7 +112,6 @@ public class MainScreen {
         choiceBox.setValue("Single player");
         choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
-
         choiceBox.setStyle("-fx-background-color:#090a0c, " +
                 "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
                 "linear-gradient(#20262b, #191d22), " +
@@ -119,19 +121,58 @@ public class MainScreen {
                 "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
         choiceBox.getStylesheets().addAll("file:resources/choiceBoxStyling.css");
 
-        enter.setOnAction(e -> {
+
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener(e -> {
+        if (choiceBox.getSelectionModel().getSelectedIndex() == 0) {
+            playGameBox.getChildren().clear();
+            playGameBox.getChildren().addAll(choiceBox, nameIn, enter);
+        }
+        else {
+            playGameBox.getChildren().clear();
+            playGameBox.getChildren().addAll(choiceBox, nameIn, IPIn, enter);
+        }
+        });
+
+        enter.setOnAction(e ->{
+            InetAddress inetAddress;
+            try {
+                if (IPIn.getText() == null || IPIn.getText().isEmpty())
+                    inetAddress = InetAddress.getLocalHost();
+                else
+                    inetAddress = InetAddress.getByName(IPIn.getText());
+            } catch (UnknownHostException ex) {
+                // TODO show error message next to textfield
+                return;
+            }
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
 
         nameIn.setOnAction(e -> {
+            InetAddress inetAddress;
+            try {
+                if (IPIn.getText() == null || IPIn.getText().isEmpty())
+                    inetAddress = InetAddress.getLocalHost();
+                else
+                    inetAddress = InetAddress.getByName(IPIn.getText());
+            } catch (UnknownHostException ex) {
+                // TODO show error message next to textfield
+                return;
+            }
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
 
         numOfPlayersIn.setOnAction(e -> {
+            InetAddress inetAddress;
+            try {
+                inetAddress = InetAddress.getByName(IPIn.getText());
+            } catch (UnknownHostException ex) {
+                // TODO show error message next to textfield
+                return;
+            }
             window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
         });
 
         playGame.setOnAction(e -> {
