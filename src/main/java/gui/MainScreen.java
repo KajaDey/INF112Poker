@@ -100,7 +100,7 @@ public class MainScreen {
         horizontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
 
         TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Name");
-        TextField IPIn = ObjectStandards.makeTextFieldForMainScreen("IP addres");
+        TextField IPIn = ObjectStandards.makeTextFieldForMainScreen("IP address");
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
         Button enter = ObjectStandards.makeStandardButton("Enter");
