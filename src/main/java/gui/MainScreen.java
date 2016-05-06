@@ -101,7 +101,6 @@ public class MainScreen {
 
         TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Name");
         TextField IPIn = ObjectStandards.makeTextFieldForMainScreen("IP addres");
-        IPIn.setText("127.0.0.1");
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
         Button enter = ObjectStandards.makeStandardButton("Enter");
@@ -124,7 +123,6 @@ public class MainScreen {
         };
 
         enter.setOnAction(e ->{
-            System.out.println("enter clicked. gameType = "+gameType.name());
             enterGameScreen.get();
         });
 
