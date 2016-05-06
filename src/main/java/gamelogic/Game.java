@@ -442,6 +442,7 @@ public class Game {
         gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         GUIMain.debugPrintln("\n"+winner.getName()+" won the hand");
+        pot = new Pot();
         delay(3000);
     }
 
