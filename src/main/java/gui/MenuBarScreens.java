@@ -28,6 +28,11 @@ public class MenuBarScreens {
                 "-fx-text-fill: linear-gradient(white, #d0d0d0)";
     }
 
+    /**
+     * Method for creating the screens for displaying the licenses for both the software and the card sprites.
+     * @param licenseType The type of license, i.e. software or card sprites
+     * @throws IOException
+     */
     public void createScreenForLicense(String licenseType) throws IOException {
         Stage window = new Stage();
         Pane pane = new Pane();
@@ -57,6 +62,12 @@ public class MenuBarScreens {
 
     }
 
+    /**
+     * Method for reading the text files containing the licenses
+     * @param fileName The name of the file
+     * @return A string containing the license
+     * @throws IOException
+     */
     public String licenseReader(String fileName) throws IOException {
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
