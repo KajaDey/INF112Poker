@@ -10,6 +10,7 @@ import java.util.Optional;
 
 /**
  * Created by morten on 27.04.16.
+ *
  */
 public class ServerGameCommunicator {
     private final String playerName;
@@ -35,7 +36,7 @@ public class ServerGameCommunicator {
      * @throws IOException
      */
     public void startUpi() throws IOException {
-        System.out.println("Client " + playerName + " telling server upiok");
+        System.out.println("Client " + playerName + " telling server upi 0.1");
         socketWriter.write("upi 0.1\n");
         socketWriter.flush();
 
@@ -50,7 +51,8 @@ public class ServerGameCommunicator {
 
         while (true) {
             input = socketReader.readLine();
-            System.out.println("Client (" + playerName + ": Received command " + input);
+            System.out.println("Client " + playerName + ": Received command " + input);
+
             String[] tokens = input.split("\\s+");
             if (tokens.length == 0) {
                 throw new IOException("Received empty command \"" + input + "\" from server");
