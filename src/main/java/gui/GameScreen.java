@@ -93,17 +93,17 @@ public class GameScreen {
     /**
      * Insert players to the screen
      *
-     * @param userID
-     * @param name
-     * @param stackSize
+     * @param userID Users ID
+     * @param name Users name
+     * @param stackSize Initial stack size
      * @return True if the player was seated
      */
-    public boolean insertPlayer(int userID, String name, long stackSize) {
+    public boolean insertPlayer(int userID, String name) {
         this.names.put(userID, name);
-        this.stackSizes.put(userID, stackSize);
+        this.stackSizes.put(userID, 0L);
 
         if (userID == playerID) {
-            PlayerLayout pLayout = new PlayerLayout(userID,name,stackSizes.get(0));
+            PlayerLayout pLayout = new PlayerLayout(userID,name);
             playerLayout = pLayout;
             pLayout.setLayoutX(scene.getWidth()/4);
             pLayout.setLayoutY(scene.getHeight()-190);
@@ -111,7 +111,7 @@ public class GameScreen {
             allPlayerLayouts.put(userID, pLayout);
         } else {
             int oppPosition = positions[opponentsAdded];
-            OpponentLayout oppLayout = new OpponentLayout(name, stackSize, oppPosition);
+            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition);
 
             //Set X/Y-layout of this opponent
             double height = scene.getHeight(), width = scene.getWidth();
@@ -622,8 +622,7 @@ public class GameScreen {
             Image image = ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
             assert image != null;
             assert pos != null;
-            allPlayerLayouts.get(id)
-                    .setPositionLabel(pos, image);
+            allPlayerLayouts.get(id).setPositionLabel(pos, image);
         }
     }
 

@@ -35,7 +35,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private long stackSize;
 
 
-    public PlayerLayout(int playerID, String name, long stackSizeIn){
+    public PlayerLayout(int playerID, String name){
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -48,8 +48,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         HBox lastMoveAndChips = new HBox();
 
         //////Make all the elements I want to add to the playerLayout//////////
-        this.stackSize = stackSizeIn;
-        stackLabel = ObjectStandards.makeStandardLabelWhite("", stackSizeIn + "");
+        stackLabel = ObjectStandards.makeStandardLabelWhite("", "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("", "");
         lastMoveLabel = ObjectStandards.makeStandardLabelWhite("", "");
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
@@ -74,13 +73,13 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
         amountTextField = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
-        slider.setMin(currentBigBlind);
-        slider.setMax(stackSizeIn);
-        slider.setValue(currentBigBlind);
+        //slider.setMin(currentBigBlind);
+        //slider.setMax(stackSizeIn);
+        //slider.setValue(currentBigBlind);
 
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
-        slider.setMajorTickUnit(slider.getMax()/2);
+        //slider.setMajorTickUnit(slider.getMax()/2);
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
         slider.setSnapToTicks(false);
@@ -105,17 +104,17 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         //Actions
         betRaiseButton.setOnAction(e -> {
             ButtonListeners.betButtonListener(amountTextField, betRaiseButton.getText());
-            updateSliderValues(stackSizeIn);
+            updateSliderValues(stackSize);
         });
 
         amountTextField.setOnAction(e -> {
             ButtonListeners.betButtonListener(amountTextField, betRaiseButton.getText());
-            updateSliderValues(stackSizeIn);
+            updateSliderValues(stackSize);
         });
 
         checkCallButton.setOnAction(e -> {
             ButtonListeners.checkButtonListener(checkCallButton.getText());
-            updateSliderValues(stackSizeIn);
+            updateSliderValues(stackSize);
         });
 
         foldButton.setOnAction(e -> ButtonListeners.foldButtonListener());

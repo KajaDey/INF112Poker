@@ -28,7 +28,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private boolean isBust = false;
 
-    public OpponentLayout(String name, long stackSize, int position) {
+    public OpponentLayout(String name, int position) {
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
         rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
 
@@ -51,7 +51,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
-        stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
+        stackSizeLabel = ObjectStandards.makeStandardLabelWhite("", "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
         lastMoveLabel = ObjectStandards.makeLobbyLabelWhite("", "");
         percentLabel = ObjectStandards.makeStandardLabelWhite("","");

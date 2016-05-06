@@ -134,6 +134,7 @@ public class GUIClient implements GameClient {
     public void setPlayerNames(Map<Integer, String> names) {
         this.names = Optional.of(new HashMap<>(names));
         Platform.runLater(() ->gameScreen.setNames(names));
+        names.forEach((id, name) -> Platform.runLater(() -> gameScreen.insertPlayer(id, name)));
     }
 
     @Override
