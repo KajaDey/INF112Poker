@@ -38,6 +38,11 @@ public class GUIClient implements GameClient {
     }
 
     @Override
+    public String getName() {
+        throw new UnsupportedOperationException("GUI-clients don't have their own names");
+    }
+
+    @Override
     public synchronized Decision getDecision(long timeToThink){
         if (!gameState.isPresent()) {
             initGameState();
@@ -63,11 +68,6 @@ public class GUIClient implements GameClient {
 
         //Return decision
         return decision;
-    }
-
-    @Override
-    public String getName() {
-        throw new UnsupportedOperationException("GUI-clients don't have their own names");
     }
 
     /**
@@ -102,6 +102,12 @@ public class GUIClient implements GameClient {
     }
 
     /**
+     * TODO Javadoc anyone?? When is this used?
+     * @param move
+     */
+    public synchronized void setDecision(Decision.Move move) { setDecision(move, 0); }
+
+    /**
      *  Check if a decision is valid (according to current stack size etc)
      * @param move The move
      * @param moveSize Size of the move
@@ -127,8 +133,6 @@ public class GUIClient implements GameClient {
 
         return true;
     }
-
-    public void setDecision(Decision.Move move) { setDecision(move, 0); }
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
