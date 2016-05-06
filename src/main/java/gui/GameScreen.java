@@ -96,7 +96,7 @@ public class GameScreen {
      * @param userID
      * @param name
      * @param stackSize
-     * @return player objects
+     * @return True if the player was seated
      */
     public boolean insertPlayer(int userID, String name, long stackSize) {
         this.names.put(userID, name);

@@ -558,11 +558,12 @@ public class Game {
         long totalChipsInPlay = 0;
         HashMap<Integer, Long> stacks = new HashMap<>();
 
-        for (Player p : players)
+        for (Player p : players) {
             if (p.getStackSize() > 0) {
                 stacks.put(p.getID(), p.getStackSize());
                 totalChipsInPlay += p.getStackSize();
             }
+        }
 
         gameController.setStackSizes(stacks);
 

@@ -85,7 +85,9 @@ public class GUIMain extends Application{
      * @return The game screen containing the new player
      */
     public void insertPlayer(int userID, String name, long stackSize) {
-        Platform.runLater(() -> gameScreen.insertPlayer(userID, name, stackSize));
+        //TODO: REMOVE?
+        //This happens double up. GC insert players on creation, GUI-client insert them again in initialization
+        //Platform.runLater(() -> gameScreen.insertPlayer(userID, name, stackSize));
     }
 
     /**

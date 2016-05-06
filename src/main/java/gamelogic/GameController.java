@@ -53,8 +53,7 @@ public class GameController {
     }
 
     /**
-     * Returns a deep copy of the game's settings
-     * @return
+     * @return a deep copy of the game's settings
      */
     public GameSettings getGameSettings() {
         return new GameSettings(gameSettings);
@@ -232,7 +231,7 @@ public class GameController {
     }
 
     /**
-     * @param id The id of this integer
+     * @param id The id of this client
      * @param client Network or AI client
      * @param name Name of the client
      */
@@ -274,10 +273,6 @@ public class GameController {
      * @return Decision made by the client
      */
     public Decision getDecisionFromClient(int ID) {
-        //Tell the GUI-client to highlight the players turn
-        //guiClient.highlightPlayerTurn(ID);
-        // guiClient now does this by itself
-
         //Ask for decision from client
         GameClient client = clients.get(ID);
         if (client instanceof SimpleAI || client instanceof MCTSAI)

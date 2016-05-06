@@ -63,7 +63,7 @@ public class NameGenerator {
             pathsOfSeries.add(name);
         }
 
-        //get random filepath from a list of paths of series if we haven't got one
+        //get random filepath from a list
         pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
 
         try {

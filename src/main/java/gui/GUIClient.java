@@ -101,9 +101,9 @@ public class GUIClient implements GameClient {
 
     /**
      *  Check if a decision is valid (according to current stack size etc)
-     * @param move
-     * @param moveSize
-     * @return
+     * @param move The move
+     * @param moveSize Size of the move
+     * @return True if the move was valid
      */
     private boolean validMove(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
@@ -130,9 +130,9 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
-        this.names = Optional.of(new HashMap<>());
-        names.forEach((id, name) -> this.names.get().put(id, name));
+        this.names = Optional.of(new HashMap<>(names));
         Platform.runLater(() ->gameScreen.setNames(names));
+        Platform.runLater(() -> names.forEach((id, name) -> gameScreen.insertPlayer(id, name, stackSizes.get(id))));
     }
 
     @Override
@@ -207,17 +207,12 @@ public class GUIClient implements GameClient {
 
     public void initGameState() {
         assert !gameState.isPresent();
-        assert names.isPresent() : "GUI was sent a decision without receving names";
-        assert positions.isPresent() : "GUI was sent a decision without receving positions";
+        assert names.isPresent() : "GUI was sent a decision without receiving names";
+        assert positions.isPresent() : "GUI was sent a decision without receiving positions";
         assert stackSizes != null : "GUI was sent a decision without receiving stackSizes";
 
         Map<Integer, Long> clonedStackSizes = new HashMap<>();
         stackSizes.forEach(clonedStackSizes::put);
-        Platform.runLater(() -> names.get().forEach((id, name) -> gameScreen.insertPlayer(id, name, stackSizes.get(id))));
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) { }
-
         gameState = Optional.of(new GameState(amountOfPlayers, positions.get(),
                 clonedStackSizes, names.get(), smallBlind, bigBlind));
     }
