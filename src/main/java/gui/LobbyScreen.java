@@ -307,7 +307,7 @@ public class LobbyScreen {
      * @param tableID The table id
      * @param playerID The players id
      */
-    public void addPlayer(int tableID, int playerID) {
+    public void addPlayer(int playerID, int tableID) {
         getTable(tableID).addPlayer(playerID);
         displayGameInfo(tables.get(tableID));
     }
@@ -317,7 +317,7 @@ public class LobbyScreen {
      * @param tableID The table id
      * @param playerID The players id
      */
-    public void removePlayer(int tableID, int playerID) {
+    public void removePlayer(int playerID, int tableID ) {
         getTable(tableID).removePlayer(playerID);
         displayGameInfo(tables.get(tableID));
     }

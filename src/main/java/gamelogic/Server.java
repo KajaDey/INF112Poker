@@ -113,7 +113,7 @@ public class Server {
         lobbyPlayers.forEach(p -> {
             p.write("tableCreated " + tableID);
             p.write("tableSettings " + tableID + " " + table.settingsToString());
-            p.write("playerJoinedTable " + tableID + " " + host.id);
+            p.write("playerJoinedTable " + host.id + " " + tableID);
         });
     }
 
@@ -427,14 +427,14 @@ public class Server {
                 return false;
             } else {
                 seatedPlayers.add(player);
-                /*
+
                 try {
                     GameClient client = new NetworkClient(player.socket, player.id);
                     gameController.addClient(player.id, client, player.playerName);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return false;
-                }*/
+                }
                 return true;
             }
         }

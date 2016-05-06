@@ -130,11 +130,11 @@ public class ServerLobbyCommunicator {
                         System.out.println("Player left lobby, p.id: " + tokens[1]);
                         break;
                     case "playerJoinedTable":
-                        Platform.runLater(()->lobbyScreen.addPlayer(Integer.parseInt(tokens[2]), Integer.parseInt(tokens[1])));
+                        Platform.runLater(()->lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
                         System.out.println("Player joined table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "playerLeftTable":
-                        Platform.runLater(()->lobbyScreen.removePlayer(Integer.parseInt(tokens[2]), Integer.parseInt(tokens[1])));
+                        Platform.runLater(()->lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
                         System.out.println("Player left table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "tableCreated":
