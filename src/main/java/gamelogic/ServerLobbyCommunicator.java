@@ -18,11 +18,11 @@ import java.util.Map;
  */
 public class ServerLobbyCommunicator {
 
-    final Socket clientSocket;
-    final private BufferedReader socketReader;
-    final private BufferedWriter socketWriter;
-    final private Map<Integer, String> names;
-    final private LobbyScreen lobbyScreen;
+    private final Socket clientSocket;
+    private final BufferedReader socketReader;
+    private final BufferedWriter socketWriter;
+    private final Map<Integer, String> names;
+    private final LobbyScreen lobbyScreen;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and

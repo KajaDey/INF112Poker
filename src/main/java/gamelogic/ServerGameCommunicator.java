@@ -1,13 +1,9 @@
 package gamelogic;
 
-import gamelogic.ai.MCTSAI;
-import gui.GUIClient;
 import gui.GUIMain;
-import gui.GameScreen;
 import gui.GameSettings;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -18,8 +14,8 @@ import java.util.Optional;
 public class ServerGameCommunicator {
     private final String playerName;
     private Optional<GameClient> gameClient = Optional.empty();
-    private final BufferedReader socketInput;
-    private final BufferedWriter socketOutput;
+    private final BufferedReader socketReader;
+    private final BufferedWriter socketWriter;
 
     /**
      * * Creates a new ServerGameCommunicator to the given ip, but does not start communication
@@ -28,8 +24,8 @@ public class ServerGameCommunicator {
      * @param playerName The player's chosen name
      */
     public ServerGameCommunicator(BufferedWriter out, BufferedReader in, String playerName) {
-        this.socketInput = in;
-        this.socketOutput = out;
+        this.socketReader = in;
+        this.socketWriter = out;
         this.playerName = playerName;
     }
 
@@ -40,11 +36,11 @@ public class ServerGameCommunicator {
      */
     public void startUpi() throws IOException {
         System.out.println("Client " + playerName + " telling server upiok");
-        socketOutput.write("upi 0.1\n");
-        socketOutput.flush();
+        socketWriter.write("upi 0.1\n");
+        socketWriter.flush();
 
         System.out.println("Client " + playerName + ": Waiting for upiok");
-        String input = socketInput.readLine();
+        String input = socketReader.readLine();
         if (!input.equals("upiok")) {
             throw new IOException("Received " + input + " from server, expected upiok");
         } else {
@@ -53,7 +49,7 @@ public class ServerGameCommunicator {
 
 
         while (true) {
-            input = socketInput.readLine();
+            input = socketReader.readLine();
             System.out.println("Client (" + playerName + ": Received command " + input);
             String[] tokens = input.split("\\s+");
             if (tokens.length == 0) {
@@ -61,8 +57,8 @@ public class ServerGameCommunicator {
             }
             switch (tokens[0]) {
                 case "getName":
-                    socketOutput.write("playerName " + playerName + "\n");
-                    socketOutput.flush();
+                    socketWriter.write("playerName " + playerName + "\n");
+                    socketWriter.flush();
                     break;
                 case "newHand":
                     assert gameClient.isPresent();
@@ -141,8 +137,8 @@ public class ServerGameCommunicator {
                 case "getDecision": {
                     assert gameClient.isPresent();
                     Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
-                    socketOutput.write(decisionToString(decision) + "\n");
-                    socketOutput.flush();
+                    socketWriter.write(decisionToString(decision) + "\n");
+                    socketWriter.flush();
                     break;
                 }
                 case "playerMadeDecision":

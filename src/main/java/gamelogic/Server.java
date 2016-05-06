@@ -62,7 +62,7 @@ public class Server {
 
     /**
      * Removes a client from the lobby, closing sockets and broadcasting their leaving to the other clients
-     * @param id
+     * @param id Id of the client to remove
      */
     private synchronized void removeClient(int id) {
         Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
@@ -152,6 +152,7 @@ public class Server {
         String playerName;
         BufferedReader reader;
         BufferedWriter writer;
+        boolean listening = false;
 
         public LobbyPlayer(Socket s, int id) {
             this.socket = s;
@@ -191,11 +192,14 @@ public class Server {
                 while(true) {
                     String line;
                     try {
+                        listening = true;
                         line = reader.readLine();
                     } catch (IOException e) {
                         failedToReadFromPlayer(this);
                         return;
                     }
+                    listening = false;
+
                     if (line == null)
                         break;
                     String [] tokens = line.split("\\s+");
@@ -275,7 +279,7 @@ public class Server {
                                 }
                                 break;
                             default:
-                                System.out.println("Unknown command, " + tokens[0]);
+                                System.out.println("Unknown command, " + line);
                         }
                     }
                     catch (PokerProtocolException e) {
@@ -434,6 +438,10 @@ public class Server {
 
             this.seatedPlayers.forEach(player -> player.write("startGame"));
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
+            seatedPlayers.forEach(p -> {
+                if (p.listening)
+                    p.listener.interrupt();
+            });
             try {
                 gameController.initGame(false, sockets);
                 this.delete();
