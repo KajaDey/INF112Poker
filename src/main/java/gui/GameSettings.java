@@ -127,4 +127,13 @@ public class GameSettings {
     public int getPlayerClock(){
         return playerClock;
     }
+
+    public String toString(){
+        String str;
+
+        str = startStack+ "\n" + bigBlind + "\n" + smallBlind + "\n" + maxNumberOfPlayers + "\n" +
+                levelDuration + "\n" + aiType + "\n" + playerClock + "\n";
+
+        return str;
+    }
 }

@@ -1,6 +1,8 @@
 package gui;
 
 import gamelogic.AIType;
+import gamelogic.Game;
+import gamelogic.ai.GameState;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,7 +33,7 @@ public class GameLobby {
      * @param gameSettings
      * @param gameController
      */
-    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController, String name){
+    public static void createScreenForGameLobby(GUIMain guiMain, GameSettings gameSettings, GameController gameController, String name){
         Stage window = new Stage();
 
         //Boxes
@@ -59,7 +61,11 @@ public class GameLobby {
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener(gameController, showAllPlayerCards);
+            try {
+                ButtonListeners.startGameButtonListener(gameController, showAllPlayerCards);
+            } catch (Game.InvalidGameSettingsException e1) {
+                guiMain.displayErrorMessageToLobby(e1.getMessage());
+            }
         });
 
         leaveLobby.setOnAction(e -> {
@@ -125,20 +131,21 @@ public class GameLobby {
         TextField levelDurationTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField playerClockTF = ObjectStandards.makeTextFieldForSettingsScreen();
 
-        amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
-        numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
-        bigBlindTF.setText(String.valueOf(gameController.gameSettings.getBigBlind()));
-        smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
-        levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
+        GameSettings gameSettings = gameController.getGameSettings();
+        amountOfChipsTF.setText(String.valueOf(gameSettings.getStartStack()));
+        numberOfPlayersTF.setText(String.valueOf(gameSettings.getMaxNumberOfPlayers()));
+        bigBlindTF.setText(String.valueOf(gameSettings.getBigBlind()));
+        smallBlindTF.setText(String.valueOf(gameSettings.getSmallBlind()));
+        levelDurationTF.setText(String.valueOf(gameSettings.getLevelDuration()));
 
         choiceBox = new ChoiceBox<>();
-        choiceBox.setValue(gameController.gameSettings.getAiType().toString());
+        choiceBox.setValue(gameSettings.getAiType().toString());
         choiceBox.setMinWidth(100);
         choiceBox.setMaxWidth(100);
         choiceBox.setMinHeight(30);
         choiceBox.setMaxWidth(30);
         choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
-        choiceBox.setValue(gameController.gameSettings.getAiType().toString());
+        choiceBox.setValue(gameSettings.getAiType().toString());
         choiceBox.setTooltip(new Tooltip("Pick a difficulty"));
         choiceBox.setPadding(new Insets(5,5,8,5));
 

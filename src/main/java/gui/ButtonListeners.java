@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
 
 /**
  * Created by ady on 07/03/16.
@@ -104,9 +106,10 @@ public class ButtonListeners {
     /**
      * What happens when the startGameButton is pushed
      */
-    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
+    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
-        gameController.startTournamentButtonClicked(gameSettings, showCards);
+        gameController.initGame(showCards, new ArrayList<>());
+
     }
 
     /**
@@ -119,20 +122,18 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox, GameController gameController){
+    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, MainScreen.GameType gameType, GameController gameController){
         savedName = name;
-        savedChoiceBox = choiceBox;
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
             if (!name.isEmpty()) {
-
-                gameController.enterButtonClicked(name, choiceBox);
-                gameSettings = gameController.gameSettings;
+                gameController.enterButtonClicked(name, IPAddress, gameType);
+                gameSettings = gameController.getGameSettings();
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
         }catch (NumberFormatException e){
-
+            System.out.println(e.getMessage());
         }
     }
 
@@ -216,5 +217,9 @@ public class ButtonListeners {
 
     public static void chatListener(String text) {
 
+    }
+
+    public static void watchNowButtonListener(File file) {
+        ReplayReader.readFile(file);
     }
 }

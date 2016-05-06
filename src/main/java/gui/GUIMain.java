@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.util.Optional;
 
 /**
@@ -19,17 +20,19 @@ public class GUIMain extends Application{
     private static final boolean PRINT_DEBUG_TO_STDOUT = true;
     private static final boolean PRINT_DEBUG_LOG = true;
     private static Optional<PrintWriter> logWriter = Optional.empty();
+    private static Optional<PrintWriter> replayWriter = Optional.empty();
+    public static GUIMain guiMain;
 
     private GameController gameController;
     private GameScreen gameScreen;
     private GUIClient client;
 
     public GUIMain() {
-            this.gameController = new  GameController(this);
+            this.gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), this);
     }
 
     public static void main(String[] args) {
-        GUIMain gui = new GUIMain();
+        guiMain = new GUIMain();
         launch(args);
     }
     public void displayErrorMessageToLobby(String message){
@@ -41,12 +44,12 @@ public class GUIMain extends Application{
      * @param gameSettings The settings to be displayed
      */
     public void displaySinglePlayerScreen(String name, GameSettings gameSettings){
-        GameLobby.createScreenForGameLobby(gameSettings, gameController, name);
+        GameLobby.createScreenForGameLobby(this, gameSettings, gameController, name);
 
     }
 
-    public void displayMultiPlayerScreen(String name, GameSettings gameSettings) {
-        new LobbyScreen(gameController, name);
+    public void displayMultiPlayerScreen(String name, InetAddress IPAddress, GameSettings gameSettings) {
+        new LobbyScreen(gameController, name, IPAddress);
     }
 
     /**
@@ -69,7 +72,7 @@ public class GUIMain extends Application{
         ButtonListeners.setClient(client);
 
         //Create initial screen, empty
-        SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings), "GameScreen");
+        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings), "GameScreen"));
 
         return client;
     }
@@ -119,6 +122,29 @@ public class GUIMain extends Application{
                     e.printStackTrace();
                     System.exit(1);
                 }
+            }
+        }
+    }
+
+    public static void replayLogPrint(String message){
+
+        if (replayWriter.isPresent()) {
+            replayWriter.get().print(message);
+            replayWriter.get().flush();
+        }
+        else {
+            try {
+                File replayFile = new File("replays/poker" + System.currentTimeMillis() / 1000 + ".log");
+                new File("replays").mkdir();
+                replayWriter = replayWriter.of(new PrintWriter(replayFile, "UTF-8"));
+                replayWriter.get().print(message);
+                replayWriter.get().flush();
+            } catch (FileNotFoundException e) {
+                // If creating the log file fails, do not write to it
+                System.out.println(e);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                System.exit(1);
             }
         }
     }

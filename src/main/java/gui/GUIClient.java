@@ -1,8 +1,12 @@
 package gui;
 
 import gamelogic.*;
+import gamelogic.ai.GameState;
 import javafx.application.Platform;
+
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by ady on 08/03/16.
@@ -13,7 +17,12 @@ public class GUIClient implements GameClient {
 
     private GameScreen gameScreen;
 
+    private Optional<GameState> gameState = Optional.empty();
+    private Optional<Map<Integer, Integer>> positions = Optional.empty();
+    private Optional<Map<Integer, String>> names = Optional.empty();
+
     //Storage variables
+    private int amountOfPlayers;
     private long minimumRaise = 0, highestAmountPutOnTable = 0;
     private Decision decision;
     private Map<Integer, Long> stackSizes;
@@ -28,6 +37,9 @@ public class GUIClient implements GameClient {
 
     @Override
     public synchronized Decision getDecision(long timeToThink){
+        if (!gameState.isPresent()) {
+            initGameState();
+        }
         //Make buttons visible
         Decision.Move moveIfTimeRunOut = highestAmountPutOnTable == 0 ? Decision.Move.CHECK : Decision.Move.FOLD;
         Platform.runLater(() -> {
@@ -49,6 +61,11 @@ public class GUIClient implements GameClient {
 
         //Return decision
         return decision;
+    }
+
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("GUI-clients don't have their own names");
     }
 
     /**
@@ -113,6 +130,8 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
+        this.names = Optional.of(new HashMap<>());
+        names.forEach((id, name) -> this.names.get().put(id, name));
         Platform.runLater(() ->gameScreen.setNames(names));
     }
 
@@ -123,18 +142,35 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setFlop(Card card1, Card card2, Card card3) {
+        try {
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card1));
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card2));
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card3));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+        }
         Platform.runLater(() -> gameScreen.displayFlop(card1, card2, card3));
         newBettingRound();
     }
 
     @Override
     public void setTurn(Card turn) {
+        try {
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+        }
         Platform.runLater(() -> gameScreen.displayTurn(turn));
         newBettingRound();
     }
 
     @Override
     public void setRiver(Card river) {
+        try {
+            gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
+        } catch (IllegalDecisionException e) {
+            e.printStackTrace();
+        }
         Platform.runLater(() -> gameScreen.displayRiver(river));
         newBettingRound();
     }
@@ -142,6 +178,7 @@ public class GUIClient implements GameClient {
     @Override
     public void startNewHand() {
         Platform.runLater(() -> gameScreen.startNewHand());
+        gameState = Optional.empty();
         newBettingRound();
     }
 
@@ -158,16 +195,40 @@ public class GUIClient implements GameClient {
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         this.stackSizes = stackSizes;
-        Platform.runLater(() -> {
-            gameScreen.updateStackSizes(stackSizes);
+        if (gameState.isPresent()) {
+            Platform.runLater(() -> {
+                gameScreen.updateStackSizes(stackSizes);
 
-            //Updates the values of the slider
-            gameScreen.updateSliderValues();
-        });
+                //Updates the values of the slider
+                gameScreen.updateSliderValues();
+            });
+        }
+    }
+
+    public void initGameState() {
+        assert !gameState.isPresent();
+        assert names.isPresent() : "GUI was sent a decision without receving names";
+        assert positions.isPresent() : "GUI was sent a decision without receving positions";
+        assert stackSizes != null : "GUI was sent a decision without receiving stackSizes";
+
+        Map<Integer, Long> clonedStackSizes = new HashMap<>();
+        stackSizes.forEach(clonedStackSizes::put);
+        Platform.runLater(() -> names.get().forEach((id, name) -> gameScreen.insertPlayer(id, name, stackSizes.get(id))));
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) { }
+
+        gameState = Optional.of(new GameState(amountOfPlayers, positions.get(),
+                clonedStackSizes, names.get(), smallBlind, bigBlind));
     }
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
+
+        if (!gameState.isPresent()) {
+            initGameState();
+        }
+
         switch (decision.move) {
             case SMALL_BLIND: case BIG_BLIND:
                 highestAmountPutOnTable = decision.move == Decision.Move.BIG_BLIND ? bigBlind : smallBlind;
@@ -181,6 +242,14 @@ public class GUIClient implements GameClient {
                 break;
             case ALL_IN:
                 break;
+        }
+        try {
+            gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
+        } catch (IllegalDecisionException e) {
+            assert false : "Illegal decision " + e;
+        }
+        if (gameState.get().getPlayersLeftInHand() > 0) {
+            gameScreen.highlightPlayerTurn(gameState.get().currentPlayer.id);
         }
         Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
     }
@@ -210,11 +279,14 @@ public class GUIClient implements GameClient {
      */
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
+        this.positions = Optional.of(new HashMap<>());
+        positions.forEach((id, pos) -> this.positions.get().put(id, pos));
         Platform.runLater(() -> gameScreen.setPositions(positions));
     }
 
     @Override
     public void setAmountOfPlayers(int amountOfPlayers) {
+        this.amountOfPlayers = amountOfPlayers;
         Platform.runLater(() -> gameScreen.setNumberOfPlayers(amountOfPlayers));
     }
 
@@ -225,6 +297,9 @@ public class GUIClient implements GameClient {
     public void newBettingRound() {
         minimumRaise = 0;
         highestAmountPutOnTable = 0;
+        if (!gameState.isPresent()) {
+            initGameState();
+        }
         Platform.runLater(() -> gameScreen.newBettingRound());
     }
 
@@ -242,10 +317,16 @@ public class GUIClient implements GameClient {
     }
 
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
+        // Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
+        // This is now done via setHandForClient()
     }
 
+    /**
+     * Highlights the next player to make a move
+     * @param id ID of the acting player
+     */
     public void highlightPlayerTurn(int id) {
-        gameScreen.highlightPlayerTurn(id);
+        //gameScreen.highlightPlayerTurn(id);
+        // This now done in playerMadeDecision()
     }
 }

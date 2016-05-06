@@ -51,6 +51,11 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
     public void startNewHand() {
         gameState = Optional.empty();
         stackSizes = Optional.empty();
@@ -70,6 +75,16 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void gameOver(Statistics stats) { }
+
+    @Override
+    public void printToLogField(String output) {
+
+    }
+
+    @Override
+    public void preShowdownWinner(int winnerID) {
+
+    }
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
