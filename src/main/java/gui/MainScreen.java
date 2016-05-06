@@ -23,6 +23,7 @@ import java.util.function.Supplier;
  * for entering the lobby screen.
  *
  * @author Jostein Kringlen
+ * @author André Dyrstad
  */
 public class MainScreen {
 
@@ -74,8 +75,6 @@ public class MainScreen {
                "Enter your name, and start playing!";
 
 
-        ////////////////////////////////////
-
         VBox playGameBox = new VBox();
         VBox watchGameBox = new VBox();
 
@@ -87,9 +86,6 @@ public class MainScreen {
         Button watchNow = ObjectStandards.makeButtonForLobbyScreen("Watch now");
         Label selectedFile = ObjectStandards.makeStandardLabelWhite("No file chosen", "");
         selectedFile.setFont(new Font("Areal",20));
-
-
-        ///////////////////////////////////
 
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 

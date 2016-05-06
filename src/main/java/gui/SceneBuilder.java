@@ -5,7 +5,10 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * Created by ady on 08/03/16.
+ *
+ * This class displays all the layouts to the screen
+ *
+ * @author André Dyrstad
  */
 public class SceneBuilder {
 

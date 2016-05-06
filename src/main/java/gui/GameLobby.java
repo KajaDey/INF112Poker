@@ -18,9 +18,10 @@ import gamelogic.GameController;
 import java.io.IOException;
 
 /**
- * TODO: Add class description
+ * This is the layout for the single player lobby screen
  *
  * @author André Dyrstad
+ * @author Jostein Kringlen
  */
 public class GameLobby {
 
@@ -174,7 +175,7 @@ public class GameLobby {
 
     /**
      *
-     * Uppdates all the setting in game lobby
+     * Updates all the setting in game lobby
      *
      * @param gameSettings
      */

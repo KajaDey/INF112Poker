@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * This class represents a table in the lobby (used by LobbyScreen)
  *
- * Created by kristianrosland on 03.05.2016.
+ * @author Kristian Rosland
  */
 public class LobbyTable {
     final int id;

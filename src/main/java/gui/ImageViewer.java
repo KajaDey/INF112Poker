@@ -5,7 +5,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 /**
- * Created by ady on 05/03/16.
+ * The purpose of this class, is to display images more easily and find them in the repo.
+ *
+ * @author Jostein Kringlen
  */
 public class ImageViewer {
     public enum Image_type { DEALER_BUTTON, CARD_BACK, PLAYER, OPPONENT }
@@ -94,6 +96,12 @@ public class ImageViewer {
         return imageView;
     }
 
+    /**
+     * Finds and returns the right chip image
+     *
+     * @param name
+     * @return
+     */
     public static Image getChipImage(String name){
         String chipOut = "file:resources/Images/" + name + ".png";
         if (chipOut.isEmpty())
@@ -102,6 +110,12 @@ public class ImageViewer {
         return new Image(chipOut);
     }
 
+    /**
+     * Find image from folder
+     *
+     * @param type
+     * @return
+     */
     public static Image getImage(Image_type type) {
         switch (type) {
             case DEALER_BUTTON:

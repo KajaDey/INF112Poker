@@ -764,6 +764,14 @@ public class GameScreen {
             return ImageViewer.getChipImage("poker8");
     }
 
+    /**
+     *
+     * Add dealer button to the board
+     *
+     * @param player
+     * @param id
+     * @return
+     */
     private Image getButtonImage(int player, int id){
         if (player == 0) {
             if(getPositionName(id, numberOfPlayers).equals("Dealer"))

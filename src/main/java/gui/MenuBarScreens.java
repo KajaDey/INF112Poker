@@ -10,7 +10,9 @@ import javafx.stage.Stage;
 import java.io.*;
 
 /**
- * Created by Jostein on 09.04.2016.
+ * The menu bar at the top is made here
+ *
+ * @author Josten Kringlen
  */
 public class MenuBarScreens {
 
