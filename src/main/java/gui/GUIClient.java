@@ -34,7 +34,6 @@ public class GUIClient implements GameClient {
         this.gameScreen = gameScreen;
     }
 
-
     @Override
     public synchronized Decision getDecision(long timeToThink){
         if (!gameState.isPresent()) {
@@ -132,7 +131,6 @@ public class GUIClient implements GameClient {
     public void setPlayerNames(Map<Integer, String> names) {
         this.names = Optional.of(new HashMap<>(names));
         Platform.runLater(() ->gameScreen.setNames(names));
-        Platform.runLater(() -> names.forEach((id, name) -> gameScreen.insertPlayer(id, name, stackSizes.get(id))));
     }
 
     @Override
@@ -265,7 +263,6 @@ public class GUIClient implements GameClient {
         this.smallBlind = smallBlind;
         Platform.runLater(() -> gameScreen.setSmallBlind(smallBlind));
     }
-
 
     /**
      * Sends every player's position, as a map indexed by the players' IDs.

@@ -428,7 +428,6 @@ public class Server {
         }
 
         public void startGame() {
-            //TODO: Probably have to do way more stuff here
             System.out.println("Warning: Forcing default settings");
             this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);

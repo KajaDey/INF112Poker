@@ -264,7 +264,6 @@ public class LobbyScreen {
         VBox tableBox = makeTableBox(table);
         tableBoxes.put(table.id, tableBox);
         sideMenu.getChildren().add(0, tableBox);
-        //displayGameInfo(table);
 
         GUIMain.debugPrintln("Added new table, id " + table.id);
     }
@@ -324,8 +323,6 @@ public class LobbyScreen {
     }
 
     public void displayErrorMessage(String error){
-
-
         System.err.println("Cant connect to server");
 
         Stage errorMessage = new Stage();

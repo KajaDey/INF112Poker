@@ -87,7 +87,7 @@ public class NetworkClient implements GameClient {
             return "";
         }
         String[] tokens = input.split("\\s+");
-        if (tokens.length < 1 || !tokens[0].equals("name")) {
+        if (tokens.length < 1 || !tokens[0].equals("playerName")) {
             System.out.println("Got illegal name command \"" + input + "\" from client, returning blank");
             return "";
         }

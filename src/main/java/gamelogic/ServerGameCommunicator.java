@@ -22,7 +22,7 @@ public class ServerGameCommunicator {
     private final BufferedWriter socketOutput;
 
     /**
-     * * Creates a new ServerGameCommunicator to the given ip, but does not start communcation
+     * * Creates a new ServerGameCommunicator to the given ip, but does not start communication
      * @param out An open output stream to the Server TCP socket
      * @param in An open input stream from the Server TCP socket
      * @param playerName The player's chosen name
@@ -39,18 +39,22 @@ public class ServerGameCommunicator {
      * @throws IOException
      */
     public void startUpi() throws IOException {
+        System.out.println("Client " + playerName + " telling server upiok");
         socketOutput.write("upi 0.1\n");
         socketOutput.flush();
 
-        System.out.println("Waiting for upiok");
+        System.out.println("Client " + playerName + ": Waiting for upiok");
         String input = socketInput.readLine();
         if (!input.equals("upiok")) {
             throw new IOException("Received " + input + " from server, expected upiok");
+        } else {
+            System.out.println("Client " + playerName + " received upiok from server");
         }
+
 
         while (true) {
             input = socketInput.readLine();
-            System.out.println("Received command " + input);
+            System.out.println("Client (" + playerName + ": Received command " + input);
             String[] tokens = input.split("\\s+");
             if (tokens.length == 0) {
                 throw new IOException("Received empty command \"" + input + "\" from server");

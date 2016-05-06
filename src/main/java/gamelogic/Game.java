@@ -471,8 +471,6 @@ public class Game {
 
         //Tell all clients that the game is over
         gameController.gameOver(stats);
-
-        return;
     }
 
     /**
