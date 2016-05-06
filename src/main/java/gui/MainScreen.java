@@ -126,7 +126,10 @@ public class MainScreen {
             return null;
         };
 
-        enter.setOnAction(e ->{ enterGameScreen.get(); });
+        enter.setOnAction(e ->{
+            System.out.println("enter clicked. gameType = "+gameType.name());
+            enterGameScreen.get();
+        });
 
         nameIn.setOnAction(e -> { enterGameScreen.get(); });
 
@@ -141,7 +144,7 @@ public class MainScreen {
         });
 
         multiPlayer.setOnAction(e -> {
-            gameType = GameType.SINGLE_PLAYER;
+            gameType = GameType.MULTI_PLAYER;
             playGameBox.getChildren().clear();
             playGameBox.getChildren().addAll(nameIn, IPIn, enter);
             verticalButtonAndChoiceBox.getChildren().clear();
