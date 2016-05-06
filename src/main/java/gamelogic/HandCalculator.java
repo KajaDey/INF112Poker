@@ -33,26 +33,17 @@ public class HandCalculator {
     public HandCalculator(Hand hand) {
 
         bestHand = Optional.empty();
-        straightFlush = new StraightFlush();
-        quad = new xOfaKind(4);
-        house = new House();
-        flush = new Flush();
-        straight = new Straight();
-        trips = new xOfaKind(3);
-        twoPairs = new TwoPairs();
-        pair = new xOfaKind(2);
-        highCard = new HighCard();
 
         rules = new ArrayList<>(9);
-        rules.add(straightFlush);
-        rules.add(quad);
-        rules.add(house);
-        rules.add(flush);
-        rules.add(straight);
-        rules.add(trips);
-        rules.add(twoPairs);
-        rules.add(pair);
-        rules.add(highCard);
+        rules.add(new StraightFlush());
+        rules.add(new xOfaKind(4));
+        rules.add(new House());
+        rules.add(new Flush());
+        rules.add(new Straight());
+        rules.add(new xOfaKind(3));
+        rules.add(new TwoPairs());
+        rules.add(new xOfaKind(2));
+        rules.add(new HighCard());
 
         for (IRule r : rules) {
             if (r.match(hand)) {

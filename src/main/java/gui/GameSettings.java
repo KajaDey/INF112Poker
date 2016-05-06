@@ -1,14 +1,11 @@
 package gui;
-
-/**
- * Created by ady on 09/03/16.
- */
-
 import gamelogic.AIType;
 import gamelogic.GameController;
 
 /**
- * A class that contains all the settings we need to know
+ * A class that contains all the settings in a game
+ *
+ * @author André Dyrstad
  */
 public class GameSettings {
 

@@ -1,5 +1,6 @@
 package gamelogic;
 
+import gui.GUIMain;
 import gui.GameSettings;
 
 import java.io.BufferedReader;
@@ -9,7 +10,10 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 
 /**
- * Created by ady on 05/05/16.
+ * This class i made to read a replay file from a previous game.
+ * The text is converted to objects which the program can read.
+ *
+ * @author André Dyrstad
  */
 public class ReplayReader {
 
@@ -71,21 +75,38 @@ public class ReplayReader {
                         break;
                 }
             }
+            GUIMain.debugPrint("Uploaded replay without problems");
         }
         catch (IOException e){
-            System.out.println(e);
+            System.out.println("Error while uploading replay \n" + e);
         }
 
     }
 
+    /**
+     * Returns the next decision made in the game.
+     *
+     * @return next Decision
+     */
     public static Decision getNextDecision(){
         return decisions.pop();
     }
+
+    /**
+     * Returns the next holecard
+     *
+     * @return holecard
+     */
 
     public static Card getNextHold(){
         return holdCards.pop();
     }
 
+    /**
+     * Returns the next community card
+     *
+     * @return community card
+     */
     public static Card getNextCommunity(){
         return communityCards.pop();
     }
@@ -96,13 +117,19 @@ public class ReplayReader {
                 AIType.fromString(settings.pop()),Integer.parseInt(settings.pop()));
     }
 
+    /**
+     *
+     * Converts a string from the replay file to a decision
+     *
+     * @param move from file
+     * @return new decision
+     */
     private static Decision makeDecision(String move){
         String[] split = move.split(" ");
         if(split[2].equals("Allin"))
             split[2] = "ALL_IN";
 
         split[2] = split[2].toUpperCase();
-        System.out.println(split[2]);
 
         if(split.length == 4)
             return new Decision(Decision.Move.valueOf(split[2]));
@@ -110,6 +137,13 @@ public class ReplayReader {
             return new Decision(Decision.Move.valueOf(split[2]),Long.parseLong(split[3]));
     }
 
+    /**
+     *
+     * Converts a string from the replay file to a card
+     *
+     * @param card from file
+     * @return new card
+     */
     private static Card makeCard(String card){
 
         String[] split = card.split("");

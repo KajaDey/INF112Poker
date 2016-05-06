@@ -17,7 +17,10 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
- * Created by ady on 07/03/16.
+ * After a button is clicked, all the actions is handeled here.
+ *
+ * @author André Dyrstad
+ * @author Jostein Kringlen
  */
 public class ButtonListeners {
 
@@ -215,10 +218,20 @@ public class ButtonListeners {
         }
     }
 
+    /**
+     * What happends when a player sends a message to chat
+     *
+     * @param text
+     */
     public static void chatListener(String text) {
 
     }
 
+    /**
+     * This button is clicked when the user wants to watch a replay
+     *
+     * @param file
+     */
     public static void watchNowButtonListener(File file) {
         ReplayReader.readFile(file);
     }

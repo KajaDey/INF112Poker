@@ -9,7 +9,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created by ady on 08/03/16.
+ * This client is communicating between back- and frontend
+ *
+ * @author Kristian Rosland
+ * @author André Dyrstad
  */
 
 

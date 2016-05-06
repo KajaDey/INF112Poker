@@ -174,6 +174,9 @@ public class SoundPlayer{
         }
     }
 
+    /**
+     * Mutes the sound
+     */
     public void muteSound(){
         if (!muted) muted = true;
         else muted = false;

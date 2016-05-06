@@ -13,7 +13,11 @@ import java.net.InetAddress;
 import java.util.Optional;
 
 /**
- * Created by ady on 05/03/16.
+ * This is the main method of the game and contains prints to file
+ *
+ * @author André Dyrstad
+ * @author Kristian Rosland
+ * @author Morten Lohne
  */
 public class GUIMain extends Application{
 
@@ -128,6 +132,11 @@ public class GUIMain extends Application{
         }
     }
 
+    /**
+     * This method will save all the information needed to make a complete replay file.
+     *
+     * @param message The message to add to the replay file.
+     */
     public static void replayLogPrint(String message){
 
         if (replayWriter.isPresent()) {
