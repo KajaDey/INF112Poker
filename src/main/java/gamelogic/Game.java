@@ -636,7 +636,7 @@ public class Game {
             p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
-            GUIMain.replayLogPrint("\n" + p.getID()+ " " + cards[0].toString() + " " + cards[1].toString());
+            GUIMain.replayLogPrint("\n" + cards[0].toString() + "\n" + cards[1].toString());
         }
         GUIMain.replayLogPrint("\nDECISIONS");
     }

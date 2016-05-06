@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 
 /**
  * Created by ady on 05/05/16.
@@ -16,10 +15,10 @@ public class ReplayReader {
 
     private static InfoType currentType = null;
 
-    private static ArrayDeque<String> communityCards = new ArrayDeque<>();
-    private static ArrayDeque<String> holdCards = new ArrayDeque<>();
-    private static ArrayList<String> settings = new ArrayList<>();
-    private static ArrayDeque<String> decisions = new ArrayDeque<>();
+    private static ArrayDeque<Card> communityCards = new ArrayDeque<>();
+    private static ArrayDeque<Card> holdCards = new ArrayDeque<>();
+    private static ArrayDeque<String> settings = new ArrayDeque<>();
+    private static ArrayDeque<Decision> decisions = new ArrayDeque<>();
 
     public enum InfoType{
         COMMUNITY,HOLD,DECISION,SETTINGS
@@ -54,16 +53,17 @@ public class ReplayReader {
 
                         switch (currentType) {
                             case COMMUNITY:
-                                communityCards.add(line);
+                                communityCards.add(makeCard(line));
                                 break;
                             case HOLD:
-                                holdCards.add(line);
+                                holdCards.add(makeCard(line));
                                 break;
                             case SETTINGS:
                                 settings.add(line);
                                 break;
                             case DECISION:
-                                decisions.add(line);
+
+                                decisions.add(makeDecision(line));
                                 break;
                             default:
                                 break;
@@ -76,30 +76,68 @@ public class ReplayReader {
             System.out.println(e);
         }
 
-        communityCards.forEach(System.out::println);
-        System.out.println("\n");
-        holdCards.forEach(System.out::println);
-        System.out.println("\n");
-        settings.forEach(System.out::println);
-        System.out.println("\n");
-        decisions.forEach(System.out::println);
     }
 
-    public static String getNextDecision(){
+    public static Decision getNextDecision(){
         return decisions.pop();
     }
 
-    public static String getNextHold(){
+    public static Card getNextHold(){
         return holdCards.pop();
     }
 
-    public static String getNextCommunity(){
+    public static Card getNextCommunity(){
         return communityCards.pop();
     }
 
-    /*public static GameSettings getSettings(){
-        GameSettings gameSettings = new GameSettings();
+    public static GameSettings getSettings(){
+        return new GameSettings(Long.parseLong(settings.pop()),Long.parseLong(settings.pop()),
+                Long.parseLong(settings.pop()),Integer.parseInt(settings.pop()),Integer.parseInt(settings.pop()),
+                AIType.fromString(settings.pop()),Integer.parseInt(settings.pop()));
+    }
 
-        return gameSettings;
-    }*/
+    private static Decision makeDecision(String move){
+        String[] split = move.split(" ");
+        if(split[2].equals("Allin"))
+            split[2] = "ALL_IN";
+
+        split[2] = split[2].toUpperCase();
+        System.out.println(split[2]);
+
+        if(split.length == 4)
+            return new Decision(Decision.Move.valueOf(split[2]));
+        else
+            return new Decision(Decision.Move.valueOf(split[2]),Long.parseLong(split[3]));
+    }
+
+    private static Card makeCard(String card){
+
+        String[] split = card.split("");
+
+        if(split.length == 3)
+            split[1] = "10";
+
+        switch (split[1]){
+            case "J":
+                split[1]="11";
+                break;
+            case "Q":
+                split[1]="12";
+                break;
+            case "K":
+                split[1]="13";
+                break;
+            case "A":
+                split[1]="14";
+                break;
+        }
+        switch (split[0]) {
+            case "\u2660": split[0] = "SPADES"; break;
+            case "\u2665": split[0] = "HEARTS"; break;
+            case "\u2666": split[0] = "DIAMONDS"; break;
+            case "\u2663": split[0] = "CLUBS"; break;
+        }
+        return Card.of(Integer.parseInt(split[1]), Card.Suit.valueOf(split[0])).get();
+    }
+
 }
