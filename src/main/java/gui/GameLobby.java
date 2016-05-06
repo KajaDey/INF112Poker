@@ -197,7 +197,7 @@ public class GameLobby {
      * @param gameController
      */
 
-    public static void displayErrorMessage(String message,GameController gameController){
+    public static void displayErrorMessage(String message, GameController gameController){
 
         System.err.println("Illegal settings. Please insert valid numbers.");
 

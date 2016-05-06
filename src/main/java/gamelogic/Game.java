@@ -67,8 +67,6 @@ public class Game {
                 break;
             }
         }
-
-
         stackSizes.put(ID, gameSettings.getStartStack());
         names.put(ID, name);
 
@@ -169,7 +167,7 @@ public class Game {
         }
 
         //Showdown
-        showDown();
+        showdown();
     }
 
 
@@ -408,7 +406,7 @@ public class Game {
     /**
      * Displays each player's hole cards after a hand is over, and gives the currentPot to the winning player.
      */
-    private void showDown() {
+    private void showdown() {
         //Print all show down information to debugger
         printShowdownToDebugger();
 

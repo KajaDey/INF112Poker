@@ -30,7 +30,6 @@ import java.util.*;
  */
 public class GameScreen {
 
-
     private int playerID;
     private int numberOfPlayers, opponentsAdded = 0;
 
