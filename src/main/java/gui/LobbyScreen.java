@@ -1,7 +1,6 @@
 package gui;
 
 import gamelogic.GameController;
-import gamelogic.ServerGameCommunicator;
 import gamelogic.ServerLobbyCommunicator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -37,6 +35,7 @@ public class LobbyScreen {
     static Pane fullLayout = new Pane();
     static Pane gameInfo;
     static Label player;
+    static Label names;
     private ServerLobbyCommunicator serverLobbyCommunicator;
     private Map<Integer, LobbyTable> tables;
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
@@ -89,7 +88,7 @@ public class LobbyScreen {
         VBox vBox = new VBox();
         HBox hBox = new HBox();
 
-        Label names = ObjectStandards.makeStandardLabelWhite("Table " ,"");
+        names = ObjectStandards.makeStandardLabelWhite("Table: " + table.id,"");
         player = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
