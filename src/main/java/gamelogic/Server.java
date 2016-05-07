@@ -183,7 +183,7 @@ public class Server {
                     return;
                 }
 
-                playerName = input.substring("lobby".length());
+                playerName = input.substring("lobby".length()).trim();
 
                 write("yourId " + id);
                 sendLobbyInfo();
@@ -307,7 +307,7 @@ public class Server {
             //Send all player names: playerNames <id1 name1> osv.
             String allPlayerNames = "playerNames ";
             for (LobbyPlayer p : lobbyPlayers)
-                allPlayerNames += p.id + " " + p.playerName + " ";
+                allPlayerNames += p.id + " \"" + p.playerName + "\" ";
 
             //Send all tables: table <id> settings <<setting1, value1> ...> players <<id1><id2>..>
             ArrayList<String> allTables = new ArrayList<>();
@@ -391,7 +391,7 @@ public class Server {
             }
         }
         public static void playedJoinedLobby(Server server, LobbyPlayer player) {
-            broadCast(server, "playerJoinedLobby " + player.id + " " + player.playerName);
+            broadCast(server, "playerJoinedLobby " + player.id + " \"" + player.playerName + "\"");
         }
         public static void playerLeftLobby(Server server, LobbyPlayer player) {
             broadCast(server, "playerLeftLobby " + player.id);

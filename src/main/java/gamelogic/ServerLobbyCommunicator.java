@@ -73,9 +73,7 @@ public class ServerLobbyCommunicator {
         // Receive all information about the lobby
         getInit: while (true) {
             String input = socketReader.readLine();
-            System.out.println("Read " + input  + " from server");
             String[] tokens = UpiUtils.tokenize(input).get();
-            System.out.println("Parsed tokens " + Arrays.toString(tokens) + " from server");
 
             switch (tokens[0]) {
                 case "lobbySent":

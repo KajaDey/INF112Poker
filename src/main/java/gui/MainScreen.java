@@ -120,6 +120,7 @@ public class MainScreen {
                 return null;
             }
             window.close();
+            System.out.println("Name entered: " + nameIn.getText());
             ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), gameType, gameController);
             return null;
         };

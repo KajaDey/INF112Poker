@@ -80,6 +80,7 @@ public class NetworkClient implements GameClient {
             return "";
         }
         Optional<String[]> tokens = UpiUtils.tokenize(input);
+        System.out.println("Got name command " + input + " from client, tokens: " + Arrays.toString(tokens.get()));
         if (!tokens.isPresent() || tokens.get().length <= 1 || !tokens.get()[0].equals("playerName")) {
             System.out.println("Got illegal name command \"" + input + "\" from client, returning blank");
             return "";
@@ -89,13 +90,14 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
-        for (Integer key : names.keySet()) {
-            if (names.get(key).contains(" ")) {
-                System.out.println("Found name containing space, removing space");
-                names.put(key, names.get(key).replace(" ", ""));
+        Map<Integer, String> namesForSending = new HashMap<>(names);
+        for (Integer key : namesForSending.keySet()) {
+            if (namesForSending.get(key).contains(" ")) {
+                System.out.println("Found name containing space, wrapping in quotation marks");
+                namesForSending.put(key, "\"" + namesForSending.get(key) + "\"");
             }
         }
-        writeToSocket("playerNames " + UpiUtils.mapToString(names));
+        writeToSocket("playerNames " + UpiUtils.mapToString(namesForSending));
 
     }
 

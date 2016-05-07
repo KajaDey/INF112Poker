@@ -3,6 +3,7 @@ package gamelogic;
 import gui.GameSettings;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Various utility methods for converting between objects and upi-compatible strings representations
@@ -91,9 +92,13 @@ public class UpiUtils {
         if (parsingQuote) {
             return Optional.empty();
         }
-        else if (tokenStartIndex < input.length() && !Character.isWhitespace(input.charAt(tokenStartIndex))) {
+        else if (tokenStartIndex < input.length() && !Character.isWhitespace(input.charAt(tokenStartIndex)) && input.charAt(tokenStartIndex) != '\"') {
             tokens.add(input.substring(tokenStartIndex));
         }
+        tokens = tokens.stream().map(String::trim)
+                .filter(s -> s.length() > 0)
+                .filter(s -> s.length() > 1 || Character.isLetterOrDigit(s.charAt(0)))
+                .collect(Collectors.toList());
         return Optional.of(tokens.toArray(new String[tokens.size()]));
 
     }

@@ -52,7 +52,6 @@ public class ServerGameCommunicator {
 
         while (true) {
             input = socketReader.readLine();
-            System.out.println("Client " + playerName + ": Received command " + input);
 
             String[] tokens = UpiUtils.tokenize(input).get();
             if (tokens.length == 0) {
@@ -60,7 +59,7 @@ public class ServerGameCommunicator {
             }
             switch (tokens[0]) {
                 case "getName":
-                    socketWriter.write("playerName " + playerName + "\n");
+                    socketWriter.write("playerName \"" + playerName + "\"\n");
                     socketWriter.flush();
                     break;
                 case "newHand":
