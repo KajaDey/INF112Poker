@@ -123,7 +123,7 @@ public class LobbyScreen {
         privateGameCheckbox.setLayoutY(350);
         privateGameCheckbox.setOnAction(e -> privateGameCheckboxListener(privateGameCheckbox.isSelected()));
 
-        Label gameName = ObjectStandards.makeLabelForHeadLine("Andy's game!");
+        Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.playerIds.get(0)) + "'s game!");
         gameName.setLayoutX(325);
         gameName.setLayoutY(0);
 
