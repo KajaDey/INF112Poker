@@ -50,31 +50,26 @@ public class NetworkClient implements GameClient {
     @Override
     public Decision getDecision(long timeToThink) {
         long startTime = System.currentTimeMillis();
-        while (startTime + timeToThink > System.currentTimeMillis()) {
-            try {
-                socketOutput.write("getDecision " + timeToThink + "\n");
-                socketOutput.flush();
-                break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+
+        if (!writeToSocket("getDecision " + timeToThink)) {
+            System.out.println("Failed to ask " + this + " for decision, folding...");
+            return Decision.fold;
         }
-        while (startTime + timeToThink > System.currentTimeMillis()) {
-            try {
-                String input = socketInput.readLine();
-                Optional<Decision> decision = ServerGameCommunicator.parseDecision(input);
-                if (!decision.isPresent()) {
-                    System.out.println("Server received incorrectly formatted decision " + input + ", folding");
-                    return Decision.fold;
-                } else {
-                    return decision.get();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        try {
+            String input = socketInput.readLine();
+            Optional<Decision> decision = ServerGameCommunicator.parseDecision(input);
+            if (!decision.isPresent()) {
+                System.out.println("Server received incorrectly formatted decision " + input + ", folding");
+                return Decision.fold;
+            } else {
+                return decision.get();
             }
+        } catch (IOException e) {
+            System.out.println("Failed to read decision from socket of " + this + ", folding...");
+            return Decision.fold;
         }
-        System.out.println("Couldn't get decision from client, returning fold");
-        return Decision.fold;
     }
 
     @Override
@@ -197,20 +192,60 @@ public class NetworkClient implements GameClient {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Failed to close socket " + socket + " of " + this);
         }
     }
 
     /**
-     * Writes the output to the socket, terminating the line and flushing the socket
+     * Called whenever a write to a player fails. For now, this drops the player from the server,
+     * but in the future this should probably buffer up outstanding writes, and try to send them
+     * again for a while.
+     * @param player
+     * @param message
      */
-    private void writeToSocket(String output) {
-        try {
-            socketOutput.write(output + "\n");
-            socketOutput.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+    /*private void failedToWriteToPlayer(String message) {
+        System.out.println("Failed to write to client " + this + ", dropping player.");
+        this.removeClient(player.id);
+    }*/
+
+    /**
+     * Writes the output to the socket, terminating the line and flushing the socket
+     * If the write fails, it will try to re-write for 5 seconds, before giving up
+     * @param output
+     * @return True if the write succeeded, false if it failed.
+     */
+    private boolean writeToSocket(String output) {
+        if (socket.isClosed() || !socket.isConnected()) {
+            System.out.println("Socket for " + this + " is not connected, cannot do write");
+            return false;
         }
+        int attempts = 5;
+        for (int i = 0; i < attempts; i++) {
+            try {
+                socketOutput.write(output + "\n");
+            }
+            catch (IOException e) {
+                System.out.println("Failed to write \"" + output + "\" to " + this + ", retry #" + i);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e1) {
+                }
+                continue;
+            }
+            try {
+                socketOutput.flush();
+                return true;
+            } catch (IOException e) {
+                System.out.println("Failed to flush socket. Couldn't write " + output);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "{ NetworkClient, id " + playerId + " }";
     }
 
     /**
