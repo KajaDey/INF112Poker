@@ -167,7 +167,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void playerBust(int playerID, int rank) {
-
+        writeToSocket("playerBust " + playerID + " " + rank);
     }
 
     @Override
@@ -237,7 +237,7 @@ public class NetworkClient implements GameClient {
                 socketOutput.flush();
                 return true;
             } catch (IOException e) {
-                System.out.println("Failed to flush socket. Couldn't write \"" + output + "\" to " + this + ". (" + outstandingWrites.size() + " outstand writes waiting");
+                System.out.println("Failed to flush socket after writing \"" + output + "\" to " + this + ". (" + outstandingWrites.size() + " outstand writes waiting)");
                 return false;
             }
         }

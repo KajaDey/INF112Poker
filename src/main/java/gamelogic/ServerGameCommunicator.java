@@ -136,6 +136,11 @@ public class ServerGameCommunicator {
                     assert gameClient.isPresent();
                     gameClient.get().setRiver(parseCard(tokens[1]));
                     break;
+                case "playerBust":
+                    assert gameClient.isPresent();
+                    assert tokens.length >= 3;
+                    gameClient.get().playerBust(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+                    break;
                 case "getDecision": {
                     assert gameClient.isPresent();
                     Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));

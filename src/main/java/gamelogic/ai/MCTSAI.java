@@ -109,9 +109,9 @@ public class MCTSAI implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         assert stackSizes.isPresent() : " MCTSAI was sent a decicion without first receving stacksizes";
-        assert stackSizes.get().size() == amountOfPlayers;
+        assert stackSizes.get().size() == amountOfPlayers : "MCTSAI received stackSizes for " + positions.get().size() + " players, but there are " + amountOfPlayers + " in the game";
         assert positions.isPresent() : "MCTSAI was sent a decision without receiving positions";
-        assert positions.get().size() == amountOfPlayers;
+        assert positions.get().size() == amountOfPlayers : "MCTSAI received positions for " + positions.get().size() + " players, but there are " + amountOfPlayers + " in the game";
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
         assert names.get().size() == amountOfPlayers;
         assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
