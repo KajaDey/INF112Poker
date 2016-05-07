@@ -2,9 +2,7 @@ package gamelogic;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * An implementation of upi (universal poker interface) (Specification on the docs)
@@ -19,6 +17,7 @@ public class NetworkClient implements GameClient {
     private Socket socket;
     private BufferedReader socketInput;
     private BufferedWriter socketOutput;
+    Queue<String> outstandingWrites = new LinkedList<>();
 
     /**
      * Initializes the network client, and does the upi handshake with the remote client
@@ -49,8 +48,6 @@ public class NetworkClient implements GameClient {
 
     @Override
     public Decision getDecision(long timeToThink) {
-        long startTime = System.currentTimeMillis();
-
 
         if (!writeToSocket("getDecision " + timeToThink)) {
             System.out.println("Failed to ask " + this + " for decision, folding...");
@@ -215,6 +212,7 @@ public class NetworkClient implements GameClient {
      * @return True if the write succeeded, false if it failed.
      */
     private boolean writeToSocket(String output) {
+        outstandingWrites.add(output);
         if (socket.isClosed() || !socket.isConnected()) {
             System.out.println("Socket for " + this + " is not connected, cannot do write");
             return false;
@@ -222,12 +220,15 @@ public class NetworkClient implements GameClient {
         int attempts = 5;
         for (int i = 0; i < attempts; i++) {
             try {
-                socketOutput.write(output + "\n");
+                while (!outstandingWrites.isEmpty()) {
+                    socketOutput.write(outstandingWrites.peek() + "\n");
+                    outstandingWrites.poll();
+                }
             }
             catch (IOException e) {
-                System.out.println("Failed to write \"" + output + "\" to " + this + ", retry #" + i);
+                System.out.println("Failed to write \"" + outstandingWrites.peek() + "\" to " + this + ", retry #" + i + " (" + outstandingWrites.size() + " outstand writes waiting");
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e1) {
                 }
                 continue;
@@ -236,7 +237,7 @@ public class NetworkClient implements GameClient {
                 socketOutput.flush();
                 return true;
             } catch (IOException e) {
-                System.out.println("Failed to flush socket. Couldn't write " + output);
+                System.out.println("Failed to flush socket. Couldn't write \"" + output + "\" to " + this + ". (" + outstandingWrites.size() + " outstand writes waiting");
                 return false;
             }
         }
