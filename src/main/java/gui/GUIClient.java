@@ -140,7 +140,7 @@ public class GUIClient implements GameClient {
 
         List<Integer> ids = names.keySet().stream().sorted().collect(Collectors.toList());
         for (int i = 0; i < names.size(); i++) {
-            int playerID = ids.get(ids.indexOf((this.id) + i) % names.size());
+            int playerID = ids.get((ids.indexOf(this.id) + i) % names.size());
             Platform.runLater(() -> gameScreen.insertPlayer(playerID, names.get(playerID)));
         }
     }
