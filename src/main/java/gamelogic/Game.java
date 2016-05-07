@@ -407,6 +407,7 @@ public class Game {
     private void showdown() {
         //Print all show down information to debugger
         printShowdownToDebugger();
+        displayHoleCards();
 
         ShowdownStats showdownStats = new ShowdownStats(playersStillInCurrentHand, Arrays.asList(communityCards));
         pot.handOutPot(playersStillInCurrentHand, Arrays.asList(communityCards), showdownStats);
