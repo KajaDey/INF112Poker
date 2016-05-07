@@ -172,9 +172,6 @@ public class GameController {
                     clients.put(id, networkClient);
 
                     game.addPlayer(name, id);
-                    if (guiMain.isPresent()) {
-                        guiMain.get().insertPlayer(id, name, gameSettings.getStartStack());
-                    }
                     assert !names.containsKey(id);
                     names.put(id, name);
                     GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
