@@ -4,9 +4,8 @@ import gamelogic.*;
 import gamelogic.ai.GameState;
 import javafx.application.Platform;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This client is communicating between back- and frontend
@@ -102,7 +101,7 @@ public class GUIClient implements GameClient {
     }
 
     /**
-     * TODO Javadoc anyone?? When is this used?
+     *
      * @param move
      */
     public synchronized void setDecision(Decision.Move move) { setDecision(move, 0); }
@@ -138,7 +137,12 @@ public class GUIClient implements GameClient {
     public void setPlayerNames(Map<Integer, String> names) {
         this.names = Optional.of(new HashMap<>(names));
         Platform.runLater(() ->gameScreen.setNames(names));
-        names.forEach((id, name) -> Platform.runLater(() -> gameScreen.insertPlayer(id, name)));
+
+        List<Integer> ids = names.keySet().stream().sorted().collect(Collectors.toList());
+        for (int i = 0; i < names.size(); i++) {
+            int playerID = ids.get(ids.indexOf((this.id) + i) % names.size());
+            Platform.runLater(() -> gameScreen.insertPlayer(playerID, names.get(playerID)));
+        }
     }
 
     @Override
@@ -308,7 +312,6 @@ public class GUIClient implements GameClient {
      * @param message The message to be printed
      */
     public void printToLogField(String message) {
-
         Platform.runLater(() -> gameScreen.printToLogField(message));
     }
 

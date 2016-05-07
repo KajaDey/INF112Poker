@@ -71,7 +71,6 @@ public class LobbyScreen {
 
         try {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
-//            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, InetAddress.getLocalHost());
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
             displayErrorMessage(e.toString());
@@ -322,6 +321,10 @@ public class LobbyScreen {
         displayGameInfo(tables.get(tableID));
     }
 
+    /**
+     *  Display an error message in a new window if client cannot connect to server
+     * @param error The error message to display
+     */
     public void displayErrorMessage(String error){
         System.err.println("Cant connect to server");
 
