@@ -36,6 +36,7 @@ public class LobbyScreen {
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
     static Pane gameInfo;
+    static Label player;
     private ServerLobbyCommunicator serverLobbyCommunicator;
     private Map<Integer, LobbyTable> tables;
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
@@ -88,8 +89,8 @@ public class LobbyScreen {
         VBox vBox = new VBox();
         HBox hBox = new HBox();
 
-        Label names = ObjectStandards.makeStandardLabelWhite("Table " + table.id,"");
-        Label player = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
+        Label names = ObjectStandards.makeStandardLabelWhite("Table " ,"");
+        player = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
         vBox.setStyle(styling);
@@ -115,6 +116,7 @@ public class LobbyScreen {
      */
     public void displayGameInfo(LobbyTable table) {
         gameInfo.getChildren().clear();
+        updatePlayer(table);
 
         CheckBox privateGameCheckbox = new CheckBox("Private game");
         privateGameCheckbox.setFont(new Font("Areal", 15));
@@ -123,7 +125,7 @@ public class LobbyScreen {
         privateGameCheckbox.setLayoutY(350);
         privateGameCheckbox.setOnAction(e -> privateGameCheckboxListener(privateGameCheckbox.isSelected()));
 
-        Label gameName = ObjectStandards.makeLabelForHeadLine("Andy's game!");
+        Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.playerIds.get(0)) + "'s game!");
         gameName.setLayoutX(325);
         gameName.setLayoutY(0);
 
@@ -247,7 +249,7 @@ public class LobbyScreen {
 
     }
     public void settingsButtonListener(LobbyTable table) {
-        //Implement
+        //TODO:Implement
     }
 
     /**
@@ -354,4 +356,9 @@ public class LobbyScreen {
         errorMessage.show();
 
     }
+
+    public void updatePlayer(LobbyTable table){
+        player.setText(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers());
+    }
+
 }

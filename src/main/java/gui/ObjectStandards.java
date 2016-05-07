@@ -98,7 +98,6 @@ public class ObjectStandards {
         button.setStyle(styling);
 
         return button;
-
     }
 
     /**
@@ -109,7 +108,6 @@ public class ObjectStandards {
     public static Label makeLabelForHeadLine(String name){
         Label label = new Label(name);
         Insets padding = new Insets(20,20,20,20);
-
         label.setFont(new Font("Areal", 30));
         label.setPadding(padding);
         label.setTextFill(Color.web("#ffffff"));
@@ -133,6 +131,24 @@ public class ObjectStandards {
         label.setFont(standardFont);
         label.setPadding(standardPadding);
         label.setTextFill(Color.web("#ffffff"));
+        label.setEffect(dropShadow);
+
+        return label;
+    }
+
+    /**
+     * Makes a standard label where the text color is white
+     * @param name The name of the label
+     * @return The created label
+     */
+    public static Label makeErrorLabelRed(String name){
+        Label label = new Label(name);
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(0,0,0,0);
+
+        label.setFont(standardFont);
+        label.setPadding(standardPadding);
+        label.setTextFill(Color.RED);
         label.setEffect(dropShadow);
 
         return label;

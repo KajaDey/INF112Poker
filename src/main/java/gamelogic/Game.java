@@ -79,7 +79,6 @@ public class Game {
     public void playGame() {
         lastBlindRaiseTime = System.currentTimeMillis();
 
-        Gameloop:
         while(numberOfPlayersWithChipsLeft() > 1) {
             GUIMain.debugPrintln("\nNew hand");
             //Tell all clients that a new hand has started and update all players stack sizes
@@ -107,7 +106,6 @@ public class Game {
         refreshAllStackSizes();
 
         gameOver();
-        return;
     }
 
     /**
@@ -388,7 +386,7 @@ public class Game {
         updateBlindIndexes();
 
         //Add players to orderedListOfPlayersStillPlaying in order SB, BB ...
-        List<Player> orderedListOfPlayersStillPlaying = new ArrayList<Player>();
+        List<Player> orderedListOfPlayersStillPlaying = new ArrayList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
             Player player = players[(smallBlindIndex + i) % numberOfPlayers];
             if (player.getStackSize() > 0) {

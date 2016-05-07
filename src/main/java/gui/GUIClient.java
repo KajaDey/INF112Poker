@@ -30,6 +30,7 @@ public class GUIClient implements GameClient {
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
     private int id;
+    private boolean playersSeated = false;
 
     public GUIClient(int id, GameScreen gameScreen) {
         this.id = id;
@@ -137,12 +138,6 @@ public class GUIClient implements GameClient {
     public void setPlayerNames(Map<Integer, String> names) {
         this.names = Optional.of(new HashMap<>(names));
         Platform.runLater(() ->gameScreen.setNames(names));
-
-        List<Integer> ids = names.keySet().stream().sorted().collect(Collectors.toList());
-        for (int i = 0; i < names.size(); i++) {
-            int playerID = ids.get(ids.indexOf((this.id) + i) % names.size());
-            Platform.runLater(() -> gameScreen.insertPlayer(playerID, names.get(playerID)));
-        }
     }
 
     @Override
@@ -283,8 +278,16 @@ public class GUIClient implements GameClient {
      */
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
-        this.positions = Optional.of(new HashMap<>());
-        positions.forEach((id, pos) -> this.positions.get().put(id, pos));
+        if (!playersSeated) {
+            List<Integer> ids = positions.keySet().stream().sorted((i,j) -> positions.get(i).compareTo(positions.get(j))).collect(Collectors.toList());
+            for (int i = 0; i < positions.size(); i++) {
+                int playerID = ids.get((ids.indexOf(this.id) + i) % positions.size());
+                Platform.runLater(() -> gameScreen.insertPlayer(playerID, this.names.get().get(playerID)));
+            }
+            playersSeated = true;
+        }
+
+        this.positions = Optional.of(new HashMap<>(positions));
         Platform.runLater(() -> gameScreen.setPositions(positions));
     }
 

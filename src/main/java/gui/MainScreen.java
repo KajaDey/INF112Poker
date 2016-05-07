@@ -111,9 +111,11 @@ public class MainScreen {
             try {
                 if (IPIn.getText() == null || IPIn.getText().isEmpty())
                     inetAddress = InetAddress.getLocalHost();
-                else
+                else {
                     inetAddress = InetAddress.getByName(IPIn.getText());
+                }
             } catch (UnknownHostException ex) {
+                System.out.println("Invalid IP-address");
                 // TODO show error message next to textfield
                 return null;
             }
