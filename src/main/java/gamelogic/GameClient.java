@@ -48,7 +48,9 @@ public interface GameClient {
      * After a showdown, the client receives the hole cards of all the players still in the hand,
      * as a map indexed by the players' IDs
      */
-    void showdown(ShowdownStats showdownStats);
+    //void showdown(ShowdownStats showdownStats);
+
+    void showdown(String[] winnerStrings);
 
     /**
      * Sends the value of big blind

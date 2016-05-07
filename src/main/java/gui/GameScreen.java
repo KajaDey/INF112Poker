@@ -94,7 +94,6 @@ public class GameScreen {
      *
      * @param userID Users ID
      * @param name Users name
-     * @param stackSize Initial stack size
      * @return True if the player was seated
      */
     public boolean insertPlayer(int userID, String name) {
@@ -265,6 +264,25 @@ public class GameScreen {
         }
 
         String winnerString = showdownStats.getWinnerText();
+        boardLayout.setWinnerLabel(winnerString);
+
+        //Print all community cards to in-game log
+        printCommunityCardsToLogField();
+        printToLogField(winnerString);
+    }
+
+    /**
+     * Shows the cards of the players around the table
+     */
+    public void showdown(Map<Integer, Card[]> holeCardsToShowdown, String winnerString) {
+        //List<Player> playersToShowdown = showdownStats.getAllPlayers();
+        printToLogField(holeCardsToShowdown.size() + " players to showdown");
+
+        holeCardsToShowdown.forEach((id, cards) -> {
+            //Print the players hand
+            printToLogField(names.get(id) + ": " + cards[0] + " " + cards[1]);
+        });
+
         boardLayout.setWinnerLabel(winnerString);
 
         //Print all community cards to in-game log

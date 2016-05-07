@@ -130,8 +130,13 @@ public class MCTSAI implements GameClient {
         }
     }
 
+    //@Override
+    /*public void showdown(ShowdownStats showdownStats) {
+
+    }*/
+
     @Override
-    public void showdown(ShowdownStats showdownStats) {
+    public void showdown(String[] winnerStrings) {
 
     }
 

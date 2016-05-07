@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,12 +73,15 @@ public class ServerLobbyCommunicator {
         // Receive all information about the lobby
         getInit: while (true) {
             String input = socketReader.readLine();
-            String[] tokens = input.split("\\s+");
+            System.out.println("Read " + input  + " from server");
+            String[] tokens = UpiUtils.tokenize(input).get();
+            System.out.println("Parsed tokens " + Arrays.toString(tokens) + " from server");
 
             switch (tokens[0]) {
                 case "lobbySent":
                     break getInit;
                 case "yourId":
+                    assert tokens.length > 1 : "Couldn't parse " + input;
                     System.out.println("Received id " + tokens[1] + " from server");
                     this.lobbyScreen.setID(Integer.parseInt(tokens[1]));
                     break;
@@ -116,7 +120,7 @@ public class ServerLobbyCommunicator {
                     e.printStackTrace();
                     return;
                 }
-                String[] tokens = input.split("\\s+");
+                String[] tokens = UpiUtils.tokenize(input).get();
                 switch (tokens[0]) {
                     case "startGame":
                         goToGameScreen();

@@ -79,12 +79,12 @@ public class NetworkClient implements GameClient {
             System.out.println("Failed to get name from client, returning blank");
             return "";
         }
-        String[] tokens = input.split("\\s+");
-        if (tokens.length < 1 || !tokens[0].equals("playerName")) {
+        Optional<String[]> tokens = UpiUtils.tokenize(input);
+        if (!tokens.isPresent() || tokens.get().length <= 1 || !tokens.get()[0].equals("playerName")) {
             System.out.println("Got illegal name command \"" + input + "\" from client, returning blank");
             return "";
         }
-        return tokens[1];
+        return tokens.get()[1];
     }
 
     @Override
@@ -95,18 +95,18 @@ public class NetworkClient implements GameClient {
                 names.put(key, names.get(key).replace(" ", ""));
             }
         }
-        writeToSocket("playerNames " + mapToString(names));
+        writeToSocket("playerNames " + UpiUtils.mapToString(names));
 
     }
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        writeToSocket("setHand " + userID + " " + cardsToString(card1, card2));
+        writeToSocket("setHand " + userID + " " + UpiUtils.cardsToString(card1, card2));
     }
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        writeToSocket("stackSizes " + mapToString(stackSizes));
+        writeToSocket("stackSizes " + UpiUtils.mapToString(stackSizes));
     }
 
     @Override
@@ -115,9 +115,17 @@ public class NetworkClient implements GameClient {
                 + ServerGameCommunicator.decisionToString(decision));
     }
 
-    @Override
+    /*@Override
     public void showdown(ShowdownStats showdownStats) {
 
+    }*/
+
+    @Override
+    public void showdown(String[] winnerStrings) {
+        System.out.println("Gamecontroller sent winnerStrings " + Arrays.toString(winnerStrings));
+        String winnerString = Arrays.stream(winnerStrings).map(s -> " \"" + s + "\"").reduce("", String::concat).trim();
+        System.out.println("sending winnerString to clients: --" + winnerString + "--");
+        writeToSocket("showdown " + winnerString);
     }
 
     @Override
@@ -132,7 +140,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void setPositions(Map<Integer, Integer> setPositions) {
-        writeToSocket("playerPositions " + mapToString(setPositions));
+        writeToSocket("playerPositions " + UpiUtils.mapToString(setPositions));
     }
 
     @Override
@@ -147,17 +155,17 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void setFlop(Card card1, Card card2, Card card3) {
-        writeToSocket("setFlop " + cardsToString(card1, card2, card3));
+        writeToSocket("setFlop " + UpiUtils.cardsToString(card1, card2, card3));
     }
 
     @Override
     public void setTurn(Card turn) {
-        writeToSocket("setTurn " + cardsToString(turn));
+        writeToSocket("setTurn " + UpiUtils.cardsToString(turn));
     }
 
     @Override
     public void setRiver(Card river) {
-        writeToSocket("setRiver " + cardsToString(river));
+        writeToSocket("setRiver " + UpiUtils.cardsToString(river));
     }
 
     @Override
@@ -247,23 +255,5 @@ public class NetworkClient implements GameClient {
     @Override
     public String toString() {
         return "{ NetworkClient, id " + playerId + " }";
-    }
-
-    /**
-     * Converts a list of cards into a upi-compatible string
-     */
-    public static String cardsToString(Card ... cards) {
-        return Arrays.stream(cards)
-                .map(card -> card.suit.name().toLowerCase() + card.rank + " ")
-                .reduce("", String::concat);
-    }
-
-    /**
-     * Converts a map into a upi-compatible string
-     */
-    public static <K, V> String mapToString(Map<K, V> map) {
-        return map.keySet().stream()
-                    .map(key -> key.toString() + " " + map.get(key).toString() + " ")
-                    .reduce("", String::concat);
     }
 }

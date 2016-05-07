@@ -62,6 +62,6 @@ public class ShowdownStats {
             HandCalculator hc = new HandCalculator(winningHand);
             printable += " with " + hc.getBestHandString().toLowerCase() + "\n";
         }
-        return printable;
+        return printable.trim();
     }
 }

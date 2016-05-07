@@ -322,9 +322,10 @@ public class GameController {
      * @param showdownStats Information about pot (and side pots) and who won
      */
     public void showdown(ShowdownStats showdownStats) {
+        String[] tokens = UpiUtils.tokenize("\"" + showdownStats.getWinnerText().replace("\n", "\" \"") + "\"").get();
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(showdownStats);
+            c.showdown(tokens);
         }
     }
 

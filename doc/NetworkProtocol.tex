@@ -79,7 +79,10 @@ Sends the turn card to the client. See section ``decision and card formats'' for
 Sends the river card to the client. See section ``decision and card formats'' for the format for cards.
 
 \subsection{playerBust <id> <rank>}
-Sent when a player is busted (is out of the game). Also sends the position the player lost in.  
+Sent when a player is busted (is out of the game). Also sends the position the player lost in.
+
+\subsection{showdown <line1> <line2> ... }
+Sent after a showdown, sending n lines of text describing who won the pot and any side pots. These are meant to displayed in the middle of the GUI.
 
 \subsection*{getDecision \textlangle{}timeToThink\textrangle{}}
 It's the client's turn, and the server is asking for a decision. The server expect a decision command in return. The timeToThink field is the time the client has to think, in milliseconds. If the client does not return a decision in time, the server may give the client a ``default'' decision, or otherwise override the client's wishes.

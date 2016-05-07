@@ -110,7 +110,7 @@ public class Server {
 
         lobbyPlayers.forEach(p -> {
             p.write("tableCreated " + tableID);
-            p.write("tableSettings " + tableID + " " + table.settingsToString());
+            p.write("tableSettings " + tableID + " " + UpiUtils.settingsToString(table.settings));
             p.write("playerJoinedTable " + host.id + " " + tableID);
         });
     }
@@ -200,7 +200,7 @@ public class Server {
 
                     if (line == null)
                         break;
-                    String [] tokens = line.split("\\s+");
+                    String [] tokens = UpiUtils.tokenize(line).get();
                     if (tokens.length <= 0) {
                         receivedIllegalCommandFrom(this, line);
                         continue;
@@ -409,7 +409,7 @@ public class Server {
             broadCast(server, "tableDeleted " + table.tableID);
         }
         public static void tableSettings(Server server, LobbyTable table) {
-            broadCast(server, "tableSettings " + table + table.settingsToString());
+            broadCast(server, "tableSettings " + table + UpiUtils.settingsToString(table.settings));
         }
     }
 
@@ -481,16 +481,6 @@ public class Server {
 
 
         /**
-         * Convert settings of this table to a string matching the Lobby Protocol
-         * @return <<setting1, value1> <setting2, value2> ... >
-         */
-        public String settingsToString() {
-            return String.format("maxNumberOfPlayers %d startStack %d smallBlind %d bigBlind %d levelDuration %d",
-                    settings.getMaxNumberOfPlayers(), settings.getStartStack(), settings.getSmallBlind(), settings.getBigBlind(),
-                    settings.getLevelDuration()).trim();
-        }
-
-        /**
          *  Return a string of all the players seated at this table, matching the Lobby Protocol
          * @return <<id1<id2> ... >
          */
@@ -505,7 +495,7 @@ public class Server {
          * @return Return a string confirming to the Lobby Protocol (used when sending table info to clients)
          */
         public String toString() {
-            return ("table " + tableID + " settings " + settingsToString() + " players " + playerIDsString()).trim();
+            return ("table " + tableID + " settings " + UpiUtils.settingsToString(this.settings) + " players " + playerIDsString()).trim();
         }
     }
 

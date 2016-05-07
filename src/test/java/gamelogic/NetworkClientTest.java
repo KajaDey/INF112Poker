@@ -119,6 +119,6 @@ public class NetworkClientTest {
         HashMap<Integer, String> map = new HashMap<>();
         map.put(0, "Morten");
         map.put(1, "Kristian");
-        assertEquals("0 Morten 1 Kristian", NetworkClient.mapToString(map).trim());
+        assertEquals("0 Morten 1 Kristian", UpiUtils.mapToString(map).trim());
     }
 }

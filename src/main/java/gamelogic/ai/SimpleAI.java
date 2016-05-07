@@ -210,8 +210,13 @@ public class SimpleAI implements GameClient {
         }
     }
 
-    @Override
+    //@Override
     public void showdown(ShowdownStats showdownStats) { }
+
+    @Override
+    public void showdown(String[] winnerStrings) {
+
+    }
 
     @Override
     public void setBigBlind(long bigBlind) {

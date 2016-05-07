@@ -4,6 +4,7 @@ import gui.GUIMain;
 import gui.GameSettings;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public class ServerGameCommunicator {
             input = socketReader.readLine();
             System.out.println("Client " + playerName + ": Received command " + input);
 
-            String[] tokens = input.split("\\s+");
+            String[] tokens = UpiUtils.tokenize(input).get();
             if (tokens.length == 0) {
                 throw new IOException("Received empty command \"" + input + "\" from server");
             }
@@ -140,6 +141,12 @@ public class ServerGameCommunicator {
                     assert gameClient.isPresent();
                     assert tokens.length >= 3;
                     gameClient.get().playerBust(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+                    break;
+                case "showdown":
+                    assert gameClient.isPresent();
+                    String[] lines = Arrays.copyOfRange(tokens, 1, tokens.length);
+                    System.out.println("Sending " + Arrays.toString(lines) + " to the client");
+                    gameClient.get().showdown(lines);
                     break;
                 case "getDecision": {
                     assert gameClient.isPresent();
