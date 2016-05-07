@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.NoSuchElementException;
 
 /**
  * This class i made to read a replay file from a previous game.
@@ -77,10 +78,9 @@ public class ReplayReader {
             }
             GUIMain.debugPrint("Uploaded replay without problems");
         }
-        catch (IOException e){
+        catch (IOException | NoSuchElementException | IllegalArgumentException e){
             System.out.println("Error while uploading replay \n" + e);
         }
-
     }
 
     /**
