@@ -152,7 +152,7 @@ public class Server {
         String playerName;
         BufferedReader reader;
         BufferedWriter writer;
-        boolean listening = false;
+        private boolean readyToStartGame = false; // Whether the player's table has been started
 
         public LobbyPlayer(Socket s, int id) {
             this.socket = s;
@@ -192,13 +192,11 @@ public class Server {
                 while(true) {
                     String line;
                     try {
-                        listening = true;
                         line = reader.readLine();
                     } catch (IOException e) {
                         failedToReadFromPlayer(this);
                         return;
                     }
-                    listening = false;
 
                     if (line == null)
                         break;
@@ -207,11 +205,21 @@ public class Server {
                         receivedIllegalCommandFrom(this, line);
                         continue;
                     }
+                    System.out.println("Client " + this.id + ": " + line);
                     try {
                         switch (tokens[0]) {
                             case "quit":
                                 removeClient(id);
                                 return;
+                            case "upi":
+                                if (readyToStartGame) {
+                                    System.out.println("Lobby received upi from #" + this.id + " (" + this.playerName + ")");
+                                    return;
+                                }
+                                else {
+                                    System.out.println("Untimely upi command, " + line);
+                                    break;
+                                }
                             case "takeseat": {
                                 if (tokens.length <= 1) {
                                     receivedIllegalCommandFrom(this, line);
@@ -259,11 +267,12 @@ public class Server {
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
                                         LobbyTable t = lobbyTables.get(tableID);
-                                        t.startGame();
-                                        t.delete();
+                                        new Thread(() -> t.startGame()).start();
+                                        // t.delete(); //TODO should not delete table, but rather do special "gameStarted" logic
                                     }
                                 }
-                                return;
+                                // Do not return. Only return when you receive upi handshake
+                                break;
                             }
                             case "deletetable":
                                 if (tokens.length <= 1) {
@@ -436,11 +445,20 @@ public class Server {
             this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
 
-            this.seatedPlayers.forEach(player -> player.write("startGame"));
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
+            System.out.println("Starting game for " + seatedPlayers.toString());
             seatedPlayers.forEach(p -> {
-                if (p.listening)
-                    p.listener.interrupt();
+                p.readyToStartGame = true;
+            });
+
+            this.seatedPlayers.forEach(player -> player.write("startGame"));
+            seatedPlayers.forEach(p -> {
+                try {
+                    // Wait for all lobby listeners to get upi handshake
+                    p.listener.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             });
             try {
                 gameController.initGame(false, sockets);

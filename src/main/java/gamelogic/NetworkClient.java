@@ -34,7 +34,8 @@ public class NetworkClient implements GameClient {
         socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
         System.out.println("Waiting for upi handshake");
-        String input = socketInput.readLine();
+        //String input = socketInput.readLine();
+        String input = "upi"; // Pretend the upi handshake was received by the lobby
 
         if (input != null && input.startsWith("upi")) {
             System.out.println("Got upi from player " + playerId);
