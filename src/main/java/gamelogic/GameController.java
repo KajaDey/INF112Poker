@@ -65,7 +65,7 @@ public class GameController {
     /**
      * Called when the enter button is clicked.
      * Checks valid number of players, then makes GUI show the lobby screen
-     * @param name
+     * @param name Players name
      */
     public void enterButtonClicked(String name, InetAddress IPAddress, MainScreen.GameType gameType) {
         //Tell GUI to display Lobby
@@ -232,9 +232,7 @@ public class GameController {
      */
     private void initClients() {
         setBlinds();
-        for (Integer clientID : clients.keySet()) {
-            clients.get(clientID).setPlayerNames(new HashMap<>(names));
-        }
+        clients.forEach((id, client) -> client.setPlayerNames(new HashMap<>(names)));
         game.refreshAllStackSizes();
     }
 
@@ -242,10 +240,10 @@ public class GameController {
      * Sends the blinds to all the clients
      */
     public void setBlinds() {
-        for (int clientID : clients.keySet()) {
-            clients.get(clientID).setBigBlind(gameSettings.getBigBlind());
-            clients.get(clientID).setSmallBlind(gameSettings.getSmallBlind());
-        }
+        clients.forEach((id, client) -> {
+            client.setSmallBlind(gameSettings.getSmallBlind());
+            client.setBigBlind(gameSettings.getBigBlind());
+        });
     }
 
     /**
@@ -266,8 +264,7 @@ public class GameController {
 
     /**
      *  Get a decision from an AI-client
-     * @param aiClient
-     * @return
+     *  @return Decision made by AI
      */
     private Decision getAIDecision(GameClient aiClient) {
         long startTime = System.currentTimeMillis();
@@ -282,7 +279,7 @@ public class GameController {
 
     /**
      * Sleeps the thread for given amount of time
-     * @param delayTime
+     * @param delayTime Time to delay for
      */
     public void delay(long delayTime) {
         System.out.println("Delay");
@@ -303,15 +300,11 @@ public class GameController {
 
     /**
      * Tells each client that it is time for show down, and pass the necessary information about the showdown
-     *
      * @param showdownStats Information about pot (and side pots) and who won
      */
     public void showdown(ShowdownStats showdownStats) {
         String[] tokens = UpiUtils.tokenize("\"" + showdownStats.getWinnerText().replace("\n", "\" \"") + "\"").get();
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.showdown(tokens);
-        }
+        clients.forEach((id, client) -> client.showdown(tokens));
     }
 
     /**
@@ -338,10 +331,7 @@ public class GameController {
      * @param decision The decision that was made
      */
     public void setDecisionForClient(int userID, Decision decision) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.playerMadeDecision(userID, decision);
-        }
+        clients.forEach((id, client) -> client.playerMadeDecision(userID, decision));
     }
 
     /**
@@ -352,10 +342,7 @@ public class GameController {
      * @param card3 Card three in the flop
      */
     public void setFlop(Card card1, Card card2, Card card3) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.setFlop(card1, card2, card3);
-        }
+        clients.forEach((id, client) -> client.setFlop(card1, card2, card3));
     }
 
     /**
@@ -364,10 +351,7 @@ public class GameController {
      * @param turn Card displayed in the turn
      */
     public void setTurn(Card turn) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.setTurn(turn);
-        }
+        clients.forEach((id, client) -> client.setTurn(turn));
     }
 
     /**
@@ -376,10 +360,7 @@ public class GameController {
      * @param river Card displayed in the river
      */
     public void setRiver(Card river) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.setRiver(river);
-        }
+        clients.forEach((id, client) -> client.setRiver(river));
     }
 
     /**
@@ -388,21 +369,17 @@ public class GameController {
      * @param stackSizes Map of player ID mapped to his stack size
      */
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient c = clients.get(clientID);
-            c.setAmountOfPlayers(stackSizes.size());
-            c.setStackSizes(new HashMap<>(stackSizes));
-        }
+        clients.forEach((id, client) -> {
+            client.setAmountOfPlayers(stackSizes.size());
+            client.setStackSizes(new HashMap<>(stackSizes));
+        });
     }
 
     /**
      * Makes each client start a new hand.
      */
     public void startNewHand() {
-        for (Integer clientID : clients.keySet()) {
-            GameClient client = clients.get(clientID);
-            client.startNewHand();
-        }
+        clients.forEach((id, client) -> client.startNewHand());
     }
 
     /**
@@ -411,10 +388,7 @@ public class GameController {
      * @param stats The statistics of players
      */
     public void gameOver(Statistics stats) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient client = clients.get(clientID);
-            client.gameOver(stats);
-        }
+        clients.forEach((id, client) -> client.gameOver(stats));
     }
 
     /**
@@ -422,10 +396,7 @@ public class GameController {
      * @param positions Positions of the players, indexed by their IDs
      */
     public void setPositions(Map<Integer, Integer> positions) {
-        for (Integer clientID : clients.keySet()) {
-            GameClient client = clients.get(clientID);
-            client.setPositions(positions);
-        }
+        clients.forEach((id, client) -> client.setPositions(new HashMap<>(positions)));
     }
 
     /**
@@ -437,7 +408,7 @@ public class GameController {
 
     /**
      *  Called every time a hand is won before showdown (everyone but 1 player folded)
-     *  Prints a text showing who won the pot and how much it was. Also prints to logfield
+     *  Prints a text showing who won the pot and how much it was. Also prints to log field
      */
     public void preShowdownWinner(int winnerID) {
         clients.forEach((id, client) -> client.preShowdownWinner(winnerID));
@@ -447,8 +418,7 @@ public class GameController {
      * @param rank Place the busted player finished in
      */
     public void bustClient(int bustPlayerID, int rank) {
-        for (Integer clientID : clients.keySet())
-            clients.get(clientID).playerBust(bustPlayerID, rank);
+        clients.forEach((id, client) -> client.playerBust(bustPlayerID, rank));
 
         GameClient bustedClient = clients.get(bustPlayerID);
         if (!(bustedClient instanceof GUIClient || bustedClient instanceof NetworkClient)) {
@@ -463,9 +433,9 @@ public class GameController {
      * @param holeCards Hole cards of the players to show, indexed by playerIDs
      */
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        //guiClient.showHoleCards(holeCards); This method has been removed
-        clients.forEach((clientId, client) -> {
-            holeCards.forEach((id, cards) -> client.setHandForClient(id, cards[0], cards[1]));
-        });
+        clients.forEach((clientId, client) ->
+                holeCards.forEach((id, cards) ->
+                        client.setHandForClient(id, cards[0], cards[1]))
+        );
     }
 }
