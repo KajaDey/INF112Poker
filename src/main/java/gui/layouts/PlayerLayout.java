@@ -142,7 +142,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         dealerButtonImage = new ImageView();
         dealerButtonImage.setImage(ImageViewer.getChipImage(null));
         dealerButtonImage.setPreserveRatio(true);
-        dealerButtonImage.setFitWidth(32);
+        dealerButtonImage.setFitWidth(38);
         HBox dealerButtonBox = new HBox();
         dealerButtonBox.getChildren().addAll(dealerButtonImage);
         dealerButtonBox.setAlignment(Pos.CENTER);
