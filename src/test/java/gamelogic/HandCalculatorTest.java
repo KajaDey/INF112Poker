@@ -38,6 +38,50 @@ public class HandCalculatorTest {
     }
 
     @Test
+    public void getWinningPrecentagesTest() {
+        for (int i = 0; i < 20; i++) {
+            Deck deck = new Deck();
+            List<Card> communityCards = new ArrayList<>();
+            communityCards.add(deck.draw().get());
+            communityCards.add(deck.draw().get());
+            communityCards.add(deck.draw().get());
+
+            Map<Integer, Card[]> holeCards = new HashMap<>();
+            for (int j = 0; j < 6; j++) {
+                Card[] cards = new Card[]{deck.draw().get(), deck.draw().get()};
+                holeCards.put(j, cards);
+            }
+
+            long startTime = System.currentTimeMillis();
+            Map<Integer, Double> winningPercentages = HandCalculator.getWinningPercentages(holeCards, communityCards);
+
+            System.out.println("Found winning percentages in " + (System.currentTimeMillis() - startTime) + " ms.");
+
+            startTime = System.currentTimeMillis();
+            Map<Integer, Double> newWinningPercentages = HandCalculator.getNewWinningPercentages(holeCards, communityCards);
+            System.out.println("Found new winning percentages in " + (System.currentTimeMillis() - startTime) + " ms.");
+
+            System.out.println("Community cards: " + communityCards);
+            System.out.print("[");
+            winningPercentages.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0));
+            System.out.println("]");
+            System.out.print("[");
+            newWinningPercentages.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0));
+            System.out.println("]");
+
+        }
+    }
+
+    @Test
+    public void testSplitPot() {
+        /*
+        Community cards: [♠A, ♦Q, ♣Q]
+        [#[♥A, ♠2]: 73.87%, #[♣A, ♦5]:  8.26%, #[♥K, ♠10]: 14.56%, #[♥7, ♦9]:  0.60%, #[♣10, ♥8]:  0.45%, #[♥9, ♥J]:  2.25%, ]
+        [#[♥A, ♠2]: 48.72%, #[♣A, ♦5]: 17.95%, #[♥K, ♠10]: 15.38%, #[♥7, ♦9]: 10.26%, #[♣10, ♥8]:  0.00%, #[♥9, ♥J]:  7.69%, ]
+        */
+    }
+
+    @Test
     public void testStraightFlushReturn() throws Exception{
         holeCard1=card.of(8, Card.Suit.SPADES).get();
         holeCard2=card.of(6, Card.Suit.SPADES).get();
