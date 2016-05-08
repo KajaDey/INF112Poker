@@ -259,7 +259,6 @@ public class GameController {
             return getAIDecision(client);
         else
             return client.getDecision(20000L);
-
     }
 
     /**

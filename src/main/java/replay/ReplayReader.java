@@ -1,5 +1,8 @@
-package gamelogic;
+package replay;
 
+import gamelogic.AIType;
+import gamelogic.Card;
+import gamelogic.Decision;
 import gui.GUIMain;
 import gui.GameSettings;
 
@@ -18,15 +21,21 @@ import java.util.NoSuchElementException;
  */
 public class ReplayReader {
 
-    private static InfoType currentType = null;
+    private InfoType currentType = null;
 
-    private static ArrayDeque<Card> communityCards = new ArrayDeque<>();
-    private static ArrayDeque<Card> holdCards = new ArrayDeque<>();
-    private static ArrayDeque<String> settings = new ArrayDeque<>();
-    private static ArrayDeque<Decision> decisions = new ArrayDeque<>();
+    private ArrayDeque<String> settings = new ArrayDeque<>();
+    private ArrayDeque<Decision> decisions = new ArrayDeque<>();
+    private ArrayDeque<Card> allCards = new ArrayDeque<>();
 
     public enum InfoType{
-        COMMUNITY,HOLD,DECISION,SETTINGS
+        CARD,DECISION,SETTINGS
+    }
+
+    /**
+     * @param file The file to read from
+     */
+    public ReplayReader(File file) {
+        readFile(file);
     }
 
     /**
@@ -34,7 +43,7 @@ public class ReplayReader {
      *
      * @param file you want to watch
      */
-    public static void readFile(File file){
+    public void readFile(File file){
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             while(br.ready()){
@@ -43,10 +52,8 @@ public class ReplayReader {
 
                 switch (line) {
                     case "COMMUNITY CARDS":
-                        currentType = InfoType.COMMUNITY;
-                        break;
                     case "CARDS":
-                        currentType = InfoType.HOLD;
+                        currentType = InfoType.CARD;
                         break;
                     case "SETTINGS":
                         currentType = InfoType.SETTINGS;
@@ -57,17 +64,13 @@ public class ReplayReader {
                     default:
 
                         switch (currentType) {
-                            case COMMUNITY:
-                                communityCards.add(makeCard(line));
-                                break;
-                            case HOLD:
-                                holdCards.add(makeCard(line));
+                            case CARD:
+                                allCards.add(makeCard(line));
                                 break;
                             case SETTINGS:
                                 settings.add(line);
                                 break;
                             case DECISION:
-
                                 decisions.add(makeDecision(line));
                                 break;
                             default:
@@ -86,45 +89,35 @@ public class ReplayReader {
     /**
      * Returns the next decision made in the game.
      *
-     * @return next Decision
+     * @return next decision
      */
-    public static Decision getNextDecision(){
+    public Decision getNextDecision(){
         return decisions.pop();
     }
 
     /**
-     * Returns the next holecard
-     *
-     * @return holecard
+     * @return The next queued card (community card or hole card)
      */
-
-    public static Card getNextHold(){
-        return holdCards.pop();
+    public Card draw() {
+        return allCards.pop();
     }
 
     /**
-     * Returns the next community card
-     *
-     * @return community card
+     * @return Settings for the current game
      */
-    public static Card getNextCommunity(){
-        return communityCards.pop();
-    }
-
-    public static GameSettings getSettings(){
+    public GameSettings getSettings(){
         return new GameSettings(Long.parseLong(settings.pop()),Long.parseLong(settings.pop()),
                 Long.parseLong(settings.pop()),Integer.parseInt(settings.pop()),Integer.parseInt(settings.pop()),
                 AIType.fromString(settings.pop()),Integer.parseInt(settings.pop()));
     }
 
     /**
-     *
      * Converts a string from the replay file to a decision
      *
      * @param move from file
      * @return new decision
      */
-    private static Decision makeDecision(String move){
+    private Decision makeDecision(String move){
         String[] split = move.split(" ");
         if(split[2].equals("Allin"))
             split[2] = "ALL_IN";
@@ -144,7 +137,7 @@ public class ReplayReader {
      * @param card from file
      * @return new card
      */
-    private static Card makeCard(String card){
+    private Card makeCard(String card){
 
         String[] split = card.split("");
 

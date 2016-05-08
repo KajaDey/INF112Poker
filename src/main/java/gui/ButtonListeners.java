@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import replay.ReplayReader;
 
 import java.io.File;
 import java.io.IOException;
