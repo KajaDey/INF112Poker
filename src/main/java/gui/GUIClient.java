@@ -226,7 +226,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-
         if (!gameState.isPresent()) {
             initGameState();
         }
@@ -255,11 +254,6 @@ public class GUIClient implements GameClient {
         }
         Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
     }
-
-    //@Override
-    /*public void showdown(ShowdownStats showdownStats) {
-        Platform.runLater(() -> gameScreen.showdown(showdownStats));
-    }*/
 
     @Override
     public void showdown(String[] winnerStrings) {
@@ -331,19 +325,5 @@ public class GUIClient implements GameClient {
 
     public void preShowdownWinner(int winnerID) {
         Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
-    }
-
-    public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        // Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
-        // This is now done via setHandForClient()
-    }
-
-    /**
-     * Highlights the next player to make a move
-     * @param id ID of the acting player
-     */
-    public void highlightPlayerTurn(int id) {
-        //gameScreen.highlightPlayerTurn(id);
-        // This now done in playerMadeDecision()
     }
 }
