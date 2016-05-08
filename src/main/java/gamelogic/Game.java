@@ -179,6 +179,7 @@ public class Game {
      * @return  True if the hand continues, false if the hand is over
      */
     private boolean bettingRound(boolean isPreFlop) {
+        GUIMain.replayLogPrint("\nDECISIONS");
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
 
@@ -496,7 +497,7 @@ public class Game {
     /**
      *   Check if all the players have acted in this betting round
      *   A player is finished acting if he is all in or he matches the highest amount put on the table
-     * @return
+     *   @return True if all players are done acting this betting round
      */
     private boolean allPlayersActed() {
         int count = 0;
@@ -541,7 +542,7 @@ public class Game {
             }
         }
 
-        //Inform all clients about the udpates positions
+        //Inform all clients about the updated positions
         gameController.setPositions(new HashMap<>(positions));
     }
 
@@ -586,6 +587,7 @@ public class Game {
      * @return Array of community cards
      */
     private Card[] generateCommunityCards() {
+        GUIMain.replayLogPrint("\nCARD");
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = drawCard();
@@ -596,10 +598,10 @@ public class Game {
      * @return A random card from the deck if replay is false, the next card from the replay queue if not
      */
     private Card drawCard() {
-        if (replay)
-            return cardQueue.pop();
-        else
-            return deck.draw().get();
+        Card draw = replay ? cardQueue.pop() : deck.draw().get();
+
+        GUIMain.replayLogPrint("\n" + draw.toString());
+        return draw;
     }
 
     /**
@@ -607,10 +609,6 @@ public class Game {
      */
     private void setFlop() {
         gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
-        GUIMain.replayLogPrint("\nCARD");
-        for (Card c : communityCards)
-            GUIMain.replayLogPrint("\n"+c.toString());
-
     }
 
     /**
@@ -618,7 +616,6 @@ public class Game {
      */
     private void setTurn() {
         gameController.setTurn(communityCards[3]);
-        GUIMain.replayLogPrint("\nCARD\n"+communityCards[3].toString());
     }
 
     /**
@@ -626,7 +623,6 @@ public class Game {
      */
     private void setRiver() {
         gameController.setRiver(communityCards[4]);
-        GUIMain.replayLogPrint("\nCARD\n"+communityCards[3].toString());
     }
 
     /**
@@ -641,9 +637,7 @@ public class Game {
             p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
-            GUIMain.replayLogPrint("\n" + cards[0].toString() + "\n" + cards[1].toString());
         }
-        GUIMain.replayLogPrint("\nDECISIONS");
     }
 
     /**

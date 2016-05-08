@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * This class i made to read a replay file from a previous game.
@@ -29,7 +30,7 @@ public class ReplayReader {
     private ArrayDeque<String> names = new ArrayDeque<>();
 
     public enum InfoType{
-        NAME, CARD,DECISION,SETTINGS
+        NAMES,CARD,DECISION,SETTINGS
     }
 
     /**
@@ -61,13 +62,13 @@ public class ReplayReader {
                     case "DECISIONS":
                         currentType = InfoType.DECISION;
                         break;
-                    case "NAME":
-                        currentType = InfoType.NAME;
+                    case "NAMES":
+                        currentType = InfoType.NAMES;
                         break;
                     default:
 
                         switch (currentType) {
-                            case NAME:
+                            case NAMES:
                                 names.add(line);
                                 break;
                             case CARD:
@@ -97,8 +98,8 @@ public class ReplayReader {
      *
      * @return next decision
      */
-    public Decision getNextDecision(){
-        return decisions.pop();
+    public Optional<Decision> getNextDecision(){
+        return decisions.isEmpty() ? Optional.empty() : Optional.of(decisions.pop());
     }
 
     /**

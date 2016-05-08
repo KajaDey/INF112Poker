@@ -50,8 +50,20 @@ public class ReplayClient extends GUIClient {
     }
 
     @Override
+    /**
+     * Get decision from client (read from replayReader)
+     * @return The next decision in the replayed game, null if game ended
+     */
     public synchronized Decision getDecision(long timeToThink){
-        return replayReader.getNextDecision();
+        delay(1500);
+        Optional<Decision> decision = replayReader.getNextDecision();
+
+        if (!decision.isPresent()) {
+            delay(5000);
+            System.exit(0);
+        }
+
+        return decision.get();
     }
 
     @Override
@@ -179,6 +191,12 @@ public class ReplayClient extends GUIClient {
             super.preShowdownWinner(winnerID);
     }
 
-
+    private void delay(long delayTimeMillis) {
+        try {
+            Thread.sleep(delayTimeMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
