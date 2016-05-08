@@ -34,10 +34,10 @@ public class Server {
     }
 
     public static void main(String ... args){
-        Server server = new Server();
+        new Server();
     }
 
-    public void start() {
+    private void start() {
         Thread server = new Thread("ConnectionListener"){
             @Override
             public void run() {

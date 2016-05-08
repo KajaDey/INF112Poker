@@ -28,6 +28,9 @@ public class ServerLobbyCommunicator {
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
      * receives information about all the players from the server
      * @param name Name of the player
+     * @param lobbyScreen Lobby screen made by the player
+     * @param serverAddress IP-address of the server
+     * @throws IOException
      */
     public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen, InetAddress serverAddress) throws IOException {
         this.lobbyScreen = lobbyScreen;
