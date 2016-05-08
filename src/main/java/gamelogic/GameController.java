@@ -236,8 +236,6 @@ public class GameController {
             clients.get(clientID).setPlayerNames(new HashMap<>(names));
         }
         game.refreshAllStackSizes();
-        //setPositions(game.);
-
     }
 
     /**

@@ -126,11 +126,7 @@ public class GameSettings {
     }
 
     public String toString(){
-        String str;
-
-        str = startStack+ "\n" + bigBlind + "\n" + smallBlind + "\n" + maxNumberOfPlayers + "\n" +
+        return startStack+ "\n" + bigBlind + "\n" + smallBlind + "\n" + maxNumberOfPlayers + "\n" +
                 levelDuration + "\n" + aiType + "\n" + playerClock + "\n";
-
-        return str;
     }
 }

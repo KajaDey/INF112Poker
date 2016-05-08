@@ -73,6 +73,7 @@ public class ServerLobbyCommunicator {
         getInit: while (true) {
             String input = socketReader.readLine();
             String[] tokens = UpiUtils.tokenize(input).get();
+            System.out.println(input);
 
             switch (tokens[0]) {
                 case "lobbySent":
@@ -165,7 +166,7 @@ public class ServerLobbyCommunicator {
     }
 
     public void setNewSettings(GameSettings newSettings, int tableID) {
-        writeToSocket("changesettings " + tableID + " " + settingsToString(newSettings));
+        writeToSocket("changesettings " + tableID + " " + UpiUtils.settingsToString(newSettings));
     }
 
 
@@ -212,16 +213,6 @@ public class ServerLobbyCommunicator {
         }
     }
 
-    /**
-     * Convert settings of this table to a string matching the Lobby Protocol
-     * @return <<setting1, value1> <setting2, value2> ... >
-     */
-    public static String settingsToString(GameSettings settings) {
-        return String.format("maxNumberOfPlayers %d startStack %d smallBlind %d bigBlind %d levelDuration %d",
-                settings.getMaxNumberOfPlayers(), settings.getStartStack(), settings.getSmallBlind(), settings.getBigBlind(),
-                settings.getLevelDuration()).trim();
-    }
-
     public String getName(Integer playerID) {
         return names.get(playerID);
     }
@@ -231,7 +222,7 @@ public class ServerLobbyCommunicator {
     }
 
     public void makeNewTable() {
-        writeToSocket("createtable " + settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
+        writeToSocket("createtable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
     }
 
     /**
@@ -240,11 +231,9 @@ public class ServerLobbyCommunicator {
     public void goToGameScreen() {
         int id = lobbyScreen.getID();
         System.out.println("Client " + id + ": Going to game screen");
-        //GameScreen gameScreen = new GameScreen(id);
         ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id));
 
         System.out.println("Client " + id + ": Starting upi communication");
-        //Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(new GameSettings(GameSettings.DEFAULT_SETTINGS)), "Poker Game"));
         try {
             serverGameCommunicator.startUpi();
         } catch (IOException e) {
