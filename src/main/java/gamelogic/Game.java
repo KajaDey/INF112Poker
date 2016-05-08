@@ -602,7 +602,7 @@ public class Game {
             delay(3000);
             System.exit(0);
         }
-        
+
         Card draw = replay ? cardQueue.pop() : deck.draw().get();
 
         GUIMain.replayLogPrint("\n" + draw.toString());
