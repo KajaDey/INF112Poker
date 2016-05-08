@@ -22,7 +22,7 @@ public class GUIClient implements GameClient {
     private Optional<GameState> gameState = Optional.empty();
     private Optional<Map<Integer, Integer>> positions = Optional.empty();
     private Optional<Map<Integer, String>> names = Optional.empty();
-    private Map<Integer, Card[]> holecards = new HashMap<>();
+    private Map<Integer, Card[]> holeCards = new HashMap<>();
 
     //Storage variables
     private int amountOfPlayers;
@@ -143,7 +143,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        this.holecards.put(userID, new Card[]{card1, card2});
+        this.holeCards.put(userID, new Card[]{card1, card2});
         Platform.runLater(() -> gameScreen.setHandForUser(userID, card1, card2));
     }
 
@@ -261,7 +261,7 @@ public class GUIClient implements GameClient {
                 .map(s -> s + "\n")
                 .reduce("", String::concat)
                 .trim();
-        Platform.runLater(() -> gameScreen.showdown(new HashMap<>(holecards), winnerString));
+        Platform.runLater(() -> gameScreen.showdown(new HashMap<>(holeCards), winnerString));
     }
 
     @Override
