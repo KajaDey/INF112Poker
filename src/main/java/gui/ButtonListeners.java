@@ -28,9 +28,6 @@ public class ButtonListeners {
     private static GameSettings gameSettings;
     private static GUIClient client;
 
-    private static String savedName, savedNumOfPlayers, savedChoiceBox;
-    private static GameController savedGameController;
-
     private static long lastSpaceTap = 0;
 
     /**
@@ -91,14 +88,13 @@ public class ButtonListeners {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),
                     Integer.valueOf(levelDurationText),aiType,Integer.parseInt(playerClock));
-
-            //GameLobby.updateLabels(gameSettings);
-            gameController.setGameSettings(gameSettings);
-            window.close();
-
         }catch (NumberFormatException e){
-
+            gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+            e.printStackTrace();
         }
+
+        gameController.setGameSettings(gameSettings);
+        window.close();
 
     }
     /**
@@ -113,7 +109,6 @@ public class ButtonListeners {
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
         gameController.initGame(showCards, new ArrayList<>());
-
     }
 
     /**
@@ -126,10 +121,7 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, MainScreen.GameType gameType, GameController gameController){
-        savedName = name;
-        savedNumOfPlayers = numOfPlayers;
-        savedGameController = gameController;
+    public static void mainScreenEnterListener(String name, InetAddress IPAdd, MainScreen.GameType gameType, GameController gameController){
         try {
             if (!name.isEmpty()) {
                 gameController.enterButtonClicked(name, IPAddress, gameType);
@@ -142,10 +134,7 @@ public class ButtonListeners {
     }
 
     /**
-     *
      * When you click the errorButton, you open a new settings window
-     *
-     * @param gameController
      */
     public static void errorButtonListener(GameController gameController) {
         settingsButtonListener(gameController);
@@ -165,6 +154,9 @@ public class ButtonListeners {
         MainScreen.refreshSceneForMainScreen();
     }
 
+    /**
+     * Save stats to a file after game has ended
+     */
     public static void saveToFile(Statistics stats) {
         stats.printStatisticsToFile();
     }
@@ -177,8 +169,8 @@ public class ButtonListeners {
      *      Arrow up/down tap: Increase/decrease the amount field by 1 BB-amount
      *      Back space tap: Fold
      *
-     * @param ke
-     * @param playerLayout
+     * @param ke Key pressed
+     * @param playerLayout Player layout
      */
     public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout, BoardLayout boardLayout) {
         TextField tf = playerLayout.getAmountTextField();
@@ -220,9 +212,8 @@ public class ButtonListeners {
     }
 
     /**
-     * What happends when a player sends a message to chat
-     *
-     * @param text
+     * What happens when a player sends a message to chat
+     * @param text Text entered in chat field
      */
     public static void chatListener(String text) {
 
@@ -230,10 +221,9 @@ public class ButtonListeners {
 
     /**
      * This button is clicked when the user wants to watch a replay
-     *
-     * @param file
+     * @param file File selected by user to read replay from
      */
     public static void watchNowButtonListener(File file) {
-        ReplayReader.readFile(file);
+
     }
 }

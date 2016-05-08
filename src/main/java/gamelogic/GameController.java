@@ -93,9 +93,9 @@ public class GameController {
 
         GUIMain.replayLogPrint("SETTINGS\n" + gameSettings.toString());
 
-        if ((game.getError() != null)) {
-            throw new Game.InvalidGameSettingsException(game.getError());
-        }
+        if (!gameSettings.valid())
+            throw new Game.InvalidGameSettingsException(gameSettings.getErrorMessage());
+
         NameGenerator.readNewSeries();
 
         //Create GUI-GameClient
@@ -194,6 +194,7 @@ public class GameController {
             }
         }
     }
+
     /**
      * Create a given number of AI-clients to correspond to Player's in Game
      */
@@ -225,6 +226,13 @@ public class GameController {
             names.put(AI_id, aiName);
             GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
+    }
+
+    /**
+     * Create replay clients
+     */
+    public void createReplayClients() {
+
     }
 
     /**

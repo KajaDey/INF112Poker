@@ -125,13 +125,11 @@ public class MainScreen {
             return null;
         };
 
-        enter.setOnAction(e ->{
-            enterGameScreen.get();
-        });
+        enter.setOnAction(e -> enterGameScreen.get());
 
-        nameIn.setOnAction(e -> { enterGameScreen.get(); });
+        nameIn.setOnAction(e -> enterGameScreen.get());
 
-        numOfPlayersIn.setOnAction(e -> { enterGameScreen.get(); });
+        numOfPlayersIn.setOnAction(e -> enterGameScreen.get());
 
         singlePlayer.setOnAction(e -> {
             gameType = GameType.SINGLE_PLAYER;
@@ -185,13 +183,6 @@ public class MainScreen {
         verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
         return horizontalFull;
-    }
-
-    public static Stage getStage(){
-        return window;
-    }
-    public static GameController getGameController(){
-        return gc;
     }
 
     public static enum GameType { SINGLE_PLAYER, MULTI_PLAYER, WATCH_GAME }

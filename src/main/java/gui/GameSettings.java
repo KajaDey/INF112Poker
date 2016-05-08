@@ -129,4 +129,31 @@ public class GameSettings {
         return startStack+ "\n" + bigBlind + "\n" + smallBlind + "\n" + maxNumberOfPlayers + "\n" +
                 levelDuration + "\n" + aiType + "\n" + playerClock + "\n";
     }
+
+    /**
+     *  Checks for errors in the game settings
+     *  @return The appropriate error message if there is an error, 'No error' otherwise
+     */
+    public String getErrorMessage() {
+        String error = "No error";
+        if (startStack < 0) {
+            error = "Start stack must be a positive whole number";
+        } else if (startStack < bigBlind * 10){
+            error = "Start stack must be at least 10 times the big blind, is " + this.getStartStack() + " with big blind " + this.getBigBlind();
+        } else if(bigBlind < 0 || smallBlind < 0) {
+            error = "All blinds must be positive whole numbers";
+        } else if (bigBlind < smallBlind * 2) {
+            error = "Big blind must be at least twice the size of the small blind";
+        } else if(maxNumberOfPlayers< 2 || maxNumberOfPlayers > 6) {
+            error = "Number of players must be between 2-6";
+        } else if(bigBlind <= 0) {
+            error = "Blind level must be a positive whole number";
+        }
+
+        return error;
+    }
+
+    public boolean valid() {
+        return getErrorMessage().equalsIgnoreCase("no error");
+    }
 }
