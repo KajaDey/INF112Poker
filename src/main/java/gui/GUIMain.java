@@ -82,19 +82,6 @@ public class GUIMain extends Application{
     }
 
     /**
-     * Inserts a player into the game.
-     * @param userID The ID of the player
-     * @param name The name of the player
-     * @param stackSize The player's stack size
-     * @return The game screen containing the new player
-     */
-    public void insertPlayer(int userID, String name, long stackSize) {
-        //TODO: REMOVE?
-        //This happens double up. GC insert players on creation, GUI-client insert them again in initialization
-        //Platform.runLater(() -> gameScreen.insertPlayer(userID, name, stackSize));
-    }
-
-    /**
      * Prints a debug message to sysout and/or a lazily initialized log file, and terminates the line
      * Constants PRINT_DEBUG_TO_STDOUT and PRINT_DEBUG_LOG control where the output is printed
      */
