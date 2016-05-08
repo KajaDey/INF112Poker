@@ -146,7 +146,6 @@ public class GameController {
         GameClient guiClient = guiMain.get().displayGameScreen(settings, 0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
-        guiMain.get().insertPlayer(0, this.name, settings.getStartStack());
         guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
         names.put(0, name);
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
@@ -222,27 +221,11 @@ public class GameController {
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
-            if (guiMain.isPresent()) {
-                guiMain.get().insertPlayer(AI_id, aiName, settings.getStartStack());
-            }
             assert !names.containsKey(AI_id) : "Name list already has a name for " + AI_id;
             names.put(AI_id, aiName);
             GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
     }
-
-    /**
-     * @param id The id of this client
-     * @param client Network or AI client
-     * @param name Name of the client
-     */
-    public void addClient(int id, GameClient client, String name) {
-        this.clients.put(id, client);
-        game.addPlayer(name, id);
-        client.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
-        names.put(id, name);
-    }
-
 
     /**
      * Informs each client about the small and big blind amount
