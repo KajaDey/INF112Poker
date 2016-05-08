@@ -3,6 +3,8 @@ package gamelogic;
 import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
+import network.NetworkClient;
+import network.UpiUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,6 +25,7 @@ public class GameController {
     private String name;
     private Map<Integer, String> names;
     private boolean showAllPlayerCards;
+    private MainScreen.GameType gameType;
 
     /**
      * Used by GUI to create a new single player game
@@ -67,6 +70,7 @@ public class GameController {
     public void enterButtonClicked(String name, InetAddress IPAddress, MainScreen.GameType gameType) {
         //Tell GUI to display Lobby
         gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        this.gameType = gameType;
 
         if(gameType == MainScreen.GameType.SINGLE_PLAYER)
             guiMain.get().displaySinglePlayerScreen(name, gameSettings);
@@ -466,9 +470,9 @@ public class GameController {
             clients.get(clientID).playerBust(bustPlayerID, rank);
 
         GameClient bustedClient = clients.get(bustPlayerID);
-        if (!(bustedClient instanceof GUIClient)) {
+        if (!(bustedClient instanceof GUIClient || bustedClient instanceof NetworkClient)) {
             clients.remove(bustPlayerID);
-        } else {
+        } else if (this.gameType == MainScreen.GameType.SINGLE_PLAYER){
             showAllPlayerCards = true;
         }
     }

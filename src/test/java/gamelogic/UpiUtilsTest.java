@@ -1,5 +1,6 @@
 package gamelogic;
 
+import network.UpiUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

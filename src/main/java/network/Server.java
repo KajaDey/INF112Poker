@@ -1,5 +1,8 @@
-package gamelogic;
+package network;
 
+import gamelogic.AIType;
+import gamelogic.Game;
+import gamelogic.GameController;
 import gui.GUIMain;
 import gui.GameSettings;
 
@@ -117,8 +120,8 @@ public class Server {
 
     /**
      * Like Integer.parseInt,except that it throws a checked exception if it fails
-     * @param input
-     * @return
+     * @param input String token
+     * @return int token
      * @throws PokerProtocolException
      */
     public static int parseIntToken(String input) throws PokerProtocolException {
@@ -132,8 +135,8 @@ public class Server {
 
     /**
      * Like Long.parseLong,except that it throws a checked exception if it fails
-     * @param input
-     * @return
+     * @param input String token
+     * @return long token
      * @throws PokerProtocolException
      */
     public static long parseLongToken(String input) throws PokerProtocolException {

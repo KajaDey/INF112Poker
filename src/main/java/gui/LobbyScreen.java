@@ -1,7 +1,7 @@
 package gui;
 
 import gamelogic.GameController;
-import gamelogic.ServerLobbyCommunicator;
+import network.ServerLobbyCommunicator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

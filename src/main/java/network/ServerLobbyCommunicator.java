@@ -1,4 +1,4 @@
-package gamelogic;
+package network;
 
 import gui.*;
 import javafx.application.Platform;
@@ -7,7 +7,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

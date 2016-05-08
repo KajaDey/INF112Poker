@@ -1,5 +1,6 @@
-package gamelogic;
+package network;
 
+import gamelogic.Card;
 import gui.GameSettings;
 
 import java.util.*;
@@ -13,7 +14,7 @@ public class UpiUtils {
     /**
      * Converts a list of cards into a upi-compatible string
      */
-    public static String cardsToString(Card ... cards) {
+    public static String cardsToString(Card... cards) {
         return Arrays.stream(cards)
                 .map(card -> card.suit.name().toLowerCase() + card.rank + " ")
                 .reduce("", String::concat);

@@ -77,8 +77,7 @@ public class GameScreen {
     /**
      * Creates the game screen
      *
-     * @param settings
-     * @return a scene containing a gamescreen
+     * @return a scene containing the game screen
      */
     public Scene createSceneForGameScreen(GameSettings settings) {
         long sb = settings.getSmallBlind(), bb = settings.getBigBlind();
@@ -215,10 +214,6 @@ public class GameScreen {
 
     /**
      * Displays the card pictures to the screen
-     *
-     * @param userID
-     * @param leftCard
-     * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         //Images
@@ -241,11 +236,12 @@ public class GameScreen {
         }
     }
 
-    /**
+    //TODO: DEPRECATED
+    /*
      * Shows the cards of the players around the table
      *
      * @param showdownStats Information about the showdown
-     */
+
     public void showdown(ShowdownStats showdownStats) {
         List<Player> playersToShowdown = showdownStats.getAllPlayers();
         printToLogField(showdownStats.numberOfPlayers() + " players to showdown");
@@ -270,9 +266,12 @@ public class GameScreen {
         printCommunityCardsToLogField();
         printToLogField(winnerString);
     }
+    */
 
     /**
-     * Shows the cards of the players around the table
+     * Shows the cards of the players around the table and display the winner(s)
+     * @param holeCardsToShowdown cards of players to showdown
+     * @param winnerString String containing who won the pot(s). '... won the main pot of ... ' etc.
      */
     public void showdown(Map<Integer, Card[]> holeCardsToShowdown, String winnerString) {
         //List<Player> playersToShowdown = showdownStats.getAllPlayers();
@@ -292,10 +291,6 @@ public class GameScreen {
 
     /**
      * Displays the first three cards (the flop) on the screen
-     *
-     * @param card1
-     * @param card2
-     * @param card3
      */
     public void displayFlop(Card card1, Card card2, Card card3) {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
@@ -315,7 +310,6 @@ public class GameScreen {
 
     /**
      * Displays the fourth card on the board
-     * @param turnCard
      */
     public void displayTurn(Card turnCard) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
@@ -330,8 +324,6 @@ public class GameScreen {
 
     /**
      * Displays the fifth card on the board
-     *
-     * @param riverCard
      */
     public void displayRiver(Card riverCard) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
@@ -346,7 +338,7 @@ public class GameScreen {
 
     /**
      * Show the players possible actions (buttons)
-     * @param visible
+     * @param visible True if buttons should be visible
      */
     public void setActionsVisible(boolean visible) {
         playerLayout.setActionsVisible(visible);
@@ -355,8 +347,8 @@ public class GameScreen {
     /**
      * Update buttons and show any players last move
      *
-     * @param ID
-     * @param decision
+     * @param ID Id of the player that made the move
+     * @param decision The decision that was made
      */
     public synchronized void playerMadeDecision(int ID, Decision decision) {
         //Remove player highlighting
@@ -376,9 +368,7 @@ public class GameScreen {
     }
 
     /**
-     *   Update the buttons in the GUI depending on the last move made
-     * @param id
-     * @param move
+     *  Update the buttons in the GUI depending on the last move made
      */
     private void updateButtonTexts(int id, Decision.Move move) {
         switch (move) {
@@ -478,7 +468,7 @@ public class GameScreen {
     /**
      * Updates the stack size for all the players
      *
-     * @param stackSizes
+     * @param stackSizes map of stack sizes (id, size)
      */
     public void updateStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : stackSizes.keySet()) {
@@ -509,7 +499,7 @@ public class GameScreen {
 
     /**
      * Set the pot label
-     * @param pot
+     * @param pot size of the pot
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
@@ -519,7 +509,7 @@ public class GameScreen {
     /**
      * Set name to all the players
      *
-     * @param names
+     * @param names Map containing all player names (id, name)
      */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
@@ -608,7 +598,7 @@ public class GameScreen {
 
     /**
      * Set the text in the amount text field
-     * @param message
+     * @param message The text to set
      */
     public void setAmountTextfield(String message) {
         playerLayout.setAmountTextField(message);
@@ -616,7 +606,7 @@ public class GameScreen {
 
     /**
      *  Set the border around the amount textfield to red, indicating an error
-     * @param error
+     * @param error True if textfield should be set to error-state
      */
     public void setErrorStateOfAmountTextField(boolean error) {
         if (error)
@@ -626,27 +616,22 @@ public class GameScreen {
     }
 
     /**
-     * Set the positions of the players
-     * @param positions
+     * Set the positions of the players. 0 = sb, 1 = bb, ...
+     * @param positions Map of player positions (id, pos)
      */
     public void setPositions(Map<Integer, Integer> positions) {
-        for (Integer id : positions.keySet()) {
-            int position = positions.get(id);
-            String pos = getPositionName(position, numberOfPlayers);
-            assert pos != null;
-            //Image image = getButtonImage(0, position);
-            System.out.println("Warning: Dealer button hardcoded");
-            Image image = ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
-            assert image != null;
-            assert pos != null;
-            allPlayerLayouts.get(id).setPositionLabel(pos, image);
-        }
+        positions.forEach((id, pos) -> {
+            String posName = getPositionName(pos, numberOfPlayers);
+            if (posName.equalsIgnoreCase("dealer"))
+                allPlayerLayouts.get(id).setPositionLabel(posName, ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON));
+            else
+                allPlayerLayouts.get(id).setPositionLabel(posName, null);
+        });
     }
 
     /**
-     *  Turn an integer position into a string ("Dealer", "Small blind", ...)
-     * @param pos
-     * @return position
+     *  Turn an integer position into a string
+     * @return Text version of the players position ("Dealer", "Small blind", ...)
      */
     public static String getPositionName(int pos, int numberOfPlayers) {
         if (numberOfPlayers == 2)
@@ -762,27 +747,8 @@ public class GameScreen {
     }
 
     /**
-     *
-     * Add dealer button to the board
-     *
-     * @param player
-     * @param id
-     * @return
+     *  Highlight the players turn (set glow effect on player cards)
      */
-    private Image getButtonImage(int player, int id){
-        if (player == 0) {
-            if(getPositionName(id, numberOfPlayers).equals("Dealer"))
-                return ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
-            else return null;
-        }
-        if (player > 0){
-            if (getPositionName(id, numberOfPlayers).endsWith("Dealer"))
-                return ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
-            else return null;
-        }
-        return null;
-    }
-
     public void highlightPlayerTurn(int id) {
         if (allPlayerLayouts.get(id) != null)
             allPlayerLayouts.get(id).highlightTurn(true);
@@ -790,7 +756,7 @@ public class GameScreen {
 
     /**
      *  Start the remaining time progress bar
-     * @param timeToThink
+     * @param timeToThink Time it takes for the bar to time out
      */
     public void startTimer(long timeToThink, Decision.Move moveToExecute) {
         playerLayout.startTimer(this, timeToThink, moveToExecute);

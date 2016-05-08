@@ -1,5 +1,8 @@
-package gamelogic;
+package network;
 
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.GameClient;
 import gui.GUIMain;
 import gui.GameSettings;
 

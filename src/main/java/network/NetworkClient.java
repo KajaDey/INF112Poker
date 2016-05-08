@@ -1,4 +1,9 @@
-package gamelogic;
+package network;
+
+import gamelogic.Card;
+import gamelogic.Decision;
+import gamelogic.GameClient;
+import gamelogic.Statistics;
 
 import java.io.*;
 import java.net.Socket;

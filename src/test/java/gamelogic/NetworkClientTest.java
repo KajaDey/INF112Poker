@@ -1,8 +1,9 @@
 package gamelogic;
 
 import gamelogic.ai.AITest;
-import gui.GameScreen;
-import gui.GameSettings;
+import network.NetworkClient;
+import network.ServerGameCommunicator;
+import network.UpiUtils;
 import org.junit.Test;
 
 import java.io.*;
