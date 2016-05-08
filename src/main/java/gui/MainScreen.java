@@ -10,7 +10,6 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import gamelogic.GameController;
-import gamelogic.AIType;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -121,7 +120,7 @@ public class MainScreen {
             }
             window.close();
             System.out.println("Name entered: " + nameIn.getText());
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), gameType, gameController);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, gameType, gameController);
             return null;
         };
 
@@ -168,7 +167,7 @@ public class MainScreen {
 
         });
 
-        watchNow.setOnAction(event -> ButtonListeners.watchNowButtonListener(chosenFile));
+        watchNow.setOnAction(event -> ButtonListeners.startReplayButtonListener(gameController, chosenFile));
 
         exit.setOnAction(e -> System.exit(0));
 

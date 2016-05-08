@@ -5,7 +5,10 @@ import gamelogic.ai.SimpleAI;
 import gui.*;
 import network.NetworkClient;
 import network.UpiUtils;
+import replay.ReplayClient;
+import replay.ReplayReader;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -74,7 +77,7 @@ public class GameController {
 
         if(gameType == MainScreen.GameType.SINGLE_PLAYER)
             guiMain.get().displaySinglePlayerScreen(name, gameSettings);
-        else
+        else if (gameType == MainScreen.GameType.MULTI_PLAYER)
             guiMain.get().displayMultiPlayerScreen(name, IPAddress, gameSettings);
 
         this.name = name;
@@ -99,9 +102,8 @@ public class GameController {
         NameGenerator.readNewSeries();
 
         //Create GUI-GameClient
-        if (guiMain.isPresent()) {
-            createGUIClient(gameSettings);
-        }
+        if (guiMain.isPresent())
+            createGUIClient();
 
         System.out.println("Creating " + clientSockets.size() + " network clients");
         // Create network clients
@@ -122,6 +124,10 @@ public class GameController {
         //Print welcome message to log
         this.printToLogField("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!");
 
+        //Print names to replay log
+        GUIMain.replayLogPrint("\nNAMES");
+        names.forEach((id, name) -> GUIMain.replayLogPrint("\n" + name));
+
         return startGame();
     }
 
@@ -139,14 +145,50 @@ public class GameController {
         return gameThread;
     }
 
+    public void startReplay(File file) {
+        ReplayReader replayReader = new ReplayReader(file);
+        showAllPlayerCards = true;
+        gameSettings = replayReader.getSettings();
+
+        game = new Game(gameSettings, this);
+
+        //Initialize replay client with GUI
+        createReplayGUIClient(replayReader);
+
+        //Initialize the rest of the replay-clients
+        createReplayClients(replayReader);
+
+        //Set client initial values
+        initClients();
+
+        //Override the drawCard()-method in Game so that it draws cards from the replay queue instead of deck
+        game.setReplayCardQueue(replayReader.getCardQueue());
+
+        //Start the game replay
+        startGame();
+    }
+
+    /**
+     *  Create a ReplayClient with a GUI.
+     */
+    public void createReplayGUIClient(ReplayReader reader) {
+        GameClient guiReplayClient = guiMain.get().displayReplayScreen(0, reader);
+        this.name = reader.getNextName();
+        clients.put(0, guiReplayClient);
+        game.addPlayer(name, 0);
+        guiReplayClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
+        names.put(0, name);
+        GUIMain.debugPrintln("Initialized " + guiReplayClient.getClass().getSimpleName() + " " + names.get(0));
+    }
+
     /**
      * Create a GUI-client with initial values
      */
-    private void createGUIClient(GameSettings settings) {
-        GameClient guiClient = guiMain.get().displayGameScreen(settings, 0);
+    private void createGUIClient() {
+        GameClient guiClient = guiMain.get().displayGameScreen(0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
-        guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
+        guiClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
         names.put(0, name);
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
@@ -229,10 +271,19 @@ public class GameController {
     }
 
     /**
-     * Create replay clients
+     * Create (max number of players - 1) replay clients
      */
-    public void createReplayClients() {
+    public void createReplayClients(ReplayReader reader) {
+        for (int i = 0; i < gameSettings.getMaxNumberOfPlayers() - 1; i++) {
+            String replayName = reader.getNextName();
+            int replayId = clients.size();
 
+            GameClient replayClient = new ReplayClient(replayId, reader);
+            clients.put(replayId, replayClient);
+            game.addPlayer(replayName, replayId);
+            names.put(replayId, replayName);
+            GUIMain.debugPrintln("Initialized " + replayClient.getClass().getSimpleName() + " " + names.get(replayId));
+        }
     }
 
     /**
@@ -323,7 +374,7 @@ public class GameController {
      */
     public void setHandForClient(int clientID, Card card1, Card card2) {
         if (showAllPlayerCards) { // Send everyone's hole cards to everyone
-            clients.forEach((id, client) -> client.setHandForClient(id, card1, card2));
+            clients.forEach((id, client) -> client.setHandForClient(clientID, card1, card2));
         }
         else {
             GameClient c = clients.get(clientID);

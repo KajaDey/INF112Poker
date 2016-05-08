@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import gamelogic.*;
+import replay.ReplayClient;
+import replay.ReplayReader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +59,7 @@ public class GUIMain extends Application{
     }
 
     /**
-     * Starts the displayment of initial screen.
+     * Starts the display of initial screen.
      * @param window The window to be displayed
      */
     public void start(Stage window){
@@ -66,18 +68,26 @@ public class GUIMain extends Application{
 
     /**
      * Displays the game screen
-     * @param settings The settings to use
      * @param userID The id of the user
      * @return The GUIClient to display
      */
-    public GUIClient displayGameScreen(GameSettings settings, int userID) {
+    public GUIClient displayGameScreen(int userID) {
         this.gameScreen = new GameScreen(userID);
         this.client = new GUIClient(userID, gameScreen);
         ButtonListeners.setClient(client);
 
         //Create initial screen, empty
-        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(settings), "GameScreen"));
+        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(), "GameScreen"));
 
+        return client;
+    }
+
+    public GUIClient displayReplayScreen(int userID, ReplayReader reader) {
+        this.gameScreen = new GameScreen(userID);
+        this.client = new ReplayClient(userID, gameScreen, reader);
+        ButtonListeners.setClient(client); //TODO: I don't think this is needed
+
+        Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(), "GameScreen"));
         return client;
     }
 

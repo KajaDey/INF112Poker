@@ -34,6 +34,9 @@ public class Game {
     private Map<Integer, Integer> rankingTable;
     private Map<Integer, String> names;
     private Card [] communityCards;
+    private Deck deck;
+    private ArrayDeque<Card> cardQueue;
+    private boolean replay = false;
 
     public Game(GameSettings gameSettings, GameController gameController) {
         this.gameController = gameController;
@@ -93,9 +96,9 @@ public class Game {
             pot = new Pot();
 
             //Deal all hole cards and save community cards for later use
-            Deck deck = new Deck();
-            communityCards = generateCommunityCards(deck);
-            dealHoleCards(deck, playersStillInCurrentHand);
+            deck = new Deck();
+            communityCards = generateCommunityCards();
+            dealHoleCards(playersStillInCurrentHand);
 
             playHand();
         }
@@ -580,17 +583,23 @@ public class Game {
 
     /**
      * Randomly generates and returns five community cards from the deck.
-     * @param deck Deck to draw from
      * @return Array of community cards
      */
-    private Card[] generateCommunityCards(Deck deck) {
-        GUIMain.replayLogPrint("\nCOMMUNITY CARDS");
+    private Card[] generateCommunityCards() {
         Card[] commCards = new Card[5];
-        for (int i = 0; i < commCards.length; i++) {
-            commCards[i] = deck.draw().get();
-            GUIMain.replayLogPrint("\n"+commCards[i].toString());
-        }
+        for (int i = 0; i < commCards.length; i++)
+            commCards[i] = drawCard();
         return commCards;
+    }
+
+    /**
+     * @return A random card from the deck if replay is false, the next card from the replay queue if not
+     */
+    private Card drawCard() {
+        if (replay)
+            return cardQueue.pop();
+        else
+            return deck.draw().get();
     }
 
     /**
@@ -598,6 +607,10 @@ public class Game {
      */
     private void setFlop() {
         gameController.setFlop(communityCards[0], communityCards[1], communityCards[2]);
+        GUIMain.replayLogPrint("\nCARD");
+        for (Card c : communityCards)
+            GUIMain.replayLogPrint("\n"+c.toString());
+
     }
 
     /**
@@ -605,6 +618,7 @@ public class Game {
      */
     private void setTurn() {
         gameController.setTurn(communityCards[3]);
+        GUIMain.replayLogPrint("\nCARD\n"+communityCards[3].toString());
     }
 
     /**
@@ -612,18 +626,18 @@ public class Game {
      */
     private void setRiver() {
         gameController.setRiver(communityCards[4]);
+        GUIMain.replayLogPrint("\nCARD\n"+communityCards[3].toString());
     }
 
     /**
      * Deals hole cards to each player still in the game.
      *
-     * @param deck Deck to draw from
      * @param playersStillPlaying Players still in the game
      */
-    private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
-        GUIMain.replayLogPrint("\nCARDS");
+    private void dealHoleCards(List<Player> playersStillPlaying) {
+        GUIMain.replayLogPrint("\nCARD");
         for (Player p : playersStillPlaying) {
-            Card[] cards = {deck.draw().get(), deck.draw().get()};
+            Card[] cards = {drawCard(), drawCard()};
             p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
@@ -666,6 +680,16 @@ public class Game {
         } catch (Exception e) {
             GUIMain.debugPrintln("Thread " + Thread.currentThread() + " was interrupted.");
         }
+    }
+
+    /**
+     * Set the replay card queue
+     * Only used if the game is a replay. Use this queue instead of deck.draw()
+     * @param cardQueue The queue of cards from the replay file
+     */
+    public void setReplayCardQueue(ArrayDeque<Card> cardQueue) {
+        this.cardQueue = cardQueue;
+        this.replay = true;
     }
 
     public static class InvalidGameSettingsException extends Exception {

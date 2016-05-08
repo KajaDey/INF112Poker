@@ -18,7 +18,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
- * After a button is clicked, all the actions is handeled here.
+ * After a button is clicked, all the actions are handled here.
  *
  * @author André Dyrstad
  * @author Jostein Kringlen
@@ -112,6 +112,14 @@ public class ButtonListeners {
     }
 
     /**
+     * This button is clicked when the user wants to watch a replay
+     * @param file File selected by user to read replay from
+     */
+    public static void startReplayButtonListener(GameController gameController, File file) {
+        gameController.startReplay(file);
+    }
+
+    /**
      * What happens when the leaveLobbyButton is pushed
      */
     public static void leaveLobbyButtonListener() throws IOException {
@@ -121,7 +129,7 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, InetAddress IPAdd, MainScreen.GameType gameType, GameController gameController){
+    public static void mainScreenEnterListener(String name, InetAddress IPAddress, MainScreen.GameType gameType, GameController gameController){
         try {
             if (!name.isEmpty()) {
                 gameController.enterButtonClicked(name, IPAddress, gameType);
@@ -219,11 +227,4 @@ public class ButtonListeners {
 
     }
 
-    /**
-     * This button is clicked when the user wants to watch a replay
-     * @param file File selected by user to read replay from
-     */
-    public static void watchNowButtonListener(File file) {
-
-    }
 }

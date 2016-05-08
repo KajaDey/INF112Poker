@@ -25,10 +25,11 @@ public class ReplayReader {
 
     private ArrayDeque<String> settings = new ArrayDeque<>();
     private ArrayDeque<Decision> decisions = new ArrayDeque<>();
-    private ArrayDeque<Card> allCards = new ArrayDeque<>();
+    private ArrayDeque<Card> cardQueue = new ArrayDeque<>();
+    private ArrayDeque<String> names = new ArrayDeque<>();
 
     public enum InfoType{
-        CARD,DECISION,SETTINGS
+        NAME, CARD,DECISION,SETTINGS
     }
 
     /**
@@ -51,8 +52,7 @@ public class ReplayReader {
             String line = br.readLine();
 
                 switch (line) {
-                    case "COMMUNITY CARDS":
-                    case "CARDS":
+                    case "CARD":
                         currentType = InfoType.CARD;
                         break;
                     case "SETTINGS":
@@ -61,11 +61,17 @@ public class ReplayReader {
                     case "DECISIONS":
                         currentType = InfoType.DECISION;
                         break;
+                    case "NAME":
+                        currentType = InfoType.NAME;
+                        break;
                     default:
 
                         switch (currentType) {
+                            case NAME:
+                                names.add(line);
+                                break;
                             case CARD:
-                                allCards.add(makeCard(line));
+                                cardQueue.add(makeCard(line));
                                 break;
                             case SETTINGS:
                                 settings.add(line);
@@ -96,10 +102,10 @@ public class ReplayReader {
     }
 
     /**
-     * @return The next queued card (community card or hole card)
+     * @return The queue of cards (both hole cards and community cards)
      */
-    public Card draw() {
-        return allCards.pop();
+    public ArrayDeque<Card> getCardQueue() {
+        return cardQueue;
     }
 
     /**
@@ -128,6 +134,13 @@ public class ReplayReader {
             return new Decision(Decision.Move.valueOf(split[2]));
         else
             return new Decision(Decision.Move.valueOf(split[2]),Long.parseLong(split[3]));
+    }
+
+    /**
+     * @return Name of the next client
+     */
+    public String getNextName() {
+        return names.pop();
     }
 
     /**

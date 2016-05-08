@@ -79,9 +79,8 @@ public class GameScreen {
      *
      * @return a scene containing the game screen
      */
-    public Scene createSceneForGameScreen(GameSettings settings) {
-        long sb = settings.getSmallBlind(), bb = settings.getBigBlind();
-        boardLayout = new BoardLayout(sb, bb);
+    public Scene createSceneForGameScreen() {
+        boardLayout = new BoardLayout(0, 0);
         boardLayout.setLayoutX(scene.getWidth() / 4 - 30);
         boardLayout.setLayoutY(scene.getHeight() / 3 + 30);
         pane.getChildren().add(boardLayout);
@@ -236,37 +235,6 @@ public class GameScreen {
         }
     }
 
-    //TODO: DEPRECATED
-    /*
-     * Shows the cards of the players around the table
-     *
-     * @param showdownStats Information about the showdown
-
-    public void showdown(ShowdownStats showdownStats) {
-        List<Player> playersToShowdown = showdownStats.getAllPlayers();
-        printToLogField(showdownStats.numberOfPlayers() + " players to showdown");
-
-        Map<Integer, Card[]> hCards = showdownStats.getHoleCards();
-
-        for (Player p : playersToShowdown) {
-            Card[] cards = hCards.get(p.getID());
-            Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
-            Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
-
-            //Print the players hand
-            printToLogField(names.get(p.getID()) + ": " + cards[0] + " " + cards[1]);
-            if (p.getID() != playerID && allPlayerLayouts.get(p.getID()) != null)
-                allPlayerLayouts.get(p.getID()).setCardImage(leftImage,rightImage);
-        }
-
-        String winnerString = showdownStats.getWinnerText();
-        boardLayout.setWinnerLabel(winnerString);
-
-        //Print all community cards to in-game log
-        printCommunityCardsToLogField();
-        printToLogField(winnerString);
-    }
-    */
 
     /**
      * Shows the cards of the players around the table and display the winner(s)
