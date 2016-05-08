@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -29,7 +30,6 @@ import java.util.*;
  */
 public class GameScreen {
 
-
     private int playerID;
     private int numberOfPlayers, opponentsAdded = 0;
 
@@ -41,6 +41,8 @@ public class GameScreen {
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
     private ArrayList<Card> holeCards, communityCards;
+    private Map<Integer, Card[]> allHoleCards = new HashMap<>();
+    private boolean holeCardsShown = false;
 
 
     //GUI-elements
@@ -50,7 +52,9 @@ public class GameScreen {
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
     private Label endGameScreen;
-    private TextArea textArea = new TextArea();
+    private TextArea logField = new TextArea();
+    private TextField chatField = new TextField();
+    private Button sendTextButton = new Button();
     private SoundPlayer soundPlayer = new SoundPlayer();
 
     public GameScreen(int ID) {
@@ -61,19 +65,19 @@ public class GameScreen {
         pane.setOnMouseClicked((event) -> playerLayout.setFocus());
 
         //Create the scene
-        scene = new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080), 1280, 720);
+        scene = new Scene(ImageViewer.setBackground("table&background", pane, 1920, 1080), 1280, 720);
 
         this.allPlayerLayouts = new HashMap<>();
 
         insertLogField();
+        insertChatField();
         addMenuBarToGameScreen();
     }
 
     /**
      * Creates the game screen
      *
-     * @param settings
-     * @return a scene containing a gamescreen
+     * @return a scene containing the game screen
      */
     public Scene createSceneForGameScreen(GameSettings settings) {
         long sb = settings.getSmallBlind(), bb = settings.getBigBlind();
@@ -87,17 +91,16 @@ public class GameScreen {
     /**
      * Insert players to the screen
      *
-     * @param userID
-     * @param name
-     * @param stackSize
-     * @return player objects
+     * @param userID Users ID
+     * @param name Users name
+     * @return True if the player was seated
      */
-    public boolean insertPlayer(int userID, String name, long stackSize) {
+    public boolean insertPlayer(int userID, String name) {
         this.names.put(userID, name);
-        this.stackSizes.put(userID, stackSize);
+        this.stackSizes.put(userID, 0L);
 
         if (userID == playerID) {
-            PlayerLayout pLayout = new PlayerLayout(userID,name,stackSizes.get(0));
+            PlayerLayout pLayout = new PlayerLayout(userID,name);
             playerLayout = pLayout;
             pLayout.setLayoutX(scene.getWidth()/4);
             pLayout.setLayoutY(scene.getHeight()-190);
@@ -105,7 +108,7 @@ public class GameScreen {
             allPlayerLayouts.put(userID, pLayout);
         } else {
             int oppPosition = positions[opponentsAdded];
-            OpponentLayout oppLayout = new OpponentLayout(name, stackSize, oppPosition);
+            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition);
 
             //Set X/Y-layout of this opponent
             double height = scene.getHeight(), width = scene.getWidth();
@@ -144,22 +147,54 @@ public class GameScreen {
      * It is put in the lower, left corner.
      */
     public void insertLogField(){
-        textArea.setMaxWidth(300);
-        textArea.setMaxHeight(100);
-        textArea.setEditable(false);
-        textArea.setLayoutX(5);
-        textArea.setLayoutY(scene.getHeight() - 105);
-        textArea.setWrapText(true);
-        pane.getChildren().add(textArea);
-        textArea.setOpacity(0.9);
+        logField.setMaxWidth(300);
+        logField.setMaxHeight(100);
+        logField.setEditable(false);
+        logField.setLayoutX(5);
+        logField.setLayoutY(scene.getHeight() - 140);
+        logField.setWrapText(true);
+        pane.getChildren().add(logField);
+        logField.setOpacity(0.9);
 
         //Add listener to listen for changes and automatically scroll to the bottom
-        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+        logField.textProperty().addListener((observable, oldValue, newValue) -> {
+            logField.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
         });
 
         //Remove highlight of textfield
-        textArea.setFocusTraversable(false);
+        logField.setFocusTraversable(false);
+    }
+
+
+    /**
+     * Inserts an input field and a button for chatting with the other players
+     */
+    public void insertChatField(){
+        chatField = ObjectStandards.makeTextFieldForGameScreen("");
+        chatField.setMinWidth(225);
+        chatField.setMaxWidth(300);
+        chatField.setLayoutX(5);
+        chatField.setLayoutY(scene.getHeight() - 40);
+        chatField.setOpacity(0.9);
+
+        sendTextButton = ObjectStandards.makeStandardButton("Send");
+        sendTextButton.setLayoutX(230);
+        sendTextButton.setLayoutY(scene.getHeight() - 40);
+
+        pane.getChildren().addAll(chatField, sendTextButton);
+
+        //Listener for when a user presses "enter" on the keyboard
+        chatField.setOnAction(event -> {
+            ButtonListeners.chatListener(chatField.getText());
+            chatField.setText("");
+        });
+
+        //Listener for when a user presses the button in the game
+        sendTextButton.setOnAction(event -> {
+            ButtonListeners.chatListener(chatField.getText());
+            chatField.setText("");
+        });
+
     }
 
     /**
@@ -167,7 +202,7 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        textArea.appendText("\n" + printInfo);
+        logField.appendText("\n" + printInfo);
     }
 
     public void addMenuBarToGameScreen(){
@@ -179,10 +214,6 @@ public class GameScreen {
 
     /**
      * Displays the card pictures to the screen
-     *
-     * @param userID
-     * @param leftCard
-     * @param rightCard
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         //Images
@@ -197,13 +228,20 @@ public class GameScreen {
             holeCards.add(rightCard);
             updateYourHandLabel();
         }
+        allHoleCards.put(userID, new Card[]{leftCard, rightCard });
+
+        // If you are sent hole cards for another player, assume all hole cards will be sent soon
+        if (userID != this.playerID) {
+            holeCardsShown = true;
+        }
     }
 
-    /**
+    //TODO: DEPRECATED
+    /*
      * Shows the cards of the players around the table
      *
      * @param showdownStats Information about the showdown
-     */
+
     public void showdown(ShowdownStats showdownStats) {
         List<Player> playersToShowdown = showdownStats.getAllPlayers();
         printToLogField(showdownStats.numberOfPlayers() + " players to showdown");
@@ -228,13 +266,31 @@ public class GameScreen {
         printCommunityCardsToLogField();
         printToLogField(winnerString);
     }
+    */
+
+    /**
+     * Shows the cards of the players around the table and display the winner(s)
+     * @param holeCardsToShowdown cards of players to showdown
+     * @param winnerString String containing who won the pot(s). '... won the main pot of ... ' etc.
+     */
+    public void showdown(Map<Integer, Card[]> holeCardsToShowdown, String winnerString) {
+        //List<Player> playersToShowdown = showdownStats.getAllPlayers();
+        printToLogField(holeCardsToShowdown.size() + " players to showdown");
+
+        holeCardsToShowdown.forEach((id, cards) -> {
+            //Print the players hand
+            printToLogField(names.get(id) + ": " + cards[0] + " " + cards[1]);
+        });
+
+        boardLayout.setWinnerLabel(winnerString);
+
+        //Print all community cards to in-game log
+        printCommunityCardsToLogField();
+        printToLogField(winnerString);
+    }
 
     /**
      * Displays the first three cards (the flop) on the screen
-     *
-     * @param card1
-     * @param card2
-     * @param card3
      */
     public void displayFlop(Card card1, Card card2, Card card3) {
         Image card1Image = new Image(ImageViewer.returnURLPathForCardSprites(card1.getCardNameForGui()));
@@ -246,6 +302,7 @@ public class GameScreen {
         communityCards.add(card2);
         communityCards.add(card3);
         updateYourHandLabel();
+        showPercentages();
 
         new SoundPlayer().playDealCardSound();
         printToLogField("Flop " + card1 + " " + card2 + " " + card3);
@@ -253,13 +310,13 @@ public class GameScreen {
 
     /**
      * Displays the fourth card on the board
-     * @param turnCard
      */
     public void displayTurn(Card turnCard) {
         Image turnImage = new Image(ImageViewer.returnURLPathForCardSprites(turnCard.getCardNameForGui()));
         boardLayout.showTurn(turnImage);
         communityCards.add(turnCard);
         updateYourHandLabel();
+        showPercentages();
 
         printToLogField("Turn " + turnCard);
         soundPlayer.playDealCardSound();
@@ -267,8 +324,6 @@ public class GameScreen {
 
     /**
      * Displays the fifth card on the board
-     *
-     * @param riverCard
      */
     public void displayRiver(Card riverCard) {
         Image riverImage = new Image(ImageViewer.returnURLPathForCardSprites(riverCard.getCardNameForGui()));
@@ -276,13 +331,14 @@ public class GameScreen {
         communityCards.add(riverCard);
         updateYourHandLabel();
         soundPlayer.playDealCardSound();
+        showPercentages();
 
         printToLogField("River " + riverCard);
     }
 
     /**
      * Show the players possible actions (buttons)
-     * @param visible
+     * @param visible True if buttons should be visible
      */
     public void setActionsVisible(boolean visible) {
         playerLayout.setActionsVisible(visible);
@@ -291,8 +347,8 @@ public class GameScreen {
     /**
      * Update buttons and show any players last move
      *
-     * @param ID
-     * @param decision
+     * @param ID Id of the player that made the move
+     * @param decision The decision that was made
      */
     public synchronized void playerMadeDecision(int ID, Decision decision) {
         //Remove player highlighting
@@ -308,13 +364,11 @@ public class GameScreen {
         soundPlayer.getSoundForDecision(decision.move);
 
         allPlayerLayouts.get(ID).setLastMove(finalDecision, getChipImage(ID));
-        allPlayerLayouts.get(ID).setStackLabel(""+stackSizes.get(ID));
+        allPlayerLayouts.get(ID).setStackLabel("" + stackSizes.get(ID));
     }
 
     /**
-     *   Update the buttons in the GUI depending on the last move made
-     * @param id
-     * @param move
+     *  Update the buttons in the GUI depending on the last move made
      */
     private void updateButtonTexts(int id, Decision.Move move) {
         switch (move) {
@@ -388,9 +442,8 @@ public class GameScreen {
                 printToLogField(names.get(ID) + " posted small blind");
                 break;
             case ALL_IN:
-                if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) { //If raise is valid
+                if (putOnTable.get(ID) + stackSizes.get(ID) >= highestAmountPutOnTable) //If raise is valid
                     highestAmountPutOnTable = putOnTable.get(ID) + stackSizes.get(ID);
-                }
                 putOnTable.put(ID, putOnTable.get(ID) + stackSizes.get(ID));
                 newStackSize = 0;
                 decisionText += putOnTable.get(ID);
@@ -415,7 +468,7 @@ public class GameScreen {
     /**
      * Updates the stack size for all the players
      *
-     * @param stackSizes
+     * @param stackSizes map of stack sizes (id, size)
      */
     public void updateStackSizes(Map<Integer, Long> stackSizes) {
         for (Integer clientID : stackSizes.keySet()) {
@@ -446,7 +499,7 @@ public class GameScreen {
 
     /**
      * Set the pot label
-     * @param pot
+     * @param pot size of the pot
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
@@ -456,7 +509,7 @@ public class GameScreen {
     /**
      * Set name to all the players
      *
-     * @param names
+     * @param names Map containing all player names (id, name)
      */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
@@ -476,7 +529,12 @@ public class GameScreen {
         allPlayerLayouts.forEach((id, layout) -> {
             if (!layout.isBust())
                 layout.setCardImage(backImage, backImage);
+            layout.setPercentLabel("");
         });
+
+        //Reset hole cards
+        this.holeCardsShown = false;
+        this.allHoleCards = new HashMap<>();
 
         //Reset board
         boardLayout.newHand();
@@ -540,7 +598,7 @@ public class GameScreen {
 
     /**
      * Set the text in the amount text field
-     * @param message
+     * @param message The text to set
      */
     public void setAmountTextfield(String message) {
         playerLayout.setAmountTextField(message);
@@ -548,7 +606,7 @@ public class GameScreen {
 
     /**
      *  Set the border around the amount textfield to red, indicating an error
-     * @param error
+     * @param error True if textfield should be set to error-state
      */
     public void setErrorStateOfAmountTextField(boolean error) {
         if (error)
@@ -558,20 +616,22 @@ public class GameScreen {
     }
 
     /**
-     * Set the positions of the players
-     * @param positions
+     * Set the positions of the players. 0 = sb, 1 = bb, ...
+     * @param positions Map of player positions (id, pos)
      */
     public void setPositions(Map<Integer, Integer> positions) {
-        for (Integer id : positions.keySet()) {
-            String pos = getPositionName(positions.get(id), numberOfPlayers);
-            allPlayerLayouts.get(id).setPositionLabel(pos, getButtonImage(id, positions.get(id)));
-        }
+        positions.forEach((id, pos) -> {
+            String posName = getPositionName(pos, numberOfPlayers);
+            if (posName.equalsIgnoreCase("dealer"))
+                allPlayerLayouts.get(id).setPositionLabel(posName, ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON));
+            else
+                allPlayerLayouts.get(id).setPositionLabel(posName, null);
+        });
     }
 
     /**
-     *  Turn an integer position into a string ("Dealer", "Small blind", ...)
-     * @param pos
-     * @return position
+     *  Turn an integer position into a string
+     * @return Text version of the players position ("Dealer", "Small blind", ...)
      */
     public static String getPositionName(int pos, int numberOfPlayers) {
         if (numberOfPlayers == 2)
@@ -661,19 +721,6 @@ public class GameScreen {
     }
 
     /**
-     *  Show the hole cards of players remaining in the hand
-     * @param holeCards  Map from a player's ID to his hole cards
-     */
-    public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        holeCards.forEach((id, cards) -> {
-            Image leftCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[0].getCardNameForGui()));
-            Image rightCard = new Image(ImageViewer.returnURLPathForCardSprites(cards[1].getCardNameForGui()));
-
-            allPlayerLayouts.get(id).setCardImage(leftCard, rightCard);
-        });
-    }
-
-    /**
      *  Get the correct image for this decision (based ont the decision and the amount)
      */
     private Image getChipImage(int id) {
@@ -699,20 +746,9 @@ public class GameScreen {
             return ImageViewer.getChipImage("poker8");
     }
 
-    private Image getButtonImage(int player, int id){
-        if (player == 0) {
-            if(getPositionName(id, numberOfPlayers).equals("Dealer"))
-                return ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
-            else return null;
-        }
-        if (player > 0){
-            if (getPositionName(id, numberOfPlayers).endsWith("Dealer"))
-                return ImageViewer.getImage(ImageViewer.Image_type.DEALER_BUTTON);
-            else return null;
-        }
-        return null;
-    }
-
+    /**
+     *  Highlight the players turn (set glow effect on player cards)
+     */
     public void highlightPlayerTurn(int id) {
         if (allPlayerLayouts.get(id) != null)
             allPlayerLayouts.get(id).highlightTurn(true);
@@ -720,9 +756,24 @@ public class GameScreen {
 
     /**
      *  Start the remaining time progress bar
-     * @param timeToThink
+     * @param timeToThink Time it takes for the bar to time out
      */
     public void startTimer(long timeToThink, Decision.Move moveToExecute) {
-        playerLayout.startTimer(timeToThink, moveToExecute);
+        playerLayout.startTimer(this, timeToThink, moveToExecute);
+    }
+    public void stopTimer() {
+        playerLayout.stopTimer();
+    }
+
+    /**
+     * If hole cards are shown, calculate percentages for all players
+     */
+    private void showPercentages() {
+        if (!holeCardsShown || allHoleCards == null || communityCards.size() < 3)
+            return;
+
+        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(allHoleCards, communityCards);
+
+        percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
     }
 }

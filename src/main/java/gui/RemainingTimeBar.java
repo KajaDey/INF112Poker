@@ -5,24 +5,28 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 
 /**
+ * A bar which displays how long time the player has to make a decision
+ *
  * Created by Kristian Rosland on 24.04.2016.
  */
 public class RemainingTimeBar extends ProgressBar {
 
     private Thread countDown;
+    private static String playerName;
 
-    public RemainingTimeBar() {
-        this.minHeight(75       );
+    public RemainingTimeBar(String playerName) {
+        this.playerName = playerName;
+        this.minHeight(100);
         this.setProgress(1.0);
     }
 
-    public void setTimer(long timeInMilliseconds, Decision.Move moveToExecute) {
+    public void setTimer(GameScreen gameScreen, long timeInMilliseconds, Decision.Move moveToExecute) {
         // If there is a count down going on already, we need to interrupt it
         if (countDown != null && !countDown.isInterrupted())
             countDown.interrupt();
 
         //Set the progress property to our Timer-task and start the progress bar
-        Task timer = timer(timeInMilliseconds, moveToExecute);
+        Task timer = timer(gameScreen, timeInMilliseconds, moveToExecute);
         this.progressProperty().unbind();
         this.progressProperty().bind(timer.progressProperty());
         countDown = new Thread(timer);
@@ -38,7 +42,7 @@ public class RemainingTimeBar extends ProgressBar {
      * @param moveToExecute  Move this method executes if it reaches 0%
      * @return
      */
-    public Task timer(long time, Decision.Move moveToExecute) {
+    public Task timer(GameScreen gameScreen, long time, Decision.Move moveToExecute) {
         return new Task() {
             @Override
             protected Object call() throws Exception {
@@ -51,6 +55,8 @@ public class RemainingTimeBar extends ProgressBar {
                     ButtonListeners.foldButtonListener();
                 else if (moveToExecute == Decision.Move.CHECK)
                     ButtonListeners.checkButtonListener("Check");
+
+                gameScreen.printToLogField(playerName + " timed out.");
 
                 return true;
             }
@@ -74,5 +80,11 @@ public class RemainingTimeBar extends ProgressBar {
         });
     }
 
-
+    /**
+     * Interrupt the count down thread
+     */
+    public void stopTimer() {
+        if (countDown != null && !countDown.isInterrupted())
+            countDown.interrupt();
+    }
 }

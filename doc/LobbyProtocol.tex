@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+\title{Poker lobby protocol}
+\begin{document}
+\maketitle
+
+\section{Sending the whole lobby}
+When a new client connects, they need to be sent all information about the lobby. This should only be sent once during initialization.
+
+\subsection*{playerNames <id1 name1> <id2 name2> ...}
+The id and name of all the players in the lobby, including those on unstarted tables
+
+\subsection*{table <id> settings <{}<setting1 value1> <settings2 value2> ...> players <{}<id1> <id2> ...>}
+Sends information about a single table. If there are many open tables, this must be sent for each of them.
+
+\subsection*{lobbySent}
+The server is finished sending lobby information. After this, the client should only expect lobby updates.
+
+
+\section{Sending lobby updates}
+When a client has received the initial lobby, all further lobby changes are sent as lobby updates.
+
+\subsection*{playerJoinedLobby <id> <name>}
+A new player connected to the lobby
+
+\subsection*{playerLeftLobby <id>}
+A player left the lobby
+
+\subsection*{playerJoinedTable <playerId> <tableId>}
+A player joined the table
+
+\subsection*{playerLeftTable <playerId> <tableId>}
+A player left the table
+
+\subsection*{tableCreated <tableId>}
+A new table was created. Table settings and the players in it are sent as tableSettings and playerJoinedTable
+
+\subsection*{tableDeleted <tableId>}
+A table was deleted, either because the owner chose to disband it, or because the game was started and the players left the lobby. The server must send playerLeftLobby commands for the players on that table.
+
+\subsection*{tableSettings <tableID> <{}<setting1 value1> <setting2 value2> ...>}
+Sends the table's settings. All the table's settings should generally be sent every time on is changed, but if a setting is not sent, the old/default one should be kept.
+
+\subsubsection*{Possible table settings:}
+\begin{description}
+\item[maxNumberOfPlayers <n>]
+\item[startStack <n>]
+\item[smallBlind <n>]
+\item[bigBlind <n>]
+\item[levelDuration <n>]
+\end{description}
+
+\section{Example playthrough}
+\begin{description}
+\item[Client] lobby Morten
+\item[Server] lobbyok
+\item[Server] playerNames 0 Kristian 2 Kaja 3 Mariah
+\item[Server] table 2 settings smallBlind 25 bigBlind 50 players 0
+\item[Server] table 3 settings smallBlind 50 bigBlind 100 players 2 3
+\item[Server] lobbySent
+\item[Server] playerJoinedLobby 1 Morten
+\item[Server] tableCreated 0 // Morten creates a new table
+\item[Server] tableSettings 0 smallBlind 25 bigBlind 100 maxNumberOfPlayers 2
+\item[Server] playerJoinedTable 1 0
+\item[Server] playerLeftTable 0 2 // Kristian leaves his table and joins Morten's
+\item[Server] tableDeleted 2
+\item[Server] playerJoinedTable 0 1
+\item[Server] tableDeleted 0 // They start a game
+\item[Server] playerLeftLobby 0
+\item[Server] playerLeftLobby 1
+\end{description}
+
+\end{document}

@@ -1,6 +1,8 @@
 package gui;
 
 import gamelogic.AIType;
+import gamelogic.Game;
+import gamelogic.ai.GameState;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,13 +18,14 @@ import gamelogic.GameController;
 import java.io.IOException;
 
 /**
- * TODO: Add class description
+ * This is the layout for the single player lobby screen
  *
  * @author André Dyrstad
+ * @author Jostein Kringlen
  */
 public class GameLobby {
 
-    private static Label amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, headLine;
+    private static Label amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, headLine, playerClock;
     private static ChoiceBox<String> choiceBox;
 
     /**
@@ -31,8 +34,7 @@ public class GameLobby {
      * @param gameSettings
      * @param gameController
      */
-    public static void createScreenForGameLobby(GameSettings gameSettings,GameController gameController, String name){
-
+    public static void createScreenForGameLobby(GUIMain guiMain, GameSettings gameSettings, GameController gameController, String name){
         Stage window = new Stage();
 
         //Boxes
@@ -53,13 +55,18 @@ public class GameLobby {
         bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ", gameSettings.getBigBlind() + "$");
         smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", gameSettings.getSmallBlind() + "$");
         levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
+        playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",gameSettings.getPlayerClock() + "sec");
         headLine = ObjectStandards.makeLabelForHeadLine("Game Lobby");
 
         //ActionListeners
         settings.setOnAction(e -> ButtonListeners.settingsButtonListener(gameController));
         startGame.setOnAction(e -> {
             window.close();
-            ButtonListeners.startGameButtonListener(gameController, showAllPlayerCards);
+            try {
+                ButtonListeners.startGameButtonListener(gameController, showAllPlayerCards);
+            } catch (Game.InvalidGameSettingsException e1) {
+                guiMain.displayErrorMessageToLobby(e1.getMessage());
+            }
         });
 
         leaveLobby.setOnAction(e -> {
@@ -73,7 +80,7 @@ public class GameLobby {
 
         //Put objects in boxes
 
-        gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration);
+        gameRules.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration, playerClock);
         gameRules.setAlignment(Pos.CENTER_LEFT);
 
         buttons.getChildren().addAll(startGame, leaveLobby, settings, showAllPlayerCards);
@@ -116,27 +123,30 @@ public class GameLobby {
         Label smallBlind = ObjectStandards.makeLabelForSettingsScreen("Small blind:");
         Label levelDuration = ObjectStandards.makeLabelForSettingsScreen("Level duration:");
         Label aIDifficulty = ObjectStandards.makeLabelForSettingsScreen("AI difficulty:");
+        Label playerClock = ObjectStandards.makeLabelForSettingsScreen("Player clock:");
 
         TextField amountOfChipsTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField numberOfPlayersTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField bigBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField smallBlindTF = ObjectStandards.makeTextFieldForSettingsScreen();
         TextField levelDurationTF = ObjectStandards.makeTextFieldForSettingsScreen();
+        TextField playerClockTF = ObjectStandards.makeTextFieldForSettingsScreen();
 
-        amountOfChipsTF.setText(String.valueOf(gameController.gameSettings.getStartStack()));
-        numberOfPlayersTF.setText(String.valueOf(gameController.gameSettings.getMaxNumberOfPlayers()));
-        bigBlindTF.setText(String.valueOf(gameController.gameSettings.getBigBlind()));
-        smallBlindTF.setText(String.valueOf(gameController.gameSettings.getSmallBlind()));
-        levelDurationTF.setText(String.valueOf(gameController.gameSettings.getLevelDuration()));
+        GameSettings gameSettings = gameController.getGameSettings();
+        amountOfChipsTF.setText(String.valueOf(gameSettings.getStartStack()));
+        numberOfPlayersTF.setText(String.valueOf(gameSettings.getMaxNumberOfPlayers()));
+        bigBlindTF.setText(String.valueOf(gameSettings.getBigBlind()));
+        smallBlindTF.setText(String.valueOf(gameSettings.getSmallBlind()));
+        levelDurationTF.setText(String.valueOf(gameSettings.getLevelDuration()));
 
         choiceBox = new ChoiceBox<>();
-        choiceBox.setValue(gameController.gameSettings.getAiType().toString());
+        choiceBox.setValue(gameSettings.getAiType().toString());
         choiceBox.setMinWidth(100);
         choiceBox.setMaxWidth(100);
         choiceBox.setMinHeight(30);
         choiceBox.setMaxWidth(30);
         choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
-        choiceBox.setValue(gameController.gameSettings.getAiType().toString());
+        choiceBox.setValue(gameSettings.getAiType().toString());
         choiceBox.setTooltip(new Tooltip("Pick a difficulty"));
         choiceBox.setPadding(new Insets(5,5,8,5));
 
@@ -146,14 +156,14 @@ public class GameLobby {
 
 
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
+                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue(), playerClockTF.getText()));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
 
-        levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-                bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
+        //levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
+                //bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
 
-        labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration,aIDifficulty ,accept);
-        textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF,choiceBox,cancel);
+        labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration ,playerClock ,aIDifficulty ,accept);
+        textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF ,playerClockTF ,choiceBox,cancel);
 
         labelBox.setAlignment(Pos.CENTER);
         textFieldBox.setAlignment(Pos.CENTER);
@@ -165,7 +175,7 @@ public class GameLobby {
 
     /**
      *
-     * Uppdates all the setting in game lobby
+     * Updates all the setting in game lobby
      *
      * @param gameSettings
      */
@@ -187,7 +197,7 @@ public class GameLobby {
      * @param gameController
      */
 
-    public static void displayErrorMessage(String message,GameController gameController){
+    public static void displayErrorMessage(String message, GameController gameController){
 
         System.err.println("Illegal settings. Please insert valid numbers.");
 

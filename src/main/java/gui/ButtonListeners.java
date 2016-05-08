@@ -1,7 +1,6 @@
 package gui;
 
-import gamelogic.AIType;
-import gamelogic.Statistics;
+import gamelogic.*;
 import gui.layouts.BoardLayout;
 import gui.layouts.PlayerLayout;
 import javafx.scene.Scene;
@@ -11,15 +10,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import gamelogic.Decision;
-import gamelogic.GameController;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.InetAddress;
+import java.util.ArrayList;
 
 /**
- * Created by ady on 07/03/16.
+ * After a button is clicked, all the actions is handeled here.
+ *
+ * @author André Dyrstad
+ * @author Jostein Kringlen
  */
 public class ButtonListeners {
 
@@ -34,15 +35,17 @@ public class ButtonListeners {
     /**
      * What happens when the betButton is pushed
      */
-    public static void betButtonListener(String betAmount, String buttonText) {
+    public static void betButtonListener(TextField amountTextField, String buttonText) {
+        String betAmount = amountTextField.getText();
         try {
-            if (buttonText.equalsIgnoreCase("Raise to")) {
+            if (betAmount.equalsIgnoreCase("all in"))
+                client.setDecision(Decision.Move.ALL_IN);
+            else if (buttonText.equalsIgnoreCase("Raise to"))
                 client.setDecision(Decision.Move.RAISE, Long.valueOf(betAmount));
-            } else if (buttonText.equalsIgnoreCase("Bet")) {
+            else if (buttonText.equalsIgnoreCase("Bet"))
                 client.setDecision(Decision.Move.BET, Long.valueOf(betAmount));
-            }
-        } catch (NumberFormatException e){
-
+        } catch (NumberFormatException nfe){
+            amountTextField.clear();
         }
     }
 
@@ -71,7 +74,7 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,250);
+        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,300);
         settings.setScene(scene);
         settings.show();
     }
@@ -79,14 +82,16 @@ public class ButtonListeners {
      * What happens when the acceptSettingsButton is pushed
      */
     public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
-                                             String smallBlindText, String levelDurationText, Stage window, GameController gameController,String aiChoice) {
+                                             String smallBlindText, String levelDurationText, Stage window,
+                                                    GameController gameController,String aiChoice, String playerClock) {
 
         AIType aiType = AIType.fromString(aiChoice);
         try {
             gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
-                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),Integer.valueOf(levelDurationText),aiType);
+                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),
+                    Integer.valueOf(levelDurationText),aiType,Integer.parseInt(playerClock));
 
-            GameLobby.updateLabels(gameSettings);
+            //GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             window.close();
 
@@ -104,10 +109,12 @@ public class ButtonListeners {
     /**
      * What happens when the startGameButton is pushed
      */
-    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) {
-        boolean showCards = showAllPlayerCards.isSelected();
-        gameController.startTournamentButtonClicked(gameSettings, showCards);
+    public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
+        boolean showCards = false;
+        gameController.initGame(showCards, new ArrayList<>());
+
     }
+
     /**
      * What happens when the leaveLobbyButton is pushed
      */
@@ -118,21 +125,18 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, String numOfPlayers, String choiceBox, GameController gameController){
+    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, MainScreen.GameType gameType, GameController gameController){
         savedName = name;
-        savedChoiceBox = choiceBox;
         savedNumOfPlayers = numOfPlayers;
         savedGameController = gameController;
         try {
-            if (!name.isEmpty() && Integer.valueOf(numOfPlayers) != null) {
-                AIType type = AIType.fromString(choiceBox);
-
-                gameController.enterButtonClicked(name, Integer.parseInt(numOfPlayers), type);
-                gameSettings = gameController.gameSettings;
+            if (!name.isEmpty()) {
+                gameController.enterButtonClicked(name, IPAddress, gameType);
+                gameSettings = gameController.getGameSettings();
             }
             else MainScreen.createSceneForMainScreen("PokerTable", gameController);
         }catch (NumberFormatException e){
-
+            System.out.println(e.getMessage());
         }
     }
 
@@ -192,7 +196,7 @@ public class ButtonListeners {
                     break;
 
                 case ENTER:
-                    betButtonListener(tf.getText(), playerLayout.getBetRaiseButtonText());
+                    betButtonListener(tf, playerLayout.getBetRaiseButtonText());
                     break;
 
                 case UP:case DOWN:
@@ -212,5 +216,23 @@ public class ButtonListeners {
         } catch (NumberFormatException nfe) {
             tf.setText("" + currentBB);
         }
+    }
+
+    /**
+     * What happends when a player sends a message to chat
+     *
+     * @param text
+     */
+    public static void chatListener(String text) {
+
+    }
+
+    /**
+     * This button is clicked when the user wants to watch a replay
+     *
+     * @param file
+     */
+    public static void watchNowButtonListener(File file) {
+        ReplayReader.readFile(file);
     }
 }

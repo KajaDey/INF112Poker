@@ -7,9 +7,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import gamelogic.GameController;
 import gamelogic.AIType;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.function.Supplier;
 
 /**
  * This purpose of this class is to create the full screen that is seen when the application is started.
@@ -17,12 +23,15 @@ import gamelogic.AIType;
  * for entering the lobby screen.
  *
  * @author Jostein Kringlen
+ * @author André Dyrstad
  */
 public class MainScreen {
 
     private static String imgName;
     private static GameController gc;
     private static Stage window;
+    private static File chosenFile;
+    private static GameType gameType;
 
     /**
      * Creates the sceen for the initial (main) screen
@@ -39,7 +48,7 @@ public class MainScreen {
         mainScreenLayout.setPadding(new Insets(10,10,10,10));
         mainScreenLayout.setCenter(MainScreen.makeLayout(window, gameController));
         mainScreenLayout.setTop(ObjectStandards.createMenuBar());
-        SceneBuilder.showCurrentScene(mainScreenLayout,"Welcome to The Game!");
+        SceneBuilder.showCurrentScene(mainScreenLayout, "Welcome to The Game!");
     }
 
     public static void refreshSceneForMainScreen() {
@@ -56,7 +65,7 @@ public class MainScreen {
         Insets largePadding = new Insets(15);
         int standardButton = 75;
 
-        HBox horisontalFull = new HBox();
+        HBox horizontalFull = new HBox();
         VBox verticalButtonAndChoiceBox = new VBox();
 
         //Top-text
@@ -66,52 +75,116 @@ public class MainScreen {
                "Enter your name, and start playing!";
 
 
+        VBox playGameBox = new VBox();
+        VBox watchGameBox = new VBox();
+
+        Button singlePlayer = ObjectStandards.makeMainScreenButton("Single Player");
+        Button multiPlayer = ObjectStandards.makeMainScreenButton("Multi player");
+        Button watchReplay = ObjectStandards.makeMainScreenButton("Watch game");
+        Button exit = ObjectStandards.makeMainScreenButton("Exit");
+        Button selectFile = ObjectStandards.makeButtonForLobbyScreen("Select file");
+        Button watchNow = ObjectStandards.makeButtonForLobbyScreen("Watch now");
+        Label selectedFile = ObjectStandards.makeStandardLabelWhite("No file chosen", "");
+        selectedFile.setFont(new Font("Areal",20));
+
         Label titleText = ObjectStandards.makeLabelForHeadLine(title);
 
         Label infoText = ObjectStandards.makeStandardLabelWhite(info,"");
         infoText.setPadding(largePadding);
         infoText.setFont(new Font("Areal", 15));
 
-        verticalButtonAndChoiceBox.getChildren().addAll(titleText,infoText);
+        verticalButtonAndChoiceBox.getChildren().addAll(titleText);
         verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
-        horisontalFull.setAlignment(Pos.CENTER);
-        horisontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
+        horizontalFull.setAlignment(Pos.CENTER);
+        horizontalFull.getChildren().addAll(verticalButtonAndChoiceBox);
 
         TextField nameIn = ObjectStandards.makeTextFieldForMainScreen("Name");
+        TextField IPIn = ObjectStandards.makeTextFieldForMainScreen("IP address");
         TextField numOfPlayersIn = ObjectStandards.makeTextFieldForMainScreen("Number of players");
 
         Button enter = ObjectStandards.makeStandardButton("Enter");
         enter.setMinWidth(2 * standardButton);
-        ChoiceBox<String> choiceBox = new ChoiceBox<>();
-        choiceBox.setMinWidth(2 * standardButton);
-        choiceBox.getItems().addAll(AIType.SIMPLE_AI.toString(), AIType.MCTS_AI.toString(), AIType.MIXED.toString());
-        choiceBox.setValue(AIType.MCTS_AI.toString());
-        choiceBox.setTooltip(new Tooltip("Pick a game mode"));
 
-
-        choiceBox.setStyle("-fx-background-color:#090a0c, " +
-                "linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%), " +
-                "linear-gradient(#20262b, #191d22), " +
-                "radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0)); " +
-                "-fx-background-radius: 5,4,3,5; " +
-                "-fx-background-insets: 0,1,2,0; " +
-                "-fx-text-fill: linear-gradient(white, #d0d0d0) ; ");
-        choiceBox.getStylesheets().addAll("file:resources/choiceBoxStyling.css");
+        Supplier<Void> enterGameScreen = () -> {
+            InetAddress inetAddress;
+            try {
+                if (IPIn.getText() == null || IPIn.getText().isEmpty())
+                    inetAddress = InetAddress.getLocalHost();
+                else {
+                    inetAddress = InetAddress.getByName(IPIn.getText());
+                }
+            } catch (UnknownHostException ex) {
+                System.out.println("Invalid IP-address");
+                // TODO show error message next to textfield
+                return null;
+            }
+            window.close();
+            System.out.println("Name entered: " + nameIn.getText());
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), gameType, gameController);
+            return null;
+        };
 
         enter.setOnAction(e ->{
-            window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+            enterGameScreen.get();
         });
 
-        numOfPlayersIn.setOnAction(e -> {
-            window.close();
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), numOfPlayersIn.getText(), choiceBox.getValue(), gameController);
+        nameIn.setOnAction(e -> { enterGameScreen.get(); });
+
+        numOfPlayersIn.setOnAction(e -> { enterGameScreen.get(); });
+
+        singlePlayer.setOnAction(e -> {
+            gameType = GameType.SINGLE_PLAYER;
+            playGameBox.getChildren().clear();
+            playGameBox.getChildren().addAll(nameIn, enter);
+            verticalButtonAndChoiceBox.getChildren().clear();
+            verticalButtonAndChoiceBox.getChildren().addAll(titleText, singlePlayer, playGameBox, multiPlayer, watchReplay, exit);
         });
 
-        verticalButtonAndChoiceBox.getChildren().addAll(choiceBox, nameIn, numOfPlayersIn, enter);
+        multiPlayer.setOnAction(e -> {
+            gameType = GameType.MULTI_PLAYER;
+            playGameBox.getChildren().clear();
+            playGameBox.getChildren().addAll(nameIn, IPIn, enter);
+            verticalButtonAndChoiceBox.getChildren().clear();
+            verticalButtonAndChoiceBox.getChildren().addAll(titleText, singlePlayer, multiPlayer, playGameBox, watchReplay, exit);
+        });
 
-        return horisontalFull;
+        watchReplay.setOnAction(e -> {
+            gameType = GameType.WATCH_GAME;
+            verticalButtonAndChoiceBox.getChildren().clear();
+            verticalButtonAndChoiceBox.getChildren().addAll(titleText, singlePlayer, multiPlayer, watchGameBox, watchReplay, exit);
+
+        });
+
+        selectFile.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+            File fileSelected = fileChooser.showOpenDialog(null);
+
+            if(fileSelected != null) {
+                selectedFile.setText(fileSelected.getName());
+                chosenFile = fileSelected;
+            }
+            else
+                selectedFile.setText("File is not valid");
+
+        });
+
+        watchNow.setOnAction(event -> ButtonListeners.watchNowButtonListener(chosenFile));
+
+        exit.setOnAction(e -> System.exit(0));
+
+        playGameBox.getChildren().addAll(nameIn, enter);
+        playGameBox.setAlignment(Pos.CENTER);
+        playGameBox.setPadding(new Insets(10, 10, 10, 10));
+        watchGameBox.getChildren().addAll(selectFile, selectedFile, watchNow);
+        watchGameBox.setAlignment(Pos.CENTER);
+        watchGameBox.setPadding(new Insets(10, 10, 10, 10));
+
+        verticalButtonAndChoiceBox.getChildren().addAll(singlePlayer, multiPlayer, watchReplay, exit);
+        verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
+
+        return horizontalFull;
     }
 
     public static Stage getStage(){
@@ -120,4 +193,6 @@ public class MainScreen {
     public static GameController getGameController(){
         return gc;
     }
+
+    public static enum GameType { SINGLE_PLAYER, MULTI_PLAYER, WATCH_GAME }
 }

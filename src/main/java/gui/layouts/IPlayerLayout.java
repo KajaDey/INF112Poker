@@ -27,4 +27,5 @@ public interface IPlayerLayout {
 
     void highlightTurn(boolean highlight);
 
+    void setPercentLabel(String s);
 }

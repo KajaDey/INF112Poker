@@ -31,7 +31,7 @@ public class NameGenerator {
     }
 
     /**
-     *  Get a random name from a randomly selected theme series
+     *  Get a random playerName from a randomly selected theme series
      *  Guarantees no duplicates, removes all white spaces
      *  @return
      */
@@ -63,7 +63,7 @@ public class NameGenerator {
             pathsOfSeries.add(name);
         }
 
-        //get random filepath from a list of paths of series if we haven't got one
+        //get random filepath from a list
         pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
 
         try {

@@ -51,8 +51,8 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public int getID() {
-        return playerId;
+    public String getName() {
+        return "";
     }
 
     @Override
@@ -77,6 +77,16 @@ public class MCTSAI implements GameClient {
     public void gameOver(Statistics stats) { }
 
     @Override
+    public void printToLogField(String output) {
+
+    }
+
+    @Override
+    public void preShowdownWinner(int winnerID) {
+
+    }
+
+    @Override
     public void setPlayerNames(Map<Integer, String> names) {
         assert names.size() == amountOfPlayers : "MCTSAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players.";
         this.names = Optional.of(names);
@@ -84,8 +94,6 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        assert this.getID() == userID;
-
         holeCards = new ArrayList<>(2);
         assert holeCards.size() == 0;
         holeCards.add(card1);
@@ -94,16 +102,16 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
-        assert stackSizes.size() == amountOfPlayers;
+        assert stackSizes.size() == amountOfPlayers : "Received stacksizes for " + stackSizes.size() + " players, but there are " + amountOfPlayers + " playing.";
         this.stackSizes = Optional.of(stackSizes);
     }
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         assert stackSizes.isPresent() : " MCTSAI was sent a decicion without first receving stacksizes";
-        assert stackSizes.get().size() == amountOfPlayers;
+        assert stackSizes.get().size() == amountOfPlayers : "MCTSAI received stackSizes for " + positions.get().size() + " players, but there are " + amountOfPlayers + " in the game";
         assert positions.isPresent() : "MCTSAI was sent a decision without receiving positions";
-        assert positions.get().size() == amountOfPlayers;
+        assert positions.get().size() == amountOfPlayers : "MCTSAI received positions for " + positions.get().size() + " players, but there are " + amountOfPlayers + " in the game";
         assert names.isPresent() : "MCTSAI was sent a decision without receiving names";
         assert names.get().size() == amountOfPlayers;
         assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
@@ -122,8 +130,13 @@ public class MCTSAI implements GameClient {
         }
     }
 
+    //@Override
+    /*public void showdown(ShowdownStats showdownStats) {
+
+    }*/
+
     @Override
-    public void showdown(ShowdownStats showdownStats) {
+    public void showdown(String[] winnerStrings) {
 
     }
 

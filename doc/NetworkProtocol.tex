@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{textcomp}
 
 \title{Poker network protocol}
@@ -38,11 +39,14 @@ Requests the client's name, to which it expects a name command in return.
 \subsection*{newGame}
 Tells the client that a whole new game is being played, with new players and new stack sizes. 
 
-\subsection*{amountOfPlayers \textlangle{}n\textrangle{}}
-Sends the number of players on the table, including the client itself. This should be sent immediately after a newgame command, and before other information (stack sizes, blinds, names, etc) is sent.
+\subsection*{newHand}
+Tells the client that a new hand is starting.
 
 \subsection*{clientId \textlangle{}id\textrangle{}}
-Sends the client's ID in the game. Each player on the table has a unique non-negative ID, which is used when sending names, positions, etc.
+Sends the client's ID in the game. Each player on the table has a unique non-negative ID, which is used when sending names, positions, etc. This should be sent immediately after a newgame command, before amountOfPlayers and other information about the players.
+
+\subsection*{amountOfPlayers \textlangle{}n\textrangle{}}
+Sends the number of players on the table, including the client itself. This should be sent after clientId, but before any information about the other players (stack sizes, blinds, names, etc) is sent.
 
 \subsection*{playerNames \textlangle{}id1 name1\textrangle{} \textlangle{}id2 name2\textrangle{} ... }
 Sends the names of all the players. This should be sent at the start of each game. These are not used by the protocol, but are for the client to display.
@@ -53,6 +57,18 @@ Sends the position for all players' IDs. This is sent at the start of each hand,
 \subsection*{stackSizes \textlangle{}id1 stackSize1\textrangle{} \textlangle{}id2 stackSize2\textrangle{} ... }
 Sends the stackSizes for all players' IDs. This is sent at the start of each hand, and also at the end of the final hand.
 
+\subsection*{smallBlind \textlangle{}n\textrangle{}}
+Sends the small blind.
+
+\subsection*{bigBlind \textlangle{}n\textrangle{}}
+Sends the big blind.
+
+\subsection*{levelDuration \textlangle{}n\textrangle{}}
+Sends the duration of each blind level, in minutes.
+
+\subsection*{setHand \textlangle{}id\textrangle{} \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}}
+Sends the hole cards of the player's id. The client's own hole cards are sent at the start of each hand; other players' hole cards are sent during showdown, or when reviewing games.
+
 \subsection*{setFlop \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}  \textlangle{}card3\textrangle{}}
 Sends the flop cards to the client. See section ``decision and card formats'' for the format for cards.
 
@@ -61,6 +77,12 @@ Sends the turn card to the client. See section ``decision and card formats'' for
 
 \subsection*{setRiver \textlangle{}card\textrangle{}}
 Sends the river card to the client. See section ``decision and card formats'' for the format for cards.
+
+\subsection{playerBust <id> <rank>}
+Sent when a player is busted (is out of the game). Also sends the position the player lost in.
+
+\subsection{showdown <line1> <line2> ... }
+Sent after a showdown, sending n lines of text describing who won the pot and any side pots. These are meant to displayed in the middle of the GUI.
 
 \subsection*{getDecision \textlangle{}timeToThink\textrangle{}}
 It's the client's turn, and the server is asking for a decision. The server expect a decision command in return. The timeToThink field is the time the client has to think, in milliseconds. If the client does not return a decision in time, the server may give the client a ``default'' decision, or otherwise override the client's wishes.

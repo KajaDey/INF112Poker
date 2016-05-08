@@ -5,7 +5,10 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * Created by ady on 08/03/16.
+ *
+ * This class displays all the layouts to the screen
+ *
+ * @author André Dyrstad
  */
 public class SceneBuilder {
 
@@ -26,7 +29,7 @@ public class SceneBuilder {
         window = new Stage();
         window.setOnCloseRequest(e -> System.exit(0));
         window.setTitle(titleIn);
-        window.setScene(new Scene(ImageViewer.setBackground("PokerTable", pane, 1920, 1080),1280,720));
+        window.setScene(new Scene(ImageViewer.setBackground("table&background", pane, 1920, 1080),1280,720));
         window.setResizable(false);
         window.show();
     }

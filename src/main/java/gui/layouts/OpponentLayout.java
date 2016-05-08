@@ -24,12 +24,11 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     private DropShadow dropShadow = new DropShadow();
     private DropShadow glow = new DropShadow();
 
-    private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel;
+    private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel, percentLabel;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private boolean isBust = false;
-    private boolean folded = false;
 
-    public OpponentLayout(String name, long stackSize, int position) {
+    public OpponentLayout(String name, int position) {
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
         rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
 
@@ -52,9 +51,10 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));
-        stackSizeLabel = ObjectStandards.makeStandardLabelWhite("Stack size:", stackSize + "");
+        stackSizeLabel = ObjectStandards.makeStandardLabelWhite("", "");
         positionLabel = ObjectStandards.makeStandardLabelWhite("Position: ","");
         lastMoveLabel = ObjectStandards.makeLobbyLabelWhite("", "");
+        percentLabel = ObjectStandards.makeStandardLabelWhite("","");
 
         HBox cards = new HBox();
         VBox opponentStats = new VBox();
@@ -81,7 +81,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             chipBox.setPadding(new Insets(0,6,0,6));
 
             VBox stats = new VBox();
-            stats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            stats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel, percentLabel);
             stats.setAlignment(Pos.TOP_LEFT);
             opponentStats.getChildren().addAll(cards, stats);
             cards.getChildren().addAll(leftCardImage, rightCardImage, lastMoveButtonChipBox);
@@ -101,7 +101,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             chipBox.getChildren().addAll(chipImage);
             chipBox.setPadding(new Insets(3, 3, 3, 3));
 
-            opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            opponentStats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel, percentLabel);
             cards.getChildren().addAll(lastMoveButtonChipBox,leftCardImage, rightCardImage, opponentStats);
 
             this.getChildren().add(cards);
@@ -117,7 +117,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             chipBox.setPadding(new Insets(0, 6, 0, 6));
 
             VBox stats = new VBox();
-            stats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel);
+            stats.getChildren().addAll(nameLabel, stackSizeLabel, positionLabel, percentLabel);
             stats.setAlignment(Pos.TOP_RIGHT);
             opponentStats.getChildren().addAll(cards, stats);
             cards.getChildren().addAll(lastMoveButtonChipBox,leftCardImage, rightCardImage);
@@ -130,9 +130,10 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         else
             GUIMain.debugPrint("Invalid position from OpponentLayout");
 
-        nameLabel.setMinWidth(140);
-        stackSizeLabel.setMinWidth(140);
-        positionLabel.setMinWidth(140);
+        nameLabel.setMinWidth(150);
+        stackSizeLabel.setMinWidth(150);
+        positionLabel.setMinWidth(150);
+        percentLabel.setMinWidth(150);
 
         this.setMinWidth(300);
         this.setMaxWidth(300);
@@ -156,16 +157,18 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
 
     /**
      * Sets stack size label for this opponent
-     * @param s The complete string the label will be set to
+     * @param s The amount the stack label should be set to
      */
     @Override
     public void setStackLabel(String s){
+        if (s.equals("0"))
+            s = "All in";
         stackSizeLabel.setText(s);
     }
 
     /**
      * Sets the position label for this opponent to the given string.
-     * @param s
+     * @param s The position string (Dealer, Small blind, etc..)
      */
     @Override
     public void setPositionLabel(String s, Image buttonImage){
@@ -177,8 +180,8 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     /**
      * Sets this opponents hole cards to the images provided
      * Used at showdown and when hands are being dealt
-     * @param leftCard
-     * @param rightCard
+     * @param leftCard Image
+     * @param rightCard Image
      */
     @Override
     public synchronized void setCardImage(Image leftCard,Image rightCard) {
@@ -193,8 +196,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
 
     /**
      * Sets name for opponent
-     *
-     * @param name
+     * @param name Players name
      */
     @Override
     public void setNameLabel(String name) {
@@ -209,15 +211,13 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     public synchronized void foldPlayer() {
         ColorAdjust adjust = new ColorAdjust();
         adjust.setBrightness(-0.5);
-        folded = true;
         leftCardImage.setEffect(adjust);
         rightCardImage.setEffect(adjust);
     }
 
     /**
      * What happens when a player is bust
-     *
-     * @param bustedText
+     * @param bustedText E.g.: "Busted in 5th"
      */
     @Override
     public synchronized void bustPlayer(String bustedText) {
@@ -226,6 +226,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         setStackLabel(bustedText);
         setPositionLabel("", null);
         setCardImage(null, null);
+        setPercentLabel("");
     }
 
     @Override
@@ -244,6 +245,11 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             leftCardImage.setEffect(dropShadow);
             rightCardImage.setEffect(dropShadow);
         }
+    }
+
+    @Override
+    public void setPercentLabel(String s) {
+        this.percentLabel.setText(s);
     }
 
     /**

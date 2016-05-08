@@ -71,6 +71,15 @@ public class ObjectStandards {
         return button;
     }
 
+    public static Button makeMainScreenButton(String name){
+        Button button = new Button(name);
+        button.setMinWidth(200);
+        button.setMinHeight(50);
+
+        button.setStyle(styling);
+        return button;
+    }
+
     /**
      * Makes a button for the lobby screen
      * @param name The name of the button
@@ -81,15 +90,14 @@ public class ObjectStandards {
         Insets padding = new Insets(5,5,5,5);
         button.setPadding(padding);
         button.setFont(new Font("Areal", 15));
-        button.setMinWidth(120);
-        button.setMaxWidth(120);
+        button.setMinWidth(150);
+        button.setMaxWidth(150);
         button.setMinHeight(50);
         button.setMaxHeight(50);
 
         button.setStyle(styling);
 
         return button;
-
     }
 
     /**
@@ -100,7 +108,6 @@ public class ObjectStandards {
     public static Label makeLabelForHeadLine(String name){
         Label label = new Label(name);
         Insets padding = new Insets(20,20,20,20);
-
         label.setFont(new Font("Areal", 30));
         label.setPadding(padding);
         label.setTextFill(Color.web("#ffffff"));
@@ -124,6 +131,24 @@ public class ObjectStandards {
         label.setFont(standardFont);
         label.setPadding(standardPadding);
         label.setTextFill(Color.web("#ffffff"));
+        label.setEffect(dropShadow);
+
+        return label;
+    }
+
+    /**
+     * Makes a standard label where the text color is white
+     * @param name The name of the label
+     * @return The created label
+     */
+    public static Label makeErrorLabelRed(String name){
+        Label label = new Label(name);
+        Font standardFont = new Font("Areal",15);
+        Insets standardPadding = new Insets(0,0,0,0);
+
+        label.setFont(standardFont);
+        label.setPadding(standardPadding);
+        label.setTextFill(Color.RED);
         label.setEffect(dropShadow);
 
         return label;
@@ -360,4 +385,5 @@ public class ObjectStandards {
         }
 
     }
+
 }

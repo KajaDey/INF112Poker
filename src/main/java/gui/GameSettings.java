@@ -1,23 +1,23 @@
 package gui;
-
-/**
- * Created by ady on 09/03/16.
- */
-
 import gamelogic.AIType;
 import gamelogic.GameController;
 
 /**
- * A class that contains all the settings we need to know
+ * A class that contains all the settings in a game
+ *
+ * @author André Dyrstad
  */
 public class GameSettings {
 
-    private final long startStack;
+    public final static GameSettings DEFAULT_SETTINGS = new GameSettings(5000, 50, 25, 6, 10, AIType.MCTS_AI,30);
+
+    private long startStack;
     private long bigBlind;
     private long smallBlind;
-    private final int maxNumberOfPlayers;
-    private final int levelDuration;
+    private int maxNumberOfPlayers;
+    private int levelDuration;
     private AIType aiType;
+    private int playerClock;
 
     /**
      *
@@ -29,13 +29,23 @@ public class GameSettings {
      * @param aiType The type of AI (Simple/MCTS)
      */
 
-    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType) {
+    public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType, int playerClock) {
         this.startStack = startStack;
         this.bigBlind = bigBlind;
         this.smallBlind = smallBlind;
         this.maxNumberOfPlayers = maxNumberOfPlayers;
         this.levelDuration = levelDuration;
         this.aiType = aiType;
+        this.playerClock = playerClock;
+    }
+
+    public GameSettings(GameSettings oldSetting) {
+        startStack = oldSetting.startStack;
+        bigBlind = oldSetting.bigBlind;
+        smallBlind = oldSetting.smallBlind;
+        maxNumberOfPlayers = oldSetting.maxNumberOfPlayers;
+        levelDuration = oldSetting.levelDuration;
+        aiType = oldSetting.aiType;
     }
 
     /**
@@ -46,6 +56,30 @@ public class GameSettings {
         bigBlind *= 2;
     }
 
+
+    public void setStartStack(long startStack) {
+        this.startStack = startStack;
+    }
+
+    public void setBigBlind(long bigBlind) {
+        this.bigBlind = bigBlind;
+    }
+
+    public void setSmallBlind(long smallBlind) {
+        this.smallBlind = smallBlind;
+    }
+
+    public void setMaxNumberOfPlayers(int maxNumberOfPlayers) {
+        this.maxNumberOfPlayers = maxNumberOfPlayers;
+    }
+
+    public void setLevelDuration(int levelDuration) {
+        this.levelDuration = levelDuration;
+    }
+
+    public void setAiType(AIType aiType) {
+        this.aiType = aiType;
+    }
     /**
      * @return startStack
      */
@@ -87,4 +121,16 @@ public class GameSettings {
     public AIType getAiType(){
         return aiType; }
 
+    public int getPlayerClock(){
+        return playerClock;
+    }
+
+    public String toString(){
+        String str;
+
+        str = startStack+ "\n" + bigBlind + "\n" + smallBlind + "\n" + maxNumberOfPlayers + "\n" +
+                levelDuration + "\n" + aiType + "\n" + playerClock + "\n";
+
+        return str;
+    }
 }

@@ -33,26 +33,17 @@ public class HandCalculator {
     public HandCalculator(Hand hand) {
 
         bestHand = Optional.empty();
-        straightFlush = new StraightFlush();
-        quad = new xOfaKind(4);
-        house = new House();
-        flush = new Flush();
-        straight = new Straight();
-        trips = new xOfaKind(3);
-        twoPairs = new TwoPairs();
-        pair = new xOfaKind(2);
-        highCard = new HighCard();
 
         rules = new ArrayList<>(9);
-        rules.add(straightFlush);
-        rules.add(quad);
-        rules.add(house);
-        rules.add(flush);
-        rules.add(straight);
-        rules.add(trips);
-        rules.add(twoPairs);
-        rules.add(pair);
-        rules.add(highCard);
+        rules.add(new StraightFlush());
+        rules.add(new xOfaKind(4));
+        rules.add(new House());
+        rules.add(new Flush());
+        rules.add(new Straight());
+        rules.add(new xOfaKind(3));
+        rules.add(new TwoPairs());
+        rules.add(new xOfaKind(2));
+        rules.add(new HighCard());
 
         for (IRule r : rules) {
             if (r.match(hand)) {
@@ -115,33 +106,36 @@ public class HandCalculator {
         return rule.toString();
     }
 
-    public static Map<Integer, Double> getWinningPercentages(List<Player> playersInHand, List<Card> communityCards) {
+    public static Map<Integer, Double> getWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards) {
         assert communityCards.size() >= 3 : "Computing percentages before the flop is displayed takes too much time";
 
         Map<Integer, Double> percentages = new HashMap<>();
         Map<Integer, Integer> scenariosWon = new HashMap<>();
-        playersInHand.stream().forEach(p -> scenariosWon.put(p.getID(), 0));
+        holeCards.forEach((id, hc) -> scenariosWon.put(id, 0));
 
         ArrayList<Card> usedCards = new ArrayList<>(communityCards);
-        playersInHand.stream().forEach(p -> usedCards.addAll(Arrays.asList(p.getHoleCards())));
+        holeCards.forEach((id, hc) -> usedCards.addAll(Arrays.asList(hc)));
 
-        addMoreCards(playersInHand, new ArrayList<>(communityCards), scenariosWon, new ArrayList<>(usedCards));
+        addMoreCards(holeCards, new ArrayList<>(communityCards), scenariosWon, new ArrayList<>(usedCards));
 
         double totalScenarios = 0;
         for (Integer i : scenariosWon.keySet())
             totalScenarios += scenariosWon.get(i);
 
-        for (Player p : playersInHand)
-            percentages.put(p.getID(), (double)scenariosWon.get(p.getID()) / totalScenarios);
+        final double tot = totalScenarios;
+        holeCards.forEach((id, hc) -> percentages.put(id, (double)scenariosWon.get(id) / tot));
 
         return percentages;
     }
 
-    private static void addMoreCards(List<Player> playersInHand, ArrayList<Card> communityCards, Map<Integer, Integer> scenariosWon, ArrayList<Card> usedCards) {
+    private static void addMoreCards(Map<Integer, Card[]> holeCards, ArrayList<Card> communityCards, Map<Integer, Integer> scenariosWon, ArrayList<Card> usedCards) {
         if (communityCards.size() == 5) {
-            Comparator<Player> comp = (p1, p2) -> p1.getHand(communityCards).compareTo(p2.getHand(communityCards));
-            Player winner = playersInHand.stream().max(comp).get();
-            scenariosWon.put(winner.getID(), scenariosWon.get(winner.getID())+1);
+            Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
+            Card[] max = Collections.max(holeCards.values(), comp);
+            holeCards.forEach((id, hc) -> {
+                if (hc.equals(max))
+                    scenariosWon.put(id, scenariosWon.get(id)+1);
+            });
             return;
         }
 
@@ -154,7 +148,7 @@ public class HandCalculator {
 
             communityCards.add(card);
             usedCards.add(card);
-            addMoreCards(playersInHand, communityCards, scenariosWon, usedCards);
+            addMoreCards(holeCards, communityCards, scenariosWon, usedCards);
             communityCards.remove(card);
             usedCards.remove(card);
         }

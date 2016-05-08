@@ -3,7 +3,12 @@ package gamelogic;
 import gamelogic.ai.MCTSAI;
 import gamelogic.ai.SimpleAI;
 import gui.*;
+import network.NetworkClient;
+import network.UpiUtils;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.*;
 
 /**
@@ -14,68 +19,116 @@ import java.util.*;
 public class GameController {
     private Game game;
     private Map<Integer, GameClient> clients;
-    private GUIClient guiClient;
-    private GUIMain mainGUI;
-    public GameSettings gameSettings;
+
+    private GameSettings gameSettings;
+    private final Optional<GUIMain> guiMain;
     private String name;
     private Map<Integer, String> names;
     private boolean showAllPlayerCards;
+    private MainScreen.GameType gameType;
 
-    public GameController(GUIMain gui) {
-        this.mainGUI = gui;
+    /**
+     * Used by GUI to create a new single player game
+     */
+    public GameController(GameSettings settings, GUIMain guiMain) {
+        this.guiMain = Optional.of(guiMain);
+        this.gameSettings = settings;
+        this.game = new Game(settings, this);
+
+        clients = new HashMap<>();
+        names = new HashMap<>();
+    }
+
+    /**
+     * Used by Server to create a new GameController for a network game
+     */
+    public GameController(GameSettings settings) {
+        this.guiMain = Optional.empty();
+        this.gameSettings = settings;
+        this.game = new Game(settings, this);
+
+        clients = new HashMap<>();
+        names = new HashMap<>();
+    }
+
+    public GameController() {
+        this(new GameSettings(GameSettings.DEFAULT_SETTINGS));
+    }
+
+    /**
+     * @return a deep copy of the game's settings
+     */
+    public GameSettings getGameSettings() {
+        return new GameSettings(gameSettings);
     }
 
     /**
      * Called when the enter button is clicked.
      * Checks valid number of players, then makes GUI show the lobby screen
      * @param name
-     * @param numPlayers
-     * @param aiType Type of AI (Simple or MCTS)
      */
-    public void enterButtonClicked(String name, int numPlayers, AIType aiType) {
+    public void enterButtonClicked(String name, InetAddress IPAddress, MainScreen.GameType gameType) {
         //Tell GUI to display Lobby
-        gameSettings = new GameSettings(5000, 50, 25, numPlayers, 10, aiType);
-        if (numPlayers >=2 && numPlayers <= 6) {
-            mainGUI.displayLobbyScreen(name, gameSettings);
-            this.name = name;
-        }
+        gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        this.gameType = gameType;
+
+        if(gameType == MainScreen.GameType.SINGLE_PLAYER)
+            guiMain.get().displaySinglePlayerScreen(name, gameSettings);
+        else
+            guiMain.get().displayMultiPlayerScreen(name, IPAddress, gameSettings);
+
+        this.name = name;
     }
 
     /**
      * Called when the start tournament button is clicked.
      * Creates a new game, creates clients and starts the game.
      *
-     * @param gamesettings Game settings
-     * @param showCards
+     * @param showCards If all players hole cards should be visible or not
      */
-    public void startTournamentButtonClicked(GameSettings gamesettings, boolean showCards) {
+    public Thread initGame(boolean showCards, List<Socket> clientSockets) throws Game.InvalidGameSettingsException {
         //Make a new Game object and validate
-        game = new Game(gamesettings, this);
+        game = new Game(gameSettings, this);
         this.showAllPlayerCards = showCards;
 
-        String error;
-        if (((error = game.getError()) != null)) {
-            mainGUI.displayErrorMessageToLobby(error);
-            return;
-        }
+        GUIMain.replayLogPrint("SETTINGS\n" + gameSettings.toString());
 
-        //Empty maps of clients/names
-        clients = new HashMap<>();
-        names = new HashMap<>();
+        if ((game.getError() != null)) {
+            throw new Game.InvalidGameSettingsException(game.getError());
+        }
+        NameGenerator.readNewSeries();
 
         //Create GUI-GameClient
-        createGUIClient(gamesettings);
+        if (guiMain.isPresent()) {
+            createGUIClient(gameSettings);
+        }
 
+        System.out.println("Creating " + clientSockets.size() + " network clients");
+        // Create network clients
+        createNetworkClients(clientSockets);
+
+        System.out.println("Creating ai clients");
         //Create AI-GameClients
-        int numberOfAIClients = gameSettings.getMaxNumberOfPlayers() - 1;
-        createAIClients(numberOfAIClients, gamesettings);
+        int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers();
+        if (guiMain.isPresent()) {
+            numberOfAIClients--;
+        }
+        numberOfAIClients -= clientSockets.size();
+        createAIClients(numberOfAIClients, gameSettings);
 
         //Set initial blind values for clients
         initClients();
 
         //Print welcome message to log
-        this.printToLogField("Game with " + gameSettings.getMaxNumberOfPlayers() + " players started!");
+        this.printToLogField("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!");
 
+        return startGame();
+    }
+
+    /**
+     * Method to start the game (in a separate thread)
+     */
+    public Thread startGame() {
         Thread gameThread = new Thread("GameThread") {
             @Override
             public void run() {
@@ -83,30 +136,73 @@ public class GameController {
             }
         };
         gameThread.start();
+        return gameThread;
     }
 
     /**
      * Create a GUI-client with initial values
      */
     private void createGUIClient(GameSettings settings) {
-        guiClient = mainGUI.displayGameScreen(settings, 0);
+        GameClient guiClient = guiMain.get().displayGameScreen(settings, 0);
         clients.put(0, guiClient);
         game.addPlayer(this.name, 0);
-        mainGUI.insertPlayer(0, this.name, settings.getStartStack());
+        guiMain.get().insertPlayer(0, this.name, settings.getStartStack());
         guiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
         names.put(0, name);
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
 
+    private void createNetworkClients(List<Socket> clientSockets) {
+        ArrayList<Thread> clientThreads = new ArrayList<>();
+        for (int i = clients.size(); i < clientSockets.size(); i++) {
+            int id = i;
+            Runnable r = () -> {
+                GameClient networkClient;
+                try {
+                    Socket socket = clientSockets.get(guiMain.isPresent() ? id - 1 : id);
+                    System.out.println("Creating network client");
+                    networkClient = new NetworkClient(socket, id);
+                } catch (IOException e) {
+                    System.out.println("Failed to connect to a client, dropping client");
+                    return;
+                }
+                System.out.println("Connected to network client");
+                networkClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
+                String name = networkClient.getName();
+                if (name.equals("")) {
+                    name = NameGenerator.getRandomName();
+                }
+                synchronized (this) {
+                    clients.put(id, networkClient);
+
+                    game.addPlayer(name, id);
+                    assert !names.containsKey(id);
+                    names.put(id, name);
+                    GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
+                }
+
+            };
+            clientThreads.add(new Thread(r));
+            System.out.println("Connecting to client...");
+            clientThreads.get(clientThreads.size() - 1).start();
+        }
+        // Wait for all clients to finish initialization
+        for (Thread thread : clientThreads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * Create a given number of AI-clients to correspond to Player's in Game
      */
     private void createAIClients(int numberOfAIs, GameSettings settings) {
-        NameGenerator.readNewSeries();
 
         for (int i = 0; i < numberOfAIs; i++) {
             String aiName = NameGenerator.getRandomName();
-            int AI_id = i + 1;
+            int AI_id = clients.size();
 
             GameClient aiClient;
             double contemptFactor = 1.00;
@@ -126,11 +222,27 @@ public class GameController {
             aiClient.setAmountOfPlayers(settings.getMaxNumberOfPlayers());
             clients.put(AI_id, aiClient);
             game.addPlayer(aiName, AI_id);
-            mainGUI.insertPlayer(AI_id, aiName, settings.getStartStack());
+            if (guiMain.isPresent()) {
+                guiMain.get().insertPlayer(AI_id, aiName, settings.getStartStack());
+            }
+            assert !names.containsKey(AI_id) : "Name list already has a name for " + AI_id;
             names.put(AI_id, aiName);
             GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
         }
     }
+
+    /**
+     * @param id The id of this client
+     * @param client Network or AI client
+     * @param name Name of the client
+     */
+    public void addClient(int id, GameClient client, String name) {
+        this.clients.put(id, client);
+        game.addPlayer(name, id);
+        client.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
+        names.put(id, name);
+    }
+
 
     /**
      * Informs each client about the small and big blind amount
@@ -140,6 +252,9 @@ public class GameController {
         for (Integer clientID : clients.keySet()) {
             clients.get(clientID).setPlayerNames(new HashMap<>(names));
         }
+        game.refreshAllStackSizes();
+        //setPositions(game.);
+
     }
 
     /**
@@ -159,9 +274,6 @@ public class GameController {
      * @return Decision made by the client
      */
     public Decision getDecisionFromClient(int ID) {
-        //Tell the GUI-client to highlight the players turn
-        guiClient.highlightPlayerTurn(ID);
-
         //Ask for decision from client
         GameClient client = clients.get(ID);
         if (client instanceof SimpleAI || client instanceof MCTSAI)
@@ -181,11 +293,22 @@ public class GameController {
         long timeToTake = 500L + (long)(Math.random() * 2000.0);
         Decision decision = aiClient.getDecision(timeToTake);
         long timeTaken = System.currentTimeMillis() - startTime;
-        try { Thread.sleep(Math.max(0, timeToTake - timeTaken)); }
+
+        delay(timeToTake - timeTaken);
+
+        return decision;
+    }
+
+    /**
+     * Sleeps the thread for given amount of time
+     * @param delayTime
+     */
+    public void delay(long delayTime) {
+        System.out.println("Delay");
+        try { Thread.sleep(Math.max(0, delayTime)); }
         catch (InterruptedException e) {
             System.out.println("Sleeping thread interrupted");
         }
-        return decision;
     }
 
     /**
@@ -203,9 +326,10 @@ public class GameController {
      * @param showdownStats Information about pot (and side pots) and who won
      */
     public void showdown(ShowdownStats showdownStats) {
+        String[] tokens = UpiUtils.tokenize("\"" + showdownStats.getWinnerText().replace("\n", "\" \"") + "\"").get();
         for (Integer clientID : clients.keySet()) {
             GameClient c = clients.get(clientID);
-            c.showdown(showdownStats);
+            c.showdown(tokens);
         }
     }
 
@@ -217,11 +341,13 @@ public class GameController {
      * @param card2 Card two in the hand
      */
     public void setHandForClient(int clientID, Card card1, Card card2) {
-        GameClient c = clients.get(clientID);
-        c.setHandForClient(clientID, card1, card2);
-
-        if (showAllPlayerCards)
-            guiClient.setHandForClient(clientID, card1, card2);
+        if (showAllPlayerCards) { // Send everyone's hole cards to everyone
+            clients.forEach((id, client) -> client.setHandForClient(id, card1, card2));
+        }
+        else {
+            GameClient c = clients.get(clientID);
+            c.setHandForClient(clientID, card1, card2);
+        }
     }
 
     /**
@@ -322,10 +448,10 @@ public class GameController {
     }
 
     /**
-     * Print a message to the on screen log
+     * Print a message to all clients' logs
      */
     public void printToLogField(String message) {
-        guiClient.printToLogField(message);
+        clients.forEach((id, client) -> client.printToLogField(message));
     }
 
     /**
@@ -333,7 +459,7 @@ public class GameController {
      *  Prints a text showing who won the pot and how much it was. Also prints to logfield
      */
     public void preShowdownWinner(int winnerID) {
-        guiClient.preShowdownWinner(winnerID);
+        clients.forEach((id, client) -> client.preShowdownWinner(winnerID));
     }
     /**
      * Called every time a player is bust to inform all clients
@@ -344,9 +470,9 @@ public class GameController {
             clients.get(clientID).playerBust(bustPlayerID, rank);
 
         GameClient bustedClient = clients.get(bustPlayerID);
-        if (!(bustedClient instanceof GUIClient)) {
+        if (!(bustedClient instanceof GUIClient || bustedClient instanceof NetworkClient)) {
             clients.remove(bustPlayerID);
-        } else {
+        } else if (this.gameType == MainScreen.GameType.SINGLE_PLAYER){
             showAllPlayerCards = true;
         }
     }
@@ -356,6 +482,9 @@ public class GameController {
      * @param holeCards Hole cards of the players to show, indexed by playerIDs
      */
     public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        guiClient.showHoleCards(holeCards);
+        //guiClient.showHoleCards(holeCards); This method has been removed
+        clients.forEach((clientId, client) -> {
+            holeCards.forEach((id, cards) -> client.setHandForClient(id, cards[0], cards[1]));
+        });
     }
 }
