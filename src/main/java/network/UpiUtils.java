@@ -264,24 +264,30 @@ public class UpiUtils {
     }
 
     /**
-     *  Turns a upi string into a statistics object
+     *  Turns a upi string into an optional statistics object
+     *  @return an optional statistics object (empty if parsing failed)
      *  @throws PokerProtocolException
      */
-    public static Statistics upiStringToStatistics(String input) throws PokerProtocolException {
+    public static Optional<Statistics> upiStringToStatistics(String input) throws PokerProtocolException {
         Optional<String []> tokens = UpiUtils.tokenize(input);
         if (!tokens.isPresent())
-            return null;
+            return Optional.empty();
 
-        int pID = parseIntToken(tokens.get()[2]);
-        String rankingTableString = tokens.get()[4];
-        String namesString = tokens.get()[6];
-        int handsWon = parseIntToken(tokens.get()[8]);
-        int handsPlayed = parseIntToken(tokens.get()[10]);
-        int foldsPreFlop = parseIntToken(tokens.get()[12]);
-        int aggressiveMoves = parseIntToken(tokens.get()[14]);
-        int passiveMoves = parseIntToken(tokens.get()[16]);
-        String bestHand = tokens.get()[18];
+        try {
+            int pID = parseIntToken(tokens.get()[2]);
+            String rankingTableString = tokens.get()[4];
+            String namesString = tokens.get()[6];
+            int handsWon = parseIntToken(tokens.get()[8]);
+            int handsPlayed = parseIntToken(tokens.get()[10]);
+            int foldsPreFlop = parseIntToken(tokens.get()[12]);
+            int aggressiveMoves = parseIntToken(tokens.get()[14]);
+            int passiveMoves = parseIntToken(tokens.get()[16]);
+            String bestHand = tokens.get()[18];
 
-        return new Statistics(pID, stringToIntIntMap(rankingTableString), stringToIntStringMap(namesString), handsWon, handsPlayed, foldsPreFlop, aggressiveMoves, passiveMoves, bestHand);
+            return Optional.of(new Statistics(pID, stringToIntIntMap(rankingTableString), stringToIntStringMap(namesString), handsWon, handsPlayed, foldsPreFlop, aggressiveMoves, passiveMoves, bestHand));
+        } catch (PokerProtocolException ppe) {
+            ppe.printStackTrace();
+            return Optional.empty();
+        }
     }
 }

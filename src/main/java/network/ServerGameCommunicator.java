@@ -2,6 +2,7 @@ package network;
 
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gamelogic.Statistics;
 import gui.GUIMain;
 
 import java.io.*;
@@ -165,6 +166,17 @@ public class ServerGameCommunicator {
                     assert gameClient.isPresent();
                     if (gameClient.isPresent())
                         gameClient.get().printToLogField(tokens[1]);
+                    break;
+                case "statistics":
+                    assert gameClient.isPresent();
+                    Optional<Statistics> stats = UpiUtils.upiStringToStatistics(input);
+                    if (stats.isPresent() && gameClient.isPresent())
+                        gameClient.get().gameOver(stats.get());
+                    break;
+                case "preShowdownWinner":
+                    assert gameClient.isPresent();
+                    if (gameClient.isPresent())
+                        gameClient.get().preShowdownWinner(UpiUtils.parseIntToken(tokens[1]));
                     break;
                 default:
                     System.out.println("Received unrecognized command \"" + input + "\"");

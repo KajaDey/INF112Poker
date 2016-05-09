@@ -201,8 +201,8 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public void gameOver(Statistics stats) {
-        Platform.runLater(() -> gameScreen.gameOver(stats));
+    public void gameOver(Statistics statistics) {
+        Platform.runLater(() -> gameScreen.gameOver(statistics));
     }
 
     @Override

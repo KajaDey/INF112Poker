@@ -118,7 +118,7 @@ public class SimpleAI implements GameClient {
     }
 
     @Override
-    public void gameOver(Statistics stats) { }
+    public void gameOver(Statistics statistics) { }
 
     @Override
     public void printToLogField(String output) {

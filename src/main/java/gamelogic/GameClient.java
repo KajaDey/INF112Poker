@@ -116,9 +116,9 @@ public interface GameClient {
 
     /**
      *  Called when the game ends (only 1 player has chips left)
-     * @param winnerID ID of winner
+     * @param statistics Personal statistics for this game
      */
-    void gameOver(Statistics winnerID);
+    void gameOver(Statistics statistics);
 
     /**
      * Sends log output to the client, which the client may display to the user
