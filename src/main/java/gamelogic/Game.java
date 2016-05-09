@@ -598,7 +598,7 @@ public class Game {
      * @return A random card from the deck if replay is false, the next card from the replay queue if not
      */
     private Card drawCard() {
-        if (cardQueue.isEmpty()) {
+        if (!(cardQueue == null) && cardQueue.isEmpty()) {
             delay(3000);
             System.exit(0);
         }
