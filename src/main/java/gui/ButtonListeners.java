@@ -218,13 +218,4 @@ public class ButtonListeners {
             tf.setText("" + currentBB);
         }
     }
-
-    /**
-     * What happens when a player sends a message to chat
-     * @param text Text entered in chat field
-     */
-    public static void chatListener(String text) {
-
-    }
-
 }

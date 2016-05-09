@@ -1,6 +1,7 @@
 package gamelogic;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
 An interface which represents any poker game client,
@@ -131,4 +132,10 @@ public interface GameClient {
      * @param winnerID
      */
     void preShowdownWinner(int winnerID);
+
+    /**
+     * Set chat listener
+     * @param chatListener A chat listener to be fired if the client chats
+     */
+    void setChatListener(Consumer<String> chatListener);
 }

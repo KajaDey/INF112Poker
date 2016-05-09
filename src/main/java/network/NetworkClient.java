@@ -8,6 +8,8 @@ import gamelogic.Statistics;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.Consumer;
 
 /**
  * An implementation of upi (universal poker interface) (Specification on the docs)
@@ -23,10 +25,13 @@ public class NetworkClient implements GameClient {
     private Socket socket;
     private BufferedReader socketInput;
     private BufferedWriter socketOutput;
-    private Object lock = new Object();
     Optional<Decision> decision = Optional.empty();
     Queue<String> outstandingWrites = new LinkedList<>();
 
+    //Blocking queues for locking while reading
+    private ArrayBlockingQueue<String> nameBlockingQueue = new ArrayBlockingQueue<>(1);
+    private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(2);
+    private Consumer<String> chatListener;
 
     /**
      * Initializes the network client, and does the upi handshake with the remote client
@@ -48,7 +53,10 @@ public class NetworkClient implements GameClient {
         new Thread(this::readFromSocket).start();
     }
 
-    public synchronized void readFromSocket(){
+    /**
+     * Read from socket and make appropriate action
+     */
+    public void readFromSocket(){
             while (true) {
                 try {
                     String input = socketInput.readLine();
@@ -56,16 +64,17 @@ public class NetworkClient implements GameClient {
                     if (tokens.isPresent())
                         switch (tokens.get()[0]) {
                             case "chat":
-
+                                if (tokens.get().length > 1)
+                                    chatListener.accept(tokens.get()[1]);
                                 break;
-                            case "decision": //decisions
+                            case "decision":
+                                //Parse decision and queue it. If it can't be parsed, queue FOLD
                                 decision = UpiUtils.parseDecision(input.substring("decision ".length()));
-                                notifyAll(); //notify the getDecision-thread
+                                decisionBlockingQueue.add(decision.isPresent() ? decision.get() : Decision.fold);
                                 break;
                             case "playerName":
-                                this.name = tokens.get()[1];
-                                System.out.println("Received name " + this.name);
-                                notifyAll();
+                                //Queue name so that getName will be unlocked
+                                nameBlockingQueue.add(tokens.get()[1]);
                                 break;
                             default:
                                 throw new IOException("Could not parse input " + input);
@@ -83,6 +92,12 @@ public class NetworkClient implements GameClient {
 
 
     @Override
+    /**
+     *  Get decision from this client.
+     *  Writes get decision + timeToThink to client and waits for decisionBlockingQueue to unlock.
+     *
+     *  @return The decision the player made if it is parsed correctly, fold if not
+     */
     public synchronized Decision getDecision(long timeToThink) {
         //Write getDecision to client
         if (!writeToSocket("getDecision " + timeToThink)) {
@@ -90,43 +105,37 @@ public class NetworkClient implements GameClient {
             return Decision.fold;
         }
 
-        //Wait for readingThread to signal that a decision has been made
+        //Wait for decision to be added to decision queue (by the readingThread)
         try {
-            lock.wait();
-        } catch (InterruptedException | IllegalStateException e) {
+            return decisionBlockingQueue.take();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+            return Decision.fold;
         }
-
-        //If no decision is present, return fold
-        return decision.isPresent() ? decision.get() : Decision.fold;
     }
 
     @Override
     public synchronized String getName() {
         writeToSocket("getName");
 
-        System.out.println("Waiting for name..");
-
+        //Wait for name to be added to name queue (by the reading thread)
         try {
-            lock.wait();
-        } catch (InterruptedException | IllegalStateException e) {
+            return nameBlockingQueue.take();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+            return "";
         }
-
-        System.out.println("Returning name " + this.name);
-
-        return this.name;
     }
 
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
         Map<Integer, String> namesForSending = new HashMap<>(names);
-        for (Integer key : namesForSending.keySet()) {
-            if (namesForSending.get(key).contains(" ")) {
-                System.out.println("Found name containing space, wrapping in quotation marks");
-                namesForSending.put(key, "\"" + namesForSending.get(key) + "\"");
-            }
-        }
+        namesForSending.keySet().stream()
+                .filter(key -> namesForSending.get(key).contains(" "))
+                .forEach(key -> {
+                    System.out.println("Found name containing space, wrapping in quotation marks");
+                    namesForSending.put(key, "\"" + namesForSending.get(key) + "\"");
+                });
         writeToSocket("playerNames " + UpiUtils.mapToString(namesForSending));
     }
 
@@ -211,7 +220,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void printToLogField(String output) {
-        //TODO: Implement
+        writeToSocket("logPrint \"" + output + "\"");
     }
 
     @Override
@@ -281,5 +290,13 @@ public class NetworkClient implements GameClient {
     @Override
     public String toString() {
         return "{ NetworkClient, id " + playerId + " }";
+    }
+
+    /**
+     *  Set the chat listener
+     * @param chatListener Listener to be fired when a client sends a chat message
+     */
+    public void setChatListener(Consumer<String> chatListener) {
+        this.chatListener = chatListener;
     }
 }

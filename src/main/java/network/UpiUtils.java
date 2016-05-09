@@ -6,6 +6,7 @@ import gui.GameSettings;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import network.Server.PokerProtocolException;
 
 /**
  * Various utility methods for converting between objects and upi-compatible strings representations
@@ -174,6 +175,57 @@ public class UpiUtils {
         }
     }
 
+    /**
+     * Like Integer.parseInt,except that it throws a checked exception if it fails
+     * @param input String token
+     * @return int token
+     * @throws PokerProtocolException
+     */
+    public static int parseIntToken(String input) throws PokerProtocolException {
+        try {
+            return Integer.parseInt(input);
+        }
+        catch (NumberFormatException e) {
+            throw new PokerProtocolException("Error parsing " + input + " to int");
+        }
+    }
 
+    /**
+     * Like Long.parseLong,except that it throws a checked exception if it fails
+     * @param input String token
+     * @return long token
+     * @throws PokerProtocolException
+     */
+    public static long parseLongToken(String input) throws PokerProtocolException {
+        try {
+            return Long.parseLong(input);
+        }
+        catch (NumberFormatException e) {
+            throw new PokerProtocolException("Error parsing " + input + " to long");
+        }
+    }
+
+    /**
+     * Parse a string to a card
+     */
+    public static Card parseCard(String input) {
+        if (input.startsWith("spades")) {
+            int rank = Integer.parseInt(input.substring("spades".length()));
+            return Card.of(rank, Card.Suit.SPADES).get();
+        }
+        else if (input.startsWith("hearts")) {
+            int rank = Integer.parseInt(input.substring("hearts".length()));
+            return Card.of(rank, Card.Suit.HEARTS).get();
+        }
+        else if (input.startsWith("diamonds")) {
+            int rank = Integer.parseInt(input.substring("diamonds".length()));
+            return Card.of(rank, Card.Suit.DIAMONDS).get();
+        }
+        else if (input.startsWith("clubs")) {
+            int rank = Integer.parseInt(input.substring("clubs".length()));
+            return Card.of(rank, Card.Suit.CLUBS).get();
+        }
+        throw new IllegalArgumentException("Couldn't parse card " + input);
+    }
 
 }

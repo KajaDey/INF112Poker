@@ -1,15 +1,12 @@
 package network;
 
-import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.GameClient;
 import gui.GUIMain;
-import gui.GameSettings;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -60,6 +57,7 @@ public class ServerGameCommunicator {
             if (tokens.length == 0) {
                 throw new IOException("Received empty command \"" + input + "\" from server");
             }
+
             switch (tokens[0]) {
                 case "getName":
                     socketWriter.write("playerName \"" + playerName + "\"\n");
@@ -81,7 +79,11 @@ public class ServerGameCommunicator {
                     gameClient = Optional.of(GUIMain.guiMain.displayGameScreen(Integer.parseInt(tokens[1])));
                     try { // Wait for a bit for the GUI to get ready
                         Thread.sleep(50);
-                    } catch (InterruptedException e) { }
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread " + Thread.currentThread() + " interrupted.");
+                    }
+                    //Set the chat listener
+                    gameClient.get().setChatListener(this::chatListener);
                     break;
                 case "playerNames":
                     assert gameClient.isPresent();
@@ -90,8 +92,7 @@ public class ServerGameCommunicator {
                         for (int i = 1; i < tokens.length; i += 2) {
                             playerNames.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
                         }
-                    }
-                    catch (RuntimeException e) {
+                    } catch (RuntimeException e) {
                         System.out.println(e.getMessage());
                         System.out.println("Failed to parse " + input);
                         break;
@@ -124,19 +125,19 @@ public class ServerGameCommunicator {
                     break;
                 case "setHand":
                     assert gameClient.isPresent();
-                    gameClient.get().setHandForClient(Integer.parseInt(tokens[1]), parseCard(tokens[2]), parseCard(tokens[3]));
+                    gameClient.get().setHandForClient(Integer.parseInt(tokens[1]), UpiUtils.parseCard(tokens[2]), UpiUtils.parseCard(tokens[3]));
                     break;
                 case "setFlop":
                     assert gameClient.isPresent();
-                    gameClient.get().setFlop(parseCard(tokens[1]), parseCard(tokens[2]), parseCard(tokens[3]));
+                    gameClient.get().setFlop(UpiUtils.parseCard(tokens[1]), UpiUtils.parseCard(tokens[2]), UpiUtils.parseCard(tokens[3]));
                     break;
                 case "setTurn":
                     assert gameClient.isPresent();
-                    gameClient.get().setTurn(parseCard(tokens[1]));
+                    gameClient.get().setTurn(UpiUtils.parseCard(tokens[1]));
                     break;
                 case "setRiver":
                     assert gameClient.isPresent();
-                    gameClient.get().setRiver(parseCard(tokens[1]));
+                    gameClient.get().setRiver(UpiUtils.parseCard(tokens[1]));
                     break;
                 case "playerBust":
                     assert gameClient.isPresent();
@@ -151,7 +152,7 @@ public class ServerGameCommunicator {
                     break;
                 case "getDecision": {
                     assert gameClient.isPresent();
-                    Decision decision = decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
+                    Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
                     socketWriter.write(UpiUtils.decisionToString(decision) + "\n");
                     socketWriter.flush();
                     break;
@@ -164,7 +165,10 @@ public class ServerGameCommunicator {
                     }
                     int id = Integer.parseInt(tokens[1]);
                     gameClient.get().playerMadeDecision(id, decision.get());
-
+                    break;
+                case "logPrint":
+                    assert gameClient.isPresent();
+                    gameClient.get().printToLogField(tokens[1]);
                     break;
                 default:
                     System.out.println("Received unrecognized command \"" + input + "\"");
@@ -172,23 +176,16 @@ public class ServerGameCommunicator {
         }
     }
 
-    public static Card parseCard(String input) {
-        if (input.startsWith("spades")) {
-            int rank = Integer.parseInt(input.substring("spades".length()));
-            return Card.of(rank, Card.Suit.SPADES).get();
+    /**
+     * Send a chat message to the server
+     */
+    public void chatListener(String chatMessage) {
+        try {
+            socketWriter.write("chat \"" + chatMessage + "\"\n");
+            socketWriter.flush();
+        } catch (IOException e) {
+            System.out.println("Could not send chat message, " + chatMessage);
+            e.printStackTrace();
         }
-        else if (input.startsWith("hearts")) {
-            int rank = Integer.parseInt(input.substring("hearts".length()));
-            return Card.of(rank, Card.Suit.HEARTS).get();
-        }
-        else if (input.startsWith("diamonds")) {
-            int rank = Integer.parseInt(input.substring("diamonds".length()));
-            return Card.of(rank, Card.Suit.DIAMONDS).get();
-        }
-        else if (input.startsWith("clubs")) {
-            int rank = Integer.parseInt(input.substring("clubs".length()));
-            return Card.of(rank, Card.Suit.CLUBS).get();
-        }
-        throw new IllegalArgumentException("Couldn't parse card " + input);
     }
 }

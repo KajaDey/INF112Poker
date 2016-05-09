@@ -5,6 +5,7 @@ import gamelogic.ai.GameState;
 import javafx.application.Platform;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -73,9 +74,6 @@ public class GUIClient implements GameClient {
 
     /**
      * Called from ButtonListeners-class to notify the client that a decision has been made
-     *
-     * @param move
-     * @param moveSize
      */
     public synchronized void setDecision(Decision.Move move, long moveSize) {
         if (!validMove(move, moveSize))
@@ -324,5 +322,10 @@ public class GUIClient implements GameClient {
 
     public void preShowdownWinner(int winnerID) {
         Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
+    }
+
+    @Override
+    public void setChatListener(Consumer<String> chatListener) {
+        Platform.runLater(() -> gameScreen.setChatListener(chatListener));
     }
 }
