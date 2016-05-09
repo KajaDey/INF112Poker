@@ -151,19 +151,20 @@ public class ServerGameCommunicator {
                     break;
                 case "getDecision": {
                     assert gameClient.isPresent();
-                    Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
+                    Decision decision = decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
                     socketWriter.write(UpiUtils.decisionToString(decision) + "\n");
                     socketWriter.flush();
                     break;
                 }
                 case "playerMadeDecision":
                     assert gameClient.isPresent();
-                    Optional<Decision> decision = UpiUtils.parseDecision(tokens[2]);
+                    Optional<Decision> decision = UpiUtils.parseDecision(tokens[3]);
                     if (!decision.isPresent()) {
                         System.out.println("Couldn't parse decision " + tokens[2]);
                     }
                     int id = Integer.parseInt(tokens[1]);
-                    gameClient.get().playerMadeDecision(id,  decision.get());
+                    gameClient.get().playerMadeDecision(id, decision.get());
+
                     break;
                 default:
                     System.out.println("Received unrecognized command \"" + input + "\"");

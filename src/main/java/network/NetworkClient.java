@@ -19,10 +19,13 @@ import java.util.*;
 public class NetworkClient implements GameClient {
 
     private final int playerId;
+    private String name;
     private Socket socket;
     private BufferedReader socketInput;
     private BufferedWriter socketOutput;
+    Optional<Decision> decision = Optional.empty();
     Queue<String> outstandingWrites = new LinkedList<>();
+
 
     /**
      * Initializes the network client, and does the upi handshake with the remote client
@@ -40,74 +43,71 @@ public class NetworkClient implements GameClient {
         //Sending upi-handshake
         writeToSocket("upiok");
         writeToSocket("clientId " + playerId);
+
+        new Thread(this::readFromSocket).start();
     }
 
-    public void readFromSocket(){
-        Runnable task = (() -> {
+    public synchronized void readFromSocket(){
+        while(true) {
             try {
                 String input = socketInput.readLine();
-                Optional<String []> tokens = UpiUtils.tokenize(input);
+                Optional<String[]> tokens = UpiUtils.tokenize(input);
                 if (tokens.isPresent())
-                switch (tokens.get()[0]) {
-                    case "chat":
+                    switch (tokens.get()[0]) {
+                        case "chat":
 
-                        break;
-                    case "decision": //decisions
-
-                        break;
-
-                    default:
-                        throw new IOException("Could not parse input " + input);
-                }
+                            break;
+                        case "decision": //decisions
+                            decision = UpiUtils.parseDecision(input.substring("decision ".length()));
+                            notifyAll(); //notify the getDecision-thread
+                            break;
+                        case "playerName":
+                            this.name = tokens.get()[1];
+                            notifyAll();
+                            break;
+                        default:
+                            throw new IOException("Could not parse input " + input);
+                    }
 
             } catch (IOException ioe) {
+                System.out.println("Unrecognized input");
                 ioe.printStackTrace();
             }
-
-
-        });
+        }
     }
 
-    @Override
-    public Decision getDecision(long timeToThink) {
 
+
+    @Override
+    public synchronized Decision getDecision(long timeToThink) {
+        //Write getDecision to client
         if (!writeToSocket("getDecision " + timeToThink)) {
             System.out.println("Failed to ask " + this + " for decision, folding...");
             return Decision.fold;
         }
 
+        //Wait for readingThread to signal that a decision has been made
         try {
-            String input = socketInput.readLine();
-            Optional<Decision> decision = UpiUtils.parseDecision(input);
-            if (!decision.isPresent()) {
-                System.out.println("Server received incorrectly formatted decision " + input + ", folding");
-                return Decision.fold;
-            } else {
-                return decision.get();
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to read decision from socket of " + this + ", folding...");
-            return Decision.fold;
+            wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
+        //If no decision is present, return fold
+        return decision.isPresent() ? decision.get() : Decision.fold;
     }
 
     @Override
-    public String getName() {
+    public synchronized String getName() {
         writeToSocket("getName");
-        String input;
+
         try {
-            input = socketInput.readLine();
-        } catch (IOException e) {
-            System.out.println("Failed to get name from client, returning blank");
-            return "";
+            wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        Optional<String[]> tokens = UpiUtils.tokenize(input);
-        System.out.println("Got name command " + input + " from client, tokens: " + Arrays.toString(tokens.get()));
-        if (!tokens.isPresent() || tokens.get().length <= 1 || !tokens.get()[0].equals("playerName")) {
-            System.out.println("Got illegal name command \"" + input + "\" from client, returning blank");
-            return "";
-        }
-        return tokens.get()[1];
+
+        return this.name;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void showdown(String[] winnerStrings) {
-        System.out.println("Gamecontroller sent winnerStrings " + Arrays.toString(winnerStrings));
+        System.out.println("Game controller sent winnerStrings " + Arrays.toString(winnerStrings));
         String winnerString = Arrays.stream(winnerStrings).map(s -> " \"" + s + "\"").reduce("", String::concat).trim();
         System.out.println("sending winnerString to clients: --" + winnerString + "--");
         writeToSocket("showdown " + winnerString);

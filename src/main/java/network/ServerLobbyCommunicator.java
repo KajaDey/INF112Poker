@@ -33,7 +33,7 @@ public class ServerLobbyCommunicator {
         this.lobbyScreen = lobbyScreen;
         Socket tempSocket = new Socket();
         // Attempt to connect to server up to 20 times before giving up
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 5; i++) {
             try {
                 tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
                 tempSocket.connect(new InetSocketAddress(serverAddress, 39100), 1000);

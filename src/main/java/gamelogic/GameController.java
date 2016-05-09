@@ -78,7 +78,7 @@ public class GameController {
         if(gameType == MainScreen.GameType.SINGLE_PLAYER)
             guiMain.get().displaySinglePlayerScreen(name, gameSettings);
         else if (gameType == MainScreen.GameType.MULTI_PLAYER)
-            guiMain.get().displayMultiPlayerScreen(name, IPAddress, gameSettings);
+            guiMain.get().displayMultiPlayerScreen(name, IPAddress);
 
         this.name = name;
     }
@@ -193,7 +193,7 @@ public class GameController {
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
 
-    private void createNetworkClients(List<Socket> clientSockets) {
+    /*private void createNetworkClients(List<Socket> clientSockets) {
         ArrayList<Thread> clientThreads = new ArrayList<>();
         for (int i = clients.size(); i < clientSockets.size(); i++) {
             int id = i;
@@ -234,6 +234,35 @@ public class GameController {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    } */
+
+    private void createNetworkClients(List<Socket> clientSockets) {
+        for (int i = clients.size(); i < clientSockets.size(); i++) {
+            int id = i;
+            GameClient networkClient;
+            try {
+                Socket socket = clientSockets.get(guiMain.isPresent() ? id - 1 : id);
+                System.out.println("Creating network client");
+                networkClient = new NetworkClient(socket, id);
+            } catch (IOException e) {
+                System.out.println("Failed to connect to a client, dropping client");
+                return;
+            }
+            System.out.println("Connected to network client");
+            networkClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
+            String name = networkClient.getName();
+            if (name.equals("")) {
+                name = NameGenerator.getRandomName();
+            }
+            synchronized (this) {
+                clients.put(id, networkClient);
+                game.addPlayer(name, id);
+                assert !names.containsKey(id);
+                names.put(id, name);
+                GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
+            }
+            System.out.println("Connecting to client...");
         }
     }
 

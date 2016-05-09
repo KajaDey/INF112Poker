@@ -75,7 +75,6 @@ public class LobbyScreen {
         } catch (IOException e) {
             displayErrorMessage(e.toString());
             GUIMain.debugPrintln("Error: Could not connect to server");
-            e.printStackTrace();
         }
     }
 
