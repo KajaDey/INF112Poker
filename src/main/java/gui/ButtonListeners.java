@@ -237,6 +237,8 @@ public class ButtonListeners {
                     break;
 
                 case ENTER:
+                    if (!ke.isShiftDown())
+                        return;
                     betButtonListener(tf, playerLayout.getBetRaiseButtonText());
                     break;
 
@@ -251,6 +253,8 @@ public class ButtonListeners {
                     break;
 
                 case BACK_SPACE:
+                    if (!ke.isShiftDown())
+                        return;
                     foldButtonListener();
                     break;
             }
