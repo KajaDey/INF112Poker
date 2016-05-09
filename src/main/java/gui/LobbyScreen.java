@@ -1,6 +1,7 @@
 package gui;
 
 import gamelogic.GameController;
+import gamelogic.Logger;
 import network.ServerLobbyCommunicator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -69,7 +70,7 @@ public class LobbyScreen {
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
         try {
-            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress, new Logger("Client", ""));
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
             displayErrorMessage("Could not connect to server");
