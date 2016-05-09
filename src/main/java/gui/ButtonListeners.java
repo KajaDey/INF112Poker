@@ -180,11 +180,12 @@ public class ButtonListeners {
      * @param ke Key pressed
      * @param playerLayout Player layout
      */
-    public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout, BoardLayout boardLayout) {
+    public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout, BoardLayout boardLayout, TextField chatField) {
         TextField tf = playerLayout.getAmountTextField();
         long currentBB = boardLayout.getBB(), stackSize = playerLayout.getStackSize();
 
-        if (tf.focusedProperty().getValue())
+        //If the amount field or chat field is focused, key shortcuts are disabled
+        if (tf.focusedProperty().getValue() || (chatField != null && chatField.focusedProperty().getValue()))
             return;
 
         try {

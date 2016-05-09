@@ -60,7 +60,7 @@ public class GameScreen {
         this.playerID = ID;
 
         //Set onKeyRelease and onMouseClick events for pane
-        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
+        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout, chatField));
         pane.setOnMouseClicked((event) -> playerLayout.setFocus());
 
         //Create the scene
@@ -71,6 +71,7 @@ public class GameScreen {
         insertLogField();
         insertChatField();
         addMenuBarToGameScreen();
+        pane.requestFocus();
     }
 
     /**
