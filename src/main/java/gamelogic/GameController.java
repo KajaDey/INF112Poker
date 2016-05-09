@@ -217,7 +217,7 @@ public class GameController {
                 try {
                     Socket socket = clientSockets.get(guiMain.isPresent() ? id - 1 : id);
                     logger.println("Creating network client", Logger.MessageType.NETWORK);
-                    networkClient = new NetworkClient(socket, id);
+                    networkClient = new NetworkClient(socket, id, logger);
                 } catch (IOException e) {
                     logger.println("Failed to connect to a client, dropping client", Logger.MessageType.INIT, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                     return;

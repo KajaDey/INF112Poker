@@ -37,7 +37,7 @@ public class NetworkClientTest {
 
                     Socket serverSocket = socketListener.accept();
 
-                    GameClient gameClient = new NetworkClient(serverSocket, i);
+                    GameClient gameClient = new NetworkClient(serverSocket, i, new Logger());
                     players.add(gameClient);
                     gameClient.setHandForClient(i, deck.draw().get(), deck.draw().get());
 
