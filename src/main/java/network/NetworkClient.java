@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 public class NetworkClient implements GameClient {
 
     private final int playerId;
-    private String name;
     private Socket socket;
     private BufferedReader socketInput;
     private BufferedWriter socketOutput;
@@ -61,7 +60,7 @@ public class NetworkClient implements GameClient {
                 try {
                     String input = socketInput.readLine();
                     Optional<String[]> tokens = UpiUtils.tokenize(input);
-                    if (tokens.isPresent())
+                    if (tokens.isPresent() && tokens.get().length != 0) {
                         switch (tokens.get()[0]) {
                             case "chat":
                                 if (tokens.get().length > 1)
@@ -79,7 +78,7 @@ public class NetworkClient implements GameClient {
                             default:
                                 throw new IOException("Could not parse input " + input);
                         }
-
+                    }
                 } catch (IOException ioe) {
                     System.out.println("Unrecognized input");
                     ioe.printStackTrace();
