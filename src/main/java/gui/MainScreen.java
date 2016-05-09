@@ -77,8 +77,8 @@ public class MainScreen {
         VBox playGameBox = new VBox();
         VBox watchGameBox = new VBox();
 
-        Button singlePlayer = ObjectStandards.makeMainScreenButton("Single Player");
-        Button multiPlayer = ObjectStandards.makeMainScreenButton("Multi player");
+        Button singlePlayer = ObjectStandards.makeMainScreenButton("Singleplayer");
+        Button multiPlayer = ObjectStandards.makeMainScreenButton("Multiplayer");
         Button watchReplay = ObjectStandards.makeMainScreenButton("Watch game");
         Button exit = ObjectStandards.makeMainScreenButton("Exit");
         Button selectFile = ObjectStandards.makeButtonForLobbyScreen("Select file");

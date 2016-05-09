@@ -46,6 +46,7 @@ public class GameSettings {
         maxNumberOfPlayers = oldSetting.maxNumberOfPlayers;
         levelDuration = oldSetting.levelDuration;
         aiType = oldSetting.aiType;
+        playerClock = oldSetting.playerClock;
     }
 
     /**

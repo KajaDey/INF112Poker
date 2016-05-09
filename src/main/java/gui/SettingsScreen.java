@@ -52,6 +52,7 @@ public class SettingsScreen {
         bigBlindTF.setText(String.valueOf(gameSettings.getBigBlind()));
         smallBlindTF.setText(String.valueOf(gameSettings.getSmallBlind()));
         levelDurationTF.setText(String.valueOf(gameSettings.getLevelDuration()));
+        playerClockTF.setText(String.valueOf(gameSettings.getPlayerClock()));
 
 
         choiceBox.setValue(gameSettings.getAiType().toString());
@@ -72,9 +73,6 @@ public class SettingsScreen {
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
                 bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue(), playerClockTF.getText()));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
-
-        //levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-        //bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, gameController,choiceBox.getValue()));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration ,playerClock ,aIDifficulty ,accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF ,playerClockTF ,choiceBox,cancel);
@@ -124,6 +122,7 @@ public class SettingsScreen {
         bigBlindTF.setText(String.valueOf(gameSettings.getBigBlind()));
         smallBlindTF.setText(String.valueOf(gameSettings.getSmallBlind()));
         levelDurationTF.setText(String.valueOf(gameSettings.getLevelDuration()));
+        playerClockTF.setText(String.valueOf(gameSettings.getPlayerClock()));
 
 
         choiceBox.setValue(gameSettings.getAiType().toString());
@@ -144,9 +143,6 @@ public class SettingsScreen {
         accept.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
                 bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, serverLobbyCommunicator, table, choiceBox.getValue(), playerClockTF.getText()));
         cancel.setOnAction(e -> ButtonListeners.cancelSettingsButtonListener(window));
-
-        //levelDurationTF.setOnAction(e -> ButtonListeners.acceptSettingsButtonListener(amountOfChipsTF.getText(), numberOfPlayersTF.getText(),
-        //bigBlindTF.getText(), smallBlindTF.getText(), levelDurationTF.getText(), window, serverLobbyCommunicator,choiceBox.getValue()));
 
         labelBox.getChildren().addAll(amountOfChips, numberOfPlayers, bigBlind, smallBlind, levelDuration ,playerClock ,aIDifficulty ,accept);
         textFieldBox.getChildren().addAll(amountOfChipsTF, numberOfPlayersTF, bigBlindTF, smallBlindTF, levelDurationTF ,playerClockTF ,choiceBox,cancel);

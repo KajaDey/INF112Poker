@@ -132,7 +132,6 @@ public class ButtonListeners {
             window.close();
 
         }catch (NumberFormatException e){
-
         }
 
     }

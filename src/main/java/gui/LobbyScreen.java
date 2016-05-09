@@ -6,7 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -117,13 +116,6 @@ public class LobbyScreen {
         gameInfo.getChildren().clear();
         updatePlayer(table);
 
-        CheckBox privateGameCheckbox = new CheckBox("Private game");
-        privateGameCheckbox.setFont(new Font("Areal", 15));
-        privateGameCheckbox.setStyle("-fx-text-fill: white");
-        privateGameCheckbox.setLayoutX(660);
-        privateGameCheckbox.setLayoutY(350);
-        privateGameCheckbox.setOnAction(e -> privateGameCheckboxListener(privateGameCheckbox.isSelected()));
-
         Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.playerIds.get(0)) + "'s game!");
         gameName.setLayoutX(325);
         gameName.setLayoutY(0);
@@ -158,7 +150,7 @@ public class LobbyScreen {
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        gameInfo.getChildren().addAll(settings, privateGameCheckbox, takeASeat, imageView, changeSettings, gameName, startGame);
+        gameInfo.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName, startGame);
         seatPlayersOnTable(table, gameInfo);
     }
 
@@ -243,9 +235,6 @@ public class LobbyScreen {
     }
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);
-    }
-    private void privateGameCheckboxListener(boolean selected) {
-
     }
 
     /**
