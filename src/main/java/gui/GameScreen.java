@@ -736,29 +736,35 @@ public class GameScreen {
         playerLayout.stopTimer();
     }
 
+    // The thread that is currently calculating winning percentages. Only one thread should be modifying the GUI at the time
+    private volatile Optional<Thread> winningPercentageComputer;
     /**
      * If hole cards are shown, calculate percentages for all players
      */
     public void showPercentages() {
         assert allHoleCards != null;
         if (!holeCardsShown) {
-            System.out.println((System.currentTimeMillis() % 1000) + ": Hole cards aren't shown");
+            System.out.println((System.currentTimeMillis() % 10000) + ": Hole cards aren't shown");
             return;
         }
-        System.out.println((System.currentTimeMillis() % 1000) + ": Starting computing wining percentages with " + holeCards.size() + " hole cards.");
+        //System.out.println((System.currentTimeMillis() % 10000) + ": Starting computing wining percentages with " + holeCards.size() + " hole cards.");
         Consumer<Map<Integer, Double>> callBack = (percentages) -> {
-            Platform.runLater(() ->
+            // Make sure another, older thread cannot simultaneously modify the GUI
+            if (winningPercentageComputer.isPresent() && winningPercentageComputer.get().getId() == Thread.currentThread().getId()) {
+                Platform.runLater(() -> {
+                    percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
 
-                percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"))
-            );
+                });
+            }
         };
 
 
-        new Thread(() ->  {
-            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(allHoleCards, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY - 10L);
+        winningPercentageComputer = Optional.of(new Thread(() ->  {
+            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(allHoleCards, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             callBack.accept(percentages);
-        }).start();
-
-        //percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
+            System.out.println("Computed winning percentages for " + communityCards.size() + " community cards: "
+                    + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat));
+        }));
+        winningPercentageComputer.get().start();
     }
 }

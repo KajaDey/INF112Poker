@@ -12,7 +12,7 @@ import java.util.*;
 public class Game {
 
     public static final long WAIT_FOR_COMMUNITY_CARD_DELAY = 1000L;
-    public static final long WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY = 5000L;
+    public static final long WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY = 4000L;
     public static final long HAND_OVER_DELAY = 7000L;
     public static final long EVERYONE_FOLDED_DELAY = 3000L;
 
@@ -142,8 +142,9 @@ public class Game {
         GUIMain.debugPrintln("\nPRE FLOP:");
 
         boolean handContinues = bettingRound(preFlop);
-        if (skipBettingRound()) {
+        if (skipBettingRound() && playersStillInCurrentHand.size() > 1) {
             displayHoleCards();
+            delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
         }
         if (!handContinues) {
             preShowdownWinner();
@@ -495,12 +496,9 @@ public class Game {
      *  @return True if betting round should be skipped, false if not
      */
     private boolean skipBettingRound() {
-        int count = 0;
-        for (Player p : playersStillInCurrentHand)
-            if (p.isAllIn())
-                count++;
-
-        return count >= playersStillInCurrentHand.size() - 1;
+        return playersStillInCurrentHand.stream()
+                .filter(Player::isAllIn)
+                .count() >= playersStillInCurrentHand.size() - 1;
     }
 
     /**

@@ -118,6 +118,7 @@ public class HandCalculator {
      */
     public static Map<Integer, Double> getNewWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards,
                                                                 Consumer<Map<Integer, Double>> progressCallback, long maxTime) {
+        holeCards = new HashMap<>(holeCards);
         Map<Integer, Integer> scenariosWon = new HashMap<>();
         ArrayList<Card> unusedCards = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
@@ -130,7 +131,6 @@ public class HandCalculator {
 
         addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0, progressCallback, maxTime > 0 ? maxTime + System.currentTimeMillis() : Long.MAX_VALUE);
 
-        System.out.println("Finished");
         return percentagesFromScenariosWon(scenariosWon);
     }
 
@@ -143,7 +143,7 @@ public class HandCalculator {
         int totalScenariosPlayed = scenariosWon.keySet().stream()
                 .map(scenariosWon::get)
                 .reduce(0, Integer::sum);
-        if (totalScenariosPlayed % 500 == 0 && totalScenariosPlayed > 0) {
+        if (totalScenariosPlayed % 1000 == 0 && totalScenariosPlayed > 0) {
             if (System.currentTimeMillis() > timeToStop) {
                 return;
             }

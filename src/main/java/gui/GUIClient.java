@@ -149,8 +149,8 @@ public class GUIClient implements GameClient {
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) { }
-        if (gameState.isPresent() && gameState.get().getPlayersAllIn() > 1 && this.holecards.size() == gameState.get().getPlayersAllIn() && userID != id) {
-            System.out.println((System.currentTimeMillis() % 1000) + ": got cards for all players (" + userID + "), displaying winning percentages");
+        if (gameState.isPresent() && this.holeCards.size() >= gameState.get().getPlayersAllIn() && userID != id) {
+            //System.out.println((System.currentTimeMillis() % 10000) + ": got cards for all players (" + userID + "), displaying winning percentages");
             gameScreen.showPercentages();
         }
     }
@@ -195,6 +195,7 @@ public class GUIClient implements GameClient {
         Platform.runLater(() -> gameScreen.startNewHand());
         gameState = Optional.empty();
         newBettingRound();
+        holeCards.clear();
     }
 
     @Override
