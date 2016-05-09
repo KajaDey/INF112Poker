@@ -1,0 +1,7 @@
+About the key combinations:
+
+The key combinations are shortcuts for making moves whilst in game,
+and the combinations will work alongside the buttons.
+
+The combinations will only work when the input field for moves is
+in focus, NOT when the chat field is focused.
