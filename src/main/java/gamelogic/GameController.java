@@ -255,13 +255,14 @@ public class GameController {
             if (name.equals("")) {
                 name = NameGenerator.getRandomName();
             }
-            synchronized (this) {
-                clients.put(id, networkClient);
-                game.addPlayer(name, id);
-                assert !names.containsKey(id);
-                names.put(id, name);
-                GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
-            }
+
+            System.out.println("Hello");
+            clients.put(id, networkClient);
+            game.addPlayer(name, id);
+            assert !names.containsKey(id);
+            names.put(id, name);
+            GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
+
             System.out.println("Connecting to client...");
         }
     }

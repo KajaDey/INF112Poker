@@ -23,6 +23,7 @@ public class NetworkClient implements GameClient {
     private Socket socket;
     private BufferedReader socketInput;
     private BufferedWriter socketOutput;
+    private Object lock = new Object();
     Optional<Decision> decision = Optional.empty();
     Queue<String> outstandingWrites = new LinkedList<>();
 
@@ -48,33 +49,36 @@ public class NetworkClient implements GameClient {
     }
 
     public synchronized void readFromSocket(){
-        while(true) {
-            try {
-                String input = socketInput.readLine();
-                Optional<String[]> tokens = UpiUtils.tokenize(input);
-                if (tokens.isPresent())
-                    switch (tokens.get()[0]) {
-                        case "chat":
+            while (true) {
+                try {
+                    String input = socketInput.readLine();
+                    Optional<String[]> tokens = UpiUtils.tokenize(input);
+                    if (tokens.isPresent())
+                        switch (tokens.get()[0]) {
+                            case "chat":
 
-                            break;
-                        case "decision": //decisions
-                            decision = UpiUtils.parseDecision(input.substring("decision ".length()));
-                            notifyAll(); //notify the getDecision-thread
-                            break;
-                        case "playerName":
-                            this.name = tokens.get()[1];
-                            notifyAll();
-                            break;
-                        default:
-                            throw new IOException("Could not parse input " + input);
-                    }
+                                break;
+                            case "decision": //decisions
+                                decision = UpiUtils.parseDecision(input.substring("decision ".length()));
+                                notifyAll(); //notify the getDecision-thread
+                                break;
+                            case "playerName":
+                                this.name = tokens.get()[1];
+                                System.out.println("Received name " + this.name);
+                                notifyAll();
+                                break;
+                            default:
+                                throw new IOException("Could not parse input " + input);
+                        }
 
-            } catch (IOException ioe) {
-                System.out.println("Unrecognized input");
-                ioe.printStackTrace();
+                } catch (IOException ioe) {
+                    System.out.println("Unrecognized input");
+                    ioe.printStackTrace();
+                } catch (IllegalStateException ise) {
+                    System.out.println("WARNING: Illegal state exception, " + ise.getMessage());
+                }
             }
         }
-    }
 
 
 
@@ -88,8 +92,8 @@ public class NetworkClient implements GameClient {
 
         //Wait for readingThread to signal that a decision has been made
         try {
-            wait();
-        } catch (InterruptedException e) {
+            lock.wait();
+        } catch (InterruptedException | IllegalStateException e) {
             e.printStackTrace();
         }
 
@@ -101,11 +105,15 @@ public class NetworkClient implements GameClient {
     public synchronized String getName() {
         writeToSocket("getName");
 
+        System.out.println("Waiting for name..");
+
         try {
-            wait();
-        } catch (InterruptedException e) {
+            lock.wait();
+        } catch (InterruptedException | IllegalStateException e) {
             e.printStackTrace();
         }
+
+        System.out.println("Returning name " + this.name);
 
         return this.name;
     }
