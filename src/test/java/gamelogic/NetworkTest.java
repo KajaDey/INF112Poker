@@ -1,5 +1,7 @@
 package gamelogic;
 
+import network.Server;
+import network.ServerGameCommunicator;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -13,6 +15,7 @@ public class NetworkTest {
     public void testMultiPlayerTwoGUIClients() {
 
         // kjør server
+        Server server = new Server();
 
         // opprett servergamecomm, startupi
 

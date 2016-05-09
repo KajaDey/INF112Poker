@@ -79,7 +79,7 @@ public class ServerGameCommunicator {
                 case "clientId":
                     assert !gameClient.isPresent() : "Server sent clientId twice";
                     GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
-                    gameClient = Optional.of(GUIMain.guiMain.displayGameScreen(settings, Integer.parseInt(tokens[1])));
+                    gameClient = createGUIClient(settings, Integer.parseInt(tokens[1]));
                     try { // Wait for a bit for the GUI to get ready
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }
@@ -170,6 +170,10 @@ public class ServerGameCommunicator {
                     System.out.println("Received unrecognized command \"" + input + "\"");
             }
         }
+    }
+
+    private Optional<GameClient> createGUIClient(GameSettings settings, int userID) {
+        return Optional.of(GUIMain.guiMain.displayGameScreen(settings, userID));
     }
 
     public static String decisionToString(Decision decision) {
