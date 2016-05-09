@@ -10,9 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import replay.ReplayReader;
 import network.ServerLobbyCommunicator;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -103,7 +101,6 @@ public class ButtonListeners {
                     Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),
                     Integer.valueOf(levelDurationText),aiType,Integer.parseInt(playerClock));
 
-            //GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
             GameLobby.updateLabels(gameSettings);
             window.close();

@@ -73,7 +73,7 @@ public class LobbyScreen {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
-            displayErrorMessage(e.toString());
+            displayErrorMessage("Could not connect to server");
             GUIMain.debugPrintln("Error: Could not connect to server");
             e.printStackTrace();
         }
@@ -324,23 +324,32 @@ public class LobbyScreen {
      * @param error The error message to display
      */
     public void displayErrorMessage(String error){
-        System.err.println("Cant connect to server");
 
         Stage errorMessage = new Stage();
 
         VBox layout = new VBox();
         layout.setPadding(new Insets(10, 10, 10, 10));
 
-        Label label = ObjectStandards.makeLobbyLabelWhite("Can't connect to network","");
+        Label label = ObjectStandards.makeLobbyLabelWhite(error,"");
         label.setFont(new Font("Areal", 25));
 
-        Button backToMainMenu = ObjectStandards.makeStandardButton("Return to the main menu");
-        backToMainMenu.setOnAction(e -> {
-            ButtonListeners.returnToMainMenuButtonListener();
-            errorMessage.close();
-        });
+        Button ok;
 
-        layout.getChildren().addAll(label, backToMainMenu);
+        if(error.contains("connect")) {
+            ok = ObjectStandards.makeStandardButton("Return to the main menu");
+            ok.setOnAction(e -> {
+                ButtonListeners.returnToMainMenuButtonListener();
+                errorMessage.close();
+            });
+        }
+        else{
+            ok = ObjectStandards.makeStandardButton("Return to lobby");
+            ok.setOnAction(e -> {
+                errorMessage.close();
+            });
+        }
+
+        layout.getChildren().addAll(label, ok);
         layout.setAlignment(Pos.CENTER);
 
         layout.setStyle("-fx-background-color:#602121");
