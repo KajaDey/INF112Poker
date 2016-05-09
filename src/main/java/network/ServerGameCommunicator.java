@@ -52,7 +52,6 @@ public class ServerGameCommunicator {
             System.out.println("Client " + playerName + " received upiok from server");
         }
 
-
         while (true) {
             input = socketReader.readLine();
 

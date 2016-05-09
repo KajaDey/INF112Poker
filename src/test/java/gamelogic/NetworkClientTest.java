@@ -4,12 +4,10 @@ import gamelogic.ai.AITest;
 import gamelogic.ai.MCTSAI;
 import gui.GameSettings;
 import gui.LobbyScreen;
+import javafx.application.Platform;
 import network.*;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.internal.exceptions.ExceptionIncludingMockitoWarnings;
 import org.mockito.invocation.InvocationOnMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -31,7 +29,7 @@ import static org.junit.Assert.*;
  * Created by morten on 27.04.16.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ServerGameCommunicator.class })
+@PrepareForTest({ServerGameCommunicator.class, Platform.class })
 
 public class NetworkClientTest {
 
@@ -40,25 +38,13 @@ public class NetworkClientTest {
     Deck deck;
     ServerSocket socketListener;
     List<GameClient> players;
-    ServerLobbyCommunicator comm;
-    public static Stack<String> decisionStrings;
+    ServerLobbyCommunicator lobbyCommunicator;
+    ServerGameCommunicator gameCommunicator;
+    public static Stack<String> inputStrings;
 
     @Test
-    public void playFlopOverNetwork() throws IOException {
-        amountOfPlayers = 4;
-        deck = new Deck();
-        socketListener = new ServerSocket(39100);
-        players = new ArrayList<>();
-
-        connectClients();
-
-        try {
-            Thread.sleep(200L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        createCommunicatorForClients();
+    public void playFlopOverNetwork() throws Exception {
+        setupPlayFlopOverNetworkTest();
 
         for (int i = 0; i < amountOfPlayers; i++) {
             setDecisionForClient(Decision.Move.CALL, i);
@@ -73,6 +59,33 @@ public class NetworkClientTest {
         // Close all the sockets
         for (GameClient client : players) {
             ((NetworkClient)client).closeSocket();
+        }
+
+    }
+
+    @Test
+    public void testServerLobbyCommunicator() throws Exception {
+        setupServerLobbyTest();
+
+        lobbyCommunicator.start();
+
+        Thread commThread = Whitebox.getInternalState(lobbyCommunicator, "listeningThread");
+        commThread.join();
+    }
+
+    @Test
+    public void testMapToString() throws Exception {
+        HashMap<Integer, String> map = new HashMap<>();
+        map.put(0, "Morten");
+        map.put(1, "Kristian");
+        assertEquals("0 Morten 1 Kristian", UpiUtils.mapToString(map).trim());
+    }
+
+    private void delay(long delayTime) {
+        try {
+            Thread.sleep(delayTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -113,14 +126,10 @@ public class NetworkClientTest {
         for (int j = 0; j < amountOfPlayers; j++) {
             players.get(j).playerMadeDecision(playerID, new Decision(decision));
         }
-        try {
-            Thread.sleep(200L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        delay(200L);
     }
 
-    private void createCommunicatorForClients() {
+    private void createGameCommunicatorForClients() {
         for (int i = 0; i < amountOfPlayers; i++) {
             int i2 = i;
             Runnable r = () -> {
@@ -128,8 +137,8 @@ public class NetworkClientTest {
                     Socket clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
                     BufferedReader socketInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
                     BufferedWriter socketOutput = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
-                    ServerGameCommunicator communicator = makeServerGameCommunicatorSpy(socketOutput, socketInput, "Morten-" + i2);
-                    communicator.startUpi();
+                    createServerGameCommunicatorSpy(socketOutput, socketInput, "Morten-" + i2);
+                    gameCommunicator.startUpi();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception ex) {
@@ -137,69 +146,69 @@ public class NetworkClientTest {
                 }
             };
             new Thread(r).start();
-            try {
-                Thread.sleep(100L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            delay(100L);
         }
     }
 
-    private ServerGameCommunicator makeServerGameCommunicatorSpy(BufferedWriter socketOutput, BufferedReader socketInput, String playerName) {
-        ServerGameCommunicator spy = spy(new ServerGameCommunicator(socketOutput, socketInput, playerName));
-
-        try {
-            doAnswer((Answer<Optional<GameClient>>) arg -> {
-                int userID = ((int)arg.getArguments()[1]);
-                return Optional.of(new MCTSAI(userID, 1.0));
-            }).when(spy, "createGUIClient", any(GameSettings.class), anyInt());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return spy;
-    }
-
-    @Before
-    public void setup() throws Exception{
-
-    }
-
-    @Test
-    public void testServerLobbyCommunicator() throws Exception{
+    private void setupServerLobbyTest() throws Exception {
         Server server = new Server();
-        decisionStrings = new Stack<>();
 
-        decisionStrings.addAll(Arrays.asList("hei", "ja"));
+        inputStrings = new Stack<>();
+        inputStrings.addAll(Arrays.asList("startGame", "playerJoinedTable 0 0",
+                "tableSettings 0 smallBlind 25 bigBlind 100 maxNumberOfPlayers 2",
+                "tableCreated 0", "playerJoinedLobby 0 Ragnhild", "lobbySent", "lobbyok"));
 
+        createServerLobbyCommunicatorSpy();
+    }
 
+    private void setupPlayFlopOverNetworkTest() throws Exception {
+        Server server = new Server();
+        amountOfPlayers = 4;
+        deck = new Deck();
+        socketListener = server.serverSocket;
+        players = new ArrayList<>();
 
+        connectClients();
+
+        delay(200L);
+
+        createGameCommunicatorForClients();
+    }
+
+    private void createServerLobbyCommunicatorSpy() throws Exception{
         try {
-            ServerLobbyCommunicator comm = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost()));
+            lobbyCommunicator = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost()));
+
+            doNothing().when(lobbyCommunicator, "goToGameScreen");
 
             doAnswer(new Answer<String>() {
                 @Override
                 public String answer(InvocationOnMock invocation) throws Throwable {
-                    return NetworkClientTest.decisionStrings.pop();
+                    if (inputStrings.isEmpty()) System.exit(0);
+
+                    return NetworkClientTest.inputStrings.pop();
                 }
-            }).when(comm, "readFromServer");
+            }).when(lobbyCommunicator, "readFromServer");
 
-            comm.start();
+            mockStatic(Platform.class);
+            doNothing().when(Platform.class, "runLater", any(Runnable.class));
 
-            Thread commThread = Whitebox.getInternalState(comm, "listeningThread");
-            commThread.join();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void createServerGameCommunicatorSpy(BufferedWriter socketOutput, BufferedReader socketInput, String playerName) {
+        gameCommunicator = spy(new ServerGameCommunicator(socketOutput, socketInput, playerName));
 
-
-    @Test
-    public void testMapToString() throws Exception {
-        HashMap<Integer, String> map = new HashMap<>();
-        map.put(0, "Morten");
-        map.put(1, "Kristian");
-        assertEquals("0 Morten 1 Kristian", UpiUtils.mapToString(map).trim());
+        try {
+            doAnswer((Answer<Optional<GameClient>>) arg -> {
+                int userID = ((int)arg.getArguments()[1]);
+                return Optional.of(new MCTSAI(userID, 1.0));
+            }).when(gameCommunicator, "createGUIClient", any(GameSettings.class), anyInt());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
