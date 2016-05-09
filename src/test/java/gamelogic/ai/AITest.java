@@ -23,8 +23,8 @@ public class AITest {
     static HashMap<Integer, Integer> positions;
     static HashMap<Integer, Long> stackSizes;
     static HashMap<Integer, String> names;
-    static int smallBlind = 25;
-    static int bigBlind = 50;
+    static long smallBlind = 25;
+    static long bigBlind = 50;
     static long startStack = 2500L;
     static long timeToThink = 2000L;
 
@@ -304,6 +304,8 @@ public class AITest {
             simpleAI.setPositions(positions);
             mctsAi.setStackSizes(stackSizes);
             simpleAI.setStackSizes(stackSizes);
+            mctsAi.setSmallBlind(smallBlind);
+            simpleAI.setBigBlind(smallBlind);
             mctsAi.setBigBlind(bigBlind);
             simpleAI.setBigBlind(bigBlind);
 
@@ -362,6 +364,46 @@ public class AITest {
             mctsAi.playerMadeDecision(2, simpleAiDecision);
         }
     }
+    @Test
+    public void blindAsAllIn() {
+        for (int i = 0; i < 10; i++) {
+            MCTSAI ai = new MCTSAI(0);
+            ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
+
+            HashMap<Integer, Integer> positions = new HashMap<>();
+            HashMap<Integer, String> names = new HashMap<>();
+            HashMap<Integer, Long> stackSizes = new HashMap<>();
+            positions.put(0, 0);
+            stackSizes.put(0, 1000L);
+            names.put(0, "Morten");
+            positions.put(1, 1);
+            stackSizes.put(1, bigBlind);
+            names.put(1, "Kristian");
+            positions.put(2, 2);
+            stackSizes.put(2, 2000L);
+            names.put(2, "Ragnhild");
+
+
+            ai.setAmountOfPlayers(3);
+            ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setPositions(positions);
+            ai.setSmallBlind(smallBlind);
+            ai.setBigBlind(bigBlind);
+
+            ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND));
+            if (Math.random() > 0.5) {
+                ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND));
+            }
+            else {
+                ai.playerMadeDecision(1, new Decision(Decision.Move.ALL_IN));
+            }
+            ai.playerMadeDecision(2, new Decision(Decision.Move.CALL));
+            ai.getDecision(timeToThink / 5);
+            ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
+            ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get());
+        }
+    }
 
     @Test
     // Test created to reproduce a specific bug in the AI
@@ -387,13 +429,15 @@ public class AITest {
         ai.setStackSizes(stackSizes);
         ai.setPlayerNames(names);
         ai.setPositions(positions);
+        ai.setSmallBlind(smallBlind);
+        ai.setBigBlind(bigBlind);
 
         ai.playerMadeDecision(4, new Decision(Decision.Move.SMALL_BLIND));
         ai.playerMadeDecision(0, new Decision(Decision.Move.BIG_BLIND));
         ai.playerMadeDecision(3, new Decision(Decision.Move.RAISE, 75));
-        ai.playerMadeDecision(4, new Decision(Decision.Move.FOLD));
-        ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN));
-        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL));
+        ai.playerMadeDecision(4, new Decision(Decision.Move.FOLD)); // position 0
+        ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN)); // position 1
+        ai.playerMadeDecision(3, new Decision(Decision.Move.CALL)); // position 2
 
         ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get());
 

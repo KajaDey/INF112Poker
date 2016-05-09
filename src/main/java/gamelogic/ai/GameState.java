@@ -124,6 +124,7 @@ public class GameState {
             }
         }
         else if (move instanceof PlayerDecision || move instanceof AIMove) {
+            assert playersToMakeDecision > 0 : "Tried to apply " + move + " when " + playersToMakeDecision + " players to make decision.";
             Decision decision;
             if (move instanceof AIMove) {
                 decision = ((AIMove)move).decision.toRealDecision(currentPlayer.currentBet, currentPlayer.minimumRaise, currentPlayer.stackSize, getCurrentPot(), playersLeftInHand == 1, currentPlayer.currentBet > 0 || communityCards.size() == 0);
@@ -186,17 +187,27 @@ public class GameState {
                             player.minimumRaise = Math.max(currentPlayer.stackSize - currentPlayer.minimumRaise, player.minimumRaise);
                         }
                     }
+                    playersAllIn++;
                     playersLeftInHand--;
-                    if (currentPlayer.currentBet >= currentPlayer.stackSize) {
+
+                    // If all in was a blind post
+                    if (getCurrentPot() + currentPlayer.stackSize <= bigBlindAmount + smallBlindAmount) {
+                        //System.out.println("All in was blind post");
+                        playersToMakeDecision--;
+                    }
+                    // If all in was a call
+                    else if (currentPlayer.currentBet >= currentPlayer.stackSize) {
+                        //System.out.println("All in is a call, currentBet=" + currentPlayer.currentBet + ", stackSize=" + currentPlayer.stackSize);
                         playersToMakeDecision--;
                     }
                     else {
+                        //System.out.println("All in is raise");
                         playersToMakeDecision = playersLeftInHand;
                     }
-                    playersAllIn++;
 
                     currentPlayer.putInPot(currentPlayer.stackSize);
                     currentPlayer.isAllIn = true;
+
                     break;
                 case SMALL_BLIND:
                     for (Player player : players) {
@@ -210,6 +221,7 @@ public class GameState {
                         playersAllIn++;
                         playersToMakeDecision--;
                         playersLeftInHand--;
+                        currentPlayer.isAllIn = true;
                     }
                     assert currentPlayer.stackSize >= 0;
                     break;
@@ -232,11 +244,13 @@ public class GameState {
                         playersAllIn++;
                         playersToMakeDecision--;
                         playersLeftInHand--;
+                        currentPlayer.isAllIn = true;
                     }
                     assert currentPlayer.stackSize >= 0;
                     break;
 
             }
+            assert playersToMakeDecision >= 0 : playersToMakeDecision + " players to make decision";
 
             // Small blind moves first post-flop
             if (playersToMakeDecision == 0) {
