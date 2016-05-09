@@ -78,8 +78,7 @@ public class ServerGameCommunicator {
                     break;
                 case "clientId":
                     assert !gameClient.isPresent() : "Server sent clientId twice";
-                    GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
-                    gameClient = Optional.of(GUIMain.guiMain.displayGameScreen(settings, Integer.parseInt(tokens[1])));
+                    gameClient = Optional.of(GUIMain.guiMain.displayGameScreen(Integer.parseInt(tokens[1])));
                     try { // Wait for a bit for the GUI to get ready
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }

@@ -10,7 +10,6 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import gamelogic.GameController;
-import gamelogic.AIType;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -121,17 +120,15 @@ public class MainScreen {
             }
             window.close();
             System.out.println("Name entered: " + nameIn.getText());
-            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, numOfPlayersIn.getText(), gameType, gameController);
+            ButtonListeners.mainScreenEnterListener(nameIn.getText(), inetAddress, gameType, gameController);
             return null;
         };
 
-        enter.setOnAction(e ->{
-            enterGameScreen.get();
-        });
+        enter.setOnAction(e -> enterGameScreen.get());
 
-        nameIn.setOnAction(e -> { enterGameScreen.get(); });
+        nameIn.setOnAction(e -> enterGameScreen.get());
 
-        numOfPlayersIn.setOnAction(e -> { enterGameScreen.get(); });
+        numOfPlayersIn.setOnAction(e -> enterGameScreen.get());
 
         singlePlayer.setOnAction(e -> {
             gameType = GameType.SINGLE_PLAYER;
@@ -170,7 +167,7 @@ public class MainScreen {
 
         });
 
-        watchNow.setOnAction(event -> ButtonListeners.watchNowButtonListener(chosenFile));
+        watchNow.setOnAction(event -> ButtonListeners.startReplayButtonListener(gameController, chosenFile));
 
         exit.setOnAction(e -> System.exit(0));
 
@@ -185,13 +182,6 @@ public class MainScreen {
         verticalButtonAndChoiceBox.setAlignment(Pos.CENTER);
 
         return horizontalFull;
-    }
-
-    public static Stage getStage(){
-        return window;
-    }
-    public static GameController getGameController(){
-        return gc;
     }
 
     public static enum GameType { SINGLE_PLAYER, MULTI_PLAYER, WATCH_GAME }

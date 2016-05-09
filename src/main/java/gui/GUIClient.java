@@ -103,8 +103,7 @@ public class GUIClient implements GameClient {
     }
 
     /**
-     *
-     * @param move
+     * Used when setting decisions without size (by the ButtonListeners)
      */
     public synchronized void setDecision(Decision.Move move) { setDecision(move, 0); }
 

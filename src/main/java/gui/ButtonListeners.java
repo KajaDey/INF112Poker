@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import replay.ReplayReader;
 import network.ServerLobbyCommunicator;
 
 import java.io.File;
@@ -18,7 +19,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
- * After a button is clicked, all the actions is handeled here.
+ * After a button is clicked, all the actions are handled here.
  *
  * @author André Dyrstad
  * @author Jostein Kringlen
@@ -27,9 +28,6 @@ public class ButtonListeners {
 
     private static GameSettings gameSettings;
     private static GUIClient client;
-
-    private static String savedName, savedNumOfPlayers, savedChoiceBox;
-    private static GameController savedGameController;
 
     private static long lastSpaceTap = 0;
 
@@ -111,8 +109,12 @@ public class ButtonListeners {
             window.close();
 
         }catch (NumberFormatException e){
-
+            gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+            e.printStackTrace();
         }
+
+        gameController.setGameSettings(gameSettings);
+        window.close();
 
     }
 
@@ -150,7 +152,14 @@ public class ButtonListeners {
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
         boolean showCards = false;
         gameController.initGame(showCards, new ArrayList<>());
+    }
 
+    /**
+     * This button is clicked when the user wants to watch a replay
+     * @param file File selected by user to read replay from
+     */
+    public static void startReplayButtonListener(GameController gameController, File file) {
+        gameController.startReplay(file);
     }
 
     /**
@@ -163,10 +172,7 @@ public class ButtonListeners {
     /**
      * Listener for the button on the enter button on the main screen
      */
-    public static void mainScreenEnterListener(String name, InetAddress IPAddress, String numOfPlayers, MainScreen.GameType gameType, GameController gameController){
-        savedName = name;
-        savedNumOfPlayers = numOfPlayers;
-        savedGameController = gameController;
+    public static void mainScreenEnterListener(String name, InetAddress IPAddress, MainScreen.GameType gameType, GameController gameController){
         try {
             if (!name.isEmpty()) {
                 gameController.enterButtonClicked(name, IPAddress, gameType);
@@ -179,10 +185,7 @@ public class ButtonListeners {
     }
 
     /**
-     *
      * When you click the errorButton, you open a new settings window
-     *
-     * @param gameController
      */
     public static void errorButtonListener(GameController gameController) {
         settingsButtonListener(gameController);
@@ -202,6 +205,9 @@ public class ButtonListeners {
         MainScreen.refreshSceneForMainScreen();
     }
 
+    /**
+     * Save stats to a file after game has ended
+     */
     public static void saveToFile(Statistics stats) {
         stats.printStatisticsToFile();
     }
@@ -214,8 +220,8 @@ public class ButtonListeners {
      *      Arrow up/down tap: Increase/decrease the amount field by 1 BB-amount
      *      Back space tap: Fold
      *
-     * @param ke
-     * @param playerLayout
+     * @param ke Key pressed
+     * @param playerLayout Player layout
      */
     public static void keyReleased(KeyEvent ke, PlayerLayout playerLayout, BoardLayout boardLayout) {
         TextField tf = playerLayout.getAmountTextField();
@@ -257,20 +263,11 @@ public class ButtonListeners {
     }
 
     /**
-     * What happends when a player sends a message to chat
-     *
-     * @param text
+     * What happens when a player sends a message to chat
+     * @param text Text entered in chat field
      */
     public static void chatListener(String text) {
 
     }
 
-    /**
-     * This button is clicked when the user wants to watch a replay
-     *
-     * @param file
-     */
-    public static void watchNowButtonListener(File file) {
-        ReplayReader.readFile(file);
-    }
 }

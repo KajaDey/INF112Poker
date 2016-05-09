@@ -20,6 +20,7 @@ public class LobbyTable {
     }
 
     public void parseSetting(String name, String value) {
+        System.out.println("Setting " + name + " to " + value + " for table " + id);
         switch (name) {
             case "smallBlind":
                 settings.setSmallBlind(Long.parseLong(value));

@@ -10,8 +10,9 @@ import java.util.List;
  *
  * Class to represent a player.
  */
-public class Player extends User {
+public class Player {
     private int ID;
+    private String name;
     private long stackSize;
     private final GameSettings gameSettings;
     private long putOnTableThisRound = 0;
@@ -24,7 +25,7 @@ public class Player extends User {
     private Hand bestHand;
 
     public Player(String name, GameSettings gameSettings, int ID) {
-        super(name);
+        this.name = name;
         this.gameSettings = gameSettings;
         this.stackSize = gameSettings.getStartStack();
         this.ID = ID;
@@ -199,6 +200,11 @@ public class Player extends User {
             bestHand = hand;
 
         incrementStack(pot);
+    }
+
+
+    public String getName() {
+        return name;
     }
 
     /** Statistics-getters  **/

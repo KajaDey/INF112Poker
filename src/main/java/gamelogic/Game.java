@@ -34,6 +34,9 @@ public class Game {
     private Map<Integer, Integer> rankingTable;
     private Map<Integer, String> names;
     private Card [] communityCards;
+    private Deck deck;
+    private ArrayDeque<Card> cardQueue;
+    private boolean replay = false;
 
     public Game(GameSettings gameSettings, GameController gameController) {
         this.gameController = gameController;
@@ -93,9 +96,9 @@ public class Game {
             pot = new Pot();
 
             //Deal all hole cards and save community cards for later use
-            Deck deck = new Deck();
-            communityCards = generateCommunityCards(deck);
-            dealHoleCards(deck, playersStillInCurrentHand);
+            deck = new Deck();
+            communityCards = generateCommunityCards();
+            dealHoleCards(playersStillInCurrentHand);
 
             playHand();
         }
@@ -117,6 +120,7 @@ public class Game {
 
         GUIMain.debugPrintln("\nBLINDS");
         long currentTime = System.currentTimeMillis();
+        // Increase blinds
         if (currentTime - (gameSettings.getLevelDuration()*60*1000) > lastBlindRaiseTime) {
             gameSettings.increaseBlinds();
             GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
@@ -175,6 +179,7 @@ public class Game {
      * @return  True if the hand continues, false if the hand is over
      */
     private boolean bettingRound(boolean isPreFlop) {
+        GUIMain.replayLogPrint("\nDECISIONS");
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
 
@@ -341,14 +346,8 @@ public class Game {
         Decision postSB = new Decision(Decision.Move.SMALL_BLIND);
         Decision postBB = new Decision(Decision.Move.BIG_BLIND);
 
-        Player smallBlindPlayer, bigBlindPlayer;
-        if (playersStillInCurrentHand.size() == 2) {
-            smallBlindPlayer = playersStillInCurrentHand.get(0);
-            bigBlindPlayer = playersStillInCurrentHand.get(1);
-        } else {
-            smallBlindPlayer = playersStillInCurrentHand.get(0);
-            bigBlindPlayer = playersStillInCurrentHand.get(1);
-        }
+        Player smallBlindPlayer = playersStillInCurrentHand.get(0);
+        Player bigBlindPlayer = playersStillInCurrentHand.get(1);
 
         //If one of the players don't have enough to post their blind
         if (smallBlindPlayer.getStackSize() <= gameSettings.getSmallBlind())
@@ -498,7 +497,7 @@ public class Game {
     /**
      *   Check if all the players have acted in this betting round
      *   A player is finished acting if he is all in or he matches the highest amount put on the table
-     * @return
+     *   @return True if all players are done acting this betting round
      */
     private boolean allPlayersActed() {
         int count = 0;
@@ -543,7 +542,7 @@ public class Game {
             }
         }
 
-        //Inform all clients about the udpates positions
+        //Inform all clients about the updated positions
         gameController.setPositions(new HashMap<>(positions));
     }
 
@@ -585,17 +584,29 @@ public class Game {
 
     /**
      * Randomly generates and returns five community cards from the deck.
-     * @param deck Deck to draw from
      * @return Array of community cards
      */
-    private Card[] generateCommunityCards(Deck deck) {
-        GUIMain.replayLogPrint("\nCOMMUNITY CARDS");
+    private Card[] generateCommunityCards() {
+        GUIMain.replayLogPrint("\nCARD");
         Card[] commCards = new Card[5];
-        for (int i = 0; i < commCards.length; i++) {
-            commCards[i] = deck.draw().get();
-            GUIMain.replayLogPrint("\n"+commCards[i].toString());
-        }
+        for (int i = 0; i < commCards.length; i++)
+            commCards[i] = drawCard();
         return commCards;
+    }
+
+    /**
+     * @return A random card from the deck if replay is false, the next card from the replay queue if not
+     */
+    private Card drawCard() {
+        if (!(cardQueue == null) && cardQueue.isEmpty()) {
+            delay(3000);
+            System.exit(0);
+        }
+
+        Card draw = replay ? cardQueue.pop() : deck.draw().get();
+
+        GUIMain.replayLogPrint("\n" + draw.toString());
+        return draw;
     }
 
     /**
@@ -622,19 +633,16 @@ public class Game {
     /**
      * Deals hole cards to each player still in the game.
      *
-     * @param deck Deck to draw from
      * @param playersStillPlaying Players still in the game
      */
-    private void dealHoleCards(Deck deck, List<Player> playersStillPlaying) {
-        GUIMain.replayLogPrint("\nCARDS");
+    private void dealHoleCards(List<Player> playersStillPlaying) {
+        GUIMain.replayLogPrint("\nCARD");
         for (Player p : playersStillPlaying) {
-            Card[] cards = {deck.draw().get(), deck.draw().get()};
+            Card[] cards = {drawCard(), drawCard()};
             p.setHoleCards(cards[0], cards[1]);
             holeCards.put(p.getID(), cards);
             gameController.setHandForClient(p.getID(), cards[0], cards[1]);
-            GUIMain.replayLogPrint("\n" + cards[0].toString() + "\n" + cards[1].toString());
         }
-        GUIMain.replayLogPrint("\nDECISIONS");
     }
 
     /**
@@ -673,31 +681,17 @@ public class Game {
         }
     }
 
+    /**
+     * Set the replay card queue
+     * Only used if the game is a replay. Use this queue instead of deck.draw()
+     * @param cardQueue The queue of cards from the replay file
+     */
+    public void setReplayCardQueue(ArrayDeque<Card> cardQueue) {
+        this.cardQueue = cardQueue;
+        this.replay = true;
+    }
+
     public static class InvalidGameSettingsException extends Exception {
         public InvalidGameSettingsException(String message) { super(message); }
     }
-
-    /**
-     *  Checks for errors in the game settings
-     *  @return The appropriate error message if there is an error, null otherwise
-     */
-    public String getError() {
-        String error = null;
-        if (gameSettings.getStartStack() < 0) {
-            error = "Start stack must be a positive whole number";
-        } else if (gameSettings.getStartStack() < gameSettings.getBigBlind() * 10){
-            error = "Start stack must be at least 10 times the big blind, is " + gameSettings.getStartStack() + " with big blind " + gameSettings.getBigBlind();
-        } else if(gameSettings.getBigBlind() < 0 || gameSettings.getSmallBlind() < 0) {
-            error = "All blinds must be positive whole numbers";
-        } else if (gameSettings.getBigBlind() < gameSettings.getSmallBlind() * 2) {
-            error = "Big blind must be at least twice the size of the small blind";
-        } else if(gameSettings.getMaxNumberOfPlayers() < 2 || gameSettings.getMaxNumberOfPlayers() > 6) {
-            error = "Number of players must be between 2-6";
-        } else if(gameSettings.getBigBlind() <= 0) {
-            error = "Blind level must be a positive whole number";
-        }
-
-        return error;
-    }
-
 }
