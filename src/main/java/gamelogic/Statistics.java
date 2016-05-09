@@ -1,5 +1,7 @@
 package gamelogic;
 
+import network.UpiUtils;
+
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,6 +25,9 @@ public class Statistics {
     private int aggressiveMoves, passiveMoves;
     private String bestHand;
 
+    /**
+     * Used when creating a player statistics object from the Game-class
+     */
     public Statistics(Player player, Map<Integer, String> names, Map<Integer, Integer> rankingTable){
         this.rankingTable = rankingTable;
         this.names = names;
@@ -33,6 +38,21 @@ public class Statistics {
         this.passiveMoves = player.passiveMoves();
         this.bestHand = player.getBestHand();
         this.playerID = player.getID();
+    }
+
+    /**
+     * Used when creating a Statistics object after parsing upi-protocol
+    */
+    public Statistics(int playerID, Map<Integer, Integer> rankingTable, Map<Integer, String> names, int handsWon, int handsPlayed, int foldsPreFlop, int aggressiveMoves, int passiveMoves, String bestHand) {
+        this.playerID = playerID;
+        this.rankingTable = rankingTable;
+        this.names = names;
+        this.handsWon = handsWon;
+        this.handsPlayed = handsPlayed;
+        this.foldsPreFlop = foldsPreFlop;
+        this.aggressiveMoves = aggressiveMoves;
+        this.passiveMoves = passiveMoves;
+        this.bestHand = bestHand;
     }
 
     /**
@@ -74,7 +94,7 @@ public class Statistics {
                 + passiveMoves + " passive " + (passiveMoves==1 ? "move" : "moves") + '\n';
         allStats += " - Your best hand was " + bestHand + "\n\n";
         allStats += getRankingTable();
-        return allStats;
+        return allStats.trim();
     }
 
     /**
@@ -112,5 +132,29 @@ public class Statistics {
         return returnString;
     }
 
+    /**
+     * @return A String conforming to the upi protocol
+     */
+    public String toUPIString() {
+        return String.format("statistics playerid %d rankingTable \"%s\" names \"%s\" handsWon %d handsPlayed %d foldsPreFlop %d aggressive %d passive %d bestHand \"%s\"",
+                playerID, UpiUtils.mapToString(rankingTable), UpiUtils.mapToString(names), handsWon, handsPlayed, foldsPreFlop, aggressiveMoves, passiveMoves, bestHand).trim();
+    }
+
+    public boolean equals(Object other) {
+        if (!(other instanceof Statistics))
+            return false;
+
+        Statistics o = (Statistics) other;
+
+        return this.playerID == o.playerID
+                && this.names.equals(o.names)
+                && this.rankingTable.equals(o.rankingTable)
+                && this.handsWon == o.handsWon
+                && this.handsPlayed == o.handsPlayed
+                && this.foldsPreFlop == o.foldsPreFlop
+                && this.aggressiveMoves == o.aggressiveMoves
+                && this.passiveMoves == o.passiveMoves
+                && this.bestHand.equalsIgnoreCase(o.bestHand);
+    }
 }
 

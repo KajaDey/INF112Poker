@@ -1,8 +1,11 @@
 package gamelogic;
 
 import gui.GameSettings;
+import network.Server;
 import network.UpiUtils;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +43,30 @@ public class UpiUtilsTest {
         settings.setStartStack(3000);
         settings.setBigBlind(100);
         assertEquals("maxNumberOfPlayers 3 startStack 3000 smallBlind 25 bigBlind 100 levelDuration 10",UpiUtils.settingsToString(settings));
+    }
+
+    @Test
+    public void testParsingStatisticsObjectBackAndForth() {
+        NameGenerator.readNewSeries();
+        HashMap<Integer, Integer> rankingTable = new HashMap<>();
+        HashMap<Integer, String> names = new HashMap<>();
+        for (int i = 0; i < 5; i++) {
+            rankingTable.put(i, i + 1);
+            names.put(i, NameGenerator.getRandomName());
+        }
+
+        Statistics stats = new Statistics(0, rankingTable, names, 10, 20, 5, 30, 15, "Royal Straight Flush");
+        String upiString = stats.toUPIString();
+
+        Statistics newStats = null;
+        try {
+            newStats = UpiUtils.upiStringToStatistics(upiString);
+        } catch (Server.PokerProtocolException e) {
+            e.printStackTrace();
+        }
+
+        assertTrue(newStats != null);
+        assertTrue(stats.equals(newStats));
     }
 
 }
