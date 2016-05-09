@@ -60,7 +60,7 @@ public class UpiUtilsTest {
 
         Statistics newStats = null;
         try {
-            newStats = UpiUtils.upiStringToStatistics(upiString);
+            newStats = UpiUtils.upiStringToStatistics(upiString).get();
         } catch (Server.PokerProtocolException e) {
             e.printStackTrace();
         }
