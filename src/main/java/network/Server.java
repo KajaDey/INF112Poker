@@ -239,18 +239,22 @@ public class Server {
                                 break;
                             }
                             case "createtable":
+                                GameSettings settings;
+                                try {
+                                    int maxPlayers = Integer.parseInt(tokens[2]),
+                                            levelDuration = Integer.parseInt(tokens[10]);
+                                    long stack = Long.parseLong(tokens[4]),
+                                            smallBlind = Long.parseLong(tokens[6]),
+                                            bigBlind = Long.parseLong(tokens[8]);
+                                    //TODO: Add a token for playerClock when
+                                    int playerClock = Integer.parseInt("30");
+                                    settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI, playerClock);
+                                } catch (NumberFormatException nfe) {
+                                    nfe.printStackTrace();
+                                    settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+                                }
 
-                                long stack = Long.parseLong(tokens[2]),
-                                        smallBlind = Long.parseLong(tokens[4]),
-                                        bigBlind = Long.parseLong(tokens[6]);
-                                int maxPlayers = Integer.parseInt(tokens[8]),
-                                        levelDuration = Integer.parseInt(tokens[10]);
-                                //TODO: Add a token for playerClock when
-                                int playerClock = Integer.parseInt("30");
-
-                                GameSettings settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI, playerClock);
                                 addNewTable(settings, this);
-
                                 break;
                             case "changesettings":
                                 try {

@@ -22,7 +22,7 @@ public class GUIClient implements GameClient {
     private Optional<GameState> gameState = Optional.empty();
     private Optional<Map<Integer, Integer>> positions = Optional.empty();
     private Optional<Map<Integer, String>> names = Optional.empty();
-    private Map<Integer, Card[]> holecards = new HashMap<>();
+    private Map<Integer, Card[]> holeCards = new HashMap<>();
 
     //Storage variables
     private int amountOfPlayers;
@@ -103,7 +103,7 @@ public class GUIClient implements GameClient {
     }
 
     /**
-     *
+     * Used when setting decisions without size (by the ButtonListeners)
      */
     public synchronized void setDecision(Decision.Move move) { setDecision(move, 0); }
 
@@ -142,7 +142,7 @@ public class GUIClient implements GameClient {
 
     @Override
     public void setHandForClient(int userID, Card card1, Card card2) {
-        this.holecards.put(userID, new Card[]{card1, card2});
+        this.holeCards.put(userID, new Card[]{card1, card2});
         Platform.runLater(() -> gameScreen.setHandForUser(userID, card1, card2));
 
         // Wait for the GUI to update, so that showPercentages can see the cards. If the wait is sometimes too short, that's fine
@@ -234,7 +234,6 @@ public class GUIClient implements GameClient {
 
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
-
         if (!gameState.isPresent()) {
             initGameState();
         }
@@ -266,18 +265,13 @@ public class GUIClient implements GameClient {
 
     }
 
-    //@Override
-    /*public void showdown(ShowdownStats showdownStats) {
-        Platform.runLater(() -> gameScreen.showdown(showdownStats));
-    }*/
-
     @Override
     public void showdown(String[] winnerStrings) {
         String winnerString = Arrays.stream(winnerStrings)
                 .map(s -> s + "\n")
                 .reduce("", String::concat)
                 .trim();
-        Platform.runLater(() -> gameScreen.showdown(new HashMap<>(holecards), winnerString));
+        Platform.runLater(() -> gameScreen.showdown(new HashMap<>(holeCards), winnerString));
     }
 
     @Override

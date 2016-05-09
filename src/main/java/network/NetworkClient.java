@@ -38,7 +38,6 @@ public class NetworkClient implements GameClient {
         socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
         System.out.println("Waiting for upi handshake");
-        //String input = socketInput.readLine();
         String input = "upi"; // Pretend the upi handshake was received by the lobby
 
         if (input != null && input.startsWith("upi")) {
@@ -103,7 +102,6 @@ public class NetworkClient implements GameClient {
             }
         }
         writeToSocket("playerNames " + UpiUtils.mapToString(namesForSending));
-
     }
 
     @Override
@@ -121,11 +119,6 @@ public class NetworkClient implements GameClient {
         writeToSocket("playerMadeDecision " + playerId + " "
                 + ServerGameCommunicator.decisionToString(decision));
     }
-
-    /*@Override
-    public void showdown(ShowdownStats showdownStats) {
-
-    }*/
 
     @Override
     public void showdown(String[] winnerStrings) {

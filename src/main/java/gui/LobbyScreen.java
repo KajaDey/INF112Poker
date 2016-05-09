@@ -6,7 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -73,7 +72,7 @@ public class LobbyScreen {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
-            displayErrorMessage(e.toString());
+            displayErrorMessage("Could not connect to server");
             GUIMain.debugPrintln("Error: Could not connect to server");
             e.printStackTrace();
         }
@@ -117,13 +116,6 @@ public class LobbyScreen {
         gameInfo.getChildren().clear();
         updatePlayer(table);
 
-        CheckBox privateGameCheckbox = new CheckBox("Private game");
-        privateGameCheckbox.setFont(new Font("Areal", 15));
-        privateGameCheckbox.setStyle("-fx-text-fill: white");
-        privateGameCheckbox.setLayoutX(660);
-        privateGameCheckbox.setLayoutY(350);
-        privateGameCheckbox.setOnAction(e -> privateGameCheckboxListener(privateGameCheckbox.isSelected()));
-
         Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.playerIds.get(0)) + "'s game!");
         gameName.setLayoutX(325);
         gameName.setLayoutY(0);
@@ -146,7 +138,7 @@ public class LobbyScreen {
         changeSettings.setLayoutX(670);
         changeSettings.setLayoutY(400);
         changeSettings.setMinWidth(150);
-        changeSettings.setOnAction(event -> settingsButtonListener(table));
+        changeSettings.setOnAction(event -> ButtonListeners.settingsButtonListener(serverLobbyCommunicator,table));
 
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         startGame.setLayoutX(50);
@@ -158,7 +150,7 @@ public class LobbyScreen {
         settings.setLayoutX(650);
         settings.setLayoutY(150);
 
-        gameInfo.getChildren().addAll(settings, privateGameCheckbox, takeASeat, imageView, changeSettings, gameName, startGame);
+        gameInfo.getChildren().addAll(settings, takeASeat, imageView, changeSettings, gameName, startGame);
         seatPlayersOnTable(table, gameInfo);
     }
 
@@ -244,12 +236,6 @@ public class LobbyScreen {
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);
     }
-    private void privateGameCheckboxListener(boolean selected) {
-
-    }
-    public void settingsButtonListener(LobbyTable table) {
-        //TODO:Implement
-    }
 
     /**
      * Add a new table to the GUI.
@@ -327,23 +313,32 @@ public class LobbyScreen {
      * @param error The error message to display
      */
     public void displayErrorMessage(String error){
-        System.err.println("Cant connect to server");
 
         Stage errorMessage = new Stage();
 
         VBox layout = new VBox();
         layout.setPadding(new Insets(10, 10, 10, 10));
 
-        Label label = ObjectStandards.makeLobbyLabelWhite("Can't connect to network","");
+        Label label = ObjectStandards.makeLobbyLabelWhite(error,"");
         label.setFont(new Font("Areal", 25));
 
-        Button backToMainMenu = ObjectStandards.makeStandardButton("Return to the main menu");
-        backToMainMenu.setOnAction(e -> {
-            ButtonListeners.returnToMainMenuButtonListener();
-            errorMessage.close();
-        });
+        Button ok;
 
-        layout.getChildren().addAll(label, backToMainMenu);
+        if(error.contains("connect")) {
+            ok = ObjectStandards.makeStandardButton("Return to the main menu");
+            ok.setOnAction(e -> {
+                ButtonListeners.returnToMainMenuButtonListener();
+                errorMessage.close();
+            });
+        }
+        else{
+            ok = ObjectStandards.makeStandardButton("Return to lobby");
+            ok.setOnAction(e -> {
+                errorMessage.close();
+            });
+        }
+
+        layout.getChildren().addAll(label, ok);
         layout.setAlignment(Pos.CENTER);
 
         layout.setStyle("-fx-background-color:#602121");
