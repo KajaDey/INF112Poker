@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import network.ServerLobbyCommunicator;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,10 +75,23 @@ public class ButtonListeners {
         Stage settings = new Stage();
         settings.initModality(Modality.APPLICATION_MODAL);
         settings.setTitle("Settings");
-        Scene scene = new Scene(GameLobby.createScreenForSettings(settings,gameController),270,300);
+        Scene scene = new Scene(SettingsScreen.createScreenForSettings(settings, gameController),270,300);
         settings.setScene(scene);
         settings.show();
     }
+
+    /**
+     * What happens when the settingsButton is pushed
+     */
+    public static void settingsButtonListener(ServerLobbyCommunicator serverLobbyCommunicator, LobbyTable table) {
+        Stage settings = new Stage();
+        settings.initModality(Modality.APPLICATION_MODAL);
+        settings.setTitle("Settings");
+        Scene scene = new Scene(SettingsScreen.createScreenForSettings(settings, serverLobbyCommunicator, table),270,300);
+        settings.setScene(scene);
+        settings.show();
+    }
+
     /**
      * What happens when the acceptSettingsButton is pushed
      */
@@ -93,6 +107,7 @@ public class ButtonListeners {
 
             //GameLobby.updateLabels(gameSettings);
             gameController.setGameSettings(gameSettings);
+            GameLobby.updateLabels(gameSettings);
             window.close();
 
         }catch (NumberFormatException e){
@@ -100,6 +115,29 @@ public class ButtonListeners {
         }
 
     }
+
+    /**
+     * What happens when the acceptSettingsButton is pushed
+     */
+    public static void acceptSettingsButtonListener(String amountOfChips, String numberOfPlayersText, String bigBlindText,
+                                                    String smallBlindText, String levelDurationText, Stage window,
+                                                    ServerLobbyCommunicator serverLobbyCommunicator,LobbyTable table,String aiChoice, String playerClock) {
+
+        AIType aiType = AIType.fromString(aiChoice);
+        try {
+            gameSettings = new GameSettings(Long.valueOf(amountOfChips),Integer.valueOf(bigBlindText),
+                    Integer.valueOf(smallBlindText),(Integer.valueOf(numberOfPlayersText)),
+                    Integer.valueOf(levelDurationText),aiType,Integer.parseInt(playerClock));
+
+            serverLobbyCommunicator.setNewSettings(gameSettings,table.id);
+            window.close();
+
+        }catch (NumberFormatException e){
+
+        }
+
+    }
+
     /**
      * What happens when the cancelSettingsButton is pushed
      */

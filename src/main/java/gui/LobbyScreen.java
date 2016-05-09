@@ -146,7 +146,7 @@ public class LobbyScreen {
         changeSettings.setLayoutX(670);
         changeSettings.setLayoutY(400);
         changeSettings.setMinWidth(150);
-        changeSettings.setOnAction(event -> settingsButtonListener(table));
+        changeSettings.setOnAction(event -> ButtonListeners.settingsButtonListener(serverLobbyCommunicator,table));
 
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         startGame.setLayoutX(50);
@@ -246,9 +246,6 @@ public class LobbyScreen {
     }
     private void privateGameCheckboxListener(boolean selected) {
 
-    }
-    public void settingsButtonListener(LobbyTable table) {
-        //TODO:Implement
     }
 
     /**
