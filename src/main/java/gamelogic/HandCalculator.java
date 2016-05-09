@@ -14,16 +14,8 @@ import java.util.*;
 public class HandCalculator {
 
     public enum HandType {
-        STRAIGHT_FLUSH, QUAD, HOUSE, FLUSH, STRAIGHT, TRIPS, TWO_PAIRS, PAIR, HIGH_CARD;
+        STRAIGHT_FLUSH, QUAD, HOUSE, FLUSH, STRAIGHT, TRIPS, TWO_PAIRS, PAIR, HIGH_CARD
     }
-
-    private IRule straightFlush;
-    private IRule quad, trips, pair;
-    private IRule house;
-    private IRule flush;
-    private IRule straight;
-    private IRule twoPairs;
-    private IRule highCard;
 
     private Optional<List<Card>> bestHand;
     private List<IRule> rules;
@@ -72,7 +64,6 @@ public class HandCalculator {
 
     /**
      * Gets the list of rules (straight, flush etc)
-     * @return
      */
     public List<IRule> getRules() {
         return rules;
@@ -116,9 +107,10 @@ public class HandCalculator {
         });
         unusedCards.removeAll(communityCards);
 
-        List<Thread> threads = new ArrayList<>();
+        addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0);
+        /*List<Thread> threads = new ArrayList<>();
         List<Map<Integer, Integer>> threadLocalSecenariosWon = new ArrayList<>();
-        int nOfThreads = 8;
+        int nOfThreads = 4;
         for (int i = 0; i < nOfThreads; i++) {
             int icopy = i;
             threadLocalSecenariosWon.add(new HashMap<>(scenariosWon));
@@ -130,7 +122,7 @@ public class HandCalculator {
                 int totalScenarios = threadLocalSecenariosWon.get(icopy).keySet().stream()
                         .map(scenariosWon::get)
                         .reduce(0, Integer::sum);
-                System.out.println("Total scenarios in thread: " + totalScenarios);
+                //System.out.println("Total scenarios in thread: " + totalScenarios);
             }));
             threads.get(i).start();
         }
@@ -139,7 +131,7 @@ public class HandCalculator {
                 threads.get(i).join();
             } catch (InterruptedException e) { }
             threadLocalSecenariosWon.get(i).forEach((id, numWon) -> scenariosWon.put(id, scenariosWon.get(id) + numWon));
-        }
+        }*/
 
         Map<Integer, Double> percentages = new HashMap<>();
         int totalScenarios = scenariosWon.keySet().stream()
@@ -151,8 +143,8 @@ public class HandCalculator {
     }
 
     private static void addWinningPercentages(Map<Integer, Card[]> holeCards, Map<Integer, Integer> scenariosWon,
-                                              List<Card> communityCards, ArrayList<Card> unusedCards, int low, int high) {
-        if (low == high) {
+                                              List<Card> communityCards, ArrayList<Card> unusedCards, int startIndex) {
+        if (startIndex == unusedCards.size()) {
             return;
         }
         if (communityCards.size() == 5) {
@@ -166,9 +158,9 @@ public class HandCalculator {
         }
         List<Card> newCommunityCards = new ArrayList<>(communityCards);
 
-        for (int i = low; i < high; i++) {
+        for (int i = startIndex; i < unusedCards.size(); i++) {
             newCommunityCards.add(unusedCards.get(i));
-            addWinningPercentages(holeCards, scenariosWon, newCommunityCards, unusedCards, i + 1, high);
+            addWinningPercentages(holeCards, scenariosWon, newCommunityCards, unusedCards, i + 1);
             newCommunityCards.remove(newCommunityCards.size() - 1);
         }
     }
@@ -200,7 +192,7 @@ public class HandCalculator {
             Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
             Card[] max = Collections.max(holeCards.values(), comp);
             holeCards.forEach((id, hc) -> {
-                if (hc.equals(max))
+                if (Arrays.equals(hc,max))
                     scenariosWon.put(id, scenariosWon.get(id)+1);
             });
             return;

@@ -10,13 +10,12 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * Created by Vegar on 10/03/16.
  */
 public class HandCalculatorTest {
     Hand hand, wantedHand;
     List<Card> communityCards = new ArrayList<>();
     List<Card> highCards = new ArrayList<>();
-    Card card, holeCard1, holeCard2;
+    Card holeCard1, holeCard2;
     HandCalculator hc;
     Card c1,c2,c3,c4,c5,c6;
     GameSettings settings = new GameSettings(5000,25,50, 5, 0, AIType.MCTS_AI,30);
@@ -25,10 +24,10 @@ public class HandCalculatorTest {
     public void setUp() throws Exception {
 
         c1 = Card.of(7,Card.Suit.SPADES).get();
-        c2 = card.of(7, Card.Suit.HEARTS).get();
-        c3 = card.of(9, Card.Suit.SPADES).get();
-        c4 = card.of(10, Card.Suit.SPADES).get();
-        c5 = card.of(13, Card.Suit.HEARTS).get();
+        c2 = Card.of(7, Card.Suit.HEARTS).get();
+        c3 = Card.of(9, Card.Suit.SPADES).get();
+        c4 = Card.of(10, Card.Suit.SPADES).get();
+        c5 = Card.of(13, Card.Suit.HEARTS).get();
 
         communityCards.add(c1);
         communityCards.add(c2);
@@ -39,7 +38,8 @@ public class HandCalculatorTest {
 
     @Test
     public void getWinningPrecentagesTest() {
-        for (int i = 0; i < 20; i++) {
+        long totalTime = System.currentTimeMillis();
+        for (int i = 0; i < 100; i++) {
             Deck deck = new Deck();
             List<Card> communityCards = new ArrayList<>();
             communityCards.add(deck.draw().get());
@@ -70,6 +70,7 @@ public class HandCalculatorTest {
             System.out.println("]");
 
         }
+        System.out.println("Total time: " + (System.currentTimeMillis() - totalTime) + " ms.");
     }
 
     @Test
@@ -83,8 +84,8 @@ public class HandCalculatorTest {
 
     @Test
     public void testStraightFlushReturn() throws Exception{
-        holeCard1=card.of(8, Card.Suit.SPADES).get();
-        holeCard2=card.of(6, Card.Suit.SPADES).get();
+        holeCard1=Card.of(8, Card.Suit.SPADES).get();
+        holeCard2=Card.of(6, Card.Suit.SPADES).get();
         hand = new Hand(holeCard1, holeCard2, communityCards);
         hc = new HandCalculator(hand);
         wantedHand = new Hand(holeCard1,holeCard2, communityCards);
@@ -95,8 +96,8 @@ public class HandCalculatorTest {
 
     @Test
     public void testQuadReturn() throws Exception{
-        holeCard1=card.of(7, Card.Suit.CLUBS).get();
-        holeCard2=card.of(7, Card.Suit.DIAMONDS).get();
+        holeCard1=Card.of(7, Card.Suit.CLUBS).get();
+        holeCard2=Card.of(7, Card.Suit.DIAMONDS).get();
         hand = new Hand(holeCard1, holeCard2,communityCards);
         hc = new HandCalculator(hand);
 
@@ -108,8 +109,8 @@ public class HandCalculatorTest {
 
     @Test
     public void testHouseReturn() throws Exception{
-        holeCard1=card.of(7, Card.Suit.CLUBS).get();
-        holeCard2=card.of(10, Card.Suit.DIAMONDS).get();
+        holeCard1=Card.of(7, Card.Suit.CLUBS).get();
+        holeCard2=Card.of(10, Card.Suit.DIAMONDS).get();
         hand = new Hand(holeCard1, holeCard2,communityCards);
         hc = new HandCalculator(hand);
 
@@ -120,8 +121,8 @@ public class HandCalculatorTest {
     }
     @Test
     public void testFlushReturn() throws Exception{
-        holeCard1=card.of(4, Card.Suit.SPADES).get();
-        holeCard2=card.of(2, Card.Suit.SPADES).get();
+        holeCard1=Card.of(4, Card.Suit.SPADES).get();
+        holeCard2=Card.of(2, Card.Suit.SPADES).get();
         hand = new Hand(holeCard1, holeCard2,communityCards);
         hc = new HandCalculator(hand);
 
@@ -132,8 +133,8 @@ public class HandCalculatorTest {
     }
     @Test
     public void testStraightReturn() throws Exception{
-        holeCard1=card.of(8, Card.Suit.HEARTS).get();
-        holeCard2=card.of(6, Card.Suit.CLUBS).get();
+        holeCard1=Card.of(8, Card.Suit.HEARTS).get();
+        holeCard2=Card.of(6, Card.Suit.CLUBS).get();
         hand = new Hand(holeCard1, holeCard2,communityCards);
         hc = new HandCalculator(hand);
         wantedHand = new Hand(holeCard1,holeCard2,communityCards);
@@ -144,8 +145,8 @@ public class HandCalculatorTest {
     }
     @Test
     public void testTripsReturn() throws Exception{
-        holeCard1=card.of(7, Card.Suit.DIAMONDS).get();
-        holeCard2=card.of(12, Card.Suit.CLUBS).get();
+        holeCard1=Card.of(7, Card.Suit.DIAMONDS).get();
+        holeCard2=Card.of(12, Card.Suit.CLUBS).get();
         hand = new Hand(holeCard1, holeCard2, communityCards);
         hc = new HandCalculator(hand);
         wantedHand = new Hand(holeCard1,holeCard2, communityCards);
@@ -157,8 +158,8 @@ public class HandCalculatorTest {
     }
     @Test
     public void testTwoPairsReturn() throws Exception{
-        holeCard1=card.of(10, Card.Suit.HEARTS).get();
-        holeCard2=card.of(9, Card.Suit.CLUBS).get();
+        holeCard1=Card.of(10, Card.Suit.HEARTS).get();
+        holeCard2=Card.of(9, Card.Suit.CLUBS).get();
         hand = new Hand(holeCard1, holeCard2, communityCards);
         hc = new HandCalculator(hand);
         wantedHand = new Hand(holeCard1,holeCard2, communityCards);
@@ -169,8 +170,8 @@ public class HandCalculatorTest {
     }
     @Test
     public void testPairReturn() throws Exception{
-        holeCard1=card.of(12, Card.Suit.HEARTS).get();
-        holeCard2=card.of(2, Card.Suit.CLUBS).get();
+        holeCard1=Card.of(12, Card.Suit.HEARTS).get();
+        holeCard2=Card.of(2, Card.Suit.CLUBS).get();
         hand = new Hand(holeCard1, holeCard2,communityCards);
         hc = new HandCalculator(hand);
         wantedHand= new Hand(holeCard1,holeCard2,communityCards);
@@ -182,9 +183,9 @@ public class HandCalculatorTest {
 
     @Test
     public void testNoMatches() throws Exception{
-        c6 =  card.of(5, Card.Suit.DIAMONDS).get();
-        holeCard1=card.of(12, Card.Suit.HEARTS).get();
-        holeCard2=card.of(2, Card.Suit.CLUBS).get();
+        c6 =  Card.of(5, Card.Suit.DIAMONDS).get();
+        holeCard1=Card.of(12, Card.Suit.HEARTS).get();
+        holeCard2=Card.of(2, Card.Suit.CLUBS).get();
         highCards.add(c1);
         highCards.add(c3);
         highCards.add(c4);
