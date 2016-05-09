@@ -38,14 +38,22 @@ public class PokerMCTS {
     public Decision calculateFor(long milliseconds) {
         assert initialGameState.currentPlayer.id == playerId : "Started calculating when currentPlayer is " + initialGameState.currentPlayer + ", but AI is " + initialGameState.players.get(playerPosition);
         long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() < startTime + milliseconds) {
-            for (int i = 0; i < 100; i++) {
-                rootNode.select(totalSearches, initialGameState, new Random(), false);
-                totalSearches++;
-                if (totalSearches % 100000 == 0) {
-                    printProgressReport();
+        try {
+            while (System.currentTimeMillis() < startTime + milliseconds) {
+                for (int i = 0; i < 100; i++) {
+                    rootNode.select(totalSearches, initialGameState, new Random(), false);
+                    totalSearches++;
+                    if (totalSearches % 100000 == 0) {
+                        printProgressReport();
+                    }
                 }
             }
+        }
+        catch (Exception e) {
+            System.out.println("Error: AI crashed");
+            e.printStackTrace();
+            System.out.println("AI is folding...");
+            return Decision.fold;
         }
 
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
