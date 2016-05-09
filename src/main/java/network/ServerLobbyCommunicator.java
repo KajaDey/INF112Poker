@@ -23,6 +23,7 @@ public class ServerLobbyCommunicator {
     private final BufferedWriter socketWriter;
     private final Map<Integer, String> names;
     private final LobbyScreen lobbyScreen;
+    private Thread listeningThread;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
@@ -111,6 +112,10 @@ public class ServerLobbyCommunicator {
             }
         }
 
+        listeningThread = listenForInputsFromServer();
+    }
+
+    private Thread listenForInputsFromServer() {
         Runnable serverListener = () -> {
             while (true) {
                 String input;
@@ -160,7 +165,9 @@ public class ServerLobbyCommunicator {
                 }
             }
         };
-        new Thread(serverListener).start();
+        Thread listening = new Thread(serverListener);
+        listening.start();
+        return listening;
     }
 
     public void startGame(int tableID) {

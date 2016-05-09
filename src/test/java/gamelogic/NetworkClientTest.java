@@ -3,18 +3,18 @@ package gamelogic;
 import gamelogic.ai.AITest;
 import gamelogic.ai.MCTSAI;
 import gui.GameSettings;
-import network.NetworkClient;
-import network.ServerGameCommunicator;
-import network.UpiUtils;
+import gui.LobbyScreen;
+import network.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
+import org.powermock.reflect.Whitebox;
+
 
 import java.io.*;
 import java.net.InetAddress;
@@ -148,18 +148,31 @@ public class NetworkClientTest {
         ServerGameCommunicator spy = spy(new ServerGameCommunicator(socketOutput, socketInput, playerName));
 
         try {
-            doAnswer(new Answer<Optional<GameClient>>() {
-                @Override
-                public Optional<GameClient> answer(InvocationOnMock arg) throws Throwable {
-                    int userID = ((int)arg.getArguments()[1]);
-                    return Optional.of(new MCTSAI(userID, 1.0));
-                }
+            doAnswer((Answer<Optional<GameClient>>) arg -> {
+                int userID = ((int)arg.getArguments()[1]);
+                return Optional.of(new MCTSAI(userID, 1.0));
             }).when(spy, "createGUIClient", any(GameSettings.class), anyInt());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return spy;
+    }
+
+    @Test
+    public void testServerLobbyCommunicator() throws Exception{
+        Server server = new Server();
+        try {
+            ServerLobbyCommunicator comm = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost()));
+            Thread commThread = Whitebox.getInternalState(comm, "listeningThread");
+
+            commThread.join();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
     @Test

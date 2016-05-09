@@ -37,12 +37,9 @@ public class GameTest {
         gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy));
 
         // Replaces getAIDecision-method in GameController to avoid unnecessary delay
-        doAnswer(new Answer<Decision>() {
-            @Override
-            public Decision answer(InvocationOnMock aiClient) throws Throwable{
-                return ((GameClient)aiClient.getArguments()[0]).getDecision(100L);
-            }
-        }).when(gameControllerSpy, "getAIDecision", any(GameClient.class));
+        doAnswer((Answer<Decision>) arg ->
+                ((GameClient)arg.getArguments()[0]).getDecision(100L))
+                .when(gameControllerSpy, "getAIDecision", any(GameClient.class));
 
         // Removes delays
         doNothing().when(gameControllerSpy).delay(anyLong());
