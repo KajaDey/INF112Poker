@@ -163,7 +163,8 @@ public class ServerGameCommunicator {
                     break;
                 case "logPrint":
                     assert gameClient.isPresent();
-                    gameClient.get().printToLogField(tokens[1]);
+                    if (gameClient.isPresent())
+                        gameClient.get().printToLogField(tokens[1]);
                     break;
                 default:
                     System.out.println("Received unrecognized command \"" + input + "\"");
