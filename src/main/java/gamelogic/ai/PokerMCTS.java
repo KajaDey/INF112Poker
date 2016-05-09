@@ -69,7 +69,7 @@ public class PokerMCTS {
                     long betSize = initialGameState.getCurrentPot() / 2 + initialGameState.currentPlayer.currentBet;
                     values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
-                case RAISE_MINIMUM:
+                case RAISE_QUARTER_POT:
                     betSize = initialGameState.currentPlayer.minimumRaise + initialGameState.currentPlayer.currentBet;
                     values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
                     break;
@@ -173,8 +173,6 @@ public class PokerMCTS {
             Optional<List<GameState.GameStateChange>> allMovesForChild = newGameState.allDecisions();
 
             AbstractNode childNode;
-
-            //TODO: Currently computes all moves for this node AND child node, which may be wasteful
 
             switch (childNodeType) {
                 case DEAL_HAND_CARD:
@@ -406,9 +404,9 @@ public class PokerMCTS {
 
     /**
      * Returns the evaluation of a terminal node (Showdown, or everyone folded)
-     * @param gameState
-     * @param totalSearches
-     * @return
+     * @param gameState gameState to evaluate
+     * @param totalSearches Total searches done for the entire MCTS
+     * @return The probability for each player to win the entire table, given the current gamestate
      */
     private static double[] terminalEval(GameState gameState, int totalSearches) {
 
@@ -437,12 +435,13 @@ public class PokerMCTS {
                     player.stackSize += pot;
                 }
             }
-            assert gameState.sumOfChipsInPlay(gameState.players) == gameState.allChipsOnTable : gameState.sumOfChipsInPlay(gameState.players) + " chips in play, but started with " + gameState.allChipsOnTable;
+            assert GameState.sumOfChipsInPlay(gameState.players) == gameState.allChipsOnTable : GameState.sumOfChipsInPlay(gameState.players) + " chips in play, but started with " + gameState.allChipsOnTable;
             double[] eval = new double[gameState.amountOfPlayers];
             for (int i = 0; i < gameState.players.size(); i++) {
                 assert gameState.players.get(i).position == i;
-                eval[i] = (double)gameState.players.get(i).stackSize / (double)gameState.allChipsOnTable;
-                assert eval[i] > 0 : "Everyone folded, but player " + gameState.players.get(i) + " has eval " + eval[i];
+                Player player = gameState.players.get(i);
+                eval[i] = (double)player.stackSize / (double)gameState.allChipsOnTable;
+                assert eval[i] > 0 : "Everyone folded, but player " + player + " has eval " + eval[i] + ", isAllIn=" + player.isAllIn + ", isInHand=" + player.isInHand + ", pot=" + pot + player.lastDecision;
             }
             return eval;
         }
@@ -461,7 +460,7 @@ public class PokerMCTS {
             player.contributedToPot = 0;
         }
 
-        assert newGameState.sumOfChipsInPlay(newGameState.players) + pot.getPotSize() == newGameState.allChipsOnTable;
+        assert GameState.sumOfChipsInPlay(newGameState.players) + pot.getPotSize() == newGameState.allChipsOnTable;
 
         ArrayList<PlayerAndScore> fasterHandsList = new ArrayList<>();
         for (Player player : newGameState.players) {
@@ -488,7 +487,7 @@ public class PokerMCTS {
             eval[i] = (double)newGameState.players.get(i).stackSize / (double)newGameState.allChipsOnTable;
         }
 
-        assert newGameState.sumOfChipsInPlay(newGameState.players) == newGameState.allChipsOnTable :
+        assert GameState.sumOfChipsInPlay(newGameState.players) == newGameState.allChipsOnTable :
                 "Sum of player chips is " + GameState.sumOfChipsInPlay(newGameState.players) + ", but started with " + newGameState.allChipsOnTable + " on table.";
 
         assert Arrays.stream(eval).reduce(0.0, Double::sum) > 0.999 && Arrays.stream(eval).reduce(0.0, Double::sum) < 1.001

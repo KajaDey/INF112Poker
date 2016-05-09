@@ -263,7 +263,7 @@ public class SimpleAI implements GameClient {
     }
 
     public enum AIDecision {
-        FOLD, CHECK, CALL, RAISE_MINIMUM, RAISE_HALF_POT, RAISE_POT;
+        FOLD, CHECK, CALL, RAISE_QUARTER_POT, RAISE_HALF_POT, RAISE_POT;
 
         public Decision toRealDecision(long currentBet, long minimumRaise, long stackSize, long pot,
                                        boolean isOnlyPlayerInHand, boolean betHasBeenPlaced) {
@@ -278,11 +278,13 @@ public class SimpleAI implements GameClient {
                         return new Decision(Decision.Move.ALL_IN);
                     }
                     return new Decision(Decision.Move.CALL);
-                case RAISE_MINIMUM:
-                    if (currentBet + minimumRaise >= stackSize) {
+                case RAISE_QUARTER_POT:
+                    if (currentBet + pot / 4 >= stackSize || minimumRaise + currentBet >= stackSize) {
                         return new Decision(Decision.Move.ALL_IN);
                     }
-                    return new Decision(moneyMove, minimumRaise);
+                    return new Decision(moneyMove, Math.max(minimumRaise, pot / 4));
+
+
                 case RAISE_HALF_POT:
                     if (currentBet + pot / 2 >= stackSize) {
                         return new Decision(Decision.Move.ALL_IN);

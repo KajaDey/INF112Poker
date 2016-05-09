@@ -132,6 +132,8 @@ public class GameState {
             else {
                 decision = ((PlayerDecision)move).decision;
             }
+            assert currentPlayer.stackSize > 0 : "Tried to apply " + decision + ", but player had stacksize " + currentPlayer.stackSize + " and lastDecision " + currentPlayer.lastDecision;
+            currentPlayer.lastDecision = Optional.of(decision);
             switch (decision.move) {
                 case FOLD:
                     playersLeftInHand--;
@@ -329,7 +331,7 @@ public class GameState {
                     if (currentPlayer.currentBet == 0) {
                         aiDecision = HandEstimator.getRaiseAmount(randomModifier, handQuality, 1.0);
                         if (aiDecision == AIDecision.RAISE_HALF_POT && getCurrentPot() / 2 < currentPlayer.minimumRaise) {
-                            aiDecision = AIDecision.RAISE_MINIMUM;
+                            aiDecision = AIDecision.RAISE_QUARTER_POT;
                         }
                     }
                     // If someone has already raised, raise anyway if the hand is really good
@@ -416,7 +418,9 @@ public class GameState {
                 if (currentPlayer.currentBet > 0 && currentPlayer.stackSize >= currentPlayer.currentBet) {
                     decisions.add(new AIMove(AIDecision.CALL));
                 }
-                decisions.add(new AIMove(AIDecision.RAISE_MINIMUM));
+                if (getCurrentPot() / 4 > currentPlayer.minimumRaise) {
+                    decisions.add(new AIMove(AIDecision.RAISE_QUARTER_POT));
+                }
                 if (getCurrentPot() / 2 > currentPlayer.minimumRaise) {
                     decisions.add(new AIMove(AIDecision.RAISE_HALF_POT));
                 }

@@ -1,9 +1,12 @@
 package gamelogic.ai;
 
 import gamelogic.Card;
+import gamelogic.Decision;
 
+import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Representation of a player. Used by the AI to store data about itself and its opponents
@@ -16,6 +19,8 @@ public class Player {
     public long minimumRaise; // If they want to raise, the minimum they need to raise by
     public long currentBet; // The amount they need to put on the table to remain in the hand
     public long contributedToPot = 0; // Amount contributed to the pot throughout this entire hand
+
+    public Optional<Decision> lastDecision = Optional.empty();
 
     public boolean isInHand = true;
     public boolean isAllIn = false;

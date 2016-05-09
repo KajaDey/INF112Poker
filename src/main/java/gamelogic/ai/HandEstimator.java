@@ -202,7 +202,7 @@ public class HandEstimator {
             return SimpleAI.AIDecision.RAISE_HALF_POT;
         }
         else {
-            return SimpleAI.AIDecision.RAISE_MINIMUM;
+            return SimpleAI.AIDecision.RAISE_QUARTER_POT;
         }
     }
 }
