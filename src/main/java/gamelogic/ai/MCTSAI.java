@@ -3,6 +3,7 @@ package gamelogic.ai;
 import gamelogic.*;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * An AI using monte carlo tree search to choose decisions
@@ -20,6 +21,7 @@ public class MCTSAI implements GameClient {
     private Optional<Map<Integer, Long>> stackSizes;
     private Optional<Map<Integer, Integer>> positions;
     private Optional<Map<Integer, String>> names;
+    private Consumer<String> chatListener;
 
     public MCTSAI(int playerId, double contemptFactor) {
         gameState = Optional.empty();
@@ -214,5 +216,10 @@ public class MCTSAI implements GameClient {
             System.exit(1);
         }
 
+    }
+
+    @Override
+    public void setChatListener(Consumer<String> chatListener) {
+        this.chatListener = chatListener;
     }
 }

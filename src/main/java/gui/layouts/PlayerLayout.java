@@ -313,7 +313,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     /**
-     *  Set the focus of this layout (set/remove focus amount text field)
+     *  Set the focus of this layout (remove focus amount text field)
      */
     public void setFocus() {
         this.requestFocus();

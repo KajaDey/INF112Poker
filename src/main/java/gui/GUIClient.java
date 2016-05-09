@@ -5,6 +5,8 @@ import gamelogic.ai.GameState;
 import javafx.application.Platform;
 
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -17,20 +19,19 @@ import java.util.stream.Collectors;
 
 public class GUIClient implements GameClient {
 
+    private int id;
     private GameScreen gameScreen;
 
     private Optional<GameState> gameState = Optional.empty();
     private Optional<Map<Integer, Integer>> positions = Optional.empty();
     private Optional<Map<Integer, String>> names = Optional.empty();
     private Map<Integer, Card[]> holeCards = new HashMap<>();
+    private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(3);
 
-    //Storage variables
     private int amountOfPlayers;
     private long minimumRaise = 0, highestAmountPutOnTable = 0;
-    private Decision decision;
     private Map<Integer, Long> stackSizes;
     private long smallBlind, bigBlind;
-    private int id;
     private boolean playersSeated = false;
 
     public GUIClient(int id, GameScreen gameScreen) {
@@ -44,7 +45,7 @@ public class GUIClient implements GameClient {
     }
 
     @Override
-    public synchronized Decision getDecision(long timeToThink){
+    public Decision getDecision(long timeToThink){
         if (!gameState.isPresent()) {
             initGameState();
         }
@@ -55,10 +56,12 @@ public class GUIClient implements GameClient {
             gameScreen.startTimer(timeToThink, moveIfTimeRunOut);
         });
 
+        Decision decision;
         try {
-            wait();
-        } catch (Exception e) {
-            e.printStackTrace();
+            decision = decisionBlockingQueue.take();
+        } catch (InterruptedException ie) {
+            decision = Decision.fold;
+            ie.printStackTrace();
         }
 
         //Make buttons invisible
@@ -67,45 +70,39 @@ public class GUIClient implements GameClient {
             gameScreen.stopTimer();
         });
 
-        //Return decision
         return decision;
     }
 
     /**
      * Called from ButtonListeners-class to notify the client that a decision has been made
-     *
-     * @param move
-     * @param moveSize
      */
-    public synchronized void setDecision(Decision.Move move, long moveSize) {
+    public void setDecision(Decision.Move move, long moveSize) {
         if (!validMove(move, moveSize))
             return;
 
         switch (move) {
             case BET:
                 if (moveSize == stackSizes.get(this.id))
-                    this.decision = new Decision(Decision.Move.ALL_IN);
+                    decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
                 else
-                    this.decision = new Decision(move, moveSize);
+                    decisionBlockingQueue.add(new Decision(move, moveSize));
                 break;
             case RAISE:
                 if (moveSize == stackSizes.get(this.id))
-                    this.decision = new Decision(Decision.Move.ALL_IN);
+                    decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
                 else
-                    this.decision = new Decision(move, moveSize - highestAmountPutOnTable);
+                    decisionBlockingQueue.add(new Decision(move, moveSize - highestAmountPutOnTable));
                 break;
-            case CALL:case CHECK:case FOLD:case ALL_IN: this.decision = new Decision(move);
+            case CALL:case CHECK:case FOLD:case ALL_IN: decisionBlockingQueue.add(new Decision(move));
         }
 
         Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(false));
-
-        notifyAll();
     }
 
     /**
      * Used when setting decisions without size (by the ButtonListeners)
      */
-    public synchronized void setDecision(Decision.Move move) { setDecision(move, 0); }
+    public void setDecision(Decision.Move move) { setDecision(move, 0); }
 
     /**
      *  Check if a decision is valid (according to current stack size etc)
@@ -338,4 +335,8 @@ public class GUIClient implements GameClient {
         Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
     }
 
+    @Override
+    public void setChatListener(Consumer<String> chatListener) {
+        Platform.runLater(() -> gameScreen.setChatListener(chatListener));
+    }
 }

@@ -1,10 +1,12 @@
 package network;
 
 import gamelogic.Card;
+import gamelogic.Decision;
 import gui.GameSettings;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import network.Server.PokerProtocolException;
 
 /**
  * Various utility methods for converting between objects and upi-compatible strings representations
@@ -103,4 +105,127 @@ public class UpiUtils {
         return Optional.of(tokens.toArray(new String[tokens.size()]));
 
     }
+
+    /**
+     *  Turn a decision into a string that conforms with the network protocol (upi)
+     *  Adds a 'decision' token in front of the decision
+     */
+    public static String decisionToString(Decision decision) {
+        if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
+            return "decision " + decision.move.toString().toLowerCase() + decision.getSize();
+        }
+        else if (decision.move == Decision.Move.BIG_BLIND) {
+            return "decision bigBlind";
+        }
+        else if (decision.move == Decision.Move.SMALL_BLIND) {
+            return "decision smallBlind";
+        }
+        else {
+            return "decision " + decision.move.toString().toLowerCase();
+        }
+    }
+
+    public static Optional<Decision> parseDecision(String string) {
+        if (string == null) {
+            return Optional.empty();
+        }
+        int firstDigitIndex = 0;
+        for (int i = 0; i < string.length(); i++) {
+            if (Character.isDigit(string.charAt(i))) {
+                firstDigitIndex = i;
+                break;
+            }
+        }
+        if (firstDigitIndex == 0) {
+            try {
+                return Optional.of(new Decision(parseMove(string).get()));
+            }
+            catch (NoSuchElementException | IllegalArgumentException e) {
+                return Optional.empty();
+            }
+        }
+        else {
+            try {
+                return Optional.of(new Decision(parseMove(string.substring(0, firstDigitIndex)).get(), Long.parseLong(string.substring(firstDigitIndex))));
+            }
+            catch (NoSuchElementException | IllegalArgumentException e) {
+                return Optional.empty();
+            }
+        }
+    }
+
+    /**
+     * @return A upi compatible String containing the move
+     */
+    public static Optional<Decision.Move> parseMove(String string) {
+        switch (string) {
+            case "smallBlind":
+                return Optional.of(Decision.Move.SMALL_BLIND);
+            case "bigBlind":
+                return Optional.of(Decision.Move.BIG_BLIND);
+            case "allin":
+                return Optional.of(Decision.Move.ALL_IN);
+            default:
+                try {
+                    return Optional.of(Decision.Move.valueOf(string.toUpperCase()));
+                }
+                catch (IllegalArgumentException e) {
+                    return Optional.empty();
+                }
+        }
+    }
+
+    /**
+     * Like Integer.parseInt,except that it throws a checked exception if it fails
+     * @param input String token
+     * @return int token
+     * @throws PokerProtocolException
+     */
+    public static int parseIntToken(String input) throws PokerProtocolException {
+        try {
+            return Integer.parseInt(input);
+        }
+        catch (NumberFormatException e) {
+            throw new PokerProtocolException("Error parsing " + input + " to int");
+        }
+    }
+
+    /**
+     * Like Long.parseLong,except that it throws a checked exception if it fails
+     * @param input String token
+     * @return long token
+     * @throws PokerProtocolException
+     */
+    public static long parseLongToken(String input) throws PokerProtocolException {
+        try {
+            return Long.parseLong(input);
+        }
+        catch (NumberFormatException e) {
+            throw new PokerProtocolException("Error parsing " + input + " to long");
+        }
+    }
+
+    /**
+     * Parse a string to a card
+     */
+    public static Card parseCard(String input) {
+        if (input.startsWith("spades")) {
+            int rank = Integer.parseInt(input.substring("spades".length()));
+            return Card.of(rank, Card.Suit.SPADES).get();
+        }
+        else if (input.startsWith("hearts")) {
+            int rank = Integer.parseInt(input.substring("hearts".length()));
+            return Card.of(rank, Card.Suit.HEARTS).get();
+        }
+        else if (input.startsWith("diamonds")) {
+            int rank = Integer.parseInt(input.substring("diamonds".length()));
+            return Card.of(rank, Card.Suit.DIAMONDS).get();
+        }
+        else if (input.startsWith("clubs")) {
+            int rank = Integer.parseInt(input.substring("clubs".length()));
+            return Card.of(rank, Card.Suit.CLUBS).get();
+        }
+        throw new IllegalArgumentException("Couldn't parse card " + input);
+    }
+
 }

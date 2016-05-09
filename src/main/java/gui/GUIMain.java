@@ -54,7 +54,7 @@ public class GUIMain extends Application{
 
     }
 
-    public void displayMultiPlayerScreen(String name, InetAddress IPAddress, GameSettings gameSettings) {
+    public void displayMultiPlayerScreen(String name, InetAddress IPAddress) {
         new LobbyScreen(gameController, name, IPAddress);
     }
 

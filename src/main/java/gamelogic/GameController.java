@@ -78,7 +78,7 @@ public class GameController {
         if(gameType == MainScreen.GameType.SINGLE_PLAYER)
             guiMain.get().displaySinglePlayerScreen(name, gameSettings);
         else if (gameType == MainScreen.GameType.MULTI_PLAYER)
-            guiMain.get().displayMultiPlayerScreen(name, IPAddress, gameSettings);
+            guiMain.get().displayMultiPlayerScreen(name, IPAddress);
 
         this.name = name;
     }
@@ -124,6 +124,9 @@ public class GameController {
         //Print welcome message to log
         this.printToLogField("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!");
 
+        //Set chat listener for all clients
+        clients.forEach((id, client) -> client.setChatListener(s -> printToLogField(names.get(id) + ": " + s)));
+
         //Print names to replay log
         GUIMain.replayLogPrint("\nNAMES");
         names.forEach((id, name) -> GUIMain.replayLogPrint("\n" + name));
@@ -145,6 +148,10 @@ public class GameController {
         return gameThread;
     }
 
+    /**
+     *  Called if a game replay is to be started
+     * @param file File to read replay from
+     */
     public void startReplay(File file) {
         ReplayReader replayReader = new ReplayReader(file);
         showAllPlayerCards = true;
@@ -193,6 +200,10 @@ public class GameController {
         GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
     }
 
+    /**
+     * Create all of the network clients and
+     * @param clientSockets Sockets for each client
+     */
     private void createNetworkClients(List<Socket> clientSockets) {
         ArrayList<Thread> clientThreads = new ArrayList<>();
         for (int i = clients.size(); i < clientSockets.size(); i++) {
@@ -210,9 +221,9 @@ public class GameController {
                 System.out.println("Connected to network client");
                 networkClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
                 String name = networkClient.getName();
-                if (name.equals("")) {
+                if (name.equals(""))
                     name = NameGenerator.getRandomName();
-                }
+
                 synchronized (this) {
                     clients.put(id, networkClient);
 
@@ -271,7 +282,7 @@ public class GameController {
     }
 
     /**
-     * Create (max number of players - 1) replay clients
+     * Create (max number of players - 1) replay clients with no GUI
      */
     public void createReplayClients(ReplayReader reader) {
         for (int i = 0; i < gameSettings.getMaxNumberOfPlayers() - 1; i++) {

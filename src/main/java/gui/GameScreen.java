@@ -17,7 +17,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -53,17 +52,16 @@ public class GameScreen {
     private PlayerLayout playerLayout;
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
-    private Label endGameScreen;
     private TextArea logField = new TextArea();
     private TextField chatField = new TextField();
-    private Button sendTextButton = new Button();
     private SoundPlayer soundPlayer = new SoundPlayer();
+    private Optional<Consumer<String>> chatListener = Optional.empty();
 
     public GameScreen(int ID) {
         this.playerID = ID;
 
         //Set onKeyRelease and onMouseClick events for pane
-        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout));
+        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout, chatField));
         pane.setOnMouseClicked((event) -> playerLayout.setFocus());
 
         //Create the scene
@@ -74,6 +72,7 @@ public class GameScreen {
         insertLogField();
         insertChatField();
         addMenuBarToGameScreen();
+        pane.requestFocus();
     }
 
     /**
@@ -178,24 +177,22 @@ public class GameScreen {
         chatField.setLayoutY(scene.getHeight() - 40);
         chatField.setOpacity(0.9);
 
-        sendTextButton = ObjectStandards.makeStandardButton("Send");
+        Button sendTextButton = ObjectStandards.makeStandardButton("Send");
         sendTextButton.setLayoutX(230);
         sendTextButton.setLayoutY(scene.getHeight() - 40);
 
         pane.getChildren().addAll(chatField, sendTextButton);
 
-        //Listener for when a user presses "enter" on the keyboard
-        chatField.setOnAction(event -> {
-            ButtonListeners.chatListener(chatField.getText());
+        //Listener for chat field
+        Runnable chatTask = (() -> {
+            if (chatListener.isPresent())
+                chatListener.get().accept(chatField.getText());
             chatField.setText("");
         });
 
-        //Listener for when a user presses the button in the game
-        sendTextButton.setOnAction(event -> {
-            ButtonListeners.chatListener(chatField.getText());
-            chatField.setText("");
-        });
-
+        //Set listeners for chat field
+        chatField.setOnAction(event -> chatTask.run());
+        sendTextButton.setOnAction(event -> chatTask.run());
     }
 
     /**
@@ -528,7 +525,7 @@ public class GameScreen {
         backToMainScreenButton.setMinWidth(200);
         saveStatisticsButton.setMinWidth(200);
 
-        endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
+        Label endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!", "");
         endGameScreen.setFont(new Font("Areal", 30));
 
         Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");
@@ -766,5 +763,9 @@ public class GameScreen {
                     + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat));
         }));
         winningPercentageComputer.get().start();
+    }
+
+    public void setChatListener(Consumer<String> chatListener) {
+        this.chatListener = Optional.of(chatListener);
     }
 }

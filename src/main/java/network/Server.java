@@ -92,7 +92,6 @@ public class Server {
     /**
      * Removes a client from the lobby and broadcasts their leaving to the other client,
      * but does not close the socket
-     * @param id
      */
     private synchronized void playerStartedGame(int id) {
         Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
@@ -116,36 +115,6 @@ public class Server {
             p.write("tableSettings " + tableID + " " + UpiUtils.settingsToString(table.settings));
             p.write("playerJoinedTable " + host.id + " " + tableID);
         });
-    }
-
-    /**
-     * Like Integer.parseInt,except that it throws a checked exception if it fails
-     * @param input String token
-     * @return int token
-     * @throws PokerProtocolException
-     */
-    public static int parseIntToken(String input) throws PokerProtocolException {
-        try {
-            return Integer.parseInt(input);
-        }
-        catch (NumberFormatException e) {
-            throw new PokerProtocolException("Error parsing " + input + " to int");
-        }
-    }
-
-    /**
-     * Like Long.parseLong,except that it throws a checked exception if it fails
-     * @param input String token
-     * @return long token
-     * @throws PokerProtocolException
-     */
-    public static long parseLongToken(String input) throws PokerProtocolException {
-        try {
-            return Long.parseLong(input);
-        }
-        catch (NumberFormatException e) {
-            throw new PokerProtocolException("Error parsing " + input + " to long");
-        }
     }
 
     class LobbyPlayer {
@@ -228,7 +197,7 @@ public class Server {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
                                 }
-                                int tableID = parseIntToken(tokens[1]);
+                                int tableID = UpiUtils.parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
                                         if (lobbyTables.get(tableID).seatPlayer(this)) {
@@ -241,13 +210,13 @@ public class Server {
                             case "createtable":
                                 GameSettings settings;
                                 try {
-                                    int maxPlayers = Integer.parseInt(tokens[2]),
-                                            levelDuration = Integer.parseInt(tokens[10]);
-                                    long stack = Long.parseLong(tokens[4]),
-                                            smallBlind = Long.parseLong(tokens[6]),
-                                            bigBlind = Long.parseLong(tokens[8]);
+                                    int maxPlayers = UpiUtils.parseIntToken(tokens[2]),
+                                            levelDuration = UpiUtils.parseIntToken(tokens[10]);
+                                    long stack = UpiUtils.parseLongToken(tokens[4]),
+                                            smallBlind = UpiUtils.parseLongToken(tokens[6]),
+                                            bigBlind = UpiUtils.parseLongToken(tokens[8]);
                                     //TODO: Add a token for playerClock when
-                                    int playerClock = Integer.parseInt("30");
+                                    int playerClock = UpiUtils.parseIntToken("30");
                                     settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI, playerClock);
                                 } catch (NumberFormatException nfe) {
                                     nfe.printStackTrace();
@@ -270,12 +239,11 @@ public class Server {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
                                 }
-                                int tableID = parseIntToken(tokens[1]);
+                                int tableID = UpiUtils.parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
                                         LobbyTable t = lobbyTables.get(tableID);
-                                        new Thread(() -> t.startGame()).start();
-                                        // t.delete(); //TODO should not delete table, but rather do special "gameStarted" logic
+                                        new Thread(t::startGame).start();
                                     }
                                 }
                                 // Do not return. Only return when you receive upi handshake
@@ -286,7 +254,7 @@ public class Server {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
                                 }
-                                int tableID = parseIntToken(tokens[1]);
+                                int tableID = UpiUtils.parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
                                         lobbyTables.get(tableID).delete();
@@ -330,7 +298,7 @@ public class Server {
             if (tokens.length <= 1) {
                 throw new PokerProtocolException();
             }
-            int tableID = parseIntToken(tokens[1]);
+            int tableID = UpiUtils.parseIntToken(tokens[1]);
             if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
                 //TODO: Change settings for this table based on the tokens[2] value
                 GameSettings s = lobbyTables.get(tableID).settings;
@@ -361,8 +329,6 @@ public class Server {
      * Called whenever a write to a player fails. For now, this drops the player from the server,
      * but in the future this should probably buffer up outstanding writes, and try to send them
      * again for a while.
-     * @param player
-     * @param message
      */
     private void failedToWriteToPlayer(LobbyPlayer player, String message) {
         System.out.println("Failed to write to client " + player + ", dropping player.");
@@ -372,7 +338,6 @@ public class Server {
     /**
      * Called whenever a read from a player fails. This usually means that the socket has been closed,
      * and the client will be disconnected
-     * @param player
      */
     private void failedToReadFromPlayer(LobbyPlayer player) {
         System.out.println("Failed to read from client " + player + ", dropping player.");
@@ -382,8 +347,6 @@ public class Server {
     /**
      * Called whenever the server receives an illegally formatted command from a client
      * For now, this just skips the command in question, and keeps the client
-     * @param player
-     * @param command
      */
     private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
         System.out.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"");

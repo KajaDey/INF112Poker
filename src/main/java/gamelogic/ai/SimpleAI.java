@@ -3,6 +3,7 @@ package gamelogic.ai;
 import gamelogic.*;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  An SimpleAI player that works through the GameClient interface.
@@ -19,6 +20,7 @@ public class SimpleAI implements GameClient {
     private List<Card> communityCards = new ArrayList<>();
     private long smallBlindAmount;
     private long bigBlindAmount;
+    private Consumer<String> chatListener;
 
     // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
     private Map<Integer, Long> stackSizes;
@@ -304,5 +306,10 @@ public class SimpleAI implements GameClient {
 
             }
         }
+    }
+
+    @Override
+    public void setChatListener(Consumer<String> chatListener) {
+        this.chatListener = chatListener;
     }
 }
