@@ -18,12 +18,15 @@ import java.util.Map;
  */
 public class ServerLobbyCommunicator {
 
-    private final Socket clientSocket;
-    private final BufferedReader socketReader;
-    private final BufferedWriter socketWriter;
-    private final Map<Integer, String> names;
+    private Socket clientSocket;
+    private BufferedReader socketReader;
+    private BufferedWriter socketWriter;
+    private Map<Integer, String> names;
     private final LobbyScreen lobbyScreen;
     private Thread listeningThread;
+    private InetAddress serverAddress;
+    private String name;
+    private InputStream inputStream;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
@@ -34,7 +37,12 @@ public class ServerLobbyCommunicator {
      * @throws IOException
      */
     public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen, InetAddress serverAddress) throws IOException {
+        this.name = name;
         this.lobbyScreen = lobbyScreen;
+        this.serverAddress = serverAddress;
+    }
+
+    private void connectClientToServer() throws IOException {
         Socket tempSocket = new Socket();
         // Attempt to connect to server up to 20 times before giving up
         for (int i = 0; i < 20; i++) {
@@ -58,13 +66,19 @@ public class ServerLobbyCommunicator {
         else {
             throw new IOException("Failed to connect to " + serverAddress);
         }
+    }
+
+    public void start() throws IOException {
+        connectClientToServer();
+
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
         socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
         //Establish handshake with server
         writeToSocket("lobby " + name);
         {
-            String input = socketReader.readLine();
+            String input = readFromServer();
+            System.out.println("Input: "+input);
             if (input.equals("lobbyok")) {
                 System.out.println("Received handshake from client");
             } else {
@@ -75,7 +89,8 @@ public class ServerLobbyCommunicator {
         names = new HashMap<>();
         // Receive all information about the lobby
         getInit: while (true) {
-            String input = socketReader.readLine();
+            String input = readFromServer();
+            System.out.println(input);
             String[] tokens = UpiUtils.tokenize(input).get();
 
             switch (tokens[0]) {
@@ -115,6 +130,10 @@ public class ServerLobbyCommunicator {
         listeningThread = listenForInputsFromServer();
     }
 
+    public String readFromServer() throws IOException{
+        return socketReader.readLine();
+    }
+
     private Thread listenForInputsFromServer() {
         Runnable serverListener = () -> {
             while (true) {
@@ -133,7 +152,7 @@ public class ServerLobbyCommunicator {
                         return;
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
-                        System.out.println("Player joined lobby, id: " + tokens[1] + " name" + tokens[2]);
+                        System.out.println("Player joined lobby, id: " + tokens[1] + " name: " + tokens[2]);
                         break;
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));

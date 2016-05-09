@@ -5,11 +5,14 @@ import gamelogic.ai.MCTSAI;
 import gui.GameSettings;
 import gui.LobbyScreen;
 import network.*;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.internal.exceptions.ExceptionIncludingMockitoWarnings;
+import org.mockito.invocation.InvocationOnMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -20,10 +23,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +40,8 @@ public class NetworkClientTest {
     Deck deck;
     ServerSocket socketListener;
     List<GameClient> players;
+    ServerLobbyCommunicator comm;
+    public static Stack<String> decisionStrings;
 
     @Test
     public void playFlopOverNetwork() throws IOException {
@@ -57,7 +59,6 @@ public class NetworkClientTest {
         }
 
         createCommunicatorForClients();
-
 
         for (int i = 0; i < amountOfPlayers; i++) {
             setDecisionForClient(Decision.Move.CALL, i);
@@ -159,21 +160,40 @@ public class NetworkClientTest {
         return spy;
     }
 
+    @Before
+    public void setup() throws Exception{
+
+    }
+
     @Test
     public void testServerLobbyCommunicator() throws Exception{
         Server server = new Server();
+        decisionStrings = new Stack<>();
+
+        decisionStrings.addAll(Arrays.asList("hei", "ja"));
+
+
+
         try {
             ServerLobbyCommunicator comm = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost()));
-            Thread commThread = Whitebox.getInternalState(comm, "listeningThread");
 
+            doAnswer(new Answer<String>() {
+                @Override
+                public String answer(InvocationOnMock invocation) throws Throwable {
+                    return NetworkClientTest.decisionStrings.pop();
+                }
+            }).when(comm, "readFromServer");
+
+            comm.start();
+
+            Thread commThread = Whitebox.getInternalState(comm, "listeningThread");
             commThread.join();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
     }
+
+
 
     @Test
     public void testMapToString() throws Exception {
