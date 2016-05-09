@@ -4,6 +4,7 @@ import gamelogic.rules.*;
 
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created by kaja on 08.03.2016.
@@ -97,7 +98,26 @@ public class HandCalculator {
         return rule.toString();
     }
 
+    /**
+     * Gets the chances each payer has of winning the pot, for use during showdown
+     * @param holeCards The holecards for each player
+     * @param communityCards The community cards, which may be empty
+     * @return A map from player ids to their probability of winning
+     */
     public static Map<Integer, Double> getNewWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards) {
+        return getNewWinningPercentages(holeCards, communityCards, (s) -> {}, 0L);
+    }
+
+    /**
+     * Gets the chances each payer has of winning the pot, for use during showdown
+     * @param holeCards The holecards for each player
+     * @param communityCards The community cards, which may be empty
+     * @param progressCallback If you do not want to wait for the percentages to be calulated precisely, this function will be called with preliminary results
+     * @param maxTime Maximum amount of time to take, in milliseconds
+     * @return A map from player ids to their probability of winning
+     */
+    public static Map<Integer, Double> getNewWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards,
+                                                                Consumer<Map<Integer, Double>> progressCallback, long maxTime) {
         Map<Integer, Integer> scenariosWon = new HashMap<>();
         ArrayList<Card> unusedCards = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
@@ -106,46 +126,28 @@ public class HandCalculator {
             unusedCards.removeAll(Arrays.asList(cards));
         });
         unusedCards.removeAll(communityCards);
+        Collections.shuffle(unusedCards);
 
-        addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0);
-        /*List<Thread> threads = new ArrayList<>();
-        List<Map<Integer, Integer>> threadLocalSecenariosWon = new ArrayList<>();
-        int nOfThreads = 4;
-        for (int i = 0; i < nOfThreads; i++) {
-            int icopy = i;
-            threadLocalSecenariosWon.add(new HashMap<>(scenariosWon));
-            threads.add(new Thread(() -> {
-                int from = (unusedCards.size() * icopy) / nOfThreads;
-                int to = (unusedCards.size() * (icopy + 1)) / nOfThreads;
-                addWinningPercentages(holeCards, threadLocalSecenariosWon.get(icopy), communityCards, unusedCards, from, to);
+        addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0, progressCallback, maxTime > 0 ? maxTime + System.currentTimeMillis() : Long.MAX_VALUE);
 
-                int totalScenarios = threadLocalSecenariosWon.get(icopy).keySet().stream()
-                        .map(scenariosWon::get)
-                        .reduce(0, Integer::sum);
-                //System.out.println("Total scenarios in thread: " + totalScenarios);
-            }));
-            threads.get(i).start();
-        }
-        for (int i = 0; i < nOfThreads; i++) {
-            try {
-                threads.get(i).join();
-            } catch (InterruptedException e) { }
-            threadLocalSecenariosWon.get(i).forEach((id, numWon) -> scenariosWon.put(id, scenariosWon.get(id) + numWon));
-        }*/
-
-        Map<Integer, Double> percentages = new HashMap<>();
-        int totalScenarios = scenariosWon.keySet().stream()
-                .map(scenariosWon::get)
-                .reduce(0, Integer::sum);
-        scenariosWon.forEach((id, numWon) -> percentages.put(id, (double)numWon / totalScenarios));
-        System.out.println("Total scenarios: " + totalScenarios);
-        return percentages;
+        System.out.println("Finished");
+        return percentagesFromScenariosWon(scenariosWon);
     }
 
     private static void addWinningPercentages(Map<Integer, Card[]> holeCards, Map<Integer, Integer> scenariosWon,
-                                              List<Card> communityCards, ArrayList<Card> unusedCards, int startIndex) {
+                                              List<Card> communityCards, ArrayList<Card> unusedCards, int startIndex,
+                                              Consumer<Map<Integer, Double>> progressCallback, long timeToStop) {
         if (startIndex == unusedCards.size()) {
             return;
+        }
+        int totalScenariosPlayed = scenariosWon.keySet().stream()
+                .map(scenariosWon::get)
+                .reduce(0, Integer::sum);
+        if (totalScenariosPlayed % 500 == 0 && totalScenariosPlayed > 0) {
+            if (System.currentTimeMillis() > timeToStop) {
+                return;
+            }
+            progressCallback.accept(percentagesFromScenariosWon(scenariosWon));
         }
         if (communityCards.size() == 5) {
             Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
@@ -160,58 +162,17 @@ public class HandCalculator {
 
         for (int i = startIndex; i < unusedCards.size(); i++) {
             newCommunityCards.add(unusedCards.get(i));
-            addWinningPercentages(holeCards, scenariosWon, newCommunityCards, unusedCards, i + 1);
+            addWinningPercentages(holeCards, scenariosWon, newCommunityCards, unusedCards, i + 1, progressCallback, timeToStop);
             newCommunityCards.remove(newCommunityCards.size() - 1);
         }
     }
 
-    public static Map<Integer, Double> getWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards) {
-        assert communityCards.size() >= 3 : "Computing percentages before the flop is displayed takes too much time";
-
+    private static Map<Integer, Double> percentagesFromScenariosWon(Map<Integer, Integer> scenariosWon) {
         Map<Integer, Double> percentages = new HashMap<>();
-        Map<Integer, Integer> scenariosWon = new HashMap<>();
-        holeCards.forEach((id, hc) -> scenariosWon.put(id, 0));
-
-        ArrayList<Card> usedCards = new ArrayList<>(communityCards);
-        holeCards.forEach((id, hc) -> usedCards.addAll(Arrays.asList(hc)));
-
-        addMoreCards(holeCards, new ArrayList<>(communityCards), scenariosWon, new ArrayList<>(usedCards));
-
-        double totalScenarios = 0;
-        for (Integer i : scenariosWon.keySet())
-            totalScenarios += scenariosWon.get(i);
-
-        final double tot = totalScenarios;
-        holeCards.forEach((id, hc) -> percentages.put(id, (double)scenariosWon.get(id) / tot));
-
+        int totalScenarios = scenariosWon.keySet().stream()
+                .map(scenariosWon::get)
+                .reduce(0, Integer::sum);
+        scenariosWon.forEach((id, numWon) -> percentages.put(id, (double)numWon / totalScenarios));
         return percentages;
     }
-
-    private static void addMoreCards(Map<Integer, Card[]> holeCards, ArrayList<Card> communityCards, Map<Integer, Integer> scenariosWon, ArrayList<Card> usedCards) {
-        if (communityCards.size() == 5) {
-            Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
-            Card[] max = Collections.max(holeCards.values(), comp);
-            holeCards.forEach((id, hc) -> {
-                if (Arrays.equals(hc,max))
-                    scenariosWon.put(id, scenariosWon.get(id)+1);
-            });
-            return;
-        }
-
-        Deck deck = new Deck();
-
-        Optional<Card> c;
-        while((c = deck.draw()).isPresent()) {
-            Card card = c.get();
-            if (usedCards.contains(card)) continue;
-
-            communityCards.add(card);
-            usedCards.add(card);
-            addMoreCards(holeCards, communityCards, scenariosWon, usedCards);
-            communityCards.remove(card);
-            usedCards.remove(card);
-        }
-
-    }
-
 }

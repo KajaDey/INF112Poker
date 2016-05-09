@@ -11,6 +11,11 @@ import java.util.*;
  */
 public class Game {
 
+    public static final long WAIT_FOR_COMMUNITY_CARD_DELAY = 1000L;
+    public static final long WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY = 5000L;
+    public static final long HAND_OVER_DELAY = 7000L;
+    public static final long EVERYONE_FOLDED_DELAY = 3000L;
+
     //Controls
     private Player [] players;
     private GameController gameController;
@@ -34,6 +39,7 @@ public class Game {
     private Map<Integer, Integer> rankingTable;
     private Map<Integer, String> names;
     private Card [] communityCards;
+
 
     public Game(GameSettings gameSettings, GameController gameController) {
         this.gameController = gameController;
@@ -132,6 +138,9 @@ public class Game {
         GUIMain.debugPrintln("\nPRE FLOP:");
 
         boolean handContinues = bettingRound(preFlop);
+        if (skipBettingRound()) {
+            displayHoleCards();
+        }
         if (!handContinues) {
             preShowdownWinner();
             return;
@@ -194,13 +203,13 @@ public class Game {
         //Check if all players are all in and betting round should be skipped
         if (skipBettingRound()) {
             displayHoleCards();
-            delay(4000);
+            delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             return true;
         }
 
         //Return true if hand continues, false if hand is over
         boolean handContinues = getDecisions(actingPlayerIndex, isPreFlop);
-        delay(1000);
+        delay(WAIT_FOR_COMMUNITY_CARD_DELAY);
         return handContinues;
     }
 
@@ -414,7 +423,7 @@ public class Game {
         assert pot.getPotSize() == 0 : "The pot was handed out, but there were still chips left";
 
         gameController.showdown(showdownStats);
-        delay(7000);
+        delay(HAND_OVER_DELAY);
 
         //If a player that was in this hand now has zero chips, it means he just busted
         for (Player p : playersStillInCurrentHand) {
@@ -440,7 +449,7 @@ public class Game {
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         GUIMain.debugPrintln("\n"+winner.getName()+" won the hand");
         pot = new Pot();
-        delay(3000);
+        delay(EVERYONE_FOLDED_DELAY);
     }
 
     /**

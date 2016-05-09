@@ -37,9 +37,8 @@ public class HandCalculatorTest {
     }
 
     @Test
-    public void getWinningPrecentagesTest() {
-        long totalTime = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
+    public void getWinningPercentagesTest() {
+        for (int i = 0; i < 10; i++) {
             Deck deck = new Deck();
             List<Card> communityCards = new ArrayList<>();
             communityCards.add(deck.draw().get());
@@ -47,34 +46,19 @@ public class HandCalculatorTest {
             communityCards.add(deck.draw().get());
 
             Map<Integer, Card[]> holeCards = new HashMap<>();
-            for (int j = 0; j < 6; j++) {
+            int amountOfPlayers = (int)(4*Math.random()) + 2;
+            for (int j = 0; j < amountOfPlayers; j++) {
                 Card[] cards = new Card[]{deck.draw().get(), deck.draw().get()};
                 holeCards.put(j, cards);
             }
-
-            long startTime = System.currentTimeMillis();
-            Map<Integer, Double> winningPercentages = HandCalculator.getWinningPercentages(holeCards, communityCards);
-
-            System.out.println("Found winning percentages in " + (System.currentTimeMillis() - startTime) + " ms.");
-
-            startTime = System.currentTimeMillis();
-            Map<Integer, Double> newWinningPercentages = HandCalculator.getNewWinningPercentages(holeCards, communityCards);
-            System.out.println("Found new winning percentages in " + (System.currentTimeMillis() - startTime) + " ms.");
-
-            System.out.println("Community cards: " + communityCards);
-            System.out.print("[");
-            winningPercentages.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0));
-            System.out.println("]");
-            System.out.print("[");
-            newWinningPercentages.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0));
-            System.out.println("]");
-
+            HandCalculator.getNewWinningPercentages(holeCards, communityCards, map -> map.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0)), 0L);
         }
-        System.out.println("Total time: " + (System.currentTimeMillis() - totalTime) + " ms.");
     }
 
-    @Test
-    public void testSplitPot() {
+    /**
+     * Tests that the winning probability calculator works corerctly when there is a high chance of splitting the pot
+     */
+    public void testSplitPotPercentages() {
         /*
         Community cards: [♠A, ♦Q, ♣Q]
         [#[♥A, ♠2]: 73.87%, #[♣A, ♦5]:  8.26%, #[♥K, ♠10]: 14.56%, #[♥7, ♦9]:  0.60%, #[♣10, ♥8]:  0.45%, #[♥9, ♥J]:  2.25%, ]
@@ -220,7 +204,7 @@ public class HandCalculatorTest {
         Map<Integer, Card[]> holeCards = new HashMap<>();
         players.stream().forEach(p -> holeCards.put(p.getID(), p.getHoleCards()));
 
-        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(holeCards, communityCards);
+        Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(holeCards, communityCards);
 
         assertEquals(0.38, percentages.get(0), 0.03);
         assertEquals(0.62, percentages.get(1), 0.03);

@@ -5,6 +5,7 @@ import gui.layouts.BoardLayout;
 import gui.layouts.IPlayerLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
 
 import java.sql.SQLOutput;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * This class contains all the information about the game screen.
@@ -216,6 +218,10 @@ public class GameScreen {
      * Displays the card pictures to the screen
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
+        // If you are sent hole cards for another player, assume all hole cards will be sent soon
+        if (userID != this.playerID) {
+            holeCardsShown = true;
+        }
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
@@ -230,10 +236,7 @@ public class GameScreen {
         }
         allHoleCards.put(userID, new Card[]{leftCard, rightCard });
 
-        // If you are sent hole cards for another player, assume all hole cards will be sent soon
-        if (userID != this.playerID) {
-            holeCardsShown = true;
-        }
+
     }
 
     //TODO: DEPRECATED
@@ -302,7 +305,7 @@ public class GameScreen {
         communityCards.add(card2);
         communityCards.add(card3);
         updateYourHandLabel();
-        showPercentages();
+        //showPercentages();
 
         new SoundPlayer().playDealCardSound();
         printToLogField("Flop " + card1 + " " + card2 + " " + card3);
@@ -316,7 +319,7 @@ public class GameScreen {
         boardLayout.showTurn(turnImage);
         communityCards.add(turnCard);
         updateYourHandLabel();
-        showPercentages();
+        //showPercentages();
 
         printToLogField("Turn " + turnCard);
         soundPlayer.playDealCardSound();
@@ -331,7 +334,7 @@ public class GameScreen {
         communityCards.add(riverCard);
         updateYourHandLabel();
         soundPlayer.playDealCardSound();
-        showPercentages();
+        //showPercentages();
 
         printToLogField("River " + riverCard);
     }
@@ -768,12 +771,26 @@ public class GameScreen {
     /**
      * If hole cards are shown, calculate percentages for all players
      */
-    private void showPercentages() {
-        if (!holeCardsShown || allHoleCards == null || communityCards.size() < 3)
+    public void showPercentages() {
+        assert allHoleCards != null;
+        if (!holeCardsShown) {
+            System.out.println((System.currentTimeMillis() % 1000) + ": Hole cards aren't shown");
             return;
+        }
+        System.out.println((System.currentTimeMillis() % 1000) + ": Starting computing wining percentages with " + holeCards.size() + " hole cards.");
+        Consumer<Map<Integer, Double>> callBack = (percentages) -> {
+            Platform.runLater(() ->
 
-        Map<Integer, Double> percentages = HandCalculator.getWinningPercentages(allHoleCards, communityCards);
+                percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"))
+            );
+        };
 
-        percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
+
+        new Thread(() ->  {
+            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(allHoleCards, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY - 10L);
+            callBack.accept(percentages);
+        }).start();
+
+        //percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
     }
 }

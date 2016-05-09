@@ -65,7 +65,7 @@ public class GameController {
     /**
      * Called when the enter button is clicked.
      * Checks valid number of players, then makes GUI show the lobby screen
-     * @param name
+     * @param name The player's chosen name
      */
     public void enterButtonClicked(String name, InetAddress IPAddress, MainScreen.GameType gameType) {
         //Tell GUI to display Lobby
@@ -285,8 +285,6 @@ public class GameController {
 
     /**
      *  Get a decision from an AI-client
-     * @param aiClient
-     * @return
      */
     private Decision getAIDecision(GameClient aiClient) {
         long startTime = System.currentTimeMillis();
@@ -301,7 +299,6 @@ public class GameController {
 
     /**
      * Sleeps the thread for given amount of time
-     * @param delayTime
      */
     public void delay(long delayTime) {
         System.out.println("Delay");
@@ -342,7 +339,7 @@ public class GameController {
      */
     public void setHandForClient(int clientID, Card card1, Card card2) {
         if (showAllPlayerCards) { // Send everyone's hole cards to everyone
-            clients.forEach((id, client) -> client.setHandForClient(id, card1, card2));
+            clients.forEach((id, client) -> client.setHandForClient(clientID, card1, card2));
         }
         else {
             GameClient c = clients.get(clientID);
@@ -478,7 +475,7 @@ public class GameController {
     }
 
     /**
-     * Tell the GUI to show player cards
+     * Tell the GUI to show player cards for all players
      * @param holeCards Hole cards of the players to show, indexed by playerIDs
      */
     public void showHoleCards(Map<Integer, Card[]> holeCards) {

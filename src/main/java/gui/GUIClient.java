@@ -104,7 +104,6 @@ public class GUIClient implements GameClient {
 
     /**
      *
-     * @param move
      */
     public synchronized void setDecision(Decision.Move move) { setDecision(move, 0); }
 
@@ -145,6 +144,15 @@ public class GUIClient implements GameClient {
     public void setHandForClient(int userID, Card card1, Card card2) {
         this.holecards.put(userID, new Card[]{card1, card2});
         Platform.runLater(() -> gameScreen.setHandForUser(userID, card1, card2));
+
+        // Wait for the GUI to update, so that showPercentages can see the cards. If the wait is sometimes too short, that's fine
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) { }
+        if (gameState.isPresent() && gameState.get().getPlayersAllIn() > 1 && this.holecards.size() == gameState.get().getPlayersAllIn() && userID != id) {
+            System.out.println((System.currentTimeMillis() % 1000) + ": got cards for all players (" + userID + "), displaying winning percentages");
+            gameScreen.showPercentages();
+        }
     }
 
     @Override
@@ -250,10 +258,12 @@ public class GUIClient implements GameClient {
         } catch (IllegalDecisionException e) {
             assert false : "Illegal decision " + e;
         }
+        Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
+
         if (gameState.get().getPlayersLeftInHand() > 0) {
             gameScreen.highlightPlayerTurn(gameState.get().currentPlayer.id);
         }
-        Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
+
     }
 
     //@Override
@@ -333,17 +343,4 @@ public class GUIClient implements GameClient {
         Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
     }
 
-    public void showHoleCards(Map<Integer, Card[]> holeCards) {
-        // Platform.runLater(() -> gameScreen.showHoleCards(holeCards));
-        // This is now done via setHandForClient()
-    }
-
-    /**
-     * Highlights the next player to make a move
-     * @param id ID of the acting player
-     */
-    public void highlightPlayerTurn(int id) {
-        //gameScreen.highlightPlayerTurn(id);
-        // This now done in playerMadeDecision()
-    }
 }
