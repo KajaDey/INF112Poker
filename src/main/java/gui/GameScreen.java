@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -52,10 +51,8 @@ public class GameScreen {
     private PlayerLayout playerLayout;
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
-    private Label endGameScreen;
     private TextArea logField = new TextArea();
     private TextField chatField = new TextField();
-    private Button sendTextButton = new Button();
     private SoundPlayer soundPlayer = new SoundPlayer();
     private Optional<Consumer<String>> chatListener = Optional.empty();
 
@@ -178,7 +175,7 @@ public class GameScreen {
         chatField.setLayoutY(scene.getHeight() - 40);
         chatField.setOpacity(0.9);
 
-        sendTextButton = ObjectStandards.makeStandardButton("Send");
+        Button sendTextButton = ObjectStandards.makeStandardButton("Send");
         sendTextButton.setLayoutX(230);
         sendTextButton.setLayoutY(scene.getHeight() - 40);
 
@@ -525,7 +522,7 @@ public class GameScreen {
         backToMainScreenButton.setMinWidth(200);
         saveStatisticsButton.setMinWidth(200);
 
-        endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!","");
+        Label endGameScreen = ObjectStandards.makeStandardLabelBlack(names.get(winnerID) + " has won the game!", "");
         endGameScreen.setFont(new Font("Areal", 30));
 
         Label statsLabel = ObjectStandards.makeStandardLabelWhite(stats.toString(), "");

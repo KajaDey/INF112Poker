@@ -37,18 +37,13 @@ public class ServerGameCommunicator {
      * @throws IOException
      */
     public void startUpi() throws IOException {
-        System.out.println("Client " + playerName + " telling server upi 0.1");
-        socketWriter.write("upi 0.1\n");
-        socketWriter.flush();
+        writeToSocket("upi 0.1");
 
-        System.out.println("Client " + playerName + ": Waiting for upiok");
         String input = socketReader.readLine();
-        if (!input.equals("upiok")) {
+        if (!input.equals("upiok"))
             throw new IOException("Received " + input + " from server, expected upiok");
-        } else {
+         else
             System.out.println("Client " + playerName + " received upiok from server");
-        }
-
 
         while (true) {
             input = socketReader.readLine();
@@ -60,8 +55,7 @@ public class ServerGameCommunicator {
 
             switch (tokens[0]) {
                 case "getName":
-                    socketWriter.write("playerName \"" + playerName + "\"\n");
-                    socketWriter.flush();
+                    writeToSocket("playerName \"" + playerName + "\"");
                     break;
                 case "newHand":
                     assert gameClient.isPresent();
@@ -152,9 +146,10 @@ public class ServerGameCommunicator {
                     break;
                 case "getDecision": {
                     assert gameClient.isPresent();
-                    Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
-                    socketWriter.write(UpiUtils.decisionToString(decision) + "\n");
-                    socketWriter.flush();
+                    new Thread(() -> {
+                        Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
+                        writeToSocket(UpiUtils.decisionToString(decision));
+                    }).start();
                     break;
                 }
                 case "playerMadeDecision":
@@ -177,15 +172,25 @@ public class ServerGameCommunicator {
     }
 
     /**
+     *  Write to socket
+     *  @param string to write
+     */
+    private boolean writeToSocket(String string) {
+        try {
+            socketWriter.write(string + "\n");
+            socketWriter.flush();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * Send a chat message to the server
      */
     public void chatListener(String chatMessage) {
-        try {
-            socketWriter.write("chat \"" + chatMessage + "\"\n");
-            socketWriter.flush();
-        } catch (IOException e) {
-            System.out.println("Could not send chat message, " + chatMessage);
-            e.printStackTrace();
-        }
+        if (!writeToSocket("chat \"" + chatMessage + "\""))
+            System.out.println("Failed to write chat message, " + chatMessage);
     }
 }

@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 
 public class GUIClient implements GameClient {
 
-    private GameScreen gameScreen;
     private int id;
+    private GameScreen gameScreen;
 
     private Optional<GameState> gameState = Optional.empty();
     private Optional<Map<Integer, Integer>> positions = Optional.empty();
     private Optional<Map<Integer, String>> names = Optional.empty();
     private Map<Integer, Card[]> holeCards = new HashMap<>();
-    private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(1);
+    private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(3);
 
     private int amountOfPlayers;
     private long minimumRaise = 0, highestAmountPutOnTable = 0;
@@ -70,7 +70,6 @@ public class GUIClient implements GameClient {
             gameScreen.stopTimer();
         });
 
-        //Return decision
         return decision;
     }
 
