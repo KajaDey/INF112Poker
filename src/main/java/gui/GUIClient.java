@@ -257,7 +257,7 @@ public class GUIClient implements GameClient {
         }
         Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
 
-        if (gameState.get().getPlayersLeftInHand() > 0) {
+        if (gameState.get().getNextNodeType() == GameState.NodeType.PLAYER_DECISION) {
             gameScreen.highlightPlayerTurn(gameState.get().currentPlayer.id);
         }
 
@@ -321,6 +321,9 @@ public class GUIClient implements GameClient {
             initGameState();
         }
         Platform.runLater(() -> gameScreen.newBettingRound());
+        if (gameState.get().getPlayersLeftInHand() > 0) {
+            gameScreen.highlightPlayerTurn(gameState.get().currentPlayer.id);
+        }
     }
 
     /**
