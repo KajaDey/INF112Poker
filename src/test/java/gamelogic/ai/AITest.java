@@ -2,15 +2,12 @@ package gamelogic.ai;
 
 import gamelogic.Card;
 import gamelogic.Decision;
-import gamelogic.Deck;
 import gamelogic.GameClient;
+import gamelogic.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -27,11 +24,12 @@ public class AITest {
     static long bigBlind = 50;
     static long startStack = 2500L;
     static long timeToThink = 2000L;
+    static Logger logger = new Logger("AI-test", "");
 
     @Test
     public void testAllInAsCall() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         testAllInAsCallProperty(simpleAi);
         testAllInAsCallProperty(mctsAi);
     }
@@ -39,7 +37,7 @@ public class AITest {
     @Test
     public void testAllInAsCallFollowedByAllIn() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         testAllInAsCallFollowedByAllInProperty(simpleAi);
         testAllInAsCallFollowedByAllInProperty(mctsAi);
     }
@@ -47,7 +45,7 @@ public class AITest {
     @Test
     public void doesNotFoldWithGreatHandHeadsUp() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         doesNotFoldWithGreatHandHeadsUpProperty(simpleAi);
         doesNotFoldWithGreatHandHeadsUpProperty(mctsAi);
     }
@@ -55,7 +53,7 @@ public class AITest {
     @Test
     public void checksWithShittyHandAsBigBlind() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         checksWithShittyHandAsBigBlindProperty(simpleAi);
         checksWithShittyHandAsBigBlindProperty(mctsAi);
     }
@@ -63,7 +61,7 @@ public class AITest {
     @Test
     public void foldsWithShittyHandIfNotBlind() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         foldsWithShittyHandIfNotBlindProperty(simpleAi);
         foldsWithShittyHandIfNotBlindProperty(mctsAi);
     }
@@ -71,7 +69,7 @@ public class AITest {
     @Test
     public void doesNotFoldWithGreatHand() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         doesNotFoldWithGreatHandProperty(simpleAi);
         doesNotFoldWithGreatHandProperty(mctsAi);
     }
@@ -79,14 +77,14 @@ public class AITest {
     @Test
     public void checksWithShittyHandAsBigBlindHeadsUp() {
         SimpleAI simpleAi = new SimpleAI(0);
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         checksWithShittyHandAsBigBlindHeadsUpProperty(mctsAi);
         checksWithShittyHandAsBigBlindHeadsUpProperty(simpleAi);
     }
     // Commented out for lack of passing
     //@Test
     public void doesNotFoldWithPairOfDeuces() {
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         SimpleAI simpleAi = new SimpleAI(0);
         doesNotFoldWithPairOfDeucesProperty(mctsAi);
         doesNotFoldWithPairOfDeucesProperty(simpleAi);
@@ -94,7 +92,7 @@ public class AITest {
 
     @Test
     public void doesNotFoldWithLowStraightFlush() {
-        MCTSAI mctsAi = new MCTSAI(0);
+        MCTSAI mctsAi = new MCTSAI(0, logger);
         SimpleAI simpleAi = new SimpleAI(0);
         doesNotFoldWithLowStraightFlushProperty(mctsAi);
         //doesNotFoldWithLowStraightFlushProperty(simpleAi);
@@ -278,7 +276,7 @@ public class AITest {
     public void testCunsecutiveRaises() {
         for (int i = 0; i < 1000; i++) {
 
-            MCTSAI mctsAi = new MCTSAI(0);
+            MCTSAI mctsAi = new MCTSAI(0, logger);
             SimpleAI simpleAI = new SimpleAI(2);
             HashMap<Integer, Integer> positions = new HashMap<>();
             HashMap<Integer, String> names = new HashMap<>();
@@ -367,7 +365,7 @@ public class AITest {
     @Test
     public void blindAsAllIn() {
         for (int i = 0; i < 10; i++) {
-            MCTSAI ai = new MCTSAI(0);
+            MCTSAI ai = new MCTSAI(0, logger);
             ai.setHandForClient(0, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
 
             HashMap<Integer, Integer> positions = new HashMap<>();
@@ -409,7 +407,7 @@ public class AITest {
     // Test created to reproduce a specific bug in the AI
     // Bug is fixed now, the test remains because why not
     public void testPreflopShowdown() {
-        MCTSAI ai = new MCTSAI(3);
+        MCTSAI ai = new MCTSAI(3, logger);
         ai.setHandForClient(3, Card.of(14, Card.Suit.HEARTS).get(), Card.of(14, Card.Suit.SPADES).get());
 
         HashMap<Integer, Integer> positions = new HashMap<>();

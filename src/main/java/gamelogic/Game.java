@@ -43,10 +43,12 @@ public class Game {
     private ArrayDeque<Card> cardQueue;
     private boolean replay = false;
 
+    private final Logger logger;
 
-    public Game(GameSettings gameSettings, GameController gameController) {
+    public Game(GameSettings gameSettings, GameController gameController, Logger logger) {
         this.gameController = gameController;
         this.gameSettings = gameSettings;
+        this.logger = logger;
 
         this.finishedInPosition =  gameSettings.getMaxNumberOfPlayers();
         this.players = new Player[gameSettings.getMaxNumberOfPlayers()];
@@ -89,7 +91,7 @@ public class Game {
         lastBlindRaiseTime = System.currentTimeMillis();
 
         while(numberOfPlayersWithChipsLeft() > 1) {
-            GUIMain.debugPrintln("\nNew hand");
+            logger.println("\nNew hand", Logger.MessageType.GAMEPLAY);
             //Tell all clients that a new hand has started and update all players stack sizes
             refreshAllStackSizes();
 
@@ -124,12 +126,12 @@ public class Game {
         boolean preFlop = true;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
-        GUIMain.debugPrintln("\nBLINDS");
+        logger.println("\nBLINDS", Logger.MessageType.GAMEPLAY);
         long currentTime = System.currentTimeMillis();
         // Increase blinds
         if (currentTime - (gameSettings.getLevelDuration()*60*1000) > lastBlindRaiseTime) {
             gameSettings.increaseBlinds();
-            GUIMain.debugPrintln("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind());
+            logger.println("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind(), Logger.MessageType.GAMEPLAY);
             gameController.setBlinds();
             lastBlindRaiseTime = currentTime;
         }
@@ -139,7 +141,7 @@ public class Game {
         printAllPlayerStacks();
 
         //First betting round (preflop)
-        GUIMain.debugPrintln("\nPRE FLOP:");
+        logger.println("\nPRE FLOP:", Logger.MessageType.GAMEPLAY);
 
         boolean handContinues = bettingRound(preFlop);
         if (skipBettingRound() && playersStillInCurrentHand.size() > 1) {
@@ -152,7 +154,7 @@ public class Game {
         }
 
         //Display flop and new betting round
-        GUIMain.debugPrintln("\nFLOP:");
+        logger.println("\nFLOP:", Logger.MessageType.GAMEPLAY);
         setFlop();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
@@ -161,7 +163,7 @@ public class Game {
         }
 
         //Display turn and new betting round
-        GUIMain.debugPrintln("\nTURN:");
+        logger.println("\nTURN:", Logger.MessageType.GAMEPLAY);
         setTurn();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
@@ -170,7 +172,7 @@ public class Game {
         }
 
         //Display river and new betting round
-        GUIMain.debugPrintln("\nRIVER:");
+        logger.println("\nRIVER:", Logger.MessageType.GAMEPLAY);
         setRiver();
         handContinues = bettingRound(!preFlop);
         if (!handContinues) {
@@ -267,7 +269,7 @@ public class Game {
                     break;
             }
 
-            GUIMain.debugPrintln(playerToAct.getName()  + " acted: " + decision +  ", stack size = " + playerToAct.getStackSize());
+            logger.println(playerToAct.getName()  + " acted: " + decision +  ", stack size = " + playerToAct.getStackSize(), Logger.MessageType.GAMEPLAY);
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1)
@@ -327,17 +329,17 @@ public class Game {
                 case RAISE:
                     assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.getSize() + " when highest amount put on table was 0";
                     if ((decision.getSize() + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
-                        GUIMain.debugPrintln(playerToAct.getName() + " tried to raise to " + (decision.getSize() + highestAmountPutOnTable) + " but only has " + stackSize);
+                        logger.println(playerToAct.getName() + " tried to raise to " + (decision.getSize() + highestAmountPutOnTable) + " but only has " + stackSize, Logger.MessageType.GAMEPLAY);
                         break;
                     }
                     if (decision.getSize() >= currentMinimumRaise)
                         return decision;
                     break;
-                default: GUIMain.debugPrintln("Unknown move: " + decision.move);
+                default: logger.println("Unknown move: " + decision.move, Logger.MessageType.DEBUG, Logger.MessageType.GAMEPLAY, Logger.MessageType.WARNINGS);
             }
 
 
-            GUIMain.debugPrintln("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**");
+            logger.println("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**", Logger.MessageType.WARNINGS, Logger.MessageType.GAMEPLAY, Logger.MessageType.DEBUG);
 
             //Temp hack for testing
             if (highestAmountPutOnTable > 0)
@@ -447,7 +449,7 @@ public class Game {
         Player winner = playersStillInCurrentHand.get(0);
         gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
-        GUIMain.debugPrintln("\n"+winner.getName()+" won the hand");
+        logger.println("\n"+winner.getName()+" won the hand", Logger.MessageType.GAMEPLAY);
         pot = new Pot();
         delay(EVERYONE_FOLDED_DELAY);
     }
@@ -657,12 +659,12 @@ public class Game {
      */
     private void printShowdownToDebugger() {
         //Print hole cards and community cards
-        GUIMain.debugPrintln("\nShowdown");
+        logger.println("\nShowdown", Logger.MessageType.GAMEPLAY);
         for (Player p : playersStillInCurrentHand)
-            GUIMain.debugPrintln(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1]);
+            logger.println(p.getName() + " " + p.getHoleCards()[0] + p.getHoleCards()[1], Logger.MessageType.GAMEPLAY);
         for (Card communityCard : communityCards)
-            GUIMain.debugPrint(communityCard + " ");
-        GUIMain.debugPrintln();
+            logger.println(communityCard + " ", Logger.MessageType.GAMEPLAY);
+        logger.println("");
     }
 
     /**
@@ -670,9 +672,9 @@ public class Game {
      */
     public void printAllPlayerStacks() {
         for (Player p : players) {
-            GUIMain.debugPrintln(p.getName() + "'s stack: " + p.getStackSize() + ", " + (positions.containsKey(p.getID()) ? GameScreen.getPositionName(positions.get(p.getID()), positions.size()) : "Bust"));
+            logger.println(p.getName() + "'s stack: " + p.getStackSize() + ", " + (positions.containsKey(p.getID()) ? GameScreen.getPositionName(positions.get(p.getID()), positions.size()) : "Bust"), Logger.MessageType.GAMEPLAY);
         }
-        GUIMain.debugPrintln("Pot: " + pot.getPotSize());
+        logger.println("Pot: " + pot.getPotSize(), Logger.MessageType.GAMEPLAY);
     }
 
     /**
@@ -684,7 +686,7 @@ public class Game {
         try {
             Thread.sleep(milliseconds);
         } catch (Exception e) {
-            GUIMain.debugPrintln("Thread " + Thread.currentThread() + " was interrupted.");
+            logger.println("Thread " + Thread.currentThread() + " was interrupted.", Logger.MessageType.WARNINGS, Logger.MessageType.DEBUG);
         }
     }
 
