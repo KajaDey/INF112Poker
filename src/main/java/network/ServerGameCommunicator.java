@@ -152,13 +152,13 @@ public class ServerGameCommunicator {
                 case "getDecision": {
                     assert gameClient.isPresent();
                     Decision decision = gameClient.get().getDecision(Long.parseLong(tokens[1]));
-                    socketWriter.write(decisionToString(decision) + "\n");
+                    socketWriter.write(UpiUtils.decisionToString(decision) + "\n");
                     socketWriter.flush();
                     break;
                 }
                 case "playerMadeDecision":
                     assert gameClient.isPresent();
-                    Optional<Decision> decision = parseDecision(tokens[2]);
+                    Optional<Decision> decision = UpiUtils.parseDecision(tokens[2]);
                     if (!decision.isPresent()) {
                         System.out.println("Couldn't parse decision " + tokens[2]);
                     }
@@ -168,68 +168,6 @@ public class ServerGameCommunicator {
                 default:
                     System.out.println("Received unrecognized command \"" + input + "\"");
             }
-        }
-    }
-
-    public static String decisionToString(Decision decision) {
-        if (decision.move == Decision.Move.RAISE || decision.move == Decision.Move.BET) {
-            return decision.move.toString().toLowerCase() + decision.getSize();
-        }
-        else if (decision.move == Decision.Move.BIG_BLIND) {
-            return "bigBlind";
-        }
-        else if (decision.move == Decision.Move.SMALL_BLIND) {
-            return "smallBlind";
-        }
-        else {
-            return decision.move.toString().toLowerCase();
-        }
-    }
-
-    public static Optional<Decision> parseDecision(String string) {
-        if (string == null) {
-            return Optional.empty();
-        }
-        int firstDigitIndex = 0;
-        for (int i = 0; i < string.length(); i++) {
-            if (Character.isDigit(string.charAt(i))) {
-                firstDigitIndex = i;
-                break;
-            }
-        }
-        if (firstDigitIndex == 0) {
-            try {
-                return Optional.of(new Decision(parseMove(string).get()));
-            }
-            catch (NoSuchElementException | IllegalArgumentException e) {
-                return Optional.empty();
-            }
-        }
-        else {
-            try {
-                return Optional.of(new Decision(parseMove(string.substring(0, firstDigitIndex)).get(), Long.parseLong(string.substring(firstDigitIndex))));
-            }
-            catch (NoSuchElementException | IllegalArgumentException e) {
-                return Optional.empty();
-            }
-        }
-    }
-
-    public static Optional<Decision.Move> parseMove(String string) {
-        switch (string) {
-            case "smallBlind":
-                return Optional.of(Decision.Move.SMALL_BLIND);
-            case "bigBlind":
-                return Optional.of(Decision.Move.BIG_BLIND);
-            case "allin":
-                return Optional.of(Decision.Move.ALL_IN);
-            default:
-                try {
-                    return Optional.of(Decision.Move.valueOf(string.toUpperCase()));
-                }
-                catch (IllegalArgumentException e) {
-                    return Optional.empty();
-                }
         }
     }
 

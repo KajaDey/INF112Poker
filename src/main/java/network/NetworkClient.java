@@ -37,17 +37,35 @@ public class NetworkClient implements GameClient {
         socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
-        System.out.println("Waiting for upi handshake");
-        String input = "upi"; // Pretend the upi handshake was received by the lobby
-
-        if (input != null && input.startsWith("upi")) {
-            System.out.println("Got upi from player " + playerId);
-            writeToSocket("upiok");
-        }
-        else {
-            throw new IOException("Wrong handshake " + input);
-        }
+        //Sending upi-handshake
+        writeToSocket("upiok");
         writeToSocket("clientId " + playerId);
+    }
+
+    public void readFromSocket(){
+        Runnable task = (() -> {
+            try {
+                String input = socketInput.readLine();
+                Optional<String []> tokens = UpiUtils.tokenize(input);
+                if (tokens.isPresent())
+                switch (tokens.get()[0]) {
+                    case "chat":
+
+                        break;
+                    case "decision": //decisions
+
+                        break;
+
+                    default:
+                        throw new IOException("Could not parse input " + input);
+                }
+
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+
+
+        });
     }
 
     @Override
@@ -60,7 +78,7 @@ public class NetworkClient implements GameClient {
 
         try {
             String input = socketInput.readLine();
-            Optional<Decision> decision = ServerGameCommunicator.parseDecision(input);
+            Optional<Decision> decision = UpiUtils.parseDecision(input);
             if (!decision.isPresent()) {
                 System.out.println("Server received incorrectly formatted decision " + input + ", folding");
                 return Decision.fold;
@@ -117,7 +135,7 @@ public class NetworkClient implements GameClient {
     @Override
     public void playerMadeDecision(Integer playerId, Decision decision) {
         writeToSocket("playerMadeDecision " + playerId + " "
-                + ServerGameCommunicator.decisionToString(decision));
+                + UpiUtils.decisionToString(decision));
     }
 
     @Override
