@@ -37,7 +37,7 @@ public class GameController {
     public GameController(GameSettings settings, GUIMain guiMain) {
         this.guiMain = Optional.of(guiMain);
         this.gameSettings = settings;
-        this.logger = new Logger();
+        this.logger = new Logger("Client", "");
         this.game = new Game(settings, this, logger);
 
         clients = new HashMap<>();
@@ -50,7 +50,7 @@ public class GameController {
     public GameController(GameSettings settings) {
         this.guiMain = Optional.empty();
         this.gameSettings = settings;
-        this.logger = new Logger();
+        this.logger = new Logger("ServerGame", "");
         this.game = new Game(settings, this, logger);
 
         clients = new HashMap<>();
