@@ -1,5 +1,6 @@
 package gui;
 
+import gamelogic.Logger;
 import network.Server;
 import network.UpiUtils;
 
@@ -14,10 +15,12 @@ public class LobbyTable {
     final int id;
     final GameSettings settings;
     final ArrayList<Integer> playerIds = new ArrayList<>();
+    private final Logger logger;
     private int hostID;
 
-    public LobbyTable(int id) {
+    public LobbyTable(int id, Logger logger) {
         this.id = id;
+        this.logger = logger;
         settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
     }
 
@@ -25,8 +28,7 @@ public class LobbyTable {
         try {
             UpiUtils.parseSetting(this.settings, name, value);
         } catch (Server.PokerProtocolException e) {
-            System.out.println("Could not parse setting, " + name + " " + value);
-            e.printStackTrace();
+            logger.println("Could not parse setting, " + name + " " + value, Logger.MessageType.NETWORK, Logger.MessageType.GAMEPLAY);
         }
     }
 

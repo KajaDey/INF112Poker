@@ -57,8 +57,11 @@ public class GameScreen {
     private SoundPlayer soundPlayer = new SoundPlayer();
     private Optional<Consumer<String>> chatListener = Optional.empty();
 
-    public GameScreen(int ID) {
+    private final Logger logger;
+
+    public GameScreen(int ID, Logger logger) {
         this.playerID = ID;
+        this.logger = logger;
 
         //Set onKeyRelease and onMouseClick events for pane
         pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout, chatField));
@@ -108,7 +111,7 @@ public class GameScreen {
             allPlayerLayouts.put(userID, pLayout);
         } else {
             int oppPosition = positions[opponentsAdded];
-            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition);
+            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition, logger);
 
             //Set X/Y-layout of this opponent
             double height = scene.getHeight(), width = scene.getWidth();
@@ -137,7 +140,7 @@ public class GameScreen {
             case 5: return new int[]{1,2,4,5};
             case 6: return new int[]{1,2,3,4,5};
             default:
-                GUIMain.debugPrintln("Error: " + numberOfPlayers + " players in game, cannot set positions");
+                logger.println("Error: " + numberOfPlayers + " players in game, GUI cannot set positions", Logger.MessageType.WARNINGS);
                 return null;
         }
     }
@@ -759,8 +762,8 @@ public class GameScreen {
         winningPercentageComputer = Optional.of(new Thread(() ->  {
             Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(allHoleCards, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             callBack.accept(percentages);
-            System.out.println("Computed winning percentages for " + communityCards.size() + " community cards: "
-                    + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat));
+            logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
+                    + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
         }));
         winningPercentageComputer.get().start();
     }

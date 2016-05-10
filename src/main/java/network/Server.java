@@ -4,6 +4,7 @@ import com.sun.deploy.util.SessionState;
 import gamelogic.AIType;
 import gamelogic.Game;
 import gamelogic.GameController;
+import gamelogic.Logger;
 import gui.GUIMain;
 import gui.GameSettings;
 
@@ -23,8 +24,11 @@ public class Server {
     public ServerSocket serverSocket;
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
+    private Thread server;
+    private final Logger lobbyLogger;
 
     public Server() {
+        lobbyLogger = new Logger("Lobby", "");
         try {
             serverSocket = new ServerSocket(39100);
         } catch (IOException e) {
@@ -35,18 +39,18 @@ public class Server {
     }
 
     public static void main(String ... args){
-        Server server = new Server();
+        new Server();
     }
 
-    public void start() {
-        Thread server = new Thread("ConnectionListener"){
+    private void start() {
+        server = new Thread("ConnectionListener"){
             @Override
             public void run() {
                 while(true) {
                     try {
-                        System.out.println("Server listening for connection..");
+                        lobbyLogger.println("Server listening for connection..", Logger.MessageType.NETWORK);
                         Socket socket = serverSocket.accept();
-                        System.out.println("Connection established with " + socket.getInetAddress());
+                        lobbyLogger.println("Connection established with " + socket.getInetAddress(), Logger.MessageType.NETWORK);
 
                         addNewClientSocket(socket);
                     } catch (IOException e) {
@@ -78,15 +82,15 @@ public class Server {
                 try {
                     player.socket.close();
                 } catch (IOException e) {
-                    System.out.println("Failed to close socket for " + player + "");
+                    lobbyLogger.println("Failed to close socket for " + player + "", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
                 }
             }
             else {
-                System.out.println("Warning: Tried to remove player " + player + ", but socket was already closed");
+                lobbyLogger.println("Warning: Tried to remove player " + player + ", but socket was already closed", Logger.MessageType.NETWORK);
             }
         }
         else {
-            System.out.println("Warning: Tried to remove player id " + id + ", but player was not found");
+            lobbyLogger.println("Warning: Tried to remove player id " + id + ", but player was not found", Logger.MessageType.NETWORK);
         }
     }
 
@@ -162,7 +166,7 @@ public class Server {
                         receivedIllegalCommandFrom(this, line);
                         continue;
                     }
-                    System.out.println("Client " + this.id + ": " + line);
+                    lobbyLogger.println("Client " + this.id + ": " + line, Logger.MessageType.NETWORK);
                     try {
                         tokenSwitch:
                         switch (tokens[0]) {
@@ -171,11 +175,11 @@ public class Server {
                                 return;
                             case "upi":
                                 if (readyToStartGame) {
-                                    System.out.println("Lobby received upi from #" + this.id + " (" + this.playerName + ")");
+                                    lobbyLogger.println("Lobby received upi from #" + this.id + " (" + this.playerName + ")", Logger.MessageType.NETWORK);
                                     return;
                                 }
                                 else {
-                                    System.out.println("Untimely upi command, " + line);
+                                    lobbyLogger.println("Untimely upi command, " + line, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                                     break;
                                 }
                             case "takeSeat": {
@@ -273,7 +277,7 @@ public class Server {
                                 }
                                 break;
                             default:
-                                System.out.println("Unknown command, " + line);
+                                lobbyLogger.println("Unknown command from client: " + line, Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
                         }
                     }
                     catch (PokerProtocolException e) {
@@ -333,7 +337,6 @@ public class Server {
                     }
                 }
             }
-
         }
 
         /**
@@ -350,7 +353,7 @@ public class Server {
             try {
                 writer.flush();
             } catch (IOException e) {
-                System.out.println("Failed to flush socket of " + this + ", removing player");
+                lobbyLogger.println("Failed to flush socket of " + this + ", removing player", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                 removeClient(this.id);
             }
         }
@@ -362,7 +365,7 @@ public class Server {
      * again for a while.
      */
     private void failedToWriteToPlayer(LobbyPlayer player, String message) {
-        System.out.println("Failed to write to client " + player + ", dropping player.");
+        lobbyLogger.println("Failed to write to client " + player + ", dropping player.", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         this.removeClient(player.id);
     }
 
@@ -371,7 +374,7 @@ public class Server {
      * and the client will be disconnected
      */
     private void failedToReadFromPlayer(LobbyPlayer player) {
-        System.out.println("Failed to read from client " + player + ", dropping player.");
+        lobbyLogger.println("Failed to read from client " + player + ", dropping player.", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         this.removeClient(player.id);
     }
 
@@ -380,7 +383,14 @@ public class Server {
      * For now, this just skips the command in question, and keeps the client
      */
     private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
-        System.out.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"");
+        lobbyLogger.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"", Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
+    }
+
+    /**
+     * Gets a handle to the thread listening for connection
+     */
+    public Thread getServerThread() {
+        return server;
     }
 
     static class ClientBroadcasts {
@@ -433,11 +443,11 @@ public class Server {
          * @return True if the player was seated
          */
         public boolean seatPlayer(LobbyPlayer player) {
-            if (seatedPlayers.size() >= this.settings.getMaxNumberOfPlayers()) {
-                GUIMain.debugPrintln(player.playerName + " tried to join full table, id " + tableID);
+            if (seatedPlayers.size() > settings.getMaxNumberOfPlayers()) {
+                lobbyLogger.println(player.playerName + " tried to join full table, id " + tableID, Logger.MessageType.NETWORK);
                 return false;
-            } else if (isSeated(player)) {
-                GUIMain.debugPrintln(player.playerName + " is already seated at table " + tableID);
+            } else if (seatedPlayers.contains(player)) {
+                lobbyLogger.println(player.playerName + " is already seated at table " + tableID, Logger.MessageType.NETWORK);
                 return false;
             } else {
                 seatedPlayers.add(player);
@@ -453,11 +463,15 @@ public class Server {
         }
 
         public void startGame() {
+            lobbyLogger.println("Warning: Forcing default settings", Logger.MessageType.DEBUG);
+            this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
-            System.out.println("Starting game for " + seatedPlayers.toString());
-            seatedPlayers.forEach(p -> p.readyToStartGame = true);
+            lobbyLogger.println("Starting game for " + seatedPlayers.toString(), Logger.MessageType.INIT, Logger.MessageType.NETWORK);
+            seatedPlayers.forEach(p -> {
+                p.readyToStartGame = true;
+            });
 
             this.seatedPlayers.forEach(player -> player.write("startGame"));
             seatedPlayers.forEach(p -> {
@@ -472,9 +486,9 @@ public class Server {
                 gameController.initGame(false, sockets);
                 this.delete();
             } catch (Game.InvalidGameSettingsException e) {
-                System.out.println("Error while starting game");
-                System.out.println(e.getMessage());
-                System.out.println("Game was not started");
+                lobbyLogger.println("Error while starting game", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
+                lobbyLogger.println(e.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
+                lobbyLogger.println("Game was not started", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 return;
             }
         }
@@ -486,6 +500,7 @@ public class Server {
             ClientBroadcasts.tableDeleted(Server.this, this);
             Server.this.lobbyTables.remove(this);
         }
+
 
         /**
          *  Return a string of all the players seated at this table, matching the Lobby Protocol

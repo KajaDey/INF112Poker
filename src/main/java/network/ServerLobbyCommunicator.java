@@ -1,5 +1,6 @@
 package network;
 
+import gamelogic.Logger;
 import gui.*;
 import javafx.application.Platform;
 
@@ -17,29 +18,45 @@ import java.util.Map;
  */
 public class ServerLobbyCommunicator {
 
-    private final Socket clientSocket;
-    private final BufferedReader socketReader;
-    private final BufferedWriter socketWriter;
-    private final Map<Integer, String> names;
+    private Socket clientSocket;
+    private BufferedReader socketReader;
+    private BufferedWriter socketWriter;
+    private Map<Integer, String> names;
     private final LobbyScreen lobbyScreen;
+    private final Logger logger;
+    private Thread listeningThread;
+    private InetAddress serverAddress;
+    private InputStream inputStream;
+    private String name;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
      * receives information about all the players from the server
      *
      * @param name Name of the player
+     * @param lobbyScreen Lobby screen made by the player
+     * @param serverAddress IP-address of the server
+     * @throws IOException
      */
-    public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen, InetAddress serverAddress) throws IOException {
+    public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen,
+                                   InetAddress serverAddress, Logger logger) throws IOException {
+        this.name = name;
+        this.logger = logger;
         this.lobbyScreen = lobbyScreen;
+        this.serverAddress = serverAddress;
+    }
+
+    private void connectClientToServer() throws IOException {
         Socket tempSocket = new Socket();
-        // Attempt to connect to server up to 20 times before giving up
+        // Attempt to connect to server up to 5 times before giving up
         for (int i = 0; i < 5; i++) {
             try {
                 tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
                 tempSocket.connect(new InetSocketAddress(serverAddress, 39100), 1000);
                 break;
-            } catch (IOException e) {
-                System.out.println("Failed to connect to " + serverAddress + ". Retrying...");
+            }
+            catch (IOException e) {
+                logger.println("Failed to connect to " + serverAddress + ". Retrying...", Logger.MessageType.NETWORK);
                 try {
                     Thread.sleep(1500L);
                 } catch (InterruptedException e1) {
@@ -52,15 +69,20 @@ public class ServerLobbyCommunicator {
         } else {
             throw new IOException("Failed to connect to " + serverAddress);
         }
+    }
+
+    public void start() throws IOException {
+        connectClientToServer();
+
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
         socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
         //Establish handshake with server
         writeToSocket("lobby " + name);
         {
-            String input = socketReader.readLine();
+            String input = readFromServer();
             if (input.equals("lobbyok")) {
-                System.out.println("Received handshake from client");
+                logger.println("Received handshake from client", Logger.MessageType.NETWORK);
             } else {
                 throw new IOException("Received handshake " + input + " from server, expected \"lobby\"");
             }
@@ -68,18 +90,17 @@ public class ServerLobbyCommunicator {
 
         names = new HashMap<>();
         // Receive all information about the lobby
-        getInit:
-        while (true) {
-            String input = socketReader.readLine();
+        getInit: while (true) {
+            String input = readFromServer();
             String[] tokens = UpiUtils.tokenize(input).get();
-            System.out.println(input);
+            logger.println("Server: " + input, Logger.MessageType.NETWORK);
 
             switch (tokens[0]) {
                 case "lobbySent":
                     break getInit;
                 case "yourId":
                     assert tokens.length > 1 : "Couldn't parse " + input;
-                    System.out.println("Received id " + tokens[1] + " from server");
+                    logger.println("Received id " + tokens[1] + " from server", Logger.MessageType.NETWORK);
                     this.lobbyScreen.setID(Integer.parseInt(tokens[1]));
                     break;
                 case "playerNames":
@@ -88,7 +109,7 @@ public class ServerLobbyCommunicator {
                     break;
                 case "table":
                     int id = Integer.parseInt(tokens[1]);
-                    LobbyTable table = new LobbyTable(id);
+                    LobbyTable table = new LobbyTable(id, logger);
                     if (!tokens[2].equals("settings")) {
                         throw new IOException();
                     }
@@ -104,20 +125,25 @@ public class ServerLobbyCommunicator {
                     Platform.runLater(() -> lobbyScreen.addTable(table));
                     break;
                 default:
-                    System.out.println("Received unknown init command " + tokens[0]);
+                    logger.println("Received unknown init command " + tokens[0], Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
             }
         }
 
+        listeningThread = listenForInputsFromServer();
+    }
+
+    private Thread listenForInputsFromServer() {
         Runnable serverListener = () -> {
             while (true) {
                 String input;
                 try {
-                    input = socketReader.readLine();
+                    input = readFromServer();
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
                 }
                 String[] tokens = UpiUtils.tokenize(input).get();
+
                 if (tokens.length < 1)
                     continue;
                 switch (tokens[0]) {
@@ -127,36 +153,48 @@ public class ServerLobbyCommunicator {
                         return;
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
+                        logger.println("Player joined lobby, id: " + tokens[1] + " name" + tokens[2], Logger.MessageType.NETWORK);
                         break;
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));
+                        logger.println("Player left lobby, p.id: " + tokens[1], Logger.MessageType.NETWORK);
                         break;
                     case "playerJoinedTable":
-                        Platform.runLater(() -> lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        Platform.runLater(()->lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        logger.println("Player joined table, p.id:" + tokens[1] + " t.id:" + tokens[2], Logger.MessageType.NETWORK);
                         break;
                     case "playerLeftTable":
-                        Platform.runLater(() -> lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        Platform.runLater(()->lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        logger.println("Player left table, p.id:" + tokens[1] + " t.id:" + tokens[2], Logger.MessageType.NETWORK);
                         break;
                     case "tableCreated":
                         //Make new table with default settings, tableSettings will follow shortly after this command anyway
-                        Platform.runLater(() -> lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]))));
+                        logger.println("New table created, tableID: " + tokens[1], Logger.MessageType.NETWORK);
+                        Platform.runLater(()->lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]), logger)));
                         break;
                     case "tableSettings":
                         int tableID = Integer.parseInt(tokens[1]);
                         Platform.runLater(() -> updateSettings(tableID, tokens));
                         break;
                     case "tableDeleted":
-                        Platform.runLater(() -> lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
+                        logger.println("Table deleted, tableID: " + tokens[1], Logger.MessageType.NETWORK);
+                        Platform.runLater(()->lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
                         break;
                     case "errorMessage":
                         Platform.runLater(() -> lobbyScreen.displayErrorMessage(tokens[1]));
                         break;
                     default:
-                        System.out.println("Unknown command \"" + tokens[0] + "\", ignoring...");
+                        logger.println("Unknown command \"" + tokens[0] + "\", ignoring...", Logger.MessageType.NETWORK);
                 }
             }
         };
-        new Thread(serverListener).start();
+        Thread listening = new Thread(serverListener);
+        listening.start();
+        return listening;
+    }
+
+    public String readFromServer() throws IOException{
+        return socketReader.readLine();
     }
 
     public void startGame(int tableID) {
@@ -197,7 +235,7 @@ public class ServerLobbyCommunicator {
         try {
             clientSocket.close();
         } catch (IOException e) {
-            System.out.println("Closing socket failed. Shutting down anyway.");
+            logger.println("Closing socket failed. Shutting down anyway.", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
             e.printStackTrace();
         }
     }
@@ -235,14 +273,18 @@ public class ServerLobbyCommunicator {
      */
     public void goToGameScreen() {
         int id = lobbyScreen.getID();
-        System.out.println("Client " + id + ": Going to game screen");
-        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id));
+        logger.println("Client " + id + ": Going to game screen", Logger.MessageType.NETWORK);
+        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id), logger);
 
-        System.out.println("Client " + id + ": Starting upi communication");
+        logger.println("Client " + id + ": Starting upi communication", Logger.MessageType.NETWORK);
         try {
             serverGameCommunicator.startUpi();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Thread getListeningThread() {
+        return listeningThread;
     }
 }

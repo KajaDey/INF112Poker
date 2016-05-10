@@ -19,7 +19,7 @@ public class Logger {
     private final HashMap<MessageType, BufferedWriter> logWriters = new HashMap<>();
 
     public enum MessageType {
-        DEBUG, AI, GAMEPLAY, WARNINGS, NETWORK
+        DEBUG, AI, GAMEPLAY, WARNINGS, NETWORK, INIT
     }
 
     public Logger() {
@@ -34,44 +34,64 @@ public class Logger {
         assert !logWriters.containsKey(type);
 
         if (!logFolder.isPresent()) {
-            String logFolder = System.currentTimeMillis() / 1000 + "-log";
+            String logFolder = fileNamePrefix + "_" + System.currentTimeMillis() / 1000 + "-log";
             Files.createDirectories((Paths.get("logs", logFolder)));
             this.logFolder = Optional.of(logFolder);
         }
-
-        Path logFile = Files.createFile(Paths.get(logFolder.get(), fileNamePrefix + type.toString().toLowerCase() + ".log"));
+        Path path = Paths.get("logs", logFolder.get(), type.toString().toLowerCase() + ".log");
+        Path logFile = Files.createFile(path);
         logWriters.put(type, Files.newBufferedWriter(logFile));
     }
 
-    public void print(String message, MessageType messageType) {
-        if (!logWriters.containsKey(messageType)) {
-            try {
-                createLogFor(messageType);
-            } catch (IOException e) {
-                System.out.println("Failed to create log file for " + messageType);
-                return;
+    public void print(String message, MessageType ... messageTypes) {
+        if (messageTypes.length == 0) {
+            messageTypes = new MessageType[]{MessageType.DEBUG};
+        }
+        for (MessageType messageType : messageTypes) {
+            if (!logWriters.containsKey(messageType)) {
+                try {
+                    createLogFor(messageType);
+                } catch (IOException e) {
+                    System.out.println("Failed to create log file for " + messageType + ": ");
+                    System.err.println("Failed to create log file for " + messageType + ": ");
+                    return;
+                }
             }
+            LocalTime time = LocalTime.now();
+            String wholeMessage;
+            if (message.startsWith("\n")) {
+                if (message.equals("\n")) {
+                    wholeMessage = "\n";
+                }
+                else {
+                    print("\n", messageTypes);
+                    wholeMessage = time.getHour() + ":" + time.getMinute() + ":" + time.getSecond() + " - " + logMessagePrefix + message.substring(1);
+                }
+            }
+            else {
+                wholeMessage = time.getHour() + ":" + time.getMinute() + ":" + time.getSecond() + " - " + logMessagePrefix + message;
+            }
+            try {
+                logWriters.get(messageType).write(wholeMessage);
+                logWriters.get(messageType).flush();
+            } catch (IOException e) {
+                System.out.println("Failed to write to " + messageType + " logfile");
+            }
+            System.out.print(wholeMessage);
         }
-        LocalTime time = LocalTime.now();
-        String wholeMessage = time.getHour() + ":" + time.getMinute() + ":" + time.getSecond() + " - " + logMessagePrefix + message;
-        try {
-            logWriters.get(messageType).write(wholeMessage);
-            logWriters.get(messageType).flush();
-        } catch (IOException e) {
-            System.out.println("Failed to write to " + messageType + " logfile");
-        }
-        System.out.print(wholeMessage);
     }
 
-    public void println(String message, MessageType messageType) {
-        print(message + "\n", messageType);
+    public void println(String message, MessageType ... messageTypes) {
+        print(message + "\n", messageTypes);
     }
 
     public void println(String message) {
         print(message + "\n");
     }
 
-    public void print(String message) {
-        print(message, MessageType.DEBUG);
-    }
+    public void print(String message) { print(message, MessageType.DEBUG); }
+
+    public void aiPrintln(String message) { aiPrint(message + "\n"); }
+
+    public void aiPrint(String message) { print(message, MessageType.AI); }
 }

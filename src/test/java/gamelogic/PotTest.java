@@ -25,7 +25,7 @@ public class PotTest {
         for (int i = 0; i < 5; i++)
             players.add(new Player("Player" + i, settings , i));
 
-        pot = new Pot();
+        pot = new Pot(new Logger("Test-pot", ""));
     }
 
     @Test

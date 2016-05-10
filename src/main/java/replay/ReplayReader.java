@@ -86,7 +86,7 @@ public class ReplayReader {
                         break;
                 }
             }
-            GUIMain.debugPrint("Uploaded replay without problems");
+            System.out.println("Uploaded replay without problems");
         }
         catch (IOException | NoSuchElementException | IllegalArgumentException e){
             System.out.println("Error while uploading replay \n" + e);

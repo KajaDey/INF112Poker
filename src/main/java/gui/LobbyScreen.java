@@ -1,6 +1,7 @@
 package gui;
 
 import gamelogic.GameController;
+import gamelogic.Logger;
 import network.ServerLobbyCommunicator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -42,11 +43,13 @@ public class LobbyScreen {
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
     private int ID;
     private Optional<LobbyTable> currentTable = Optional.empty();
+    private final Logger logger;
 
     private String [] buttonTexts = {"Take seat", "Leave table", "Delete table", "Change settings", "Start game"};
 
-    public LobbyScreen(GameController gameController, String name, InetAddress IPAddress) {
+    public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
         this.gameController = gameController;
+        this.logger = logger;
         this.tables = new HashMap<>();
         this.tableBoxes = new HashMap<>();
 
@@ -74,11 +77,12 @@ public class LobbyScreen {
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
         try {
-            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
-            GUIMain.debugPrintln("Connected successfully to server!");
+            serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress, GUIMain.guiMain.logger);
+            serverLobbyCommunicator.start();
+            this.logger.println("Connected successfully to server!", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         } catch (IOException e) {
             displayErrorMessage("Could not connect to server");
-            GUIMain.debugPrintln("Error: Could not connect to server");
+            this.logger.println("Error: Could not connect to server", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         }
     }
 
@@ -208,7 +212,7 @@ public class LobbyScreen {
                     nameLabel.setLayoutY(300);
                     break;
                 default:
-                    GUIMain.debugPrint("Lobby is full");
+                    logger.println("Lobby is full", Logger.MessageType.NETWORK);
                     break;
             }
             gameInfo.getChildren().add(nameLabel);
@@ -275,7 +279,7 @@ public class LobbyScreen {
         if (!currentTable.isPresent())
             currentTable = Optional.of(table);
 
-        GUIMain.debugPrintln("Added new table, id " + table.id);
+        logger.println("Added new table, id " + table.id, Logger.MessageType.NETWORK);
     }
 
     /**
