@@ -82,6 +82,7 @@ public class ServerTest {
          // TODO fix
 
 
+
         assert answer.equals("errorMessage \"You are already seated at a table\"") :
                 "Didn't get error message when trying to create table while already seated at another table. Got message: "+answer;
 
