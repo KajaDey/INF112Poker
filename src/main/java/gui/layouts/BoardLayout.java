@@ -70,7 +70,7 @@ public class BoardLayout extends VBox {
      * Set the pot
      */
     public void setPotLabel(String pot) {
-        potLabel.setText(pot);
+        potLabel.setText(pot + "$");
     }
 
     /**
@@ -117,7 +117,7 @@ public class BoardLayout extends VBox {
     }
 
     public void setSmallBlindLabel(long smallBlind) {
-        this.currentSBLabel.setText("Current SB: " + smallBlind + " $");
+        this.currentSBLabel.setText("Current SB: " + smallBlind + "$");
     }
 
     public long getBB() { return currentBigBlind; }

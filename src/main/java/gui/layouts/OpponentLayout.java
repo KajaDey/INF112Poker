@@ -163,7 +163,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     public void setStackLabel(String s){
         if (s.equals("0"))
             s = "All in";
-        stackSizeLabel.setText(s);
+        stackSizeLabel.setText(s + "$");
     }
 
     /**
