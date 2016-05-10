@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -19,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import static java.lang.String.valueOf;
 
 /**
  * The meaning of this class is to create standard gui objects that will be used throughout the
@@ -271,20 +274,27 @@ public class ObjectStandards {
         MenuItem call = new MenuItem("Call");
         MenuItem fold = new MenuItem("Fold");
         MenuItem betRaise = new MenuItem("Bet/raise");
-        MenuItem changeBetAmountBy1BB = new MenuItem("Change bet by 1xBB");
-        MenuItem changeBetAmountBy10BB = new MenuItem("Change bet by 10xBB");
+        MenuItem raiseBetAmountBy1BB = new MenuItem("Raise bet by 1xBB");
+        MenuItem lowerBetAmountBy1BB = new MenuItem("Lower bet by 1xBB");
+        MenuItem raiseBetAmountBy10BB = new MenuItem("Raise bet by 10xBB");
+        MenuItem lowerBetAmountBy10BB = new MenuItem("Lower bet by 10xBB");
         MenuItem aboutKeyCombo = new MenuItem("About Key Combinations");
 
-        check.setAccelerator(KeyCodeCombination.valueOf(KeyCode.SPACE + " (Single tap)"));
-        call.setAccelerator(KeyCodeCombination.valueOf(KeyCode.SPACE + " (Double tap)"));
+
+        check.setAccelerator(KeyCodeCombination.valueOf(KeyCode.SPACE + ""));
+        call.setAccelerator(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHIFT_DOWN));
         betRaise.setAccelerator(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN));
         fold.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE, KeyCombination.SHIFT_DOWN));
-        changeBetAmountBy1BB.setAccelerator(KeyCodeCombination.valueOf(KeyCode.UP + "/" + KeyCode.DOWN));
-        changeBetAmountBy10BB.setAccelerator(KeyCombination.valueOf(KeyCode.SHIFT + "+" + KeyCode.UP + "/" + KeyCode.DOWN));
-        keyCodes.getItems().addAll(check, call, betRaise, fold, changeBetAmountBy1BB, changeBetAmountBy10BB, aboutKeyCombo);
+        raiseBetAmountBy1BB.setAccelerator(KeyCodeCombination.valueOf(KeyCode.UP + ""));
+        lowerBetAmountBy1BB.setAccelerator(KeyCodeCombination.valueOf(KeyCode.DOWN + ""));
+        raiseBetAmountBy10BB.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.SHIFT_DOWN));
+        lowerBetAmountBy10BB.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHIFT_DOWN));
+
+        keyCodes.getItems().addAll(check, call, betRaise, fold, raiseBetAmountBy1BB, lowerBetAmountBy1BB,
+                raiseBetAmountBy10BB, lowerBetAmountBy10BB, aboutKeyCombo);
 
 
-
+        System.out.println(KeyCodeCombination.valueOf(KeyCode.SPACE.getName() + " (Single tap)"));
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);
