@@ -137,6 +137,7 @@ public class Server {
 
                 if (input.startsWith("lobby")) {
                     write("lobbyok");
+                    lobbyLogger.println("Client #" + id + ": " + input, Logger.MessageType.NETWORK);
                 } else {
                     write("lobbynotok");
                     removeClient(id);
@@ -153,6 +154,7 @@ public class Server {
                     String line;
                     try {
                         line = reader.readLine();
+                        lobbyLogger.println("Client #" + id + ": " + line, Logger.MessageType.NETWORK);
                     } catch (IOException e) {
                         failedToReadFromPlayer(this);
                         return;
@@ -165,7 +167,6 @@ public class Server {
                         receivedIllegalCommandFrom(this, line);
                         continue;
                     }
-                    lobbyLogger.println("Client " + this.id + ": " + line, Logger.MessageType.NETWORK);
                     try {
                         tokenSwitch:
                         switch (tokens[0]) {
@@ -350,6 +351,7 @@ public class Server {
         public void write(String msg) {
             try {
                 writer.write(msg + "\n");
+                lobbyLogger.println("Server to #" + this.id + ": " + msg, Logger.MessageType.NETWORK);
             }
             catch (IOException e) {
                 failedToWriteToPlayer(this, msg + "\n");
