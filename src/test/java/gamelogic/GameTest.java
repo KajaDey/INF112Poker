@@ -16,7 +16,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 
 
 /**
- * Created by pokki on 03/05/16.
+ * Created by Ragnhild Aalvik on 03/05/16.
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Game.class, GameController.class, GUIMain.class})
@@ -27,7 +27,7 @@ public class GameTest {
     static final Logger logger = new Logger("Test-game", "");
 
     /**
-     * Creates spy-objects of GameController and Game
+     * Creates spy-objects of GameController and Game. Removes delays.
      * @param aiType Type of AI to use
      * @param numPlayers number of AIs to add
      * @throws Exception
@@ -38,12 +38,9 @@ public class GameTest {
         gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy, logger));
 
         // Replaces getAIDecision-method in GameController to avoid unnecessary delay
-        doAnswer(new Answer<Decision>() {
-            @Override
-            public Decision answer(InvocationOnMock aiClient) throws Throwable{
-                return ((GameClient)aiClient.getArguments()[0]).getDecision(100L);
-            }
-        }).when(gameControllerSpy, "getAIDecision", any(GameClient.class));
+        doAnswer((Answer<Decision>) arg ->
+                ((GameClient)arg.getArguments()[0]).getDecision(100L))
+                .when(gameControllerSpy, "getAIDecision", any(GameClient.class));
 
         // Removes delays
         doNothing().when(gameControllerSpy).delay(anyLong());

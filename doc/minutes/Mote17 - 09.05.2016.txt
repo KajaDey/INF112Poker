@@ -1,0 +1,31 @@
+Møte 17 - 09.05.2016, kl 13:00
+Sekretær:Simon
+
+Oppmøte:
+- Simon
+- André
+- Vegar
+- Kristian
+- Kaja
+- Ragnhild
+- Morten
+Borte: 
+- Mariah
+- Jostein
+
+
+Hva er gjort siden sist:
+Fått nettverk til å fungere
+Replay-funksjonen fungerer
+Fjernet det meste av hardkoding i GUI
+
+Diskusjon:
+Ble enig om feature freeze tirsdag 10.05.2016 klokken 12:00
+
+Plan til neste møte:
+Få settings til å fungere både for multiplayer og singleplayer
+Exceptions i namegenerator
+Bug fixing og refactoring i nettverk
+
+Tid for neste møte: 
+Onsdag 11.05.2016 klokken 12:00

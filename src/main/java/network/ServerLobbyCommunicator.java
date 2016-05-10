@@ -18,25 +18,37 @@ import java.util.Map;
  */
 public class ServerLobbyCommunicator {
 
-    private final Socket clientSocket;
-    private final BufferedReader socketReader;
-    private final BufferedWriter socketWriter;
-    private final Map<Integer, String> names;
+    private Socket clientSocket;
+    private BufferedReader socketReader;
+    private BufferedWriter socketWriter;
+    private Map<Integer, String> names;
     private final LobbyScreen lobbyScreen;
     private final Logger logger;
+    private Thread listeningThread;
+    private InetAddress serverAddress;
+    private InputStream inputStream;
+    private String name;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
      * receives information about all the players from the server
      *
      * @param name Name of the player
+     * @param lobbyScreen Lobby screen made by the player
+     * @param serverAddress IP-address of the server
+     * @throws IOException
      */
     public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen,
                                    InetAddress serverAddress, Logger logger) throws IOException {
+        this.name = name;
         this.logger = logger;
         this.lobbyScreen = lobbyScreen;
+        this.serverAddress = serverAddress;
+    }
+
+    private void connectClientToServer() throws IOException {
         Socket tempSocket = new Socket();
-        // Attempt to connect to server up to 20 times before giving up
+        // Attempt to connect to server up to 5 times before giving up
         for (int i = 0; i < 5; i++) {
             try {
                 tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
@@ -57,13 +69,18 @@ public class ServerLobbyCommunicator {
         } else {
             throw new IOException("Failed to connect to " + serverAddress);
         }
+    }
+
+    public void start() throws IOException {
+        connectClientToServer();
+
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
         socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 
         //Establish handshake with server
         writeToSocket("lobby " + name);
         {
-            String input = socketReader.readLine();
+            String input = readFromServer();
             if (input.equals("lobbyok")) {
                 logger.println("Received handshake from client", Logger.MessageType.NETWORK);
             } else {
@@ -73,9 +90,8 @@ public class ServerLobbyCommunicator {
 
         names = new HashMap<>();
         // Receive all information about the lobby
-        getInit:
-        while (true) {
-            String input = socketReader.readLine();
+        getInit: while (true) {
+            String input = readFromServer();
             String[] tokens = UpiUtils.tokenize(input).get();
             logger.println("Server: " + input, Logger.MessageType.NETWORK);
 
@@ -113,16 +129,21 @@ public class ServerLobbyCommunicator {
             }
         }
 
+        listeningThread = listenForInputsFromServer();
+    }
+
+    private Thread listenForInputsFromServer() {
         Runnable serverListener = () -> {
             while (true) {
                 String input;
                 try {
-                    input = socketReader.readLine();
+                    input = readFromServer();
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
                 }
                 String[] tokens = UpiUtils.tokenize(input).get();
+
                 if (tokens.length < 1)
                     continue;
                 switch (tokens[0]) {
@@ -167,17 +188,26 @@ public class ServerLobbyCommunicator {
                 }
             }
         };
-        new Thread(serverListener).start();
+        Thread listening = new Thread(serverListener);
+        listening.start();
+        return listening;
+    }
+
+    public String readFromServer() throws IOException{
+        return socketReader.readLine();
     }
 
     public void startGame(int tableID) {
-        writeToSocket("startgame " + tableID);
+        writeToSocket("startGame " + tableID);
     }
 
     public void setNewSettings(GameSettings newSettings, int tableID) {
-        writeToSocket("changesettings " + tableID + " \"" + UpiUtils.settingsToString(newSettings) + "\"");
+        writeToSocket("changeSettings " + tableID + " \"" + UpiUtils.settingsToString(newSettings) + "\"");
     }
 
+    public void deleteTable(int tableID) {
+        writeToSocket("deleteTable " + tableID);
+    }
 
     private void updateSettings(int tableID, String[] tokens) {
         assert lobbyScreen.getTable(tableID) != null : "Table with id " + tableID + " does not exist. " + tokens.toString();
@@ -229,13 +259,13 @@ public class ServerLobbyCommunicator {
     }
 
     public void takeSeat(int tableID) {
-        writeToSocket("takeseat " + tableID);
+        writeToSocket("takeSeat " + tableID);
     }
 
-    public void leaveSeat(int tableID) { writeToSocket("leaveseat " + tableID); }
+    public void leaveSeat(int tableID) { writeToSocket("leaveSeat " + tableID); }
 
     public void makeNewTable() {
-        writeToSocket("createtable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
+        writeToSocket("createTable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
     }
 
     /**
@@ -252,5 +282,9 @@ public class ServerLobbyCommunicator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Thread getListeningThread() {
+        return listeningThread;
     }
 }

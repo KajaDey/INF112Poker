@@ -45,6 +45,8 @@ public class LobbyScreen {
     private Optional<LobbyTable> currentTable = Optional.empty();
     private final Logger logger;
 
+    private String [] buttonTexts = {"Take seat", "Leave table", "Delete table", "Change settings", "Start game"};
+
     public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
         this.gameController = gameController;
         this.logger = logger;
@@ -76,6 +78,7 @@ public class LobbyScreen {
 
         try {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress, GUIMain.guiMain.logger);
+            serverLobbyCommunicator.start();
             this.logger.println("Connected successfully to server!", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         } catch (IOException e) {
             displayErrorMessage("Could not connect to server");
@@ -121,7 +124,7 @@ public class LobbyScreen {
         gameInfo.getChildren().clear();
         updateNumberOfPlayersSeated(table);
 
-        Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.playerIds.get(0)) + "'s game!");
+        Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.getHost()) + "'s game!");
         gameName.setLayoutX(325);
         gameName.setLayoutY(0);
 
@@ -132,23 +135,25 @@ public class LobbyScreen {
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(550);
 
-        if(!table.isSeated(ID))
-            takeASeat = ObjectStandards.makeButtonForLobbyScreen("Take a seat");
+        if (table.getHost() == ID)
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen(buttonTexts[2]);
+        else if(!table.isSeated(ID))
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen(buttonTexts[0]);
         else
-            takeASeat = ObjectStandards.makeButtonForLobbyScreen("Leave table");
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen(buttonTexts[1]);
 
         takeASeat.setLayoutX(200);
         takeASeat.setLayoutY(425);
         takeASeat.setOnAction(e -> takeASeatButtonListener(table));
 
-        Button changeSettings = ObjectStandards.makeButtonForLobbyScreen("Change settings");
+        Button changeSettings = ObjectStandards.makeButtonForLobbyScreen(buttonTexts[3]);
 
         changeSettings.setLayoutX(670);
         changeSettings.setLayoutY(400);
         changeSettings.setMinWidth(150);
         changeSettings.setOnAction(event -> ButtonListeners.settingsButtonListener(serverLobbyCommunicator,table));
 
-        Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
+        Button startGame = ObjectStandards.makeButtonForLobbyScreen(buttonTexts[4]);
         startGame.setLayoutX(50);
         startGame.setLayoutY(425);
         startGame.setOnAction(e -> startGameButtonListener(table));
@@ -241,16 +246,20 @@ public class LobbyScreen {
         serverLobbyCommunicator.startGame(table.id);
     }
     private void makeNewLobbyButtonListener() {
+        this.currentTable = Optional.empty();
         serverLobbyCommunicator.makeNewTable();
     }
     private void takeASeatButtonListener(LobbyTable table) {
-        if(takeASeat.getText().equalsIgnoreCase("Take a seat"))
+        if(takeASeat.getText().equalsIgnoreCase(buttonTexts[0]))
             serverLobbyCommunicator.takeSeat(table.id);
-        else if(takeASeat.getText().equalsIgnoreCase("Leave table"))
+        else if(takeASeat.getText().equalsIgnoreCase(buttonTexts[1]))
             serverLobbyCommunicator.leaveSeat(table.id);
+        else if(takeASeat.getText().equalsIgnoreCase(buttonTexts[2]))
+            serverLobbyCommunicator.deleteTable(table.id);
     }
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);
+        this.currentTable = Optional.of(table);
     }
 
     /**
@@ -283,10 +292,10 @@ public class LobbyScreen {
         sideMenu.getChildren().remove(tableBoxes.get(tableID));
         tableBoxes.remove(tableID);
 
-        if (currentTable.isPresent() && currentTable.get().id == tableID){
+        if (currentTable.isPresent() && currentTable.get().id == tableID) {
             if (tables.isEmpty()) {
                 currentTable = Optional.empty();
-                fullLayout.getChildren().remove(gameInfo);
+                gameInfo.getChildren().clear();
             } else {
                 currentTable = tables.values().stream().findAny();
                 if (currentTable.isPresent())
