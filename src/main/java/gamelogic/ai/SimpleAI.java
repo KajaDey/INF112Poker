@@ -28,6 +28,7 @@ public class SimpleAI implements GameClient {
     private boolean betHasBeenPlaced;
     private long minimumRaise; // If you want to raise, the minimum you need to raise by
     private long currentBet; // The amount the SimpleAI needs to put on the table to remain in the hand
+    private String name;
 
     public SimpleAI(int playerId) {
         this(playerId, 1.0);
@@ -96,7 +97,7 @@ public class SimpleAI implements GameClient {
 
     @Override
     public String getName() {
-        return "";
+        return name;
     }
 
     /**
@@ -133,6 +134,7 @@ public class SimpleAI implements GameClient {
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
         assert names.size() == amountOfPlayers : "SimpleAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players playing.";
+        this.name = names.get(playerId);
     }
 
     public int getID() {
@@ -153,8 +155,8 @@ public class SimpleAI implements GameClient {
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         assert stackSizes.size() == amountOfPlayers;
-        assert stackSizes.get(this.playerId) != 0 : "AI didn't get its own stacksize";
-        assert stackSizes.get(this.playerId) >= 0 : "AI was sent a stacksize of " + stackSizes.get(this.playerId);
+        assert stackSizes.containsKey(this.playerId) : "AI " + name + " didn't get its own stack size";
+        assert stackSizes.get(this.playerId) >= 0 : "AI " + name + " was sent a stack size of " + stackSizes.get(this.playerId);
         for (int playerId : stackSizes.keySet()) {
             assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);
         }

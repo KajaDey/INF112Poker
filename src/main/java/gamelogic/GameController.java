@@ -495,7 +495,7 @@ public class GameController {
      * Called every time a player is bust to inform all clients
      * @param rank Place the busted player finished in
      */
-    public void bustClient(int bustPlayerID, int rank) {
+    public synchronized void bustClient(int bustPlayerID, int rank) {
         clients.forEach((id, client) -> client.playerBust(bustPlayerID, rank));
 
         GameClient bustedClient = clients.get(bustPlayerID);
