@@ -29,8 +29,6 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private boolean isBust = false;
 
-    private static final Logger logger = new Logger();
-
     public OpponentLayout(String name, int position, Logger logger) {
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
         rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
@@ -270,7 +268,8 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             case 4:case 5:
                 return width - 320;
             default:
-                logger.println("** Cannot place opponent in pos " + pos + " **\n");
+                assert GUIMain.guiMain != null : "Tried to get layout with no GUIMain present";
+                GUIMain.guiMain.logger.println("** Cannot place opponent in pos " + pos + " **\n");
                 return 0.0;
         }
     }
@@ -292,7 +291,8 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             case 3:
                 return !os.isEmpty() ? 20 : !os.startsWith("Mac") ? 30 : 20;
             default:
-                logger.println("** Cannot place opponent in pos " + pos + " **\n");
+                assert GUIMain.guiMain != null : "Tried to get layout with no GUIMain present";
+                GUIMain.guiMain.logger.println("** Cannot place opponent in pos " + pos + " **\n");
                 return 0.0;
         }
     }

@@ -1,6 +1,6 @@
 package gui;
 
-import gui.GameSettings;
+import gamelogic.Logger;
 
 import java.util.ArrayList;
 
@@ -13,14 +13,16 @@ public class LobbyTable {
     final int id;
     final GameSettings settings;
     final ArrayList<Integer> playerIds = new ArrayList<>();
+    private final Logger logger;
 
-    public LobbyTable(int id) {
+    public LobbyTable(int id, Logger logger) {
         this.id = id;
+        this.logger = logger;
         settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
     }
 
     public void parseSetting(String name, String value) {
-        System.out.println("Setting " + name + " to " + value + " for table " + id);
+        logger.println("Setting " + name + " to " + value + " for table " + id, Logger.MessageType.GAMEPLAY);
         switch (name) {
             case "smallBlind":
                 settings.setSmallBlind(Long.parseLong(value));

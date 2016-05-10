@@ -36,7 +36,7 @@ public class GUIMain extends Application{
     public final Logger logger;
 
     public GUIMain() {
-        this.logger = new Logger();
+        this.logger = new Logger("Client", "");
         this.gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), this);
     }
 

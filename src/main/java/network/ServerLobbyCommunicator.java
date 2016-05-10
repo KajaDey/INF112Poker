@@ -93,7 +93,7 @@ public class ServerLobbyCommunicator {
                     break;
                 case "table":
                     int id = Integer.parseInt(tokens[1]);
-                    LobbyTable table = new LobbyTable(id);
+                    LobbyTable table = new LobbyTable(id, logger);
                     if (!tokens[2].equals("settings")) {
                         throw new IOException();
                     }
@@ -147,7 +147,7 @@ public class ServerLobbyCommunicator {
                     case "tableCreated":
                         //Make new table with default settings, tableSettings will follow shortly after this command anyway
                         logger.println("New table created, tableID: " + tokens[1], Logger.MessageType.NETWORK);
-                        Platform.runLater(()->lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]))));
+                        Platform.runLater(()->lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]), logger)));
                         break;
                     case "tableSettings":
                         int tableID = Integer.parseInt(tokens[1]);
