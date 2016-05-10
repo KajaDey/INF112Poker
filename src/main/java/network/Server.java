@@ -1,11 +1,8 @@
 package network;
 
-import com.sun.deploy.util.SessionState;
-import gamelogic.AIType;
 import gamelogic.Game;
 import gamelogic.GameController;
 import gamelogic.Logger;
-import gui.GUIMain;
 import gui.GameSettings;
 
 import java.io.*;
@@ -20,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class Server {
 
-    private int playerIdCounter = 0, tableIdCounter = 0;
+    private int playerIDCounter = 0, tableIDCounter = 0;
     public ServerSocket serverSocket;
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
@@ -67,16 +64,16 @@ public class Server {
     }
 
     public synchronized void addNewClientSocket(Socket socket) {
-        lobbyPlayers.add(new LobbyPlayer(socket, playerIdCounter++));
+        lobbyPlayers.add(new LobbyPlayer(socket, playerIDCounter++));
     }
 
 
     /**
      * Removes a client from the lobby, closing sockets and broadcasting their leaving to the other clients
-     * @param id Id of the client to remove
+     * @param ID Id of the client to remove
      */
-    private synchronized void removeClient(int id) {
-        Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
+    private synchronized void removeClient(int ID) {
+        Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == ID).findAny();
         if (op.isPresent()) {
             LobbyPlayer player = op.get();
             lobbyPlayers.remove(player);
@@ -93,12 +90,12 @@ public class Server {
             }
         }
         else {
-            lobbyLogger.println("Warning: Tried to remove player id " + id + ", but player was not found", Logger.MessageType.NETWORK);
+            lobbyLogger.println("Warning: Tried to remove player ID " + ID + ", but player was not found", Logger.MessageType.NETWORK);
         }
     }
 
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
-        int tableID = tableIdCounter++;
+        int tableID = tableIDCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
         assert table.isSeated(host) : "Host was not seated at table.";
         lobbyTables.put(tableID, table);
