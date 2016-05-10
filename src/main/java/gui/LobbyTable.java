@@ -1,6 +1,7 @@
 package gui;
 
-import gui.GameSettings;
+import network.Server;
+import network.UpiUtils;
 
 import java.util.ArrayList;
 
@@ -20,25 +21,11 @@ public class LobbyTable {
     }
 
     public void parseSetting(String name, String value) {
-        System.out.println("Setting " + name + " to " + value + " for table " + id);
-        switch (name) {
-            case "smallBlind":
-                settings.setSmallBlind(Long.parseLong(value));
-                break;
-            case "bigBlind":
-                settings.setBigBlind(Long.parseLong(value));
-                break;
-            case "maxNumberOfPlayers":
-                settings.setMaxNumberOfPlayers(Integer.parseInt(value));
-                break;
-            case "startStack":
-                settings.setStartStack(Long.parseLong(value));
-                break;
-            case "levelDuration":
-                settings.setLevelDuration(Integer.parseInt(value));
-                break;
-            default:
-                System.out.println("Received unknown table setting " + name + ", ignoring...");
+        try {
+            UpiUtils.parseSetting(this.settings, name, value);
+        } catch (Server.PokerProtocolException e) {
+            System.out.println("Could not parse setting, " + name + " " + value);
+            e.printStackTrace();
         }
     }
 
@@ -49,6 +36,6 @@ public class LobbyTable {
     public void removePlayer(Integer playerID) {
         playerIds.remove(playerID);
 
-        assert !playerIds.contains(playerID) : "Removed p.id " + playerID + "from table " + this.id + ", but he wasn't removed";
+        assert !playerIds.contains(playerID) : "Removed p.id " + playerID + " from table " + this.id + ", but he wasn't removed";
     }
 }

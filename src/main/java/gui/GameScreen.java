@@ -93,7 +93,7 @@ public class GameScreen {
      *
      * @param userID Users ID
      * @param name Users name
-     * @return True if the player was seated
+     * @return True if the numberOfPlayer was seated
      */
     public boolean insertPlayer(int userID, String name) {
         this.names.put(userID, name);
@@ -214,7 +214,7 @@ public class GameScreen {
      * Displays the card pictures to the screen
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
-        // If you are sent hole cards for another player, assume all hole cards will be sent soon
+        // If you are sent hole cards for another numberOfPlayer, assume all hole cards will be sent soon
         if (userID != this.playerID) {
             holeCardsShown = true;
         }
@@ -315,11 +315,11 @@ public class GameScreen {
     /**
      * Update buttons and show any players last move
      *
-     * @param ID Id of the player that made the move
+     * @param ID Id of the numberOfPlayer that made the move
      * @param decision The decision that was made
      */
     public synchronized void playerMadeDecision(int ID, Decision decision) {
-        //Remove player highlighting
+        //Remove numberOfPlayer highlighting
         allPlayerLayouts.get(ID).highlightTurn(false);
 
         //Update all values in the GUI and return a string of the decision that can be displayed
@@ -358,9 +358,9 @@ public class GameScreen {
     }
 
     /**
-     *  Update GUI and all player values depending on the decision
-     * @param ID  ID of the player that made the decision
-     * @param decision  The decision the player made
+     *  Update GUI and all numberOfPlayer values depending on the decision
+     * @param ID  ID of the numberOfPlayer that made the decision
+     * @param decision  The decision the numberOfPlayer made
      * @return  A String of the decision, example "Call 200" or "Fold"
      */
     private String evaluateDecision(int ID, Decision decision) {
@@ -428,7 +428,7 @@ public class GameScreen {
         //Reset the error state of the amountTextField (remove potential red frame)
         setErrorStateOfAmountTextField(false);
 
-        //Update stack size of the player that acted
+        //Update stack size of the numberOfPlayer that acted
         stackSizes.put(ID, newStackSize);
         return decisionText;
     }
@@ -477,7 +477,7 @@ public class GameScreen {
     /**
      * Set name to all the players
      *
-     * @param names Map containing all player names (id, name)
+     * @param names Map containing all numberOfPlayer names (id, name)
      */
     public void setNames(Map<Integer, String> names) {
         this.names = names;
@@ -585,7 +585,7 @@ public class GameScreen {
 
     /**
      * Set the positions of the players. 0 = sb, 1 = bb, ...
-     * @param positions Map of player positions (id, pos)
+     * @param positions Map of numberOfPlayer positions (id, pos)
      */
     public void setPositions(Map<Integer, Integer> positions) {
         positions.forEach((id, pos) -> {
@@ -624,8 +624,8 @@ public class GameScreen {
 
     /**
      *   Set a playerLayout as bust. Prints to log.
-     * @param playerID   ID of the player that busted
-     * @param rank       The place the player came in
+     * @param playerID   ID of the numberOfPlayer that busted
+     * @param rank       The place the numberOfPlayer came in
      */
     public void bustPlayer(int playerID, int rank) {
         numberOfPlayers--;
@@ -661,7 +661,7 @@ public class GameScreen {
 
     /**
      *   Sent if the hand is over before showdown
-     * @param winnerID  The player that was left in the hand
+     * @param winnerID  The numberOfPlayer that was left in the hand
      */
     public void preShowdownWinner(int winnerID) {
         updatePot();
@@ -715,7 +715,7 @@ public class GameScreen {
     }
 
     /**
-     *  Highlight the players turn (set glow effect on player cards)
+     *  Highlight the players turn (set glow effect on numberOfPlayer cards)
      */
     public void highlightPlayerTurn(int id) {
         if (allPlayerLayouts.get(id) != null)

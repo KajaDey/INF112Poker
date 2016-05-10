@@ -12,9 +12,8 @@ import java.util.Map;
 
 /**
  * Created by Kristian Rosland on 27.04.2016.
- *
+ * <p>
  * This class acts as a communicator between the LobbyScreen and the Server.
- *
  */
 public class ServerLobbyCommunicator {
 
@@ -27,6 +26,7 @@ public class ServerLobbyCommunicator {
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
      * receives information about all the players from the server
+     *
      * @param name Name of the player
      */
     public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen, InetAddress serverAddress) throws IOException {
@@ -38,8 +38,7 @@ public class ServerLobbyCommunicator {
                 tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
                 tempSocket.connect(new InetSocketAddress(serverAddress, 39100), 1000);
                 break;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.out.println("Failed to connect to " + serverAddress + ". Retrying...");
                 try {
                     Thread.sleep(1500L);
@@ -50,8 +49,7 @@ public class ServerLobbyCommunicator {
         }
         if (tempSocket.isConnected()) {
             clientSocket = tempSocket;
-        }
-        else {
+        } else {
             throw new IOException("Failed to connect to " + serverAddress);
         }
         socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -70,7 +68,8 @@ public class ServerLobbyCommunicator {
 
         names = new HashMap<>();
         // Receive all information about the lobby
-        getInit: while (true) {
+        getInit:
+        while (true) {
             String input = socketReader.readLine();
             String[] tokens = UpiUtils.tokenize(input).get();
             System.out.println(input);
@@ -84,7 +83,7 @@ public class ServerLobbyCommunicator {
                     this.lobbyScreen.setID(Integer.parseInt(tokens[1]));
                     break;
                 case "playerNames":
-                    for (int i = 1; i < tokens.length; i+=2)
+                    for (int i = 1; i < tokens.length; i += 2)
                         names.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
                     break;
                 case "table":
@@ -102,7 +101,7 @@ public class ServerLobbyCommunicator {
                     while (i < tokens.length)
                         table.addPlayer(Integer.parseInt(tokens[i++]));
 
-                    Platform.runLater(()->lobbyScreen.addTable(table));
+                    Platform.runLater(() -> lobbyScreen.addTable(table));
                     break;
                 default:
                     System.out.println("Received unknown init command " + tokens[0]);
@@ -133,17 +132,17 @@ public class ServerLobbyCommunicator {
                         System.out.println("Player left lobby, p.id: " + tokens[1]);
                         break;
                     case "playerJoinedTable":
-                        Platform.runLater(()->lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        Platform.runLater(() -> lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
                         System.out.println("Player joined table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "playerLeftTable":
-                        Platform.runLater(()->lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
+                        Platform.runLater(() -> lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
                         System.out.println("Player left table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "tableCreated":
                         //Make new table with default settings, tableSettings will follow shortly after this command anyway
                         System.out.println("New table created, tableID: " + tokens[1]);
-                        Platform.runLater(()->lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]))));
+                        Platform.runLater(() -> lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]))));
                         break;
                     case "tableSettings":
                         int tableID = Integer.parseInt(tokens[1]);
@@ -151,7 +150,7 @@ public class ServerLobbyCommunicator {
                         break;
                     case "tableDeleted":
                         System.out.println("Table deleted, tableID: " + tokens[1]);
-                        Platform.runLater(()->lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
+                        Platform.runLater(() -> lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
                         break;
                     default:
                         System.out.println("Unknown command \"" + tokens[0] + "\", ignoring...");
@@ -166,7 +165,7 @@ public class ServerLobbyCommunicator {
     }
 
     public void setNewSettings(GameSettings newSettings, int tableID) {
-        writeToSocket("changesettings " + tableID + " " + UpiUtils.settingsToString(newSettings));
+        writeToSocket("changesettings " + tableID + " \"" + UpiUtils.settingsToString(newSettings) + "\"");
     }
 
 
@@ -175,18 +174,19 @@ public class ServerLobbyCommunicator {
 
         LobbyTable table = lobbyScreen.getTable(tableID);
         for (int i = 0; i < tokens.length; i++) {
-            switch(tokens[i]) {
+            switch (tokens[i]) {
                 case "maxNumberOfPlayers":
                 case "startStack":
                 case "smallBlind":
                 case "bigBlind":
                 case "levelDuration":
-                    table.parseSetting(tokens[i], tokens[i+1]);
+                case "playerClock":
+                    table.parseSetting(tokens[i], tokens[i + 1]);
                     break;
             }
         }
 
-        Platform.runLater(()->lobbyScreen.refreshTableSettings(tableID));
+        Platform.runLater(() -> lobbyScreen.refreshTableSettings(tableID));
 
     }
 
@@ -202,6 +202,7 @@ public class ServerLobbyCommunicator {
 
     /**
      * Write to socket (adds new line)
+     *
      * @param output Message to write
      */
     private void writeToSocket(String output) {
@@ -226,7 +227,7 @@ public class ServerLobbyCommunicator {
     }
 
     /**
-     *  Called when the server tell the client to start a game
+     * Called when the server tell the client to start a game
      */
     public void goToGameScreen() {
         int id = lobbyScreen.getID();

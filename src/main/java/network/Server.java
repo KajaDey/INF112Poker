@@ -1,5 +1,6 @@
 package network;
 
+import com.sun.deploy.util.SessionState;
 import gamelogic.AIType;
 import gamelogic.Game;
 import gamelogic.GameController;
@@ -89,32 +90,15 @@ public class Server {
         }
     }
 
-    /**
-     * Removes a client from the lobby and broadcasts their leaving to the other client,
-     * but does not close the socket
-     */
-    private synchronized void playerStartedGame(int id) {
-        Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
-        if (op.isPresent()) {
-            LobbyPlayer player = op.get();
-            lobbyPlayers.remove(player);
-            ClientBroadcasts.playerLeftLobby(this, player);
-        }
-        else {
-            System.out.println("Warning: Player id " + id + " tried to start game, but player was not found in lobby");
-        }
-    }
-
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
         lobbyTables.put(tableID, table);
 
-        lobbyPlayers.forEach(p -> {
-            p.write("tableCreated " + tableID);
-            p.write("tableSettings " + tableID + " " + UpiUtils.settingsToString(table.settings));
-            p.write("playerJoinedTable " + host.id + " " + tableID);
-        });
+        //Broadcast new table
+        ClientBroadcasts.tableCreated(this, table);
+        ClientBroadcasts.tableSettings(this, table);
+        ClientBroadcasts.playerJoinedTable(this, host, table);
     }
 
     class LobbyPlayer {
@@ -208,18 +192,12 @@ public class Server {
                                 break;
                             }
                             case "createtable":
-                                GameSettings settings;
+                                GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
-                                    int maxPlayers = UpiUtils.parseIntToken(tokens[2]),
-                                            levelDuration = UpiUtils.parseIntToken(tokens[10]);
-                                    long stack = UpiUtils.parseLongToken(tokens[4]),
-                                            smallBlind = UpiUtils.parseLongToken(tokens[6]),
-                                            bigBlind = UpiUtils.parseLongToken(tokens[8]);
-                                    //TODO: Add a token for playerClock when
-                                    int playerClock = UpiUtils.parseIntToken("30");
-                                    settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI, playerClock);
-                                } catch (NumberFormatException nfe) {
-                                    nfe.printStackTrace();
+                                    for (int i = 1; i < tokens.length; i += 2)
+                                        UpiUtils.parseSetting(settings, tokens[i], tokens[i+1]);
+                                } catch (PokerProtocolException ppe) {
+                                    ppe.printStackTrace();
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 }
 
@@ -300,9 +278,18 @@ public class Server {
             }
             int tableID = UpiUtils.parseIntToken(tokens[1]);
             if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
-                //TODO: Change settings for this table based on the tokens[2] value
-                GameSettings s = lobbyTables.get(tableID).settings;
+                LobbyTable t = lobbyTables.get(tableID);
+                String settingsString = tokens[2];
+                Optional<String []> settingsTokens = UpiUtils.tokenize(settingsString);
+                if (settingsTokens.isPresent()) {
+                    for (int i = 0; i < settingsTokens.get().length; i += 2)
+                        UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i+1]);
+
+                    if (t.settings.valid())
+                        ClientBroadcasts.tableSettings(Server.this, t);
+                }
             }
+
         }
 
         /**
@@ -379,7 +366,7 @@ public class Server {
             broadCast(server, "tableDeleted " + table.tableID);
         }
         public static void tableSettings(Server server, LobbyTable table) {
-            broadCast(server, "tableSettings " + table + UpiUtils.settingsToString(table.settings));
+            broadCast(server, "tableSettings " + table.tableID + " " + UpiUtils.settingsToString(table.settings));
         }
     }
 
@@ -417,9 +404,7 @@ public class Server {
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
             System.out.println("Starting game for " + seatedPlayers.toString());
-            seatedPlayers.forEach(p -> {
-                p.readyToStartGame = true;
-            });
+            seatedPlayers.forEach(p -> p.readyToStartGame = true);
 
             this.seatedPlayers.forEach(player -> player.write("startGame"));
             seatedPlayers.forEach(p -> {
@@ -448,7 +433,6 @@ public class Server {
             ClientBroadcasts.tableDeleted(Server.this, this);
             Server.this.lobbyTables.remove(this);
         }
-
 
         /**
          *  Return a string of all the players seated at this table, matching the Lobby Protocol

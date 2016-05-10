@@ -285,7 +285,7 @@ public class GUIClient implements GameClient {
     }
 
     /**
-     * Sends every player's position, as a map indexed by the players' IDs.
+     * Sends every numberOfPlayer's position, as a map indexed by the players' IDs.
      * A value of 0 corresponds to the small blind, 1 is big blind..
      * Sent at the start of each hand
      */
