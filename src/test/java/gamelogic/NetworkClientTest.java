@@ -42,7 +42,7 @@ public class NetworkClientTest {
     ServerGameCommunicator gameCommunicator;
     public static Stack<String> inputStrings;
 
-    @Test
+    //@Test
     public void playFlopOverNetwork() throws Exception {
         setupPlayFlopOverNetworkTest();
 
