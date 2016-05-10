@@ -246,7 +246,6 @@ public class LobbyScreen {
         serverLobbyCommunicator.startGame(table.id);
     }
     private void makeNewLobbyButtonListener() {
-        this.currentTable = Optional.empty();
         serverLobbyCommunicator.makeNewTable();
     }
     private void takeASeatButtonListener(LobbyTable table) {
