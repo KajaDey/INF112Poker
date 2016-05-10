@@ -93,6 +93,7 @@ public class Server {
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
+        table.seatPlayer(host);
         lobbyTables.put(tableID, table);
 
         //Broadcast new table
@@ -163,6 +164,7 @@ public class Server {
                     }
                     System.out.println("Client " + this.id + ": " + line);
                     try {
+                        tokenSwitch:
                         switch (tokens[0]) {
                             case "quit":
                                 removeClient(id);
@@ -183,14 +185,40 @@ public class Server {
                                 }
                                 int tableID = UpiUtils.parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
-                                    if (lobbyTables.containsKey(tableID)) {
-                                        if (lobbyTables.get(tableID).seatPlayer(this)) {
-                                            ClientBroadcasts.playerJoinedTable(Server.this, this, lobbyTables.get(tableID));
+                                    if (!lobbyTables.containsKey(tableID)) {
+                                        write("errorMessage \"Table " + tableID + " does not exist\"");
+                                        break;
+                                    }
+                                    for (Integer tID : lobbyTables.keySet()) {
+                                        if (lobbyTables.get(tID).isSeated(this)) {
+                                            write("errorMessage \"You are already seated at table " + tID + "\"");
+                                            break tokenSwitch;
                                         }
                                     }
+                                    if (lobbyTables.get(tableID).seatPlayer(this))
+                                        ClientBroadcasts.playerJoinedTable(Server.this, this, lobbyTables.get(tableID));
+                                    else
+                                        write("errorMessage \"This table is full\"");
                                 }
                                 break;
                             }
+                            case "leaveseat":
+                                if (tokens.length <= 1){
+                                    receivedIllegalCommandFrom(this, line);
+                                    break;
+                                }
+                                int tID = UpiUtils.parseIntToken(tokens[1]);
+                                if (!lobbyTables.containsKey(tID)) {
+                                    write("errorMessage \"Table " + tID + " does not exist\"");
+                                    break;
+                                }
+
+                                if (lobbyTables.get(tID).unseatPlayer(this))
+                                    ClientBroadcasts.playerLeftTable(Server.this, this, lobbyTables.get(tID));
+                                else
+                                    write("errorMessage \"You are not seated at table " + tID + "\"");
+
+                                break;
                             case "createtable":
                                 GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
@@ -362,7 +390,7 @@ public class Server {
             broadCast(server, "playerJoinedTable " + player.id + " " + table.tableID);
         }
         public static void playerLeftTable(Server server, LobbyPlayer player, LobbyTable table) {
-            broadCast(server, "playerJoinedTable " + player.id + " " + table.tableID);
+            broadCast(server, "playerLeftTable " + player.id + " " + table.tableID);
         }
         public static void tableCreated(Server server, LobbyTable table) {
             broadCast(server, "tableCreated " + table.tableID);
@@ -389,17 +417,28 @@ public class Server {
             this.host = host;
         }
 
+        /**
+         *  Seat a player at this table
+         * @return True if the player was seated
+         */
         public boolean seatPlayer(LobbyPlayer player) {
-            if (seatedPlayers.size() > settings.getMaxNumberOfPlayers()) {
+            if (seatedPlayers.size() >= this.settings.getMaxNumberOfPlayers()) {
                 GUIMain.debugPrintln(player.playerName + " tried to join full table, id " + tableID);
                 return false;
-            } else if (seatedPlayers.contains(player)) {
+            } else if (isSeated(player)) {
                 GUIMain.debugPrintln(player.playerName + " is already seated at table " + tableID);
                 return false;
             } else {
                 seatedPlayers.add(player);
                 return true;
             }
+        }
+
+        /**
+         * @return True if the player is seated at this table
+         */
+        public boolean isSeated(LobbyPlayer player) {
+            return seatedPlayers.contains(player);
         }
 
         public void startGame() {
@@ -453,6 +492,13 @@ public class Server {
          */
         public String toString() {
             return ("table " + tableID + " settings " + UpiUtils.settingsToString(this.settings) + " players " + playerIDsString()).trim();
+        }
+
+        /**
+         * Remove player from this table
+         */
+        public boolean unseatPlayer(LobbyPlayer lobbyPlayer) {
+            return seatedPlayers.remove(lobbyPlayer);
         }
     }
 

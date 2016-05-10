@@ -118,6 +118,8 @@ public class ServerLobbyCommunicator {
                     return;
                 }
                 String[] tokens = UpiUtils.tokenize(input).get();
+                if (tokens.length < 1)
+                    continue;
                 switch (tokens[0]) {
                     case "startGame":
                         goToGameScreen();
@@ -125,23 +127,18 @@ public class ServerLobbyCommunicator {
                         return;
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
-                        System.out.println("Player joined lobby, id: " + tokens[1] + " name" + tokens[2]);
                         break;
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));
-                        System.out.println("Player left lobby, p.id: " + tokens[1]);
                         break;
                     case "playerJoinedTable":
                         Platform.runLater(() -> lobbyScreen.addPlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
-                        System.out.println("Player joined table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "playerLeftTable":
                         Platform.runLater(() -> lobbyScreen.removePlayer(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2])));
-                        System.out.println("Player left table, p.id:" + tokens[1] + " t.id:" + tokens[2]);
                         break;
                     case "tableCreated":
                         //Make new table with default settings, tableSettings will follow shortly after this command anyway
-                        System.out.println("New table created, tableID: " + tokens[1]);
                         Platform.runLater(() -> lobbyScreen.addTable(new LobbyTable(Integer.parseInt(tokens[1]))));
                         break;
                     case "tableSettings":
@@ -149,7 +146,6 @@ public class ServerLobbyCommunicator {
                         Platform.runLater(() -> updateSettings(tableID, tokens));
                         break;
                     case "tableDeleted":
-                        System.out.println("Table deleted, tableID: " + tokens[1]);
                         Platform.runLater(() -> lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
                         break;
                     case "errorMessage":
@@ -224,6 +220,8 @@ public class ServerLobbyCommunicator {
     public void takeSeat(int tableID) {
         writeToSocket("takeseat " + tableID);
     }
+
+    public void leaveSeat(int tableID) { writeToSocket("leaveseat " + tableID); }
 
     public void makeNewTable() {
         writeToSocket("createtable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));

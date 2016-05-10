@@ -241,14 +241,10 @@ public class LobbyScreen {
         serverLobbyCommunicator.makeNewTable();
     }
     private void takeASeatButtonListener(LobbyTable table) {
-        if(takeASeat.getText().equals("Take a seat")) {
+        if(takeASeat.getText().equalsIgnoreCase("Take a seat"))
             serverLobbyCommunicator.takeSeat(table.id);
-        }
-        else if(takeASeat.getText().equals("Leave game")){
-            //TODO: Make it possible to leave table
-            //serverLobbyCommunicator.leaveTable(table);
-        }
-
+        else if(takeASeat.getText().equalsIgnoreCase("Leave table"))
+            serverLobbyCommunicator.leaveSeat(table.id);
     }
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);
