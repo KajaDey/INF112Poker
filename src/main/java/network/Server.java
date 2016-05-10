@@ -24,7 +24,6 @@ public class Server {
     public ServerSocket serverSocket;
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
-    private Thread server;
     private final Logger lobbyLogger;
     private static int port;
 
@@ -45,7 +44,7 @@ public class Server {
     }
 
     private void start() {
-        server = new Thread("ConnectionListener"){
+        Thread server = new Thread("ConnectionListener"){
             @Override
             public void run() {
                 while(true) {

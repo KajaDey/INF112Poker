@@ -23,11 +23,12 @@ import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
- * Created by pokki on 10/05/16.
+ * Created by Ragnhild Aalvik on 10/05/16.
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServerLobbyCommunicator.class, Platform.class})
 public class ServerLobbyCommunicatorTest {
+
     private ServerLobbyCommunicator lobbyCommunicator;
     public static Stack<String> inputStrings;
 
