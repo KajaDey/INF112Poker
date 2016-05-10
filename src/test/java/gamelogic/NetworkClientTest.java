@@ -2,6 +2,7 @@ package gamelogic;
 
 import gamelogic.ai.AITest;
 import gamelogic.ai.MCTSAI;
+import gui.GUIMain;
 import gui.GameSettings;
 import gui.LobbyScreen;
 import javafx.application.Platform;
@@ -65,14 +66,20 @@ public class NetworkClientTest {
 
         new Server();
 
-        connectClients(2);
+        connectClients(4);
 
-        System.out.println(readFromSocket(0)); // playerJoinedLobby 0 "Mariah"
-        System.out.println(readFromSocket(0)); // playerJoinedLobby 1 "Morten
-        System.out.println(readFromSocket(0)); // playerJoinedLobby 2 "Kristian"
-        System.out.println(readFromSocket(0)); // playerJoinedLobby 3 "Ragnhild"
+        assertClientsNotifiedWhenNewPlayerJoined(4);
 
 
+    }
+
+    private void assertClientsNotifiedWhenNewPlayerJoined(int numClients) throws IOException {
+        for (int i = 0; i < numClients; i++) {
+            for (int j = i; j < numClients; j++) {
+                String answer = readFromSocket(i);
+                assert answer.startsWith("playerJoinedLobby " + j) : "Got message "+ answer + ", expected playerJoinedLobby "+ j;
+            }
+        }
     }
 
     private void setupServerTestFourClients() throws IOException {
@@ -107,8 +114,7 @@ public class NetworkClientTest {
             assert answer.equals("yourId "+ i) : "Got handshake "+ answer +", expected yourId "+ i;
 
             answer = readFromSocket(i);
-            String expected = "playerNames "+ i +" \""+ name +"\"";
-            assert answer.equals(expected) : "Got handshake "+ answer +", expected "+ expected;
+            assert answer.startsWith("playerNames") : "Got handshake "+ answer +", expected playerNames";
 
             answer = readFromSocket(i);
             assert answer.equals("lobbySent") : "Got handshake "+ answer + ", expected lobbySent";
@@ -158,7 +164,7 @@ public class NetworkClientTest {
 
     private void createServerLobbyCommunicatorSpy() throws Exception {
         try {
-            lobbyCommunicator = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost()));
+            lobbyCommunicator = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost(), GUIMain.guiMain.logger));
 
             doNothing().when(lobbyCommunicator, "goToGameScreen");
 
@@ -180,12 +186,12 @@ public class NetworkClientTest {
     }
 
     private void createServerGameCommunicatorSpy(BufferedWriter socketOutput, BufferedReader socketInput, String playerName) {
-        gameCommunicator = spy(new ServerGameCommunicator(socketOutput, socketInput, playerName));
+        gameCommunicator = spy(new ServerGameCommunicator(socketOutput, socketInput, playerName, GUIMain.guiMain.logger));
 
         try {
             doAnswer((Answer<Optional<GameClient>>) arg -> {
                 int userID = ((int) arg.getArguments()[1]);
-                return Optional.of(new MCTSAI(userID, 1.0));
+                return Optional.of(new MCTSAI(userID, GUIMain.guiMain.logger));
             }).when(gameCommunicator, "createGUIClient", any(GameSettings.class), anyInt());
         } catch (Exception e) {
             e.printStackTrace();

@@ -27,6 +27,7 @@ public class ServerLobbyCommunicator {
     private Thread listeningThread;
     private InetAddress serverAddress;
     private InputStream inputStream;
+    private String name;
 
     /**
      * Initializes the ServerLobbyCommunicator, handshakes with the server and
@@ -39,6 +40,7 @@ public class ServerLobbyCommunicator {
      */
     public ServerLobbyCommunicator(String name, LobbyScreen lobbyScreen,
                                    InetAddress serverAddress, Logger logger) throws IOException {
+        this.name = name;
         this.logger = logger;
         this.lobbyScreen = lobbyScreen;
         this.serverAddress = serverAddress;
