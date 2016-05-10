@@ -17,12 +17,12 @@ import java.util.function.Consumer;
  */
 public class NetworkClient implements GameClient {
 
-    private final int playerId;
+    private final int playerID;
     private Socket socket;
     private BufferedReader socketInput;
     private BufferedWriter socketOutput;
-    Optional<Decision> decision = Optional.empty();
-    Queue<String> outstandingWrites = new LinkedList<>();
+    private Optional<Decision> decision = Optional.empty();
+    private Queue<String> outstandingWrites = new LinkedList<>();
 
     //Blocking queues for locking while reading
     private ArrayBlockingQueue<String> nameBlockingQueue = new ArrayBlockingQueue<>(1);
@@ -35,20 +35,20 @@ public class NetworkClient implements GameClient {
     /**
      * Initializes the network client, and does the upi handshake with the remote client
      * @param socket A TCP socket to the client, which is expected to already have an open connection
-     * @param playerId ID of the player
+     * @param playerID ID of the player
      * @throws IOException
      */
-    public NetworkClient(Socket socket, int playerId, Logger logger) throws IOException {
+    public NetworkClient(Socket socket, int playerID, Logger logger) throws IOException {
         this.logger = logger;
         this.socket = socket;
-        this.playerId = playerId;
+        this.playerID = playerID;
 
         socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         socketOutput = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 
         //Sending upi-handshake
         writeToSocket("upiok");
-        writeToSocket("clientId " + playerId);
+        writeToSocket("clientId " + playerID);
 
         new Thread(this::readFromSocket).start();
     }
@@ -82,7 +82,7 @@ public class NetworkClient implements GameClient {
                         continue;
                     }
 
-                    logger.println("Client #" + playerId + ": " + input, Logger.MessageType.NETWORK);
+                    logger.println("Client #" + playerID + ": " + input, Logger.MessageType.NETWORK);
                     Optional<String[]> tokens = UpiUtils.tokenize(input);
                     if (tokens.isPresent() && tokens.get().length != 0) {
                         switch (tokens.get()[0]) {
@@ -306,7 +306,7 @@ public class NetworkClient implements GameClient {
             try {
                 while (!outstandingWrites.isEmpty()) {
                     socketOutput.write(outstandingWrites.peek() + "\n");
-                    logger.println("Server to #" + playerId + ": " + outstandingWrites.poll(), Logger.MessageType.NETWORK);
+                    logger.println("Server to #" + playerID + ": " + outstandingWrites.poll(), Logger.MessageType.NETWORK);
                 }
             }
             catch (IOException e) {
@@ -332,7 +332,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public String toString() {
-        return "{ NetworkClient, id " + playerId + " }";
+        return "{ NetworkClient, id " + playerID + " }";
     }
 
     /**

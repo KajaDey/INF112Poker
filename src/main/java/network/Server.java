@@ -24,12 +24,9 @@ public class Server {
     public ServerSocket serverSocket;
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
-    private Thread server;
     private final Logger lobbyLogger;
-    private static int port;
 
     public Server(int port) {
-        this.port = port;
         lobbyLogger = new Logger("Lobby", "");
         try {
             serverSocket = new ServerSocket(port);
@@ -40,17 +37,21 @@ public class Server {
         start();
     }
 
+    public Server() {
+        this(39100);
+    }
+
     public static void main(String ... args){
-        new Server(port);
+        new Server();
     }
 
     private void start() {
-        server = new Thread("ConnectionListener"){
+        Thread server = new Thread("ConnectionListener"){
             @Override
             public void run() {
                 while(true) {
                     try {
-                        lobbyLogger.println("Server listening for connection..", Logger.MessageType.NETWORK);
+                        lobbyLogger.println("Server listening for connection on port " + port, Logger.MessageType.NETWORK);
                         Socket socket = serverSocket.accept();
                         lobbyLogger.println("Connection established with " + socket.getInetAddress(), Logger.MessageType.NETWORK);
 

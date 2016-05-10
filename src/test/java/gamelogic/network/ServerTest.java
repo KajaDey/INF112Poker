@@ -19,22 +19,16 @@ import java.util.*;
  */
 public class ServerTest {
 
-    ArrayList<Socket> clientSockets;
-    ArrayList<BufferedReader> readers;
-    ArrayList<BufferedWriter> writers;
-    InetSocketAddress socketAddress;
-    Stack<String> names;
-    Server server;
+    private ArrayList<Socket> clientSockets;
+    private ArrayList<BufferedReader> readers;
+    private ArrayList<BufferedWriter> writers;
+    private InetSocketAddress socketAddress;
+    private Stack<String> names;
 
     @Test
     public void testHandshakeWithServer() throws Exception {
         connectClientsToServer(3, 39100);
         assertClientsNotifiedWhenNewPlayerJoined(3);
-
-        // invokes private method in Server to remove clients and close sockets
-        Whitebox.invokeMethod(server, "removeClient", 0);
-        Whitebox.invokeMethod(server, "removeClient", 1);
-        Whitebox.invokeMethod(server, "removeClient", 2);
     }
 
     @Test
@@ -235,7 +229,7 @@ public class ServerTest {
         names = new Stack();
         names.addAll(Arrays.asList("Kaja", "Simon", "Vegar", "Ragnhild", "Kristian", "Morten", "Mariah"));
 
-        server = new Server(port);
+        new Server(port);
         connectClients(numClients);
     }
 
