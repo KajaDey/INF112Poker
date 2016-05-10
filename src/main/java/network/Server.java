@@ -342,6 +342,7 @@ public class Server {
                         lobbyLogger.print(ppe.getMessage());
                         write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
                         t.settings = oldSettings;
+                        return;
                     }
 
                     if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size()) {

@@ -334,6 +334,9 @@ public class LobbyScreen {
      */
     public void addPlayer(int playerID, int tableID) {
         getTable(tableID).addPlayer(playerID);
+        if (playerID == this.ID)
+            currentTable = Optional.of(getTable(tableID));
+
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
     }
