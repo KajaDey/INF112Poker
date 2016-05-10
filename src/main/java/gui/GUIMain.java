@@ -33,8 +33,11 @@ public class GUIMain extends Application{
     private GameScreen gameScreen;
     private GUIClient client;
 
+    public final Logger logger;
+
     public GUIMain() {
-            this.gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), this);
+        this.logger = new Logger("Client", "");
+        this.gameController = new GameController(new GameSettings(GameSettings.DEFAULT_SETTINGS), this);
     }
 
     public static void main(String[] args) {
@@ -55,7 +58,7 @@ public class GUIMain extends Application{
     }
 
     public void displayMultiPlayerScreen(String name, InetAddress IPAddress) {
-        new LobbyScreen(gameController, name, IPAddress);
+        new LobbyScreen(gameController, name, IPAddress, logger);
     }
 
     /**
@@ -72,8 +75,8 @@ public class GUIMain extends Application{
      * @return The GUIClient to display
      */
     public GUIClient displayGameScreen(int userID) {
-        this.gameScreen = new GameScreen(userID);
-        this.client = new GUIClient(userID, gameScreen);
+        this.gameScreen = new GameScreen(userID, logger);
+        this.client = new GUIClient(userID, gameScreen, logger);
         ButtonListeners.setClient(client);
 
         //Create initial screen, empty
@@ -83,50 +86,12 @@ public class GUIMain extends Application{
     }
 
     public GUIClient displayReplayScreen(int userID, ReplayReader reader) {
-        this.gameScreen = new GameScreen(userID);
-        this.client = new ReplayClient(userID, gameScreen, reader);
+        this.gameScreen = new GameScreen(userID, logger);
+        this.client = new ReplayClient(userID, gameScreen, reader, logger);
         ButtonListeners.setClient(client); //TODO: I don't think this is needed
 
         Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(), "GameScreen"));
         return client;
-    }
-
-    /**
-     * Prints a debug message to sysout and/or a lazily initialized log file, and terminates the line
-     * Constants PRINT_DEBUG_TO_STDOUT and PRINT_DEBUG_LOG control where the output is printed
-     */
-    public static void debugPrintln(String message) {
-        debugPrint(message + "\n");
-    }
-
-    /**
-     * Prints a debug message to sysout and/or a lazily initialized log file
-     * Constants PRINT_DEBUG_TO_STDOUT and PRINT_DEBUG_LOG control where the output is printed
-     */
-    public static void debugPrint(String message) {
-        if (PRINT_DEBUG_TO_STDOUT) {
-            System.out.print(message);
-        }
-        if (PRINT_DEBUG_LOG) {
-            if (logWriter.isPresent()) {
-                logWriter.get().print(message);
-                logWriter.get().flush();
-            }
-            else {
-                try {
-                    File logFile = new File("logs/poker" + System.currentTimeMillis() / 1000 + ".log");
-                    new File("logs").mkdir();
-                    logWriter = logWriter.of(new PrintWriter(logFile, "UTF-8"));
-                    logWriter.get().print(message);
-                    logWriter.get().flush();
-                } catch (FileNotFoundException e) {
-                    // If creating the log file fails, do not write to it
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            }
-        }
     }
 
     /**
@@ -155,9 +120,5 @@ public class GUIMain extends Application{
                 System.exit(1);
             }
         }
-    }
-
-    public static void debugPrintln() {
-        debugPrint("\n");
     }
 }

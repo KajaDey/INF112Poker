@@ -1,5 +1,6 @@
 package gui.layouts;
 
+import gamelogic.Logger;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
@@ -28,7 +29,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private boolean isBust = false;
 
-    public OpponentLayout(String name, int position) {
+    public OpponentLayout(String name, int position, Logger logger) {
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
         rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
 
@@ -128,7 +129,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             this.setAlignment(Pos.CENTER_RIGHT);
         }
         else
-            GUIMain.debugPrint("Invalid position from OpponentLayout");
+            logger.println("Invalid position from OpponentLayout", Logger.MessageType.WARNINGS);
 
         nameLabel.setMinWidth(150);
         stackSizeLabel.setMinWidth(150);
@@ -163,7 +164,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     public void setStackLabel(String s){
         if (s.equals("0"))
             s = "All in";
-        stackSizeLabel.setText(s);
+        stackSizeLabel.setText(s + "$");
     }
 
     /**
@@ -267,7 +268,8 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             case 4:case 5:
                 return width - 320;
             default:
-                GUIMain.debugPrintln("** Cannot place opponent in pos " + pos + " **\n");
+                assert GUIMain.guiMain != null : "Tried to get layout with no GUIMain present";
+                GUIMain.guiMain.logger.println("** Cannot place opponent in pos " + pos + " **\n");
                 return 0.0;
         }
     }
@@ -289,7 +291,8 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             case 3:
                 return !os.isEmpty() ? 20 : !os.startsWith("Mac") ? 30 : 20;
             default:
-                GUIMain.debugPrintln("** Cannot place opponent in pos " + pos + " **\n");
+                assert GUIMain.guiMain != null : "Tried to get layout with no GUIMain present";
+                GUIMain.guiMain.logger.println("** Cannot place opponent in pos " + pos + " **\n");
                 return 0.0;
         }
     }

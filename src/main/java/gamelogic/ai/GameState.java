@@ -3,6 +3,7 @@ package gamelogic.ai;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.IllegalDecisionException;
+import gamelogic.Logger;
 import gamelogic.ai.SimpleAI.AIDecision;
 
 import java.util.*;
@@ -40,8 +41,10 @@ public class GameState {
         return playersLeftInHand;
     }
 
+    public final Logger logger;
+
     public GameState(int amountOfPlayers, Map<Integer, Integer> positions, Map<Integer, Long> stackSizes,
-                     Map<Integer, String> names, long smallBlindAmount, long bigBlindAmount) {
+                     Map<Integer, String> names, long smallBlindAmount, long bigBlindAmount, Logger logger) {
         this.smallBlindAmount = smallBlindAmount;
         this.bigBlindAmount = bigBlindAmount;
         assert amountOfPlayers == positions.size();
@@ -61,6 +64,8 @@ public class GameState {
 
         playersLeftInHand = amountOfPlayers;
         playersToMakeDecision = amountOfPlayers;
+
+        this.logger = logger;
     }
 
     /**
@@ -84,6 +89,7 @@ public class GameState {
         this.playersAllIn = oldState.playersAllIn;
         this.playersToMakeDecision = oldState.playersToMakeDecision;
         this.playersGivenHoleCards = oldState.playersGivenHoleCards;
+        this.logger = oldState.logger;
     }
 
     public long getCurrentPot() {

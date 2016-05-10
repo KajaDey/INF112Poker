@@ -29,6 +29,7 @@ public class GameController {
     private Map<Integer, String> names;
     private boolean showAllPlayerCards;
     private MainScreen.GameType gameType;
+    private final Logger logger;
 
     /**
      * Used by GUI to create a new single player game
@@ -36,7 +37,8 @@ public class GameController {
     public GameController(GameSettings settings, GUIMain guiMain) {
         this.guiMain = Optional.of(guiMain);
         this.gameSettings = settings;
-        this.game = new Game(settings, this);
+        this.logger = guiMain.logger;
+        this.game = new Game(settings, this, logger);
 
         clients = new HashMap<>();
         names = new HashMap<>();
@@ -48,7 +50,8 @@ public class GameController {
     public GameController(GameSettings settings) {
         this.guiMain = Optional.empty();
         this.gameSettings = settings;
-        this.game = new Game(settings, this);
+        this.logger = new Logger("ServerGame", "");
+        this.game = new Game(settings, this, logger);
 
         clients = new HashMap<>();
         names = new HashMap<>();
@@ -91,7 +94,7 @@ public class GameController {
      */
     public Thread initGame(boolean showCards, List<Socket> clientSockets) throws Game.InvalidGameSettingsException {
         //Make a new Game object and validate
-        game = new Game(gameSettings, this);
+        game = new Game(gameSettings, this, logger);
         this.showAllPlayerCards = showCards;
 
         GUIMain.replayLogPrint("SETTINGS\n" + gameSettings.toString());
@@ -105,11 +108,11 @@ public class GameController {
         if (guiMain.isPresent())
             createGUIClient();
 
-        System.out.println("Creating " + clientSockets.size() + " network clients");
+        logger.println("Creating " + clientSockets.size() + " network clients", Logger.MessageType.INIT);
         // Create network clients
         createNetworkClients(clientSockets);
 
-        System.out.println("Creating ai clients");
+        logger.println("Creating ai clients", Logger.MessageType.INIT);
         //Create AI-GameClients
         int numberOfAIClients = this.gameSettings.getMaxNumberOfPlayers();
         if (guiMain.isPresent()) {
@@ -123,6 +126,7 @@ public class GameController {
 
         //Print welcome message to log
         this.printToLogField("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!");
+        logger.println("Game with " + this.gameSettings.getMaxNumberOfPlayers() + " players started!", Logger.MessageType.INIT);
 
         //Set chat listener for all clients
         clients.forEach((id, client) -> client.setChatListener(s -> printToLogField(names.get(id) + ": " + s)));
@@ -157,7 +161,7 @@ public class GameController {
         showAllPlayerCards = true;
         gameSettings = replayReader.getSettings();
 
-        game = new Game(gameSettings, this);
+        game = new Game(gameSettings, this, logger);
 
         //Initialize replay client with GUI
         createReplayGUIClient(replayReader);
@@ -185,7 +189,7 @@ public class GameController {
         game.addPlayer(name, 0);
         guiReplayClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
         names.put(0, name);
-        GUIMain.debugPrintln("Initialized " + guiReplayClient.getClass().getSimpleName() + " " + names.get(0));
+        logger.println("Initialized " + guiReplayClient.getClass().getSimpleName() + " " + names.get(0), Logger.MessageType.INIT);
     }
 
     /**
@@ -197,7 +201,7 @@ public class GameController {
         game.addPlayer(this.name, 0);
         guiClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
         names.put(0, name);
-        GUIMain.debugPrintln("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0));
+        logger.println("Initialized " + guiClient.getClass().getSimpleName() + " " + names.get(0), Logger.MessageType.INIT);
     }
 
     /**
@@ -212,13 +216,13 @@ public class GameController {
                 GameClient networkClient;
                 try {
                     Socket socket = clientSockets.get(guiMain.isPresent() ? id - 1 : id);
-                    System.out.println("Creating network client");
-                    networkClient = new NetworkClient(socket, id);
+                    logger.println("Creating network client", Logger.MessageType.NETWORK);
+                    networkClient = new NetworkClient(socket, id, logger);
                 } catch (IOException e) {
-                    System.out.println("Failed to connect to a client, dropping client");
+                    logger.println("Failed to connect to a client, dropping client", Logger.MessageType.INIT, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                     return;
                 }
-                System.out.println("Connected to network client");
+                logger.println("Connected to network client", Logger.MessageType.INIT, Logger.MessageType.NETWORK);
                 networkClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
                 String name = networkClient.getName();
                 if (name.equals(""))
@@ -230,12 +234,12 @@ public class GameController {
                     game.addPlayer(name, id);
                     assert !names.containsKey(id);
                     names.put(id, name);
-                    GUIMain.debugPrintln("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id));
+                    logger.println("Initialized " + networkClient.getClass().getSimpleName() + " " + names.get(id), Logger.MessageType.INIT, Logger.MessageType.NETWORK);
                 }
 
             };
             clientThreads.add(new Thread(r));
-            System.out.println("Connecting to client...");
+            logger.println("Connecting to client...", Logger.MessageType.INIT, Logger.MessageType.NETWORK);
             clientThreads.get(clientThreads.size() - 1).start();
         }
         // Wait for all clients to finish initialization
@@ -261,13 +265,13 @@ public class GameController {
             double contemptFactor = 1.00;
             switch (gameSettings.getAiType()) {
                 case MCTS_AI:
-                    aiClient = new MCTSAI(AI_id, contemptFactor);
+                    aiClient = new MCTSAI(AI_id, contemptFactor, logger);
                     break;
                 case SIMPLE_AI:
                     aiClient = new SimpleAI(AI_id, contemptFactor);
                     break;
                 case MIXED:
-                    aiClient = Math.random() > 0.5 ? new MCTSAI(AI_id) : new SimpleAI(AI_id, contemptFactor);
+                    aiClient = Math.random() > 0.5 ? new MCTSAI(AI_id, logger) : new SimpleAI(AI_id, contemptFactor);
                     break;
                 default: throw new IllegalStateException(); // Exception to please our java overlords
             }
@@ -277,7 +281,7 @@ public class GameController {
             game.addPlayer(aiName, AI_id);
             assert !names.containsKey(AI_id) : "Name list already has a name for " + AI_id;
             names.put(AI_id, aiName);
-            GUIMain.debugPrintln("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id));
+            logger.println("Initialized " + aiClient.getClass().getSimpleName() + " " + names.get(AI_id), Logger.MessageType.AI, Logger.MessageType.INIT);
         }
     }
 
@@ -289,11 +293,11 @@ public class GameController {
             String replayName = reader.getNextName();
             int replayId = clients.size();
 
-            GameClient replayClient = new ReplayClient(replayId, reader);
+            GameClient replayClient = new ReplayClient(replayId, reader, logger);
             clients.put(replayId, replayClient);
             game.addPlayer(replayName, replayId);
             names.put(replayId, replayName);
-            GUIMain.debugPrintln("Initialized " + replayClient.getClass().getSimpleName() + " " + names.get(replayId));
+            logger.println("Initialized " + replayClient.getClass().getSimpleName() + " " + names.get(replayId), Logger.MessageType.INIT);
         }
     }
 
@@ -328,7 +332,7 @@ public class GameController {
         if (client instanceof SimpleAI || client instanceof MCTSAI)
             return getAIDecision(client);
         else
-            return client.getDecision(20000L);
+            return client.getDecision(gameSettings.getPlayerClock() * 1000);
     }
 
     /**
@@ -351,10 +355,9 @@ public class GameController {
      * @param delayTime Time to delay for
      */
     public void delay(long delayTime) {
-        System.out.println("Delay");
         try { Thread.sleep(Math.max(0, delayTime)); }
         catch (InterruptedException e) {
-            System.out.println("Sleeping thread interrupted");
+            logger.println("Sleeping thread interrupted", Logger.MessageType.WARNINGS);
         }
     }
 
@@ -452,12 +455,14 @@ public class GameController {
     }
 
     /**
-     * Tells each client that the game is over.
+     * Tell a client that the game is over.
      *
-     * @param stats The statistics of players
+     * @param clientID id of the player
+     * @param personalStats The statistics for the given player id
      */
-    public void gameOver(Statistics stats) {
-        clients.forEach((id, client) -> client.gameOver(stats));
+    public void gameOver(int clientID, Statistics personalStats) {
+        if (clients.get(clientID) != null)
+            clients.get(clientID).gameOver(personalStats);
     }
 
     /**

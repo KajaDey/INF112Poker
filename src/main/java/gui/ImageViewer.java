@@ -77,7 +77,7 @@ public class ImageViewer {
 
     /**
      * Returns an empty image view, with the correct image size.
-     * @param type The type of player. Either a PLAYER or OPPONENT.
+     * @param type The type of numberOfPlayer. Either a PLAYER or OPPONENT.
      * @return The total image view.
      */
     public static ImageView getEmptyImageView(Image_type type){

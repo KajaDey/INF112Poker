@@ -24,6 +24,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 public class GameTest {
     private GameController gameControllerMock, gameControllerSpy;
     private Game gameSpy;
+    static final Logger logger = new Logger("Test-game", "");
 
     /**
      * Creates spy-objects of GameController and Game. Removes delays.
@@ -34,7 +35,7 @@ public class GameTest {
     private void setupGameWithAIs(AIType aiType, int numPlayers) throws Exception {
         GameSettings gameSettings = new GameSettings(5000, 500, 250, numPlayers, 10, aiType, 30);
         gameControllerSpy = spy(new GameController(gameSettings));
-        gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy));
+        gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy, logger));
 
         // Replaces getAIDecision-method in GameController to avoid unnecessary delay
         doAnswer((Answer<Decision>) arg ->
@@ -46,7 +47,7 @@ public class GameTest {
         doNothing().when(gameSpy, "delay", anyLong());
 
         // Replaces any new Game-object with gameSpy
-        whenNew(Game.class).withArguments(any(GameSettings.class), any(GameController.class)).thenReturn(gameSpy);
+        whenNew(Game.class).withArguments(any(GameSettings.class), any(GameController.class), any(Logger.class)).thenReturn(gameSpy);
     }
 
     @Test
@@ -54,7 +55,7 @@ public class GameTest {
         gameControllerMock = mock(GameController.class);
         PowerMockito.doReturn(new Decision(Decision.Move.ALL_IN)).when(gameControllerMock).getDecisionFromClient(anyInt());
 
-        gameSpy = spy(new Game(new GameSettings(5000, 50, 25, 2, 10, AIType.MCTS_AI, 30), gameControllerMock));
+        gameSpy = spy(new Game(new GameSettings(5000, 50, 25, 2, 10, AIType.MCTS_AI, 30), gameControllerMock, logger));
         doNothing().when(gameSpy, "delay", anyLong());
 
         gameSpy.addPlayer("Ragnhild", 0);

@@ -22,8 +22,10 @@ public class MCTSAI implements GameClient {
     private Optional<Map<Integer, Integer>> positions;
     private Optional<Map<Integer, String>> names;
     private Consumer<String> chatListener;
+    private final Logger logger;
 
-    public MCTSAI(int playerId, double contemptFactor) {
+    public MCTSAI(int playerId, double contemptFactor, Logger logger) {
+        this.logger = logger;
         gameState = Optional.empty();
         stackSizes = Optional.empty();
         positions = Optional.empty();
@@ -32,8 +34,8 @@ public class MCTSAI implements GameClient {
         this.contemptFactor = contemptFactor;
     }
 
-    public MCTSAI(int playerId) {
-        this(playerId, 1.0);
+    public MCTSAI(int playerId, Logger logger) {
+        this(playerId, 1.0, logger);
     }
 
     @Override
@@ -45,11 +47,11 @@ public class MCTSAI implements GameClient {
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         assert smallBlindAmount > 0 && bigBlindAmount > 0 : "AI was sent decision with receiving blinds";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount, logger));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
-        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, Math.sqrt(contemptFactor));
+        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, Math.sqrt(contemptFactor), logger);
         return mcts.calculateFor(timeToThink);
     }
 
@@ -77,7 +79,7 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void gameOver(Statistics stats) { }
+    public void gameOver(Statistics statistics) { }
 
     @Override
     public void printToLogField(String output) {
@@ -120,7 +122,7 @@ public class MCTSAI implements GameClient {
         assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
         assert smallBlindAmount > 0 && bigBlindAmount > 0 : "AI was sent decision with receiving blinds";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount, logger));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id
@@ -129,7 +131,7 @@ public class MCTSAI implements GameClient {
             gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
-            System.out.println("Error: AI received illegal decision.");
+            logger.println("Error: AI received illegal decision.", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             System.exit(1);
         }
     }
@@ -183,7 +185,7 @@ public class MCTSAI implements GameClient {
             gameState.get().makeGameStateChange(new GameState.CardDealtToTable(card3));
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
-            System.out.println("Error: AI received illegal decision.");
+            logger.println("Error: AI received illegal decision.", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             System.exit(1);
         }
 
@@ -198,7 +200,7 @@ public class MCTSAI implements GameClient {
             gameState.get().makeGameStateChange(new GameState.CardDealtToTable(turn));
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
-            System.out.println("Error: AI received illegal decision.");
+            logger.println("Error: AI received illegal decision.", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             System.exit(1);
         }
     }
@@ -212,7 +214,7 @@ public class MCTSAI implements GameClient {
             gameState.get().makeGameStateChange(new GameState.CardDealtToTable(river));
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
-            System.out.println("Error: AI received illegal decision.");
+            logger.println("Error: AI received illegal decision.", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             System.exit(1);
         }
 

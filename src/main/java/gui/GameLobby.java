@@ -18,7 +18,7 @@ import gamelogic.GameController;
 import java.io.IOException;
 
 /**
- * This is the layout for the single player lobby screen
+ * This is the layout for the single numberOfPlayer lobby screen
  *
  * @author André Dyrstad
  * @author Jostein Kringlen

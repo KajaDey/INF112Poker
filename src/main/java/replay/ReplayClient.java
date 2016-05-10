@@ -2,6 +2,7 @@ package replay;
 
 import gamelogic.Card;
 import gamelogic.Decision;
+import gamelogic.Logger;
 import gamelogic.Statistics;
 import gui.GUIClient;
 import gui.GameScreen;
@@ -19,14 +20,17 @@ public class ReplayClient extends GUIClient {
 
     private boolean gui;
     private ReplayReader replayReader;
+    private final Logger logger;
 
     /**
      *  This constructor is used if the replay client should have an attached GUI.
      * @param id Client ID
      * @param gameScreen Game screen
+     * @param logger
      */
-    public ReplayClient(int id, GameScreen gameScreen, ReplayReader replayReader) {
-        super(id, gameScreen);
+    public ReplayClient(int id, GameScreen gameScreen, ReplayReader replayReader, Logger logger) {
+        super(id, gameScreen, logger);
+        this.logger = logger;
         gui = true;
 
         this.replayReader = replayReader;
@@ -36,9 +40,11 @@ public class ReplayClient extends GUIClient {
      *  This constructor is used if the replay client should not have an attached GUI.
      *  This object will not use any of the information passed to it.
      * @param id ID of this client
+     * @param logger
      */
-    public ReplayClient(int id, ReplayReader replayReader) {
-        super(id, null);
+    public ReplayClient(int id, ReplayReader replayReader, Logger logger) {
+        super(id, null, logger);
+        this.logger = logger;
         gui = false;
 
         this.replayReader = replayReader;
@@ -109,9 +115,9 @@ public class ReplayClient extends GUIClient {
     }
 
     @Override
-    public void gameOver(Statistics stats) {
+    public void gameOver(Statistics statistics) {
         if (gui)
-            super.gameOver(stats);
+            super.gameOver(statistics);
     }
 
     @Override

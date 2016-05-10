@@ -19,10 +19,13 @@ public class PokerMCTS {
     private int totalSearches;
     private int terminalNodesSelected;
 
-    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, double contemptFactor) {
+    private final Logger logger;
+
+    public PokerMCTS(GameState gameState, int amountOfPlayers, int playerId, double contemptFactor, Logger logger) {
         this.amountOfPlayers = amountOfPlayers;
         this.playerId = playerId;
         this.contemptFactor = contemptFactor;
+        this.logger = logger;
         this.playerPosition = gameState.players.stream()
                 .filter(player -> player.id == playerId)
                 .findFirst()
@@ -50,57 +53,25 @@ public class PokerMCTS {
             }
         }
         catch (Exception e) {
-            System.out.println("Error: AI crashed");
+            logger.println("Error: AI crashed", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             e.printStackTrace();
-            System.out.println("AI is folding...");
+            logger.println("AI is folding...", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             return Decision.fold;
         }
 
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
-        double[] values = new double[allDecisions.size()];
-        for (int i = 0; i < values.length; i++) {
-            double value = rootNode.children.get(i).get().values[playerPosition];
-            int searches = rootNode.children.get(i).get().searches;
-            values[i] = value / (double)searches;
 
-            AIDecision decision = ((GameState.AIMove)allDecisions.get(i)).decision;
-            //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
-            switch (decision) {
-                case FOLD:
-                    values[i] *= 1.0 / Math.pow(contemptFactor - 0.03, 0.5);
-                    break;
-                case CHECK:
-                    values[i] *= 1.0 / Math.pow(contemptFactor - 0.03, 0.5);
-                    break;
-                case RAISE_HALF_POT:
-                    long betSize = initialGameState.getCurrentPot() / 2 + initialGameState.currentPlayer.currentBet;
-                    values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
-                    break;
-                case RAISE_QUARTER_POT:
-                    betSize = initialGameState.currentPlayer.minimumRaise + initialGameState.currentPlayer.currentBet;
-                    values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
-                    break;
-                case RAISE_POT:
-                    betSize = initialGameState.getCurrentPot() + initialGameState.currentPlayer.currentBet;
-                    values[i] *= Math.pow(contemptFactor - 0.03, (double)betSize / initialGameState.currentPlayer.stackSize);
-                    break;
-                case CALL:
-                    values[i] *= Math.pow(contemptFactor - 0.03, (double)initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
-                    break;
-            }
-        }
-        System.out.println("Values after contempt factor modification: " + Arrays.toString(values));
+        double[] values = getEval(allDecisions);
+        double[] modifiedValues = addContemptFactor(values, allDecisions);
 
         double bestValue = 0.0;
         AIDecision bestDecision = AIDecision.FOLD;
 
         assert allDecisions.size() > 1 : "Only had " + allDecisions.size() + " decisions to make: " + allDecisions;
         for (int i = 0; i < allDecisions.size(); i++) {
-            //double value = rootNode.children.get(i).get().values[playerPosition];
-            //int searches = rootNode.children.get(i).get().searches;
-            if (values[i] > bestValue) {
-                bestValue = values[i];
+            if (modifiedValues[i] > bestValue) {
+                bestValue = modifiedValues[i];
                 bestDecision = ((GameState.AIMove)allDecisions.get(i)).decision;
             }
         }
@@ -110,21 +81,62 @@ public class PokerMCTS {
                 initialGameState.currentPlayer.currentBet > 0 || initialGameState.communityCards.size() == 0);
     }
 
+    public double[] getEval(List<GameState.GameStateChange> allDecisions) {
+        double[] values = new double[allDecisions.size()];
+        for (int i = 0; i < values.length; i++) {
+            double value = rootNode.children.get(i).get().values[playerPosition];
+            int searches = rootNode.children.get(i).get().searches;
+            values[i] = value / (double)searches;
+            //System.out.print("Value of " + decision + " was " + values[i] + ", is ");
+        }
+        return values;
+    }
+
+    public double[] addContemptFactor(double[] values, List<GameState.GameStateChange> allDecisions) {
+        double[] newEvals = values.clone();
+        for (int i = 0; i < newEvals.length; i++) {
+            AIDecision decision = ((GameState.AIMove)allDecisions.get(i)).decision;
+            switch (decision) {
+                case FOLD:
+                    newEvals[i] *= 1.0 / Math.pow(contemptFactor - 0.03, 0.5);
+                    break;
+                case CHECK:
+                    newEvals[i] *= 1.0 / Math.pow(contemptFactor - 0.03, 0.5);
+                    break;
+                case RAISE_HALF_POT:
+                    long betSize = initialGameState.getCurrentPot() / 2 + initialGameState.currentPlayer.currentBet;
+                    newEvals[i] *= Math.pow(contemptFactor - 0.03, (double) betSize / initialGameState.currentPlayer.stackSize);
+                    break;
+                case RAISE_QUARTER_POT:
+                    betSize = initialGameState.currentPlayer.minimumRaise + initialGameState.currentPlayer.currentBet;
+                    newEvals[i] *= Math.pow(contemptFactor - 0.03, (double) betSize / initialGameState.currentPlayer.stackSize);
+                    break;
+                case RAISE_POT:
+                    betSize = initialGameState.getCurrentPot() + initialGameState.currentPlayer.currentBet;
+                    newEvals[i] *= Math.pow(contemptFactor - 0.03, (double) betSize / initialGameState.currentPlayer.stackSize);
+                    break;
+                case CALL:
+                    newEvals[i] *= Math.pow(contemptFactor - 0.03, (double) initialGameState.currentPlayer.currentBet / initialGameState.currentPlayer.stackSize);
+                    break;
+            }
+        }
+        return newEvals;
+    }
+
     public void printProgressReport() {
-        System.out.println(totalSearches + " searches so far, " + terminalNodesSelected + " terminal nodes selected, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
+        logger.aiPrintln(totalSearches + " searches so far, " + terminalNodesSelected + " terminal nodes selected, size of tree: " + rootNode.sizeOfTree() + "; cards: " + initialGameState.players.get(playerPosition).holeCards);
 
         List<GameState.GameStateChange> allDecisions = initialGameState.allDecisions().get();
 
         assert playerPosition == initialGameState.currentPlayer.position;
-
+        double[] modifiedEvals = addContemptFactor(getEval(allDecisions), allDecisions);
 
         for (int i = 0; i < allDecisions.size(); i++) {
             double value = rootNode.children.get(i).get().values[playerPosition];
             int searches = rootNode.children.get(i).get().searches;
-            System.out.printf("%-25s: %.2f%% (%.1f/%d)", allDecisions.get(i), 100.0 * value / searches, value, searches);
-            System.out.println();
+            logger.aiPrintln(String.format("%-25s: %.2f%%, (%.2f%%) -- (%.1f/%d)", allDecisions.get(i), 100.0 * value / searches, 100.0 * modifiedEvals[i], value, searches));
         }
-        System.out.println();
+        logger.aiPrintln("");
     }
 
     /**
@@ -457,7 +469,7 @@ public class PokerMCTS {
 
         GameState newGameState = new GameState(gameState);
         double[] eval = new double[newGameState.amountOfPlayers];
-        Pot pot = new Pot();
+        Pot pot = new Pot(gameState.logger);
         for (Player player : newGameState.players) {
             if (player.holeCards.size() < 2) {
                 newGameState.giveHoleCards(player.id);

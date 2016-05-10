@@ -1,8 +1,10 @@
 package network;
 
+import com.sun.deploy.util.SessionState;
 import gamelogic.AIType;
 import gamelogic.Game;
 import gamelogic.GameController;
+import gamelogic.Logger;
 import gui.GUIMain;
 import gui.GameSettings;
 
@@ -23,8 +25,10 @@ public class Server {
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
     private Thread server;
+    private final Logger lobbyLogger;
 
     public Server() {
+        lobbyLogger = new Logger("Lobby", "");
         try {
             serverSocket = new ServerSocket(39100);
         } catch (IOException e) {
@@ -44,9 +48,9 @@ public class Server {
             public void run() {
                 while(true) {
                     try {
-                        System.out.println("Server listening for connection..");
+                        lobbyLogger.println("Server listening for connection..", Logger.MessageType.NETWORK);
                         Socket socket = serverSocket.accept();
-                        System.out.println("Connection established with " + socket.getInetAddress());
+                        lobbyLogger.println("Connection established with " + socket.getInetAddress(), Logger.MessageType.NETWORK);
 
                         addNewClientSocket(socket);
                     } catch (IOException e) {
@@ -78,44 +82,28 @@ public class Server {
                 try {
                     player.socket.close();
                 } catch (IOException e) {
-                    System.out.println("Failed to close socket for " + player + "");
+                    lobbyLogger.println("Failed to close socket for " + player + "", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
                 }
             }
             else {
-                System.out.println("Warning: Tried to remove player " + player + ", but socket was already closed");
+                lobbyLogger.println("Warning: Tried to remove player " + player + ", but socket was already closed", Logger.MessageType.NETWORK);
             }
         }
         else {
-            System.out.println("Warning: Tried to remove player id " + id + ", but player was not found");
-        }
-    }
-
-    /**
-     * Removes a client from the lobby and broadcasts their leaving to the other client,
-     * but does not close the socket
-     */
-    private synchronized void playerStartedGame(int id) {
-        Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == id).findAny();
-        if (op.isPresent()) {
-            LobbyPlayer player = op.get();
-            lobbyPlayers.remove(player);
-            ClientBroadcasts.playerLeftLobby(this, player);
-        }
-        else {
-            System.out.println("Warning: Player id " + id + " tried to start game, but player was not found in lobby");
+            lobbyLogger.println("Warning: Tried to remove player id " + id + ", but player was not found", Logger.MessageType.NETWORK);
         }
     }
 
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
+        table.seatPlayer(host);
         lobbyTables.put(tableID, table);
 
-        lobbyPlayers.forEach(p -> {
-            p.write("tableCreated " + tableID);
-            p.write("tableSettings " + tableID + " " + UpiUtils.settingsToString(table.settings));
-            p.write("playerJoinedTable " + host.id + " " + tableID);
-        });
+        //Broadcast new table
+        ClientBroadcasts.tableCreated(this, table);
+        ClientBroadcasts.tableSettings(this, table);
+        ClientBroadcasts.playerJoinedTable(this, host, table);
     }
 
     class LobbyPlayer {
@@ -178,19 +166,20 @@ public class Server {
                         receivedIllegalCommandFrom(this, line);
                         continue;
                     }
-                    System.out.println("Client " + this.id + ": " + line);
+                    lobbyLogger.println("Client " + this.id + ": " + line, Logger.MessageType.NETWORK);
                     try {
+                        tokenSwitch:
                         switch (tokens[0]) {
                             case "quit":
                                 removeClient(id);
                                 return;
                             case "upi":
                                 if (readyToStartGame) {
-                                    System.out.println("Lobby received upi from #" + this.id + " (" + this.playerName + ")");
+                                    lobbyLogger.println("Lobby received upi from #" + this.id + " (" + this.playerName + ")", Logger.MessageType.NETWORK);
                                     return;
                                 }
                                 else {
-                                    System.out.println("Untimely upi command, " + line);
+                                    lobbyLogger.println("Untimely upi command, " + line, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                                     break;
                                 }
                             case "takeseat": {
@@ -200,27 +189,47 @@ public class Server {
                                 }
                                 int tableID = UpiUtils.parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
-                                    if (lobbyTables.containsKey(tableID)) {
-                                        if (lobbyTables.get(tableID).seatPlayer(this)) {
-                                            ClientBroadcasts.playerJoinedTable(Server.this, this, lobbyTables.get(tableID));
+                                    if (!lobbyTables.containsKey(tableID)) {
+                                        write("errorMessage \"Table " + tableID + " does not exist\"");
+                                        break;
+                                    }
+                                    for (Integer tID : lobbyTables.keySet()) {
+                                        if (lobbyTables.get(tID).isSeated(this)) {
+                                            write("errorMessage \"You are already seated at table " + tID + "\"");
+                                            break tokenSwitch;
                                         }
                                     }
+                                    if (lobbyTables.get(tableID).seatPlayer(this))
+                                        ClientBroadcasts.playerJoinedTable(Server.this, this, lobbyTables.get(tableID));
+                                    else
+                                        write("errorMessage \"This table is full\"");
                                 }
                                 break;
                             }
+                            case "leaveseat":
+                                if (tokens.length <= 1){
+                                    receivedIllegalCommandFrom(this, line);
+                                    break;
+                                }
+                                int tID = UpiUtils.parseIntToken(tokens[1]);
+                                if (!lobbyTables.containsKey(tID)) {
+                                    write("errorMessage \"Table " + tID + " does not exist\"");
+                                    break;
+                                }
+
+                                if (lobbyTables.get(tID).unseatPlayer(this))
+                                    ClientBroadcasts.playerLeftTable(Server.this, this, lobbyTables.get(tID));
+                                else
+                                    write("errorMessage \"You are not seated at table " + tID + "\"");
+
+                                break;
                             case "createtable":
-                                GameSettings settings;
+                                GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
-                                    int maxPlayers = UpiUtils.parseIntToken(tokens[2]),
-                                            levelDuration = UpiUtils.parseIntToken(tokens[10]);
-                                    long stack = UpiUtils.parseLongToken(tokens[4]),
-                                            smallBlind = UpiUtils.parseLongToken(tokens[6]),
-                                            bigBlind = UpiUtils.parseLongToken(tokens[8]);
-                                    //TODO: Add a token for playerClock when
-                                    int playerClock = UpiUtils.parseIntToken("30");
-                                    settings = new GameSettings(stack, bigBlind, smallBlind, maxPlayers, levelDuration, AIType.MCTS_AI, playerClock);
-                                } catch (NumberFormatException nfe) {
-                                    nfe.printStackTrace();
+                                    for (int i = 1; i < tokens.length; i += 2)
+                                        UpiUtils.parseSetting(settings, tokens[i], tokens[i+1]);
+                                } catch (PokerProtocolException ppe) {
+                                    ppe.printStackTrace();
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 }
 
@@ -264,7 +273,7 @@ public class Server {
                                 }
                                 break;
                             default:
-                                System.out.println("Unknown command, " + line);
+                                lobbyLogger.println("Unknown command from client: " + line, Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
                         }
                     }
                     catch (PokerProtocolException e) {
@@ -301,8 +310,21 @@ public class Server {
             }
             int tableID = UpiUtils.parseIntToken(tokens[1]);
             if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
-                //TODO: Change settings for this table based on the tokens[2] value
-                GameSettings s = lobbyTables.get(tableID).settings;
+                LobbyTable t = lobbyTables.get(tableID);
+                GameSettings oldSettings = new GameSettings(t.settings);
+                String settingsString = tokens[2];
+                Optional<String []> settingsTokens = UpiUtils.tokenize(settingsString);
+                if (settingsTokens.isPresent()) {
+                    for (int i = 0; i < settingsTokens.get().length; i += 2)
+                        UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i+1]);
+
+                    if (t.settings.valid())
+                        ClientBroadcasts.tableSettings(Server.this, t);
+                    else {
+                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
+                        t.settings = oldSettings;
+                    }
+                }
             }
         }
 
@@ -320,7 +342,7 @@ public class Server {
             try {
                 writer.flush();
             } catch (IOException e) {
-                System.out.println("Failed to flush socket of " + this + ", removing player");
+                lobbyLogger.println("Failed to flush socket of " + this + ", removing player", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                 removeClient(this.id);
             }
         }
@@ -332,7 +354,7 @@ public class Server {
      * again for a while.
      */
     private void failedToWriteToPlayer(LobbyPlayer player, String message) {
-        System.out.println("Failed to write to client " + player + ", dropping player.");
+        lobbyLogger.println("Failed to write to client " + player + ", dropping player.", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         this.removeClient(player.id);
     }
 
@@ -341,7 +363,7 @@ public class Server {
      * and the client will be disconnected
      */
     private void failedToReadFromPlayer(LobbyPlayer player) {
-        System.out.println("Failed to read from client " + player + ", dropping player.");
+        lobbyLogger.println("Failed to read from client " + player + ", dropping player.", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
         this.removeClient(player.id);
     }
 
@@ -350,7 +372,7 @@ public class Server {
      * For now, this just skips the command in question, and keeps the client
      */
     private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
-        System.out.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"");
+        lobbyLogger.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"", Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
     }
 
     /**
@@ -378,7 +400,7 @@ public class Server {
             broadCast(server, "playerJoinedTable " + player.id + " " + table.tableID);
         }
         public static void playerLeftTable(Server server, LobbyPlayer player, LobbyTable table) {
-            broadCast(server, "playerJoinedTable " + player.id + " " + table.tableID);
+            broadCast(server, "playerLeftTable " + player.id + " " + table.tableID);
         }
         public static void tableCreated(Server server, LobbyTable table) {
             broadCast(server, "tableCreated " + table.tableID);
@@ -387,7 +409,7 @@ public class Server {
             broadCast(server, "tableDeleted " + table.tableID);
         }
         public static void tableSettings(Server server, LobbyTable table) {
-            broadCast(server, "tableSettings " + table + UpiUtils.settingsToString(table.settings));
+            broadCast(server, "tableSettings " + table.tableID + " " + UpiUtils.settingsToString(table.settings));
         }
     }
 
@@ -405,12 +427,16 @@ public class Server {
             this.host = host;
         }
 
+        /**
+         *  Seat a player at this table
+         * @return True if the player was seated
+         */
         public boolean seatPlayer(LobbyPlayer player) {
             if (seatedPlayers.size() > settings.getMaxNumberOfPlayers()) {
-                GUIMain.debugPrintln(player.playerName + " tried to join full table, id " + tableID);
+                lobbyLogger.println(player.playerName + " tried to join full table, id " + tableID, Logger.MessageType.NETWORK);
                 return false;
             } else if (seatedPlayers.contains(player)) {
-                GUIMain.debugPrintln(player.playerName + " is already seated at table " + tableID);
+                lobbyLogger.println(player.playerName + " is already seated at table " + tableID, Logger.MessageType.NETWORK);
                 return false;
             } else {
                 seatedPlayers.add(player);
@@ -418,13 +444,20 @@ public class Server {
             }
         }
 
+        /**
+         * @return True if the player is seated at this table
+         */
+        public boolean isSeated(LobbyPlayer player) {
+            return seatedPlayers.contains(player);
+        }
+
         public void startGame() {
-            System.out.println("Warning: Forcing default settings");
+            lobbyLogger.println("Warning: Forcing default settings", Logger.MessageType.DEBUG);
             this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
-            System.out.println("Starting game for " + seatedPlayers.toString());
+            lobbyLogger.println("Starting game for " + seatedPlayers.toString(), Logger.MessageType.INIT, Logger.MessageType.NETWORK);
             seatedPlayers.forEach(p -> {
                 p.readyToStartGame = true;
             });
@@ -442,9 +475,9 @@ public class Server {
                 gameController.initGame(false, sockets);
                 this.delete();
             } catch (Game.InvalidGameSettingsException e) {
-                System.out.println("Error while starting game");
-                System.out.println(e.getMessage());
-                System.out.println("Game was not started");
+                lobbyLogger.println("Error while starting game", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
+                lobbyLogger.println(e.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
+                lobbyLogger.println("Game was not started", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 return;
             }
         }
@@ -474,6 +507,13 @@ public class Server {
          */
         public String toString() {
             return ("table " + tableID + " settings " + UpiUtils.settingsToString(this.settings) + " players " + playerIDsString()).trim();
+        }
+
+        /**
+         * Remove player from this table
+         */
+        public boolean unseatPlayer(LobbyPlayer lobbyPlayer) {
+            return seatedPlayers.remove(lobbyPlayer);
         }
     }
 

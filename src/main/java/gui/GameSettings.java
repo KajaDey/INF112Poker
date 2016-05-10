@@ -19,15 +19,6 @@ public class GameSettings {
     private AIType aiType;
     private int playerClock;
 
-    /**
-     *
-     * @param startStack
-     * @param bigBlind
-     * @param smallBlind
-     * @param maxNumberOfPlayers
-     * @param levelDuration
-     * @param aiType The type of AI (Simple/MCTS)
-     */
 
     public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType, int playerClock) {
         this.startStack = startStack;
@@ -77,6 +68,8 @@ public class GameSettings {
     public void setLevelDuration(int levelDuration) {
         this.levelDuration = levelDuration;
     }
+
+    public void setPlayerClock(int playerClock) { this.playerClock = playerClock; }
 
     public void setAiType(AIType aiType) {
         this.aiType = aiType;

@@ -230,7 +230,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         //If stack is a number, set stackSize to this number
         try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
         if (stack.equals("0")) stack = "All in";
-        stackLabel.setText(stack);
+        stackLabel.setText(stack + "$");
     }
 
     public void setLastMove(String lastMove, Image chipImage) {
