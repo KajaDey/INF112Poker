@@ -444,6 +444,49 @@ public class AITest {
             ai.setRiver(deck.draw().get());
         }
     }
+    @Test
+    public void testSmallBlindAsAllIn() {
+
+        for (int i = 0; i < 20; i++) {
+            // A blind post as all in or just a plain blind post
+            boolean blindIsAllIn = Math.random() > 0.5;
+            System.out.println("Blind is " + (blindIsAllIn ? "all in" : "plain blind"));
+
+            Deck deck = new Deck();
+            MCTSAI ai = new MCTSAI(0, logger);
+            ai.setHandForClient(0, deck.draw().get(), deck.draw().get());
+
+            HashMap<Integer, Integer> positions = new HashMap<>();
+            HashMap<Integer, String> names = new HashMap<>();
+            HashMap<Integer, Long> stackSizes = new HashMap<>();
+            positions.put(0, 0);
+            stackSizes.put(0, 200L);
+            names.put(0, "Morten");
+            positions.put(1, 1);
+            stackSizes.put(1, 29575L);
+            names.put(1, "Flynn");
+
+            ai.setAmountOfPlayers(2);
+            ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setPositions(positions);
+            ai.setSmallBlind(200);
+            ai.setBigBlind(400);
+
+
+            if (blindIsAllIn) {
+                ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN));
+            }
+            else {
+                ai.playerMadeDecision(0, new Decision(Decision.Move.SMALL_BLIND));
+            }
+            ai.playerMadeDecision(1, new Decision(Decision.Move.BIG_BLIND));
+
+            ai.setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
+            ai.setTurn(deck.draw().get());
+            ai.setRiver(deck.draw().get());
+        }
+    }
 
     @Test
     // Test created to reproduce a specific bug in the AI
