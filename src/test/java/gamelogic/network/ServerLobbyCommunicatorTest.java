@@ -6,8 +6,11 @@ import javafx.application.Platform;
 import network.Server;
 import network.ServerLobbyCommunicator;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,6 +25,8 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 /**
  * Created by pokki on 10/05/16.
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ServerLobbyCommunicator.class, Platform.class})
 public class ServerLobbyCommunicatorTest {
     private ServerLobbyCommunicator lobbyCommunicator;
     public static Stack<String> inputStrings;
@@ -37,7 +42,7 @@ public class ServerLobbyCommunicatorTest {
     }
 
     private void setupServerLobbyTest() throws Exception {
-        new Server();
+        new Server(39100);
 
         inputStrings = new Stack<>();
         inputStrings.addAll(Arrays.asList("startGame", "playerJoinedTable 0 0",
