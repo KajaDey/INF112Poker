@@ -12,13 +12,16 @@ import org.mockito.invocation.InvocationOnMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.mockito.stubbing.Answer;
+
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
+
 import org.powermock.reflect.Whitebox;
 
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -29,7 +32,7 @@ import static org.junit.Assert.*;
  * Created by morten on 27.04.16.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ServerGameCommunicator.class, Platform.class })
+@PrepareForTest({ServerGameCommunicator.class, Platform.class})
 
 public class NetworkClientTest {
 
@@ -41,26 +44,95 @@ public class NetworkClientTest {
     ServerLobbyCommunicator lobbyCommunicator;
     ServerGameCommunicator gameCommunicator;
     public static Stack<String> inputStrings;
+    ArrayList<Socket> clientSockets;
+    ArrayList<BufferedReader> readers;
+    ArrayList<BufferedWriter> writers;
+    InetSocketAddress socketAddress;
+    Stack<String> names;
 
-    //@Test
-    public void playFlopOverNetwork() throws Exception {
-        setupPlayFlopOverNetworkTest();
+    @Test
+    public void testHandshakeWithServer() throws Exception {
+        setupServerTestFourClients();
 
-        for (int i = 0; i < amountOfPlayers; i++) {
-            setDecisionForClient(Decision.Move.CALL, i);
+        new Server();
+
+        connectClients(4);
+    }
+
+    @Test
+    public void testPlayerMadeTable() throws Exception {
+        setupServerTestFourClients();
+
+        new Server();
+
+        connectClients(2);
+
+        System.out.println(readFromSocket(0)); // playerJoinedLobby 0 "Mariah"
+        System.out.println(readFromSocket(0)); // playerJoinedLobby 1 "Morten
+        System.out.println(readFromSocket(0)); // playerJoinedLobby 2 "Kristian"
+        System.out.println(readFromSocket(0)); // playerJoinedLobby 3 "Ragnhild"
+
+
+    }
+
+    private void setupServerTestFourClients() throws IOException {
+        socketAddress = new InetSocketAddress(InetAddress.getLocalHost(), 39100);
+        clientSockets = new ArrayList<>();
+        readers = new ArrayList<>();
+        writers = new ArrayList<>();
+        names = new Stack();
+        names.addAll(Arrays.asList("Ragnhild", "Kristian", "Morten", "Mariah"));
+    }
+
+    /**
+     * Connects given number of client sockets to server socket, and makes handshake
+     * @param numClients
+     */
+    private void connectClients(int numClients) throws Exception {
+        for (int i = 0; i < numClients; i++) {
+            Socket clientSocket = new Socket();
+            clientSocket.connect(socketAddress, 1000);
+
+            clientSockets.add(clientSocket);
+            readers.add(new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8")));
+            writers.add(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8")));
+
+            String name = names.pop();
+            writeToSocket(i, "lobby "+ name);
+
+            String answer = readFromSocket(i);
+            assert answer.equals("lobbyok") : "Got handshake "+ answer +", expected lobbyok";
+
+            answer = readFromSocket(i);
+            assert answer.equals("yourId "+ i) : "Got handshake "+ answer +", expected yourId "+ i;
+
+            answer = readFromSocket(i);
+            String expected = "playerNames "+ i +" \""+ name +"\"";
+            assert answer.equals(expected) : "Got handshake "+ answer +", expected "+ expected;
+
+            answer = readFromSocket(i);
+            assert answer.equals("lobbySent") : "Got handshake "+ answer + ", expected lobbySent";
+
+            Thread.sleep(100L); // To avoid race conditions
         }
+    }
 
-        setFlop();
+    private String readFromSocket(int clientID) throws IOException {
+        String input = readers.get(clientID).readLine();
+        return input.trim();
+    }
 
-        for (int i = 0; i < amountOfPlayers; i++) {
-            setDecisionForClient(Decision.Move.CHECK, (i + 2) % amountOfPlayers);
+    /**
+     * Write to socket (adds new line)
+     * @param output Message to write
+     */
+    private void writeToSocket(int clientID, String output) {
+        try {
+            writers.get(clientID).write(output + "\n");
+            writers.get(clientID).flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        // Close all the sockets
-        for (GameClient client : players) {
-            ((NetworkClient)client).closeSocket();
-        }
-
     }
 
     @Test
@@ -69,86 +141,8 @@ public class NetworkClientTest {
 
         lobbyCommunicator.start();
 
-        Thread commThread = Whitebox.getInternalState(lobbyCommunicator, "listeningThread");
+        Thread commThread = lobbyCommunicator.getListeningThread();
         commThread.join();
-    }
-
-    @Test
-    public void testMapToString() throws Exception {
-        HashMap<Integer, String> map = new HashMap<>();
-        map.put(0, "Morten");
-        map.put(1, "Kristian");
-        assertEquals("0 Morten 1 Kristian", UpiUtils.mapToString(map).trim());
-    }
-
-    private void delay(long delayTime) {
-        try {
-            Thread.sleep(delayTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setFlop() {
-        for (int j = 0; j < amountOfPlayers; j++) {
-            players.get(j).setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
-        }
-    }
-
-    /**
-     * Connects given number of ai players to ServerSocket
-     */
-    private void connectClients() {
-        Runnable serverThread = () -> {
-            for (int i = 0; i < amountOfPlayers; i++) {
-                try {
-                    Socket serverSocket = socketListener.accept();
-
-                    GameClient gameClient = new NetworkClient(serverSocket, i);
-                    players.add(gameClient);
-                    gameClient.setHandForClient(i, deck.draw().get(), deck.draw().get());
-
-                    AITest.setupAi(gameClient, amountOfPlayers, 2);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            System.out.println("Connected to all " + amountOfPlayers + " clients.");
-        };
-        new Thread(serverThread).start();
-    }
-
-    private void setDecisionForClient(Decision.Move decision, int playerID) {
-        System.out.println("Asking player " + playerID + " for a decision");
-        System.out.println(players.get(playerID).getDecision(timeToThink));
-
-        for (int j = 0; j < amountOfPlayers; j++) {
-            players.get(j).playerMadeDecision(playerID, new Decision(decision));
-        }
-        delay(200L);
-    }
-
-    private void createGameCommunicatorForClients() {
-        for (int i = 0; i < amountOfPlayers; i++) {
-            int i2 = i;
-            Runnable r = () -> {
-                try {
-                    Socket clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
-                    BufferedReader socketInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
-                    BufferedWriter socketOutput = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
-                    createServerGameCommunicatorSpy(socketOutput, socketInput, "Morten-" + i2);
-                    gameCommunicator.startUpi();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            };
-            new Thread(r).start();
-
-            delay(100L);
-        }
     }
 
     private void setupServerLobbyTest() throws Exception {
@@ -162,21 +156,7 @@ public class NetworkClientTest {
         createServerLobbyCommunicatorSpy();
     }
 
-    private void setupPlayFlopOverNetworkTest() throws Exception {
-        Server server = new Server();
-        amountOfPlayers = 4;
-        deck = new Deck();
-        socketListener = server.serverSocket;
-        players = new ArrayList<>();
-
-        connectClients();
-
-        delay(200L);
-
-        createGameCommunicatorForClients();
-    }
-
-    private void createServerLobbyCommunicatorSpy() throws Exception{
+    private void createServerLobbyCommunicatorSpy() throws Exception {
         try {
             lobbyCommunicator = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost()));
 
@@ -204,7 +184,7 @@ public class NetworkClientTest {
 
         try {
             doAnswer((Answer<Optional<GameClient>>) arg -> {
-                int userID = ((int)arg.getArguments()[1]);
+                int userID = ((int) arg.getArguments()[1]);
                 return Optional.of(new MCTSAI(userID, 1.0));
             }).when(gameCommunicator, "createGUIClient", any(GameSettings.class), anyInt());
         } catch (Exception e) {

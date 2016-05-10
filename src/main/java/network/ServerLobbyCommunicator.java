@@ -44,7 +44,7 @@ public class ServerLobbyCommunicator {
 
     private void connectClientToServer() throws IOException {
         Socket tempSocket = new Socket();
-        // Attempt to connect to server up to 20 times before giving up
+        // Attempt to connect to server up to 5 times before giving up
         for (int i = 0; i < 5; i++) {
             try {
                 tempSocket = new Socket(); // New socket must be created on every iteration, for some reason
@@ -267,5 +267,9 @@ public class ServerLobbyCommunicator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Thread getListeningThread() {
+        return listeningThread;
     }
 }

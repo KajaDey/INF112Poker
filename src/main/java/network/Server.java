@@ -22,6 +22,7 @@ public class Server {
     public ServerSocket serverSocket;
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
+    private Thread server;
 
     public Server() {
         try {
@@ -38,7 +39,7 @@ public class Server {
     }
 
     private void start() {
-        Thread server = new Thread("ConnectionListener"){
+        server = new Thread("ConnectionListener"){
             @Override
             public void run() {
                 while(true) {
@@ -350,6 +351,13 @@ public class Server {
      */
     private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
         System.out.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"");
+    }
+
+    /**
+     * Gets a handle to the thread listening for connection
+     */
+    public Thread getServerThread() {
+        return server;
     }
 
     static class ClientBroadcasts {
