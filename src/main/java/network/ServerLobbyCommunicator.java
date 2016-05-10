@@ -266,7 +266,7 @@ public class ServerLobbyCommunicator {
     public void leaveSeat(int tableID) { writeToSocket("leaveSeat " + tableID); }
 
     public void makeNewTable() {
-        writeToSocket("createTable \"" + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)) + "\"");
+        writeToSocket("createTable \"" + UpiUtils.settingsToString(new GameSettings()) + "\"");
     }
 
     /**

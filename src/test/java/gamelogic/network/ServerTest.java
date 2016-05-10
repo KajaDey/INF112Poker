@@ -113,14 +113,14 @@ public class ServerTest {
         ignoreAnswers(0, 3);
 
         // Tries to change settings on nonexisting table
-        GameSettings sett = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        GameSettings sett = new GameSettings();
         sett.setLevelDuration(100);
 
         writeToSocket(0, "changeSettings 0 \""+ UpiUtils.settingsToString(sett) +"\"");
 
         String []answer = UpiUtils.tokenize(readFromSocket(0)).get();
         assertEquals("tableSettings", answer[0]);
-        assertNotEquals(UpiUtils.settingsToString(GameSettings.DEFAULT_SETTINGS), answer[2]);
+        assertNotEquals(UpiUtils.settingsToString(new GameSettings()), answer[2]);
         assertEquals(UpiUtils.settingsToString(sett), answer[2]);
     }
 
@@ -155,7 +155,7 @@ public class ServerTest {
         connectClientsToServer(2, 39800);
         ignoreAnswersWhenPlayersJoined(2);
 
-        GameSettings sett = GameSettings.DEFAULT_SETTINGS;
+        GameSettings sett = new GameSettings();
         sett.setMaxNumberOfPlayers(1);
 
         writeToSocket(0, "createTable \""+ UpiUtils.settingsToString(sett) +"\"");
@@ -195,7 +195,7 @@ public class ServerTest {
     private void assertWhenTableCreatedCorrectAnswersReceived() throws IOException {
         String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
 
-        GameSettings gameSettings = GameSettings.DEFAULT_SETTINGS;
+        GameSettings gameSettings = new GameSettings();
 
         assertEquals("tableCreated", answer[0]);
         assertEquals("0", answer[1]);

@@ -62,7 +62,7 @@ public class GameController {
     }
 
     public GameController() {
-        this(new GameSettings(GameSettings.DEFAULT_SETTINGS));
+        this(new GameSettings());
     }
 
     /**
@@ -79,7 +79,7 @@ public class GameController {
      */
     public void enterButtonClicked(String name, InetAddress IPAddress, MainScreen.GameType gameType) {
         //Tell GUI to display Lobby
-        gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        gameSettings = new GameSettings();
         this.gameType = gameType;
 
         if(gameType == MainScreen.GameType.SINGLE_PLAYER)
