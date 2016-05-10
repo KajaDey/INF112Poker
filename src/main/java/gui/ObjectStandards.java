@@ -123,32 +123,14 @@ public class ObjectStandards {
      * @param value The value of the label (i.e: $)
      * @return The created label
      */
-    public static Label makeStandardLabelWhite(String name, String value){
-        Label label = new Label(name + " " + value);
+    public static Label makeStandardLabelWhite(String value, String name){
+        Label label = new Label(value + name);
         Font standardFont = new Font("Areal",15);
         Insets standardPadding = new Insets(0,0,0,0);
 
         label.setFont(standardFont);
         label.setPadding(standardPadding);
         label.setTextFill(Color.web("#ffffff"));
-        label.setEffect(dropShadow);
-
-        return label;
-    }
-
-    /**
-     * Makes a standard label where the text color is white
-     * @param name The name of the label
-     * @return The created label
-     */
-    public static Label makeErrorLabelRed(String name){
-        Label label = new Label(name);
-        Font standardFont = new Font("Areal",15);
-        Insets standardPadding = new Insets(0,0,0,0);
-
-        label.setFont(standardFont);
-        label.setPadding(standardPadding);
-        label.setTextFill(Color.RED);
         label.setEffect(dropShadow);
 
         return label;
