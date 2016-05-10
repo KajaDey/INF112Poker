@@ -473,7 +473,7 @@ public class GameScreen {
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
-        boardLayout.setPotLabel("Pot: " + potString);
+        boardLayout.setPotLabel("Pot $" + potString);
     }
 
     /**
@@ -750,9 +750,10 @@ public class GameScreen {
         Consumer<Map<Integer, Double>> callBack = (percentages) -> {
             // Make sure another, older thread cannot simultaneously modify the GUI
             if (winningPercentageComputer.isPresent() && winningPercentageComputer.get().getId() == Thread.currentThread().getId()) {
-                Platform.runLater(() -> {
-                    percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
-                });
+                Platform.runLater(() -> percentages.forEach((id, pcnt) -> {
+                    if (allPlayerLayouts.containsKey(id))
+                        allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%");
+                }));
             }
         };
 

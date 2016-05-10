@@ -255,6 +255,7 @@ public class Game {
                     highestAmountPutOnTable = decision.getSize();
                     break;
                 case RAISE:
+                    System.out.println("Player raised, " + highestAmountPutOnTable + " + " + decision.getSize());
                     highestAmountPutOnTable += decision.getSize();
                     currentMinimumRaise = decision.getSize();
                     break;
@@ -322,7 +323,8 @@ public class Game {
                     return decision;
                 else {
                     logger.print("Got decision call but highest amount was " + highestAmountPutOnTable +
-                    " and stack size was " + stackSize + ", returned decision all in instead", Logger.MessageType.DEBUG);
+                            ", stack size was " + stackSize + " and put on table was " + playerToAct.putOnTable() +
+                            ". Returned decision all in instead", Logger.MessageType.DEBUG);
                     return new Decision(Decision.Move.ALL_IN);
                 }
 
