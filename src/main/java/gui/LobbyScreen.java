@@ -148,7 +148,7 @@ public class LobbyScreen {
         startGame.setLayoutY(425);
         startGame.setOnAction(e -> startGameButtonListener(table));
 
-        if(table.getHost() == this.getID()){
+        if(table.getHost() != this.getID()){
             changeSettings.setVisible(false);
             startGame.setVisible(false);
         }
