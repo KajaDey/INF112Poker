@@ -26,11 +26,13 @@ public class Server {
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
     private Thread server;
     private final Logger lobbyLogger;
+    private static int port;
 
-    public Server() {
+    public Server(int port) {
+        this.port = port;
         lobbyLogger = new Logger("Lobby", "");
         try {
-            serverSocket = new ServerSocket(39100);
+            serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,7 +41,7 @@ public class Server {
     }
 
     public static void main(String ... args){
-        new Server();
+        new Server(port);
     }
 
     private void start() {
@@ -227,11 +229,14 @@ public class Server {
                                 }
                                 GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
+                                    if (tokens.length < 2)
+                                        throw new PokerProtocolException("Missing settings for new table");
                                     String [] settingsTokens = UpiUtils.tokenize(tokens[1]).get();
                                     for (int i = 0; i < settingsTokens.length; i += 2)
                                         UpiUtils.parseSetting(settings, settingsTokens[i], settingsTokens[i+1]);
-                                } catch (PokerProtocolException ppe) {
+                                } catch (PokerProtocolException e) {
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+                                    lobbyLogger.print("Missing settings for new table to be created");
                                 }
 
                                 addNewTable(settings, this);
