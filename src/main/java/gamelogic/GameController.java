@@ -332,7 +332,7 @@ public class GameController {
         if (client instanceof SimpleAI || client instanceof MCTSAI)
             return getAIDecision(client);
         else
-            return client.getDecision(20000L);
+            return client.getDecision(gameSettings.getPlayerClock() * 1000);
     }
 
     /**
@@ -455,12 +455,14 @@ public class GameController {
     }
 
     /**
-     * Tells each client that the game is over.
+     * Tell a client that the game is over.
      *
-     * @param stats The statistics of players
+     * @param clientID id of the player
+     * @param personalStats The statistics for the given player id
      */
-    public void gameOver(Statistics stats) {
-        clients.forEach((id, client) -> client.gameOver(stats));
+    public void gameOver(int clientID, Statistics personalStats) {
+        if (clients.get(clientID) != null)
+            clients.get(clientID).gameOver(personalStats);
     }
 
     /**

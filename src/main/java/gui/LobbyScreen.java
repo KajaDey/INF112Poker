@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class holds all the information about the lobby.
@@ -34,12 +35,14 @@ public class LobbyScreen {
     static VBox sideMenu = new VBox();
     static Pane fullLayout = new Pane();
     static Pane gameInfo;
-    static Label player;
+    static Label numberOfPlayer;
     static Label names;
+    static Button takeASeat;
     private ServerLobbyCommunicator serverLobbyCommunicator;
     private Map<Integer, LobbyTable> tables;
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
     private int ID;
+    private Optional<LobbyTable> currentTable = Optional.empty();
     private final Logger logger;
 
     public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
@@ -90,11 +93,11 @@ public class LobbyScreen {
         HBox hBox = new HBox();
 
         names = ObjectStandards.makeStandardLabelWhite("Table: " + table.id,"");
-        player = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
+        numberOfPlayer = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
         vBox.setStyle(styling);
-        hBox.getChildren().addAll(names, player);
+        hBox.getChildren().addAll(names, numberOfPlayer);
 
         hBox.setMinWidth(150);
         vBox.setMinHeight(75);
@@ -116,7 +119,7 @@ public class LobbyScreen {
      */
     public void displayGameInfo(LobbyTable table) {
         gameInfo.getChildren().clear();
-        updatePlayer(table);
+        updateNumberOfPlayersSeated(table);
 
         Label gameName = ObjectStandards.makeLabelForHeadLine(serverLobbyCommunicator.getName(table.playerIds.get(0)) + "'s game!");
         gameName.setLayoutX(325);
@@ -129,7 +132,10 @@ public class LobbyScreen {
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(550);
 
-        Button takeASeat = ObjectStandards.makeButtonForLobbyScreen("Take a seat");
+        if(!table.isSeated(ID))
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen("Take a seat");
+        else
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen("Leave table");
 
         takeASeat.setLayoutX(200);
         takeASeat.setLayoutY(425);
@@ -146,6 +152,11 @@ public class LobbyScreen {
         startGame.setLayoutX(50);
         startGame.setLayoutY(425);
         startGame.setOnAction(e -> startGameButtonListener(table));
+
+        if(table.getHost() != this.getID()){
+            changeSettings.setVisible(false);
+            startGame.setVisible(false);
+        }
 
         settings = displayTableSettings(table);
 
@@ -210,7 +221,7 @@ public class LobbyScreen {
      * @param table The table to display the settings for
      * @return A VBox with all the settings
      */
-    public VBox displayTableSettings(LobbyTable table){
+    private VBox displayTableSettings(LobbyTable table){
         VBox vBox = new VBox();
 
         Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",table.settings.getStartStack()+"");
@@ -233,7 +244,10 @@ public class LobbyScreen {
         serverLobbyCommunicator.makeNewTable();
     }
     private void takeASeatButtonListener(LobbyTable table) {
-        serverLobbyCommunicator.takeSeat(table.id);
+        if(takeASeat.getText().equalsIgnoreCase("Take a seat"))
+            serverLobbyCommunicator.takeSeat(table.id);
+        else if(takeASeat.getText().equalsIgnoreCase("Leave table"))
+            serverLobbyCommunicator.leaveSeat(table.id);
     }
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);
@@ -253,6 +267,9 @@ public class LobbyScreen {
         tableBoxes.put(table.id, tableBox);
         sideMenu.getChildren().add(0, tableBox);
 
+        if (!currentTable.isPresent())
+            currentTable = Optional.of(table);
+
         logger.println("Added new table, id " + table.id, Logger.MessageType.NETWORK);
     }
 
@@ -265,6 +282,17 @@ public class LobbyScreen {
         tables.remove(tableID);
         sideMenu.getChildren().remove(tableBoxes.get(tableID));
         tableBoxes.remove(tableID);
+
+        if (currentTable.isPresent() && currentTable.get().id == tableID){
+            if (tables.isEmpty()) {
+                currentTable = Optional.empty();
+                fullLayout.getChildren().remove(gameInfo);
+            } else {
+                currentTable = tables.values().stream().findAny();
+                if (currentTable.isPresent())
+                    displayGameInfo(currentTable.get());
+            }
+        }
     }
 
     /**
@@ -282,7 +310,8 @@ public class LobbyScreen {
      * @param tableID The table id
      */
     public void refreshTableSettings(int tableID) {
-        displayTableSettings(tables.get(tableID));
+        if (currentTable.isPresent() && currentTable.get().id == tableID)
+            displayGameInfo(currentTable.get());
     }
 
     public void setID(int ID) {
@@ -291,23 +320,25 @@ public class LobbyScreen {
     public int getID() { return ID; }
 
     /**
-     * Add a player to a given table and re-paint the table
+     * Add a numberOfPlayer to a given table and re-paint the table
      * @param tableID The table id
      * @param playerID The players id
      */
     public void addPlayer(int playerID, int tableID) {
         getTable(tableID).addPlayer(playerID);
-        displayGameInfo(tables.get(tableID));
+        if (currentTable.isPresent())
+            displayGameInfo(currentTable.get());
     }
 
     /**
-     *  Remove a player from the given table and re-paint the table
+     *  Remove a numberOfPlayer from the given table and re-paint the table
      * @param tableID The table id
      * @param playerID The players id
      */
     public void removePlayer(int playerID, int tableID ) {
         getTable(tableID).removePlayer(playerID);
-        displayGameInfo(tables.get(tableID));
+        if (currentTable.isPresent())
+            displayGameInfo(currentTable.get());
     }
 
     /**
@@ -353,8 +384,8 @@ public class LobbyScreen {
 
     }
 
-    public void updatePlayer(LobbyTable table){
-        player.setText(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers());
+    public void updateNumberOfPlayersSeated(LobbyTable table){
+        numberOfPlayer.setText(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers());
     }
 
 }

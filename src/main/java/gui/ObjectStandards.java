@@ -272,6 +272,7 @@ public class ObjectStandards {
         //Parent menus
         Menu file = new Menu("File");
         Menu about = new Menu("About");
+        Menu help = new Menu("Help");
 
         //Sub menus and menu items
         Menu licenses = new Menu("Licenses");
@@ -283,13 +284,33 @@ public class ObjectStandards {
         MenuItem restart = new MenuItem("Restart");
         MenuItem mute = new MenuItem("Mute Sound");
 
+        Menu keyCodes = new Menu("Key Combinations");
+        MenuItem check = new MenuItem("Check");
+        MenuItem call = new MenuItem("Call");
+        MenuItem fold = new MenuItem("Fold");
+        MenuItem betRaise = new MenuItem("Bet/raise");
+        MenuItem changeBetAmountBy1BB = new MenuItem("Change bet by 1xBB");
+        MenuItem changeBetAmountBy10BB = new MenuItem("Change bet by 10xBB");
+        MenuItem aboutKeyCombo = new MenuItem("About Key Combinations");
+
+        check.setAccelerator(KeyCodeCombination.valueOf(KeyCode.SPACE + " (Single tap)"));
+        call.setAccelerator(KeyCodeCombination.valueOf(KeyCode.SPACE + " (Double tap)"));
+        betRaise.setAccelerator(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN));
+        fold.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE, KeyCombination.SHIFT_DOWN));
+        changeBetAmountBy1BB.setAccelerator(KeyCodeCombination.valueOf(KeyCode.UP + "/" + KeyCode.DOWN));
+        changeBetAmountBy10BB.setAccelerator(KeyCombination.valueOf(KeyCode.SHIFT + "+" + KeyCode.UP + "/" + KeyCode.DOWN));
+        keyCodes.getItems().addAll(check, call, betRaise, fold, changeBetAmountBy1BB, changeBetAmountBy10BB, aboutKeyCombo);
+
+
+
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);
         file.getItems().addAll(quit,restart, mute);
+        help.getItems().add(keyCodes);
 
         //Adding all menus to the menu bar
-        menuBar.getMenus().addAll(file,about);
+        menuBar.getMenus().addAll(file,about, help);
 
         if (os != null) {
             if (!os.startsWith("Mac")) {
@@ -318,7 +339,7 @@ public class ObjectStandards {
 
         softwareLicense.setOnAction(event -> {
             try {
-                menuBarScreens.createScreenForLicense(softwareLicense.getText());
+                menuBarScreens.createScreenForMenuBarScreens(softwareLicense.getText());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -326,7 +347,7 @@ public class ObjectStandards {
 
         cardSpriteLicense.setOnAction(event -> {
             try {
-                menuBarScreens.createScreenForLicense(cardSpriteLicense.getText());
+                menuBarScreens.createScreenForMenuBarScreens(cardSpriteLicense.getText());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -348,6 +369,14 @@ public class ObjectStandards {
                 } catch (IOException | URISyntaxException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        aboutKeyCombo.setOnAction(event -> {
+            try {
+                menuBarScreens.createScreenForMenuBarScreens(aboutKeyCombo.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
 

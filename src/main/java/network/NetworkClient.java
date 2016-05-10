@@ -210,8 +210,8 @@ public class NetworkClient implements GameClient {
     }
 
     @Override
-    public void gameOver(Statistics winnerID) {
-
+    public void gameOver(Statistics statistics) {
+        writeToSocket(statistics.toUPIString());
     }
 
     @Override
@@ -221,7 +221,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void preShowdownWinner(int winnerID) {
-        //TODO: Maybe implement
+        writeToSocket("preShowdownWinner " + winnerID);
     }
 
     public void closeSocket() {

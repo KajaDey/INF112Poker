@@ -29,26 +29,32 @@ public class MenuBarScreens {
     }
 
     /**
-     * Method for creating the screens for displaying the licenses for both the software and the card sprites.
-     * @param licenseType The type of license, i.e. software or card sprites
+     * Method for creating the screens for displaying the popup windows available from
+     * the menu bar.
+     * @param windowType The type of window to show, i.e. software license
      * @throws IOException
      */
-    public void createScreenForLicense(String licenseType) throws IOException {
+    public void createScreenForMenuBarScreens(String windowType) throws IOException {
         Stage window = new Stage();
         Pane pane = new Pane();
         pane.styleProperty().setValue(styling);
         Label label = new Label("");
         Scene scene = null;
 
-        if (licenseType.startsWith("Software")) {
+        if (windowType.startsWith("Software")) {
             scene = new Scene(pane, 615, 500);
-            label = ObjectStandards.makeStandardLabelWhite(licenseReader("resources/softwareLicense.txt"), "");
+            label = ObjectStandards.makeStandardLabelWhite(menuBarFileReader("resources/softwareLicense.txt"), "");
             window.setTitle("Software License");
         }
-        else if (licenseType.startsWith("Card")){
+        else if (windowType.startsWith("Card")){
             scene = new Scene(pane, 615, 275);
-            label = ObjectStandards.makeStandardLabelWhite(licenseReader("resources/cardSpriteLicense.txt"), "");
+            label = ObjectStandards.makeStandardLabelWhite(menuBarFileReader("resources/cardSpriteLicense.txt"), "");
             window.setTitle("Card Sprite License");
+        }
+        else if (windowType.startsWith("About")){
+            scene = new Scene(pane, 615, 175);
+            label = ObjectStandards.makeStandardLabelWhite(menuBarFileReader("resources/keyComboInfo.txt"), "");
+            window.setTitle("About Key Combinations");
         }
 
         label.setPadding(new Insets(10,10,10,10));
@@ -63,12 +69,12 @@ public class MenuBarScreens {
     }
 
     /**
-     * Method for reading the text files containing the licenses
+     * Method for reading the text files containing the info to be shown
      * @param fileName The name of the file
-     * @return A string containing the license
+     * @return A string containing the info
      * @throws IOException
      */
-    public String licenseReader(String fileName) throws IOException {
+    public String menuBarFileReader(String fileName) throws IOException {
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF-8"));
         String out = "";

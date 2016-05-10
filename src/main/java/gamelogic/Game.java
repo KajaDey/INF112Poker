@@ -460,26 +460,15 @@ public class Game {
      * Tells GameController to pass game statistics to GUIClient(s)
      */
     private void gameOver() {
-        Player p = players[0]; //Player 0 is the Human-player
+        //Find the winning player
+        Optional<Player> winner = Arrays.stream(players).filter(p -> p.getStackSize() > 0).findAny();
+        assert winner.isPresent() : "No winner was determined when game was over";
 
-        //Find the ID of the winner
-        int winnerID = -1;
-        for (Player player : players) {
-            if (player.getStackSize() > 0) {
-                assert winnerID == -1 : "Two or more players had chips left when the game was over";
-                winnerID = player.getID();
-            }
-        }
+        //add winner to ranking table
+        rankingTable.put(winner.get().getID(), 1);
 
-        assert winnerID > -1 : "No winner was determined when game was over";
-
-        rankingTable.put(winnerID, 1);
-
-        //Create a new statistics of the object for use in showdown
-        Statistics stats = new Statistics(p, names, rankingTable);
-
-        //Tell all clients that the game is over
-        gameController.gameOver(stats);
+        //Create a new statistics for each player and send it
+        Arrays.stream(players).forEach(p -> gameController.gameOver(p.getID(), new Statistics(p, names, rankingTable)));
     }
 
     /**

@@ -115,9 +115,9 @@ public class ReplayClient extends GUIClient {
     }
 
     @Override
-    public void gameOver(Statistics stats) {
+    public void gameOver(Statistics statistics) {
         if (gui)
-            super.gameOver(stats);
+            super.gameOver(statistics);
     }
 
     @Override

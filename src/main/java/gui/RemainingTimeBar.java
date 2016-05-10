@@ -5,7 +5,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 
 /**
- * A bar which displays how long time the player has to make a decision
+ * A bar which displays how long time the numberOfPlayer has to make a decision
  *
  * Created by Kristian Rosland on 24.04.2016.
  */
