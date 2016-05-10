@@ -294,6 +294,9 @@ public class Server {
             listener = new Thread(task);
             listener.start();
         }
+        public String toString() {
+            return "Player " + playerName + ", id " + id;
+        }
 
         /**
          * @return true if the given player is seated at any table
