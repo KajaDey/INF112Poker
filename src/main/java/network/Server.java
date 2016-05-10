@@ -231,7 +231,6 @@ public class Server {
                                     for (int i = 1; i < tokens.length; i += 2)
                                         UpiUtils.parseSetting(settings, tokens[i], tokens[i+1]);
                                 } catch (PokerProtocolException ppe) {
-                                    ppe.printStackTrace();
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 }
 
@@ -336,6 +335,10 @@ public class Server {
                     for (int i = 0; i < settingsTokens.get().length; i += 2)
                         UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i+1]);
 
+                    if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size() && t.settings.valid()) {
+                        write("errorMessage \"Too many players already seated, cannot set to " + t.settings.getMaxNumberOfPlayers() + "\"");
+                        t.settings.setMaxNumberOfPlayers(oldSettings.getMaxNumberOfPlayers());
+                    }
                     if (t.settings.valid())
                         ClientBroadcasts.tableSettings(Server.this, t);
                     else {
@@ -451,7 +454,7 @@ public class Server {
          * @return True if the player was seated
          */
         public boolean seatPlayer(LobbyPlayer player) {
-            if (seatedPlayers.size() > settings.getMaxNumberOfPlayers()) {
+            if (seatedPlayers.size() >= settings.getMaxNumberOfPlayers()) {
                 lobbyLogger.println(player.playerName + " tried to join full table, id " + tableID, Logger.MessageType.NETWORK);
                 return false;
             } else if (seatedPlayers.contains(player)) {
