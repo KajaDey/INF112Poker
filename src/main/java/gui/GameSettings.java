@@ -137,7 +137,7 @@ public class GameSettings {
         } else if(bigBlind < 0 || smallBlind < 0) {
             error = "All blinds must be positive whole numbers";
         } else if (bigBlind < smallBlind * 2) {
-            error = "Big blind must be at least twice the size of the small blind";
+            error = "Big blind (" + bigBlind + ") must be at least twice the size of the small blind (" + smallBlind + ")";
         } else if(maxNumberOfPlayers< 2 || maxNumberOfPlayers > 6) {
             error = "Number of players must be between 2-6";
         } else if(bigBlind <= 0) {

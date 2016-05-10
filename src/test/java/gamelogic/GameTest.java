@@ -91,7 +91,6 @@ public class GameTest {
 
     @Test
     public void testPlayGameWithTwoMCTSAIsIllegalSizedBlinds() throws Exception {
-
         for (int i = 0; i < 10; i++) {
             System.out.println(i);
             setupGameWithAIs(2005, 700, AIType.MCTS_AI, 2);

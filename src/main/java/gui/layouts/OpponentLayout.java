@@ -28,8 +28,10 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel, percentLabel;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private boolean isBust = false;
+    private final Logger logger;
 
     public OpponentLayout(String name, int position, Logger logger) {
+        this.logger = logger;
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
         rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
 
@@ -46,9 +48,9 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         rightCardImage.setVisible(false);
         chipImage.setVisible(true);
 
-        glow.setColor(Color.web("cyan", 0.5));
-        glow.setHeight(50);
-        glow.setWidth(50);
+        glow.setColor(Color.web("cyan", 0.7));
+        glow.setHeight(75);
+        glow.setWidth(75);
 
         nameLabel = ObjectStandards.makeStandardLabelWhite("", name);
         nameLabel.setFont(Font.font("Areal", FontWeight.BOLD, 15));

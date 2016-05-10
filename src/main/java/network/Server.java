@@ -328,7 +328,7 @@ public class Server {
         }
 
         private void changeSetting(String [] tokens) throws PokerProtocolException {
-            if (tokens.length <= 1) {
+            if (tokens.length <= 2) {
                 throw new PokerProtocolException();
             }
             int tableID = UpiUtils.parseIntToken(tokens[1]);
@@ -346,6 +346,11 @@ public class Server {
                         write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
                         t.settings = oldSettings;
                         return;
+                    }
+
+                    if (!t.settings.valid()) {
+                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
+                        t.settings = oldSettings;
                     }
 
                     if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size()) {
@@ -478,8 +483,6 @@ public class Server {
         }
 
         public void startGame() {
-            lobbyLogger.println("Warning: Forcing default settings", Logger.MessageType.DEBUG);
-            this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());

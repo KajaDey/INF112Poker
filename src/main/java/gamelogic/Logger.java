@@ -20,7 +20,7 @@ public class Logger {
     private final HashMap<MessageType, BufferedWriter> logWriters = new HashMap<>();
 
     public enum MessageType {
-        DEBUG, AI, GAMEPLAY, WARNINGS, NETWORK, INIT
+        DEBUG, AI, GAMEPLAY, WARNINGS, NETWORK, GUI, INIT
     }
 
     public Logger() {
