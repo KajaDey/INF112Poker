@@ -77,9 +77,7 @@ public class Logger {
             } catch (IOException e) {
                 System.out.println("Failed to write to " + messageType + " logfile");
             }
-            if (messageType != MessageType.NETWORK) {
-                System.out.print(wholeMessage);
-            }
+            System.out.print(wholeMessage);
         }
     }
 

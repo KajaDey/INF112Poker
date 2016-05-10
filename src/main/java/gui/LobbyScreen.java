@@ -346,6 +346,7 @@ public class LobbyScreen {
      */
     public void removePlayer(int playerID, int tableID ) {
         getTable(tableID).removePlayer(playerID);
+
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
     }
@@ -395,6 +396,18 @@ public class LobbyScreen {
 
     public void updateNumberOfPlayersSeated(LobbyTable table){
         numberOfPlayer.setText(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers());
+    }
+
+    /**
+     * Remove player from any table he is seated at
+     */
+    public void playerQuit(int playerID) {
+        tables.values().forEach(t -> t.removePlayer(playerID));
+
+        if (currentTable.isPresent())
+            displayGameInfo(currentTable.get());
+        else
+            System.out.println("LobbyScreen: No current table");
     }
 
 }
