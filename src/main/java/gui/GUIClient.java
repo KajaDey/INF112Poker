@@ -260,7 +260,6 @@ public class GUIClient implements GameClient {
         }
         Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
 
-        logger.println("Next node type is " + gameState.get().getNextNodeType(), Logger.MessageType.GUI);
         GameState.NodeType nextNodeType = gameState.get().getNextNodeType();
         if (nextNodeType != GameState.NodeType.DEAL_COMMUNITY_CARD && nextNodeType != GameState.NodeType.TERMINAL) {
             Platform.runLater(() -> gameScreen.highlightPlayerTurn(gameState.get().currentPlayer.id));
