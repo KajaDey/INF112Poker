@@ -156,9 +156,7 @@ public class NetworkClient implements GameClient {
 
     @Override
     public void showdown(String[] winnerStrings) {
-        System.out.println("Game controller sent winnerStrings " + Arrays.toString(winnerStrings));
         String winnerString = Arrays.stream(winnerStrings).map(s -> " \"" + s + "\"").reduce("", String::concat).trim();
-        System.out.println("sending winnerString to clients: --" + winnerString + "--");
         writeToSocket("showdown " + winnerString);
     }
 
