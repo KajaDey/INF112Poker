@@ -25,8 +25,6 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private TextField amountTextField;
     private RemainingTimeBar progressBar;
 
-    private long currentSmallBlind, currentBigBlind;
-
     private Button betRaiseButton, checkCallButton, foldButton;
     private boolean isBust = false, isActing = false;
     private long stackSize;
@@ -53,7 +51,6 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         percentLabel = ObjectStandards.makeStandardLabelWhite("","");
         bestHand = ObjectStandards.makeStandardLabelWhite("","");
         bestHand.setFont(Font.font("Areal", FontWeight.BOLD, 15));
-
 
         Image backOfCards = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.PLAYER);
@@ -178,15 +175,9 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
      * Updates the values of the slider
      */
     public void updateSliderValues(long stackSize){
-        long maxValue = stackSize;
-        if (positionLabel.getText().toLowerCase().contains("small"))
-            maxValue -= currentSmallBlind;
-        else if (positionLabel.getText().toLowerCase().contains("big"))
-            maxValue -= currentBigBlind;
-
-        slider.setValue(currentBigBlind);
-        slider.setMin(currentBigBlind);
-        slider.setMax(maxValue);
+        slider.setValue(0);
+        slider.setMin(0);
+        slider.setMax(stackSize);
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
 

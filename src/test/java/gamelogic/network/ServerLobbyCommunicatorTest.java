@@ -43,7 +43,7 @@ public class ServerLobbyCommunicatorTest {
     }
 
     private void setupServerLobbyTest() throws Exception {
-        new Server(39100);
+        new Server();
 
         inputStrings = new Stack<>();
         inputStrings.addAll(Arrays.asList("startGame", "playerJoinedTable 0 0",

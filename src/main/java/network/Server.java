@@ -25,10 +25,8 @@ public class Server {
     public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
     private final Logger lobbyLogger;
-    private static int port;
 
     public Server(int port) {
-        this.port = port;
         lobbyLogger = new Logger("Lobby", "");
         try {
             serverSocket = new ServerSocket(port);
@@ -39,8 +37,12 @@ public class Server {
         start();
     }
 
+    public Server() {
+        this(39100);
+    }
+
     public static void main(String ... args){
-        new Server(port);
+        new Server();
     }
 
     private void start() {
