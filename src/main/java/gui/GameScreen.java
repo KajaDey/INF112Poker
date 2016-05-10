@@ -740,8 +740,8 @@ public class GameScreen {
     /**
      * If hole cards are shown, calculate percentages for all players
      */
-    public void showPercentages() {
-        assert allHoleCards != null;
+    public void showPercentages(Map<Integer, Card[]> holeCardsStillInHand) {
+        assert holeCardsStillInHand != null;
         if (!holeCardsShown) {
             System.out.println((System.currentTimeMillis() % 10000) + ": Hole cards aren't shown");
             return;
@@ -757,9 +757,8 @@ public class GameScreen {
             }
         };
 
-
         winningPercentageComputer = Optional.of(new Thread(() ->  {
-            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(allHoleCards, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
+            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(holeCardsStillInHand, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             callBack.accept(percentages);
             logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
                     + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);

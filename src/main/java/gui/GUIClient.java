@@ -151,7 +151,12 @@ public class GUIClient implements GameClient {
             Thread.sleep(50);
         } catch (InterruptedException e) { }
         if (gameState.isPresent() && this.holeCards.size() >= gameState.get().getPlayersAllIn() && userID != id) {
-            gameScreen.showPercentages();
+            Map<Integer, Card[]> holeCardsStillInHand = new HashMap<>();
+            this.holeCards.keySet().stream().filter(id -> {
+                gamelogic.ai.Player player = gameState.get().players.stream().filter(p -> p.id == id).findAny().get();
+                return player.isAllIn || player.isInHand;
+            }).forEach(id -> holeCardsStillInHand.put(id, holeCards.get(id).clone()));
+            gameScreen.showPercentages(holeCardsStillInHand);
         }
     }
 
