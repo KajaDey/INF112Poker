@@ -224,7 +224,7 @@ public class ButtonListeners {
         long currentBB = boardLayout.getBB(), stackSize = playerLayout.getStackSize();
 
         //If the amount field or chat field is focused, key shortcuts are disabled
-        if (tf.focusedProperty().getValue() || (chatField != null && chatField.focusedProperty().getValue()))
+        if (!playerLayout.isActing() || tf.focusedProperty().getValue() || (chatField != null && chatField.focusedProperty().getValue()))
             return;
 
         try {

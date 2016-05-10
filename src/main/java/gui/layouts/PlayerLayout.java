@@ -14,9 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-
 /**
  * Created by ady on 04/04/16.
  */
@@ -31,7 +28,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private long currentSmallBlind, currentBigBlind;
 
     private Button betRaiseButton, checkCallButton, foldButton;
-    private boolean isBust;
+    private boolean isBust = false, isActing = false;
     private long stackSize;
 
 
@@ -73,13 +70,8 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
         amountTextField = ObjectStandards.makeTextFieldForGameScreen("Amount");
 
-        //slider.setMin(currentBigBlind);
-        //slider.setMax(stackSizeIn);
-        //slider.setValue(currentBigBlind);
-
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
-        //slider.setMajorTickUnit(slider.getMax()/2);
         slider.setBlockIncrement(0.1f);
         slider.setMinorTickCount(0);
         slider.setSnapToTicks(false);
@@ -207,10 +199,11 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     /**
-     * Make the action buttons visible
+     * Make the action buttons visible and update isActing (a boolean that indicates if this player is acting)
      * @param visible True if buttons should be set to visible
      */
     public void setActionsVisible(boolean visible) {
+        isActing = visible;
         betRaiseButton.setVisible(visible);
         checkCallButton.setVisible(visible);
         foldButton.setVisible(visible);
@@ -337,5 +330,9 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
     public void stopTimer() {
         progressBar.stopTimer();
+    }
+
+    public boolean isActing() {
+        return isActing;
     }
 }

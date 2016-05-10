@@ -45,7 +45,6 @@ public class GameScreen {
     private Map<Integer, Card[]> allHoleCards = new HashMap<>();
     private boolean holeCardsShown = false;
 
-
     //GUI-elements
     private Scene scene;
     private Pane pane = new Pane();
@@ -753,7 +752,6 @@ public class GameScreen {
             if (winningPercentageComputer.isPresent() && winningPercentageComputer.get().getId() == Thread.currentThread().getId()) {
                 Platform.runLater(() -> {
                     percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
-
                 });
             }
         };
