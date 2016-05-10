@@ -328,7 +328,7 @@ public class GameController {
         if (client instanceof SimpleAI || client instanceof MCTSAI)
             return getAIDecision(client);
         else
-            return client.getDecision(20000L);
+            return client.getDecision(gameSettings.getPlayerClock() * 1000);
     }
 
     /**

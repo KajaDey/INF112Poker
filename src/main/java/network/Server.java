@@ -279,6 +279,7 @@ public class Server {
             int tableID = UpiUtils.parseIntToken(tokens[1]);
             if (lobbyTables.containsKey(tableID) && lobbyTables.get(tableID).host.equals(this)) {
                 LobbyTable t = lobbyTables.get(tableID);
+                GameSettings oldSettings = new GameSettings(t.settings);
                 String settingsString = tokens[2];
                 Optional<String []> settingsTokens = UpiUtils.tokenize(settingsString);
                 if (settingsTokens.isPresent()) {
@@ -287,8 +288,10 @@ public class Server {
 
                     if (t.settings.valid())
                         ClientBroadcasts.tableSettings(Server.this, t);
-                    else
+                    else {
                         write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
+                        t.settings = oldSettings;
+                    }
                 }
             }
 
@@ -400,8 +403,6 @@ public class Server {
         }
 
         public void startGame() {
-            System.out.println("Warning: Forcing default settings");
-            this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
