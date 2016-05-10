@@ -44,7 +44,6 @@ public class Game {
     private boolean replay = false;
 
     private final Logger logger;
-    private boolean skipRound = false;
 
     public Game(GameSettings gameSettings, GameController gameController, Logger logger) {
         this.gameController = gameController;
@@ -145,7 +144,8 @@ public class Game {
         //First betting round (pre flop)
         logger.println("\nPRE FLOP:", Logger.MessageType.GAMEPLAY);
         boolean handContinues = bettingRound(preFlop);
-        if (skipRound || skipBettingRound() && playersStillInCurrentHand.size() > 1) {
+        if (skipBettingRound() && playersStillInCurrentHand.size() > 1) {
+            displayHoleCards();
             delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
         }
         if (!handContinues) {
@@ -209,7 +209,7 @@ public class Game {
         }
 
         //Check if all players are all in and betting round should be skipped
-        if (skipRound || skipBettingRound()) {
+        if (skipBettingRound()) {
             displayHoleCards();
             delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             return true;
@@ -484,7 +484,7 @@ public class Game {
      *  @return True if betting round should be skipped
      */
     private boolean skipBettingRound() {
-        return skipRound = playersStillInCurrentHand.stream()
+        return playersStillInCurrentHand.stream()
                 .filter(Player::isAllIn)
                 .count() >= playersStillInCurrentHand.size() - 1;
     }
