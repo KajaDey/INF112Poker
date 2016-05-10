@@ -203,7 +203,7 @@ public class GameState {
                         //System.out.println("All in was blind post");
                         playersToMakeDecision--;
                         // If player is big blind and all in is a call, the small blind should not make another decision
-                        if (currentPlayer.equals(players.stream().skip(1L).findFirst().get()) && currentPlayer.stackSize <= smallBlindAmount && playersAllIn == 0) {
+                        if (currentPlayer.equals(players.stream().skip(1L).findFirst().get()) && currentPlayer.stackSize <= smallBlindAmount && playersAllIn == 1) {
                             playersToMakeDecision--;
                         }
 
