@@ -66,9 +66,6 @@ public class ServerGameCommunicator {
                     assert gameClient.isPresent();
                     gameClient.get().startNewHand();
                     break;
-                case "newGame":
-                    // TODO: Figure out what needs to be done here
-                    break;
                 case "amountOfPlayers":
                     assert gameClient.isPresent();
                     gameClient.get().setAmountOfPlayers(Integer.parseInt(tokens[1]));

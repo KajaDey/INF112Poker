@@ -170,7 +170,6 @@ public class Server {
                         continue;
                     }
                     try {
-                        tokenSwitch:
                         switch (tokens[0]) {
                             case "quit": //quit
                                 removeClient(id);
@@ -401,13 +400,6 @@ public class Server {
         lobbyLogger.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"", Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
     }
 
-    /**
-     * Gets a handle to the thread listening for connection
-     */
-    public Thread getServerThread() {
-        return server;
-    }
-
     static class ClientBroadcasts {
         private static void broadCast(Server server, String string) {
             synchronized (server) {
@@ -484,9 +476,7 @@ public class Server {
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
             lobbyLogger.println("Starting game for " + seatedPlayers.toString(), Logger.MessageType.INIT, Logger.MessageType.NETWORK);
-            seatedPlayers.forEach(p -> {
-                p.readyToStartGame = true;
-            });
+            seatedPlayers.forEach(p -> p.readyToStartGame = true);
 
             this.seatedPlayers.forEach(player -> player.write("startGame"));
             seatedPlayers.forEach(p -> {
@@ -504,7 +494,6 @@ public class Server {
                 lobbyLogger.println("Error while starting game", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 lobbyLogger.println(e.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 lobbyLogger.println("Game was not started", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
-                return;
             }
         }
 
