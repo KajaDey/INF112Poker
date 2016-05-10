@@ -1,7 +1,5 @@
 package gui;
 
-import gui.GameSettings;
-
 import java.util.ArrayList;
 
 /**
@@ -13,6 +11,7 @@ public class LobbyTable {
     final int id;
     final GameSettings settings;
     final ArrayList<Integer> playerIds = new ArrayList<>();
+    private int hostID;
 
     public LobbyTable(int id) {
         this.id = id;
@@ -43,6 +42,8 @@ public class LobbyTable {
     }
 
     public void addPlayer(int id) {
+        if (playerIds.isEmpty())
+            hostID = id;
         playerIds.add(id);
     }
 
@@ -55,4 +56,6 @@ public class LobbyTable {
     public boolean isSeated(int playerID) {
         return playerIds.contains(playerID);
     }
+
+    public int getHost() {return hostID;}
 }
