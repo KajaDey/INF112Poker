@@ -205,7 +205,7 @@ public class GameState {
                         // If player is big blind and all in is a call, the small blind should not make another decision
                         // If by some miracle the small blind-player was all in as well, do not make them do another decision
                         if (currentPlayer.equals(players.stream().skip(1L).findFirst().get())) {
-                            if (currentPlayer.stackSize <= smallBlindAmount) {
+                            if (currentPlayer.stackSize <= smallBlindAmount && amountOfPlayers == 2) {
                                 logger.println("Big blind went all in as call", Logger.MessageType.AI);
                                 playersToMakeDecision--;
                             }
