@@ -70,6 +70,7 @@ public class LobbyScreen {
 
         try {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress);
+            serverLobbyCommunicator.start();
             GUIMain.debugPrintln("Connected successfully to server!");
         } catch (IOException e) {
             displayErrorMessage("Could not connect to server");

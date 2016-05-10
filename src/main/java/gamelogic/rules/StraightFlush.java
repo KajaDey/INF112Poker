@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by pokki on 10/03/16.
+ * Created by Ragnhild Aalvik on 10/03/16.
  *
  * Checks if a hand contains a straight flush. (5 succeeding cards in the same suit)
  *
