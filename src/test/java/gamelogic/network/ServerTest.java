@@ -1,6 +1,6 @@
-package gamelogic;
+package gamelogic.network;
 
-import gui.GUIMain;
+import gamelogic.Logger;
 import gui.GameSettings;
 import gui.LobbyScreen;
 import javafx.application.Platform;
@@ -33,8 +33,6 @@ import java.util.*;
 
 public class ServerTest {
 
-    ServerLobbyCommunicator lobbyCommunicator;
-    public static Stack<String> inputStrings;
     ArrayList<Socket> clientSockets;
     ArrayList<BufferedReader> readers;
     ArrayList<BufferedWriter> writers;
@@ -208,9 +206,7 @@ public class ServerTest {
 
         assertEquals("tableCreated", answer[0]);
         assertEquals("0", answer[1]);
-
         assertEquals("tableSettings 0 maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30", readFromSocket(0));
-
         assertEquals("playerJoinedTable 0 0", readFromSocket(0));
     }
 
@@ -303,47 +299,4 @@ public class ServerTest {
         }
     }
 
-    @Test
-    public void testServerLobbyCommunicator() throws Exception {
-        setupServerLobbyTest();
-
-        lobbyCommunicator.start();
-
-        Thread commThread = lobbyCommunicator.getListeningThread();
-        commThread.join();
-    }
-
-    private void setupServerLobbyTest() throws Exception {
-        new Server();
-
-        inputStrings = new Stack<>();
-        inputStrings.addAll(Arrays.asList("startGame", "playerJoinedTable 0 0",
-                "tableSettings 0 smallBlind 25 bigBlind 100 maxNumberOfPlayers 2",
-                "tableCreated 0", "playerJoinedLobby 0 Ragnhild", "lobbySent", "lobbyok"));
-
-        createServerLobbyCommunicatorSpy();
-    }
-
-    private void createServerLobbyCommunicatorSpy() throws Exception {
-        try {
-            lobbyCommunicator = spy(new ServerLobbyCommunicator("Ragnhild", mock(LobbyScreen.class), InetAddress.getLocalHost(), GUIMain.guiMain.logger));
-
-            doNothing().when(lobbyCommunicator, "goToGameScreen");
-
-            doAnswer(new Answer<String>() {
-                @Override
-                public String answer(InvocationOnMock invocation) throws Throwable {
-                    if (inputStrings.isEmpty()) System.exit(0);
-
-                    return ServerTest.inputStrings.pop();
-                }
-            }).when(lobbyCommunicator, "readFromServer");
-
-            mockStatic(Platform.class);
-            doNothing().when(Platform.class, "runLater", any(Runnable.class));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
