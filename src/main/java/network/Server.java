@@ -51,7 +51,7 @@ public class Server {
             public void run() {
                 while(true) {
                     try {
-                        lobbyLogger.println("Server listening for connection on port " + port, Logger.MessageType.NETWORK);
+                        lobbyLogger.println("Server listening for connection on port " + serverSocket.getLocalPort(), Logger.MessageType.NETWORK);
                         Socket socket = serverSocket.accept();
                         lobbyLogger.println("Connection established with " + socket.getInetAddress(), Logger.MessageType.NETWORK);
 
