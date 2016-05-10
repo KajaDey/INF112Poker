@@ -228,7 +228,7 @@ public class Server {
                                 GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
                                     String [] settingsTokens = UpiUtils.tokenize(tokens[1]).get();
-                                    for (int i = 1; i < settingsTokens.length; i += 2)
+                                    for (int i = 0; i < settingsTokens.length; i += 2)
                                         UpiUtils.parseSetting(settings, settingsTokens[i], settingsTokens[i+1]);
                                 } catch (PokerProtocolException ppe) {
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);

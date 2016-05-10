@@ -162,7 +162,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testCannotJoinFullTable() throws Exception {
+    public void testCannotJoinAlreadyFullTable() throws Exception {
         connectClientsToServer(2);
         ignoreAnswersWhenPlayersJoined(2);
 
