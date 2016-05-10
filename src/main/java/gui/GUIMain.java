@@ -23,9 +23,6 @@ import java.util.Optional;
  */
 public class GUIMain extends Application{
 
-    private static final boolean PRINT_DEBUG_TO_STDOUT = true;
-    private static final boolean PRINT_DEBUG_LOG = true;
-    private static Optional<PrintWriter> logWriter = Optional.empty();
     private static Optional<PrintWriter> replayWriter = Optional.empty();
     public static GUIMain guiMain;
 
