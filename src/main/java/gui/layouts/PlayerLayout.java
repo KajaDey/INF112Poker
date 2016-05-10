@@ -201,8 +201,6 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
         progressBar.setVisible(visible);
-
-        this.requestFocus();
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
