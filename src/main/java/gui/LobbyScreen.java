@@ -246,7 +246,6 @@ public class LobbyScreen {
         serverLobbyCommunicator.startGame(table.id);
     }
     private void makeNewLobbyButtonListener() {
-        this.currentTable = Optional.empty();
         serverLobbyCommunicator.makeNewTable();
     }
     private void takeASeatButtonListener(LobbyTable table) {
@@ -335,6 +334,9 @@ public class LobbyScreen {
      */
     public void addPlayer(int playerID, int tableID) {
         getTable(tableID).addPlayer(playerID);
+        if (playerID == this.ID)
+            currentTable = Optional.of(getTable(tableID));
+
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
     }

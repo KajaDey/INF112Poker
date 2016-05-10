@@ -241,6 +241,7 @@ public class Server {
                                         changeSetting(tokens);
                                     }
                                 } catch (PokerProtocolException e) {
+                                    lobbyLogger.println(e.getMessage(), Logger.MessageType.NETWORK);
                                     receivedIllegalCommandFrom(this, line);
                                 }
                                 break;
@@ -335,19 +336,24 @@ public class Server {
                 String settingsString = tokens[2];
                 Optional<String []> settingsTokens = UpiUtils.tokenize(settingsString);
                 if (settingsTokens.isPresent()) {
-                    for (int i = 0; i < settingsTokens.get().length; i += 2)
-                        UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i+1]);
+                    try {
+                        for (int i = 0; i < settingsTokens.get().length; i += 2)
+                            UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i + 1]);
+                    } catch (PokerProtocolException ppe) {
+                        lobbyLogger.print(ppe.getMessage());
+                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
+                        t.settings = oldSettings;
+                        return;
+                    }
 
-                    if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size() && t.settings.valid()) {
+                    if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size()) {
                         write("errorMessage \"Too many players already seated, cannot set to " + t.settings.getMaxNumberOfPlayers() + "\"");
                         t.settings.setMaxNumberOfPlayers(oldSettings.getMaxNumberOfPlayers());
                     }
-                    if (t.settings.valid())
-                        ClientBroadcasts.tableSettings(Server.this, t);
-                    else {
-                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
-                        t.settings = oldSettings;
-                    }
+
+                    assert t.settings.valid();
+
+                    ClientBroadcasts.tableSettings(Server.this, t);
                 }
             }
         }
