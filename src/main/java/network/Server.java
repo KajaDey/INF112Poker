@@ -220,15 +220,16 @@ public class Server {
                                     write("errorMessage \"You are not seated at table " + tID + "\"");
 
                                 break;
-                            case "createTable": //createTable <tableid> settings <setting1, value1> ...
+                            case "createTable": //createTable <setting1, value1> ...
                                 if (seatedAtAnyTable(this)) {
                                     write("errorMessage \"You are already seated at a table\"");
                                     break;
                                 }
                                 GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
-                                    for (int i = 1; i < tokens.length; i += 2)
-                                        UpiUtils.parseSetting(settings, tokens[i], tokens[i+1]);
+                                    String [] settingsTokens = UpiUtils.tokenize(tokens[1]).get();
+                                    for (int i = 0; i < settingsTokens.length; i += 2)
+                                        UpiUtils.parseSetting(settings, settingsTokens[i], settingsTokens[i+1]);
                                 } catch (PokerProtocolException ppe) {
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 }
@@ -276,10 +277,11 @@ public class Server {
                                         if(lobbyTables.get(tableID).host != this)
                                             write("errorMessage \"You are not the host of this table\"");
                                         else {
+                                            System.out.println("Legal table"); // TODO REMOVE
                                             lobbyTables.get(tableID).delete();
                                             lobbyTables.remove(tableID);
                                         }
-                                    }
+                                    } else write("errorMessage \"There is no table with id "+ tableID +"\"");
                                 }
                                 break;
                             default:
@@ -326,7 +328,7 @@ public class Server {
         }
 
         private void changeSetting(String [] tokens) throws PokerProtocolException {
-            if (tokens.length <= 1) {
+            if (tokens.length <= 2) {
                 throw new PokerProtocolException();
             }
             int tableID = UpiUtils.parseIntToken(tokens[1]);
@@ -344,6 +346,11 @@ public class Server {
                         write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
                         t.settings = oldSettings;
                         return;
+                    }
+
+                    if (!t.settings.valid()) {
+                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
+                        t.settings = oldSettings;
                     }
 
                     if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size()) {
@@ -433,7 +440,7 @@ public class Server {
             broadCast(server, "tableDeleted " + table.tableID);
         }
         public static void tableSettings(Server server, LobbyTable table) {
-            broadCast(server, "tableSettings " + table.tableID + " " + UpiUtils.settingsToString(table.settings));
+            broadCast(server, "tableSettings " + table.tableID + " \"" + UpiUtils.settingsToString(table.settings)+"\"");
         }
     }
 
@@ -476,8 +483,6 @@ public class Server {
         }
 
         public void startGame() {
-            lobbyLogger.println("Warning: Forcing default settings", Logger.MessageType.DEBUG);
-            this.settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
             GameController gameController = new GameController(this.settings);
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());

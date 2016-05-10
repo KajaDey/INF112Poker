@@ -42,7 +42,7 @@ public class Player {
      * Execute a given decision
      *
      * @param decision Move to execute
-     * @param highestAmountPutOnTable
+     * @param highestAmountPutOnTable The highest amount put on the table at this point
      */
     public void act(Decision decision, long highestAmountPutOnTable, Pot pot, boolean preFlop) {
 
@@ -170,9 +170,6 @@ public class Player {
     }
 
     /**
-     *
-     * @param communityCards
-     * @return
      */
     public Hand getHand(List<Card> communityCards) {
         return new Hand(holeCards[0], holeCards[1], communityCards);
