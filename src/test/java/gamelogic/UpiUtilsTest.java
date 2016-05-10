@@ -38,11 +38,11 @@ public class UpiUtilsTest {
     @Test
     public void testSettingsToString() {
         GameSettings settings = new GameSettings();
-        assertEquals("maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30",UpiUtils.settingsToString(settings));
+        assertEquals("maxNumberOfPlayers 6 startStack 5000 smallBlind 50 bigBlind 100 levelDuration 5 playerClock 30 aiType Advanced", UpiUtils.settingsToString(settings));
         settings.setMaxNumberOfPlayers(3);
         settings.setStartStack(3000);
         settings.setBigBlind(100);
-        assertEquals("maxNumberOfPlayers 3 startStack 3000 smallBlind 25 bigBlind 100 levelDuration 10 playerClock 30",UpiUtils.settingsToString(settings));
+        assertEquals("maxNumberOfPlayers 3 startStack 3000 smallBlind 50 bigBlind 100 levelDuration 5 playerClock 30 aiType Advanced", UpiUtils.settingsToString(settings));
     }
 
     @Test
