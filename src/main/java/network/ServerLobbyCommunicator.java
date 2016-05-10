@@ -173,7 +173,7 @@ public class ServerLobbyCommunicator {
                         break;
                     case "tableSettings":
                         int tableID = Integer.parseInt(tokens[1]);
-                        Platform.runLater(() -> updateSettings(tableID, tokens));
+                        Platform.runLater(() -> updateSettings(tableID, tokens[2]));
                         break;
                     case "tableDeleted":
                         logger.println("Table deleted, tableID: " + tokens[1], Logger.MessageType.NETWORK);
@@ -208,9 +208,10 @@ public class ServerLobbyCommunicator {
         writeToSocket("deleteTable " + tableID);
     }
 
-    private void updateSettings(int tableID, String[] tokens) {
-        assert lobbyScreen.getTable(tableID) != null : "Table with id " + tableID + " does not exist. " + tokens.toString();
+    private void updateSettings(int tableID, String tokensString) {
+        assert lobbyScreen.getTable(tableID) != null : "Table with id " + tableID + " does not exist. " + tokensString;
 
+        String [] tokens = UpiUtils.tokenize(tokensString).get();
         LobbyTable table = lobbyScreen.getTable(tableID);
         for (int i = 0; i < tokens.length; i++) {
             switch (tokens[i]) {
@@ -264,7 +265,7 @@ public class ServerLobbyCommunicator {
     public void leaveSeat(int tableID) { writeToSocket("leaveSeat " + tableID); }
 
     public void makeNewTable() {
-        writeToSocket("createTable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
+        writeToSocket("createTable \"" + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)) + "\"");
     }
 
     /**

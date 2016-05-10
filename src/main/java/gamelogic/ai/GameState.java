@@ -202,6 +202,10 @@ public class GameState {
                     if (getCurrentPot() + currentPlayer.stackSize <= bigBlindAmount + smallBlindAmount) {
                         //System.out.println("All in was blind post");
                         playersToMakeDecision--;
+                        // If player is big blind and all in is a call, the small blind should not make another decision
+                        if (currentPlayer.equals(players.stream().skip(1L).findFirst().get()) && currentPlayer.stackSize <= smallBlindAmount) {
+                            playersToMakeDecision--;
+                        }
                     }
                     // If all in was a call
                     else if (currentPlayer.currentBet >= currentPlayer.stackSize) {
@@ -218,6 +222,7 @@ public class GameState {
 
                     break;
                 case SMALL_BLIND:
+                    assert currentPlayer.equals(players.stream().findFirst().get()) : currentPlayer + " posted small blind when " + players.stream().findFirst().get() + " is small blind.";
                     for (Player player : players) {
                         player.currentBet = smallBlindAmount;
                         player.minimumRaise = smallBlindAmount;
@@ -234,6 +239,7 @@ public class GameState {
                     assert currentPlayer.stackSize >= 0;
                     break;
                 case BIG_BLIND:
+                    assert currentPlayer.equals(players.stream().skip(1L).findFirst().get()) : currentPlayer + " posted big blind when " + players.stream().skip(1L).findFirst().get() + " is big blind.";
                     for (Player player : players) {
 
                         // If is small blind

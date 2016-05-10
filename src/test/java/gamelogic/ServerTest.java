@@ -1,6 +1,7 @@
 package gamelogic;
 
 import gui.GUIMain;
+import gui.GameSettings;
 import gui.LobbyScreen;
 import javafx.application.Platform;
 import network.*;
@@ -12,6 +13,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.mockito.stubbing.Answer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -46,9 +49,64 @@ public class ServerTest {
     }
 
     @Test
+    public void testQuit() throws Exception {
+        connectClientsToServer(1);
+        ignoreAnswersWhenPlayersJoined(1);
+
+        writeToSocket(0, "quit");
+
+        assertEquals("playerLeftLobby 0", readFromSocket(1)); // The other player gets notified
+    }
+
+    @Test
+    public void testTakeSeat() throws Exception {
+        connectClientsToServer(2);
+        ignoreAnswersWhenPlayersJoined(2);
+
+        // Tries to take seat when table doesnt exist
+        writeToSocket(1, "takeSeat 0");
+        String [] answer = UpiUtils.tokenize(readFromSocket(1)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("Table 0 does not exist", answer[1]);
+
+        // Creates table, other player takes seat
+        writeToSocket(0, "createTable");
+        ignoreAnswers(0, 3);
+        ignoreAnswers(1, 3);
+
+        writeToSocket(0, "takeSeat 0");
+        answer = UpiUtils.tokenize(readFromSocket(0)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("You are already seated at a table", answer[1]);
+
+        writeToSocket(1, "takeSeat 0");
+        assertEquals("playerJoinedTable 1 0", readFromSocket(1));
+    }
+
+    @Test
+    public void testLeaveSeat() throws Exception {
+        connectClientsToServer(1);
+        ignoreAnswersWhenPlayersJoined(1);
+
+        // Attempting to leave seat when not seated
+        writeToSocket(0, "leaveSeat 0");
+
+        String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("Table 0 does not exist", answer[1]);
+
+        // Creates table and then leaves
+        writeToSocket(0, "createTable");
+        assertWhenTableCreatedCorrectAnswersReceived();
+
+        writeToSocket(0, "leaveSeat 0");
+        assertEquals("playerLeftTable 0 0", readFromSocket(0));
+    }
+
+    @Test
     public void testCreateTable() throws Exception {
-        connectClientsToServer(4);
-        readAndIgnoreAnswersWhenPlayersJoined(4);
+        connectClientsToServer(1);
+        ignoreAnswersWhenPlayersJoined(1);
 
         writeToSocket(0, "createTable");
         assertWhenTableCreatedCorrectAnswersReceived();
@@ -58,18 +116,73 @@ public class ServerTest {
     }
 
     @Test
-    public void testLeaveSeat() throws Exception {
-        connectClientsToServer(4);
-        readAndIgnoreAnswersWhenPlayersJoined(4);
+    public void testChangeSettings() throws Exception {
+        connectClientsToServer(1);
+        ignoreAnswersWhenPlayersJoined(1);
 
-        writeToSocket(0, "leaveSeat");
+        writeToSocket(0, "createTable");
+        ignoreAnswers(0, 3);
+
+        // Tries to change settings on nonexisting table
+        GameSettings sett = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        sett.setLevelDuration(100);
+
+        writeToSocket(0, "changeSettings 0 \""+ UpiUtils.settingsToString(sett) +"\"");
+
+        String []answer = UpiUtils.tokenize(readFromSocket(0)).get();
+        assertEquals("tableSettings", answer[0]);
+        assertNotEquals(UpiUtils.settingsToString(GameSettings.DEFAULT_SETTINGS), answer[2]);
+        assertEquals(UpiUtils.settingsToString(sett), answer[2]);
     }
 
     @Test
-    public void testIllegalMessageSent() throws Exception {
+    public void testDeleteTable() throws Exception {
         connectClientsToServer(2);
-        System.out.println("Conected clients");
-        readAndIgnoreAnswersWhenPlayersJoined(2);
+        ignoreAnswersWhenPlayersJoined(2);
+
+        writeToSocket(0, "createTable");
+        ignoreAnswers(0, 3);
+        ignoreAnswers(1, 3);
+
+        writeToSocket(0, "deleteTable 1");
+        String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("There is no table with id 1", answer[1]);
+
+        writeToSocket(1, "deleteTable 0");
+        answer = UpiUtils.tokenize(readFromSocket(1)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("You are not the host of this table", answer[1]);
+
+        writeToSocket(0, "deleteTable 0");
+
+        assertEquals("playerLeftTable 0 0", readFromSocket(0));
+        assertEquals("tableDeleted 0", readFromSocket(0));
+
+    }
+
+    @Test
+    public void testCannotJoinAlreadyFullTable() throws Exception {
+        connectClientsToServer(2);
+        ignoreAnswersWhenPlayersJoined(2);
+
+        GameSettings sett = GameSettings.DEFAULT_SETTINGS;
+        sett.setMaxNumberOfPlayers(1);
+
+        writeToSocket(0, "createTable \""+ UpiUtils.settingsToString(sett) +"\"");
+        ignoreAnswers(0, 3);
+        ignoreAnswers(1, 3);
+
+        writeToSocket(1, "takeSeat 0");
+        String [] answer = UpiUtils.tokenize(readFromSocket(1)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("This table is full", answer[1]);
+    }
+
+    @Test
+    public void testUnknownCommandSent() throws Exception {
+        connectClientsToServer(2);
+        ignoreAnswersWhenPlayersJoined(2);
 
         writeToSocket(0, "Something illegal");
 
@@ -78,41 +191,46 @@ public class ServerTest {
     }
 
     private void assertErrorMessageWhenAlreadySeatedAtATable() throws IOException {
-        String answer = readFromSocket(0);
-         // TODO fix
+        String []answer = UpiUtils.tokenize(readFromSocket(0)).get();
 
-
-
-        assert answer.equals("errorMessage \"You are already seated at a table\"") :
-                "Didn't get error message when trying to create table while already seated at another table. Got message: "+answer;
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("You are already seated at a table", answer[1]);
 
         writeToSocket(0, "takeSeat 0");
-        answer = readFromSocket(0);
-        assert answer.equals("errorMessage \"You are already seated at a table\"") :
-                "Didn't get error message when trying to take seat at a table you are already seated on.";
+
+        answer = UpiUtils.tokenize(readFromSocket(0)).get();
+        assertEquals("errorMessage", answer[0]);
+        assertEquals("You are already seated at a table", answer[1]);
     }
 
     private void assertWhenTableCreatedCorrectAnswersReceived() throws IOException {
         String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
 
-        assertEquals(answer[0], "tableCreated");
-        assertEquals(answer[1], "0");
+        assertEquals("tableCreated", answer[0]);
+        assertEquals("0", answer[1]);
 
-        assertEquals(readFromSocket(0), "tableSettings 0 maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30");
+        assertEquals("tableSettings 0 maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30", readFromSocket(0));
 
-        assertEquals(readFromSocket(0), "playerJoinedTable 0 0");
+        assertEquals("playerJoinedTable 0 0", readFromSocket(0));
     }
 
     private void assertClientsNotifiedWhenNewPlayerJoined(int numClients) throws IOException {
         for (int i = 0; i < numClients; i++) {
             for (int j = i; j < numClients; j++) {
-                String answer = readFromSocket(i);
-                assert answer.startsWith("playerJoinedLobby " + j) : "Got message "+ answer + ", expected playerJoinedLobby "+ j;
+                assertTrue(readFromSocket(i).startsWith("playerJoinedLobby "+ j));
             }
         }
     }
 
-    private void readAndIgnoreAnswersWhenPlayersJoined(int numClients) throws Exception {
+    /**
+     * Ignores a given number of answers to given client. Answers are irrelevant for this test, therefore ignored.
+     */
+    private void ignoreAnswers(int clientID, int numToIgnore) throws Exception {
+        for (int i = 0; i < numToIgnore; i++)
+            readFromSocket(clientID);
+    }
+
+    private void ignoreAnswersWhenPlayersJoined(int numClients) throws Exception {
         for (int i = 0; i < numClients; i++) {
             for (int j = i; j < numClients; j++) {
                 readFromSocket(i);
@@ -152,18 +270,21 @@ public class ServerTest {
             assert answer.equals("lobbyok") : "Got handshake "+ answer +", expected lobbyok";
 
             answer = readFromSocket(i);
-            assert answer.equals("yourId "+ i) : "Got handshake "+ answer +", expected yourId "+ i;
+            assert answer.equals("yourId "+ i) : "Got message "+ answer +", expected yourId "+ i;
 
             answer = readFromSocket(i);
-            assert answer.startsWith("playerNames") : "Got handshake "+ answer +", expected playerNames";
+            assert answer.startsWith("playerNames") : "Got message "+ answer +", expected playerNames";
 
             answer = readFromSocket(i);
-            assert answer.equals("lobbySent") : "Got handshake "+ answer + ", expected lobbySent";
+            assert answer.equals("lobbySent") : "Got message "+ answer + ", expected lobbySent";
 
             Thread.sleep(100L); // To avoid race conditions
         }
     }
 
+    /**
+     * Reads input from socket and returns it
+     */
     private String readFromSocket(int clientID) throws IOException {
         String input = readers.get(clientID).readLine();
         return input.trim();

@@ -220,15 +220,16 @@ public class Server {
                                     write("errorMessage \"You are not seated at table " + tID + "\"");
 
                                 break;
-                            case "createTable": //createTable <tableid> settings <setting1, value1> ...
+                            case "createTable": //createTable <setting1, value1> ...
                                 if (seatedAtAnyTable(this)) {
                                     write("errorMessage \"You are already seated at a table\"");
                                     break;
                                 }
                                 GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
-                                    for (int i = 1; i < tokens.length; i += 2)
-                                        UpiUtils.parseSetting(settings, tokens[i], tokens[i+1]);
+                                    String [] settingsTokens = UpiUtils.tokenize(tokens[1]).get();
+                                    for (int i = 0; i < settingsTokens.length; i += 2)
+                                        UpiUtils.parseSetting(settings, settingsTokens[i], settingsTokens[i+1]);
                                 } catch (PokerProtocolException ppe) {
                                     settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 }
@@ -276,10 +277,11 @@ public class Server {
                                         if(lobbyTables.get(tableID).host != this)
                                             write("errorMessage \"You are not the host of this table\"");
                                         else {
+                                            System.out.println("Legal table"); // TODO REMOVE
                                             lobbyTables.get(tableID).delete();
                                             lobbyTables.remove(tableID);
                                         }
-                                    }
+                                    } else write("errorMessage \"There is no table with id "+ tableID +"\"");
                                 }
                                 break;
                             default:
@@ -438,7 +440,7 @@ public class Server {
             broadCast(server, "tableDeleted " + table.tableID);
         }
         public static void tableSettings(Server server, LobbyTable table) {
-            broadCast(server, "tableSettings " + table.tableID + " " + UpiUtils.settingsToString(table.settings));
+            broadCast(server, "tableSettings " + table.tableID + " \"" + UpiUtils.settingsToString(table.settings)+"\"");
         }
     }
 
