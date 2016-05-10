@@ -148,6 +148,11 @@ public class LobbyScreen {
         startGame.setLayoutY(425);
         startGame.setOnAction(e -> startGameButtonListener(table));
 
+        if(ID != 0){
+            changeSettings.setVisible(false);
+            startGame.setVisible(false);
+        }
+
         settings = displayTableSettings(table);
 
         settings.setLayoutX(650);
