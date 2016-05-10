@@ -200,21 +200,36 @@ public class GameState {
 
                     // If all in was a blind post
                     if (getCurrentPot() + currentPlayer.stackSize <= bigBlindAmount + smallBlindAmount) {
-                        //System.out.println("All in was blind post");
+                        System.out.println("All in was blind post");
                         playersToMakeDecision--;
                         // If player is big blind and all in is a call, the small blind should not make another decision
-                        if (currentPlayer.equals(players.stream().skip(1L).findFirst().get()) && currentPlayer.stackSize <= smallBlindAmount && playersAllIn == 1) {
-                            playersToMakeDecision--;
+                        // If by some miracle the small blind-player was all in as well, do not make them do another decision
+                        if (currentPlayer.equals(players.stream().skip(1L).findFirst().get())) {
+                            if (currentPlayer.stackSize <= smallBlindAmount && amountOfPlayers == 2) {
+                                logger.println("Big blind went all in as call", Logger.MessageType.AI);
+                                playersToMakeDecision--;
+                            }
+                            else {
+                                logger.println("Big blind went all in as raise", Logger.MessageType.AI);
+                            }
+                        }
+                        // If player is small blind, big blind should not make another decision either
+                        else if (currentPlayer.equals(players.stream().findFirst().get())) {
+                            logger.println("Small blind went all in", Logger.MessageType.AI);
+                            //playersToMakeDecision--;
+                        }
+                        else {
+                            assert false : "Blinds have not been posted, but player to move " + this + " has position " + currentPlayer.position;
                         }
 
                     }
                     // If all in was a call
                     else if (currentPlayer.currentBet >= currentPlayer.stackSize) {
-                        //System.out.println("All in is a call, currentBet=" + currentPlayer.currentBet + ", stackSize=" + currentPlayer.stackSize);
+                        //logger.println("All in is a call, currentBet=" + currentPlayer.currentBet + ", stackSize=" + currentPlayer.stackSize, Logger.MessageType.AI);
                         playersToMakeDecision--;
                     }
                     else {
-                        //System.out.println("All in is raise");
+                        //logger.println("All in is raise", Logger.MessageType.AI);
                         playersToMakeDecision = playersLeftInHand;
                     }
 
@@ -240,6 +255,7 @@ public class GameState {
                     assert currentPlayer.stackSize >= 0;
                     break;
                 case BIG_BLIND:
+
                     assert currentPlayer.equals(players.stream().skip(1L).findFirst().get()) : currentPlayer + " posted big blind when " + players.stream().skip(1L).findFirst().get() + " is big blind.";
                     for (Player player : players) {
 
@@ -260,6 +276,11 @@ public class GameState {
                         playersToMakeDecision--;
                         playersLeftInHand--;
                         currentPlayer.isAllIn = true;
+                    }
+                    // If small blind went all in
+                    else if (playersAllIn > 0 && this.amountOfPlayers == 2) {
+                        logger.println("Small blind has gone all in, big blind shouldn't move again", Logger.MessageType.AI);
+                        playersToMakeDecision--;
                     }
                     assert currentPlayer.stackSize >= 0;
                     break;

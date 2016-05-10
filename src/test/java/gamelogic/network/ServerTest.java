@@ -1,23 +1,12 @@
 package gamelogic.network;
 
-import gamelogic.Logger;
 import gui.GameSettings;
-import gui.LobbyScreen;
-import javafx.application.Platform;
 import network.*;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.mockito.stubbing.Answer;
-
+import org.powermock.reflect.Whitebox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
-import static org.powermock.api.mockito.PowerMockito.*;
-
 
 import java.io.*;
 import java.net.InetAddress;
@@ -28,9 +17,6 @@ import java.util.*;
 /**
  * Created by morten on 27.04.16.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ServerGameCommunicator.class, Platform.class})
-
 public class ServerTest {
 
     ArrayList<Socket> clientSockets;
@@ -38,18 +24,23 @@ public class ServerTest {
     ArrayList<BufferedWriter> writers;
     InetSocketAddress socketAddress;
     Stack<String> names;
+    Server server;
 
     @Test
     public void testHandshakeWithServer() throws Exception {
-        connectClientsToServer(4);
+        connectClientsToServer(3, 39100);
+        assertClientsNotifiedWhenNewPlayerJoined(3);
 
-        assertClientsNotifiedWhenNewPlayerJoined(4);
+        // invokes private method in Server to remove clients and close sockets
+        Whitebox.invokeMethod(server, "removeClient", 0);
+        Whitebox.invokeMethod(server, "removeClient", 1);
+        Whitebox.invokeMethod(server, "removeClient", 2);
     }
 
     @Test
     public void testQuit() throws Exception {
-        connectClientsToServer(1);
-        ignoreAnswersWhenPlayersJoined(1);
+        connectClientsToServer(2, 39200);
+        ignoreAnswersWhenPlayersJoined(2);
 
         writeToSocket(0, "quit");
 
@@ -58,7 +49,7 @@ public class ServerTest {
 
     @Test
     public void testTakeSeat() throws Exception {
-        connectClientsToServer(2);
+        connectClientsToServer(2, 39300);
         ignoreAnswersWhenPlayersJoined(2);
 
         // Tries to take seat when table doesnt exist
@@ -83,7 +74,7 @@ public class ServerTest {
 
     @Test
     public void testLeaveSeat() throws Exception {
-        connectClientsToServer(1);
+        connectClientsToServer(1, 39400);
         ignoreAnswersWhenPlayersJoined(1);
 
         // Attempting to leave seat when not seated
@@ -103,7 +94,7 @@ public class ServerTest {
 
     @Test
     public void testCreateTable() throws Exception {
-        connectClientsToServer(1);
+        connectClientsToServer(1, 39500);
         ignoreAnswersWhenPlayersJoined(1);
 
         writeToSocket(0, "createTable");
@@ -115,7 +106,7 @@ public class ServerTest {
 
     @Test
     public void testChangeSettings() throws Exception {
-        connectClientsToServer(1);
+        connectClientsToServer(1, 39600);
         ignoreAnswersWhenPlayersJoined(1);
 
         writeToSocket(0, "createTable");
@@ -135,7 +126,7 @@ public class ServerTest {
 
     @Test
     public void testDeleteTable() throws Exception {
-        connectClientsToServer(2);
+        connectClientsToServer(2, 39700);
         ignoreAnswersWhenPlayersJoined(2);
 
         writeToSocket(0, "createTable");
@@ -161,7 +152,7 @@ public class ServerTest {
 
     @Test
     public void testCannotJoinAlreadyFullTable() throws Exception {
-        connectClientsToServer(2);
+        connectClientsToServer(2, 39800);
         ignoreAnswersWhenPlayersJoined(2);
 
         GameSettings sett = GameSettings.DEFAULT_SETTINGS;
@@ -179,7 +170,7 @@ public class ServerTest {
 
     @Test
     public void testUnknownCommandSent() throws Exception {
-        connectClientsToServer(2);
+        connectClientsToServer(2, 39900);
         ignoreAnswersWhenPlayersJoined(2);
 
         writeToSocket(0, "Something illegal");
@@ -204,9 +195,11 @@ public class ServerTest {
     private void assertWhenTableCreatedCorrectAnswersReceived() throws IOException {
         String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
 
+        GameSettings gameSettings = GameSettings.DEFAULT_SETTINGS;
+
         assertEquals("tableCreated", answer[0]);
         assertEquals("0", answer[1]);
-        assertEquals("tableSettings 0 maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30", readFromSocket(0));
+        assertEquals("tableSettings 0 \""+ UpiUtils.settingsToString(gameSettings) +"\"", readFromSocket(0));
         assertEquals("playerJoinedTable 0 0", readFromSocket(0));
     }
 
@@ -234,15 +227,15 @@ public class ServerTest {
         }
     }
 
-    private void connectClientsToServer(int numClients) throws Exception {
-        socketAddress = new InetSocketAddress(InetAddress.getLocalHost(), 39100);
+    private void connectClientsToServer(int numClients, int port) throws Exception {
+        socketAddress = new InetSocketAddress(InetAddress.getLocalHost(), port);
         clientSockets = new ArrayList<>();
         readers = new ArrayList<>();
         writers = new ArrayList<>();
         names = new Stack();
         names.addAll(Arrays.asList("Kaja", "Simon", "Vegar", "Ragnhild", "Kristian", "Morten", "Mariah"));
 
-        new Server();
+        server = new Server(port);
         connectClients(numClients);
     }
 
