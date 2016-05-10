@@ -20,10 +20,7 @@
 *.DS_STORE
 
 # INTELLIJ
-*.iml
-*.xml
-.idea
-.idea/workspace.xml
+.idea/
 target
 
 *.log
