@@ -178,7 +178,7 @@ public class Server {
                                     System.out.println("Untimely upi command, " + line);
                                     break;
                                 }
-                            case "takeseat": {
+                            case "takeSeat": {
                                 if (tokens.length <= 1) {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
@@ -189,20 +189,16 @@ public class Server {
                                         write("errorMessage \"Table " + tableID + " does not exist\"");
                                         break;
                                     }
-                                    for (Integer tID : lobbyTables.keySet()) {
-                                        if (lobbyTables.get(tID).isSeated(this)) {
-                                            write("errorMessage \"You are already seated at table " + tID + "\"");
-                                            break tokenSwitch;
-                                        }
-                                    }
-                                    if (lobbyTables.get(tableID).seatPlayer(this))
+                                    if (seatedAtAnyTable(this))
+                                        write("errorMessage \"You are already seated at a table\"");
+                                    else if (lobbyTables.get(tableID).seatPlayer(this))
                                         ClientBroadcasts.playerJoinedTable(Server.this, this, lobbyTables.get(tableID));
                                     else
                                         write("errorMessage \"This table is full\"");
                                 }
                                 break;
                             }
-                            case "leaveseat":
+                            case "leaveSeat":
                                 if (tokens.length <= 1){
                                     receivedIllegalCommandFrom(this, line);
                                     break;
@@ -219,7 +215,11 @@ public class Server {
                                     write("errorMessage \"You are not seated at table " + tID + "\"");
 
                                 break;
-                            case "createtable":
+                            case "createTable":
+                                if (seatedAtAnyTable(this)) {
+                                    write("errorMessage \"You are already seated at a table\"");
+                                    break;
+                                }
                                 GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
                                 try {
                                     for (int i = 1; i < tokens.length; i += 2)
@@ -231,7 +231,7 @@ public class Server {
 
                                 addNewTable(settings, this);
                                 break;
-                            case "changesettings":
+                            case "changeSettings":
                                 try {
                                     synchronized (Server.this) {
                                         changeSetting(tokens);
@@ -240,7 +240,7 @@ public class Server {
                                     receivedIllegalCommandFrom(this, line);
                                 }
                                 break;
-                            case "startgame": {
+                            case "startGame": {
                                 if (tokens.length <= 1) {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
@@ -255,7 +255,7 @@ public class Server {
                                 // Do not return. Only return when you receive upi handshake
                                 break;
                             }
-                            case "deletetable":
+                            case "deleteTable":
                                 if (tokens.length <= 1) {
                                     receivedIllegalCommandFrom(this, line);
                                     break;
@@ -263,8 +263,12 @@ public class Server {
                                 int tableID = UpiUtils.parseIntToken(tokens[1]);
                                 synchronized (Server.this) {
                                     if (lobbyTables.containsKey(tableID)) {
-                                        lobbyTables.get(tableID).delete();
-                                        lobbyTables.remove(tableID);
+                                        if(lobbyTables.get(tableID).host != this)
+                                            write("errorMessage \"You are not the host of this table\"");
+                                        else {
+                                            lobbyTables.get(tableID).delete();
+                                            lobbyTables.remove(tableID);
+                                        }
                                     }
                                 }
                                 break;
@@ -279,6 +283,13 @@ public class Server {
             };
             listener = new Thread(task);
             listener.start();
+        }
+
+        /**
+         * @return true if the given player is seated at any table
+         */
+        private boolean seatedAtAnyTable(LobbyPlayer player) {
+            return lobbyTables.values().stream().filter(t -> t.isSeated(player)).findAny().isPresent();
         }
 
         /**

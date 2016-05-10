@@ -160,13 +160,16 @@ public class ServerLobbyCommunicator {
     }
 
     public void startGame(int tableID) {
-        writeToSocket("startgame " + tableID);
+        writeToSocket("startGame " + tableID);
     }
 
     public void setNewSettings(GameSettings newSettings, int tableID) {
-        writeToSocket("changesettings " + tableID + " \"" + UpiUtils.settingsToString(newSettings) + "\"");
+        writeToSocket("changeSettings " + tableID + " \"" + UpiUtils.settingsToString(newSettings) + "\"");
     }
 
+    public void deleteTable(int tableID) {
+        writeToSocket("deleteTable " + tableID);
+    }
 
     private void updateSettings(int tableID, String[] tokens) {
         assert lobbyScreen.getTable(tableID) != null : "Table with id " + tableID + " does not exist. " + tokens.toString();
@@ -218,13 +221,13 @@ public class ServerLobbyCommunicator {
     }
 
     public void takeSeat(int tableID) {
-        writeToSocket("takeseat " + tableID);
+        writeToSocket("takeSeat " + tableID);
     }
 
-    public void leaveSeat(int tableID) { writeToSocket("leaveseat " + tableID); }
+    public void leaveSeat(int tableID) { writeToSocket("leaveSeat " + tableID); }
 
     public void makeNewTable() {
-        writeToSocket("createtable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
+        writeToSocket("createTable " + UpiUtils.settingsToString(new GameSettings(GameSettings.DEFAULT_SETTINGS)));
     }
 
     /**
