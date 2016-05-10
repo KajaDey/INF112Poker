@@ -1,7 +1,9 @@
 package gamelogic;
 
 /**
- * Created by kristianrosland on 13.04.2016.
+ * Created by Kristian Rosland on 13.04.2016.
+ * Enum to represent the different kinds of AI
+ * Mixed means a 50% chance of either
  */
 public enum AIType { MCTS_AI, SIMPLE_AI, MIXED;
 
@@ -11,11 +13,11 @@ public enum AIType { MCTS_AI, SIMPLE_AI, MIXED;
     public String toString() {
         switch (this) {
             case MCTS_AI:
-                return "Advanced AI";
+                return "Advanced";
             case SIMPLE_AI:
-                return "Simple AI";
+                return "Simple";
             case MIXED:
-                return "Mixed AIs";
+                return "Mixed";
             default: throw new IllegalStateException();
         }
     }
@@ -25,11 +27,11 @@ public enum AIType { MCTS_AI, SIMPLE_AI, MIXED;
      */
     public static AIType fromString(String string) {
         switch (string) {
-            case "Advanced AI":
+            case "Advanced":
                 return MCTS_AI;
-            case "Simple AI":
+            case "Simple":
                 return SIMPLE_AI;
-            case "Mixed AIs":
+            case "Mixed":
                 return MIXED;
             default: throw new IllegalArgumentException();
         }

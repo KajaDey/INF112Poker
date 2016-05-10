@@ -1,5 +1,6 @@
 package network;
 
+import gamelogic.AIType;
 import gamelogic.Card;
 import gamelogic.Decision;
 import gamelogic.Statistics;
@@ -75,9 +76,9 @@ public class UpiUtils {
      * @return <<setting1, value1> <setting2, value2> ... >
      */
     public static String settingsToString(GameSettings settings) {
-        return String.format("maxNumberOfPlayers %d startStack %d smallBlind %d bigBlind %d levelDuration %d playerClock %s",
+        return String.format("maxNumberOfPlayers %d startStack %d smallBlind %d bigBlind %d levelDuration %d playerClock %s aiType %s",
                 settings.getMaxNumberOfPlayers(), settings.getStartStack(), settings.getSmallBlind(), settings.getBigBlind(),
-                settings.getLevelDuration(), settings.getPlayerClock()).trim();
+                settings.getLevelDuration(), settings.getPlayerClock(), settings.getAiType().toString()).trim();
     }
 
     /**
@@ -160,6 +161,10 @@ public class UpiUtils {
         }
     }
 
+    /**
+     * Parse a decision from a upi compatible String to a decision
+     * @return Optional decision
+     */
     public static Optional<Decision> parseDecision(String string) {
         if (string == null) {
             return Optional.empty();
@@ -280,7 +285,6 @@ public class UpiUtils {
 
             return Optional.of(new Statistics(pID, stringToIntIntMap(rankingTableString), stringToIntStringMap(namesString), handsWon, handsPlayed, foldsPreFlop, aggressiveMoves, passiveMoves, bestHand));
         } catch (PokerProtocolException ppe) {
-            ppe.printStackTrace();
             return Optional.empty();
         }
     }
@@ -312,6 +316,13 @@ public class UpiUtils {
                 break;
             case "playerClock":
                 settings.setPlayerClock(parseIntToken(value));
+                break;
+            case "aiType":
+                try {
+                    settings.setAiType(AIType.fromString(value));
+                } catch (IllegalArgumentException e) {
+                    throw new PokerProtocolException("Illegal AI-type, " + value);
+                }
                 break;
             default:
                 System.out.println("Received unknown table setting " + name + ", ignoring...");

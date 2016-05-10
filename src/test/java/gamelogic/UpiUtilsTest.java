@@ -37,7 +37,7 @@ public class UpiUtilsTest {
 
     @Test
     public void testSettingsToString() {
-        GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        GameSettings settings = new GameSettings();
         assertEquals("maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30",UpiUtils.settingsToString(settings));
         settings.setMaxNumberOfPlayers(3);
         settings.setStartStack(3000);

@@ -106,7 +106,7 @@ public class ButtonListeners {
             window.close();
 
         }catch (NumberFormatException e){
-            gameSettings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+            gameSettings = new GameSettings();
             e.printStackTrace();
         }
 

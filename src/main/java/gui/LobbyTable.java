@@ -21,7 +21,7 @@ public class LobbyTable {
     public LobbyTable(int id, Logger logger) {
         this.id = id;
         this.logger = logger;
-        settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+        settings = new GameSettings();
     }
 
     public void parseSetting(String name, String value) {

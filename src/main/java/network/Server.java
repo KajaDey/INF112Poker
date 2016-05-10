@@ -226,7 +226,7 @@ public class Server {
                                     write("errorMessage \"You are already seated at a table\"");
                                     break;
                                 }
-                                GameSettings settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+                                GameSettings settings = new GameSettings();
                                 try {
                                     if (tokens.length < 2)
                                         throw new PokerProtocolException("Missing settings for new table");
@@ -234,7 +234,7 @@ public class Server {
                                     for (int i = 0; i < settingsTokens.length; i += 2)
                                         UpiUtils.parseSetting(settings, settingsTokens[i], settingsTokens[i+1]);
                                 } catch (PokerProtocolException e) {
-                                    settings = new GameSettings(GameSettings.DEFAULT_SETTINGS);
+                                    settings = new GameSettings();
                                     lobbyLogger.print("Missing settings for new table to be created");
                                 }
 

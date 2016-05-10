@@ -9,7 +9,7 @@ import gamelogic.GameController;
  */
 public class GameSettings {
 
-    public final static GameSettings DEFAULT_SETTINGS = new GameSettings(5000, 50, 25, 6, 10, AIType.MCTS_AI,30);
+    private final static GameSettings DEFAULT_SETTINGS = new GameSettings(5000, 100, 50, 6, 5, AIType.MCTS_AI, 30);
 
     private long startStack;
     private long bigBlind;
@@ -19,6 +19,9 @@ public class GameSettings {
     private AIType aiType;
     private int playerClock;
 
+    public GameSettings() {
+        this(DEFAULT_SETTINGS);
+    }
 
     public GameSettings(long startStack, long bigBlind, long smallBlind, int maxNumberOfPlayers, int levelDuration, AIType aiType, int playerClock) {
         this.startStack = startStack;

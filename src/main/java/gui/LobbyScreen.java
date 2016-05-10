@@ -95,7 +95,7 @@ public class LobbyScreen {
         VBox vBox = new VBox();
         HBox hBox = new HBox();
 
-        names = ObjectStandards.makeStandardLabelWhite("Table: " + table.id,"");
+        names = ObjectStandards.makeStandardLabelWhite("Table " + table.id,":");
         numberOfPlayer = ObjectStandards.makeStandardLabelWhite(table.playerIds.size() +"/"+table.settings.getMaxNumberOfPlayers(), "");
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
