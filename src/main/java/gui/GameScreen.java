@@ -762,8 +762,8 @@ public class GameScreen {
         winningPercentageComputer = Optional.of(new Thread(() ->  {
             Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(allHoleCards, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             callBack.accept(percentages);
-            System.out.println("Computed winning percentages for " + communityCards.size() + " community cards: "
-                    + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat));
+            logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
+                    + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
         }));
         winningPercentageComputer.get().start();
     }
