@@ -48,7 +48,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         rightCardImage.setVisible(false);
         chipImage.setVisible(true);
 
-        glow.setColor(Color.web("cyan", 0.7));
+        glow.setColor(Color.web("cyan", 0.9));
         glow.setHeight(75);
         glow.setWidth(75);
 
