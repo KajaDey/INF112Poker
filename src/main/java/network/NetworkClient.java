@@ -30,6 +30,8 @@ public class NetworkClient implements GameClient {
     private Consumer<String> chatListener;
     private final Logger logger;
 
+    private volatile boolean isDropped = false;
+
     /**
      * Initializes the network client, and does the upi handshake with the remote client
      * @param socket A TCP socket to the client, which is expected to already have an open connection
@@ -55,9 +57,31 @@ public class NetworkClient implements GameClient {
      * Read from socket and make appropriate action
      */
     public void readFromSocket(){
-            while (true) {
+            int consecutiveAttempts = 0;
+            while (!isDropped) {
                 try {
-                    String input = socketInput.readLine();
+                    String input;
+                    try {
+                        input = socketInput.readLine();
+                        if (input == null) {
+                            throw new IOException("Got input null");
+                        }
+                        consecutiveAttempts = 0;
+                    } catch (IOException e) {
+                        logger.println("Failed to read from client " + this + ", retrying...", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+                        consecutiveAttempts++;
+                        if (consecutiveAttempts > 10) {
+                            dropClient();
+                            return; // Give up after 10 attempts
+                        }
+                        else {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException ex) { }
+                        }
+                        continue;
+                    }
+
                     logger.println("Client #" + playerId + ": " + input, Logger.MessageType.NETWORK);
                     Optional<String[]> tokens = UpiUtils.tokenize(input);
                     if (tokens.isPresent() && tokens.get().length != 0) {
@@ -76,19 +100,24 @@ public class NetworkClient implements GameClient {
                                 nameBlockingQueue.add(tokens.get()[1]);
                                 break;
                             default:
-                                throw new IOException("Could not parse input " + input);
+                                logger.println("Unrecognized input", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                         }
                     }
-                } catch (IOException ioe) {
-                    logger.println("Unrecognized input", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
-                    ioe.printStackTrace();
-                } catch (IllegalStateException ise) {
+                }
+                catch (IllegalStateException ise) {
                     logger.println("WARNING: Illegal state exception, " + ise.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
                 }
             }
         }
 
+    public void dropClient() {
+        isDropped = true;
+        logger.println("Gave up connecting to " + this + ", dropping...", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
 
+        // Add dummy data to the blocking queues, in case someone is waiting for them
+        decisionBlockingQueue.add(Decision.fold);
+        nameBlockingQueue.add("");
+    }
 
     @Override
     /**
@@ -98,30 +127,40 @@ public class NetworkClient implements GameClient {
      *  @return The decision the player made if it is parsed correctly, fold if not
      */
     public synchronized Decision getDecision(long timeToThink) {
-        //Write getDecision to client
-        if (!writeToSocket("getDecision " + timeToThink)) {
-            logger.println("Failed to ask " + this + " for decision, folding...", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
-            return Decision.fold;
-        }
+        if (!isDropped) {
+            //Write getDecision to client
+            if (!writeToSocket("getDecision " + timeToThink)) {
+                logger.println("Failed to ask " + this + " for decision, folding...", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+                return Decision.fold;
+            }
 
-        //Wait for decision to be added to decision queue (by the readingThread)
-        try {
-            return decisionBlockingQueue.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            //Wait for decision to be added to decision queue (by the readingThread)
+            try {
+                return decisionBlockingQueue.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return Decision.fold;
+            }
+        }
+        else {
             return Decision.fold;
         }
     }
 
     @Override
     public synchronized String getName() {
-        writeToSocket("getName");
+        if (!isDropped) {
+            writeToSocket("getName");
 
-        //Wait for name to be added to name queue (by the reading thread)
-        try {
-            return nameBlockingQueue.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            //Wait for name to be added to name queue (by the reading thread)
+            try {
+                return nameBlockingQueue.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return "";
+            }
+        }
+        else {
             return "";
         }
     }
@@ -252,12 +291,16 @@ public class NetworkClient implements GameClient {
      * @return True if the write succeeded, false if it failed.
      */
     private boolean writeToSocket(String output) {
+        if (isDropped) {
+            logger.println("Tried to write " + output + " to " + this + ", but client is disconnected", Logger.MessageType.NETWORK);
+            return false;
+        }
         outstandingWrites.add(output);
         if (socket.isClosed() || !socket.isConnected()) {
             logger.println("Socket for " + this + " is not connected, cannot do write", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
             return false;
         }
-        int attempts = 5;
+        int attempts = 10;
         for (int i = 0; i < attempts; i++) {
             try {
                 while (!outstandingWrites.isEmpty()) {
@@ -269,8 +312,7 @@ public class NetworkClient implements GameClient {
                 logger.println("Failed to write \"" + outstandingWrites.peek() + "\" to " + this + ", retry #" + i + " (" + outstandingWrites.size() + " outstand writes waiting", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e1) {
-                }
+                } catch (InterruptedException e1) { }
                 continue;
             }
             try {
@@ -278,9 +320,12 @@ public class NetworkClient implements GameClient {
                 return true;
             } catch (IOException e) {
                 logger.println("Failed to flush socket after writing \"" + output + "\" to " + this + ". (" + outstandingWrites.size() + " outstand writes waiting)", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
-                return false;
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) { }
             }
         }
+        dropClient();
         return false;
     }
 

@@ -316,5 +316,8 @@ public class UpiUtils {
             default:
                 System.out.println("Received unknown table setting " + name + ", ignoring...");
         }
+
+        if (!settings.valid())
+            throw new PokerProtocolException("Settings not valid, " + UpiUtils.settingsToString(settings));
     }
 }

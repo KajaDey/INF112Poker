@@ -81,7 +81,7 @@ public class GUIClient implements GameClient {
      * Called from ButtonListeners-class to notify the client that a decision has been made
      */
     public void setDecision(Decision.Move move, long moveSize) {
-        if (!validMove(move, moveSize))
+        if (!decisionBlockingQueue.isEmpty() || !validMove(move, moveSize))
             return;
 
         switch (move) {
@@ -116,8 +116,8 @@ public class GUIClient implements GameClient {
      */
     private boolean validMove(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
-            logger.println("You don't have this much in your stack. Stack size=" + stackSizes.get(id) + ", moveSize=" + moveSize);
-            Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
+            logger.println("You don't have this much in your stack. Moving all in");
+            decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
             return false;
         }
         else if (move == Decision.Move.RAISE && moveSize- highestAmountPutOnTable < Math.max(bigBlind, minimumRaise) &&
@@ -151,7 +151,6 @@ public class GUIClient implements GameClient {
             Thread.sleep(50);
         } catch (InterruptedException e) { }
         if (gameState.isPresent() && this.holeCards.size() >= gameState.get().getPlayersAllIn() && userID != id) {
-            //System.out.println((System.currentTimeMillis() % 10000) + ": got cards for all players (" + userID + "), displaying winning percentages");
             gameScreen.showPercentages();
         }
     }
