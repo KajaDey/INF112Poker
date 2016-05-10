@@ -160,8 +160,10 @@ public class Server {
                         return;
                     }
 
-                    if (line == null)
-                        break;
+                    if (line == null) {
+                        Server.this.removeClient(id);
+                        return;
+                    }
                     String [] tokens = UpiUtils.tokenize(line).get();
                     if (tokens.length <= 0) {
                         receivedIllegalCommandFrom(this, line);

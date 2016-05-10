@@ -26,7 +26,6 @@ public class ServerLobbyCommunicator {
     private final Logger logger;
     private Thread listeningThread;
     private InetAddress serverAddress;
-    private InputStream inputStream;
     private String name;
 
     /**
@@ -149,7 +148,6 @@ public class ServerLobbyCommunicator {
                 switch (tokens[0]) {
                     case "startGame":
                         goToGameScreen();
-                        // Stop listening for the server here
                         return;
                     case "playerJoinedLobby":
                         names.put(Integer.parseInt(tokens[1]), tokens[2]);
@@ -157,6 +155,7 @@ public class ServerLobbyCommunicator {
                         break;
                     case "playerLeftLobby":
                         names.remove(Integer.parseInt(tokens[1]));
+                        Platform.runLater(() ->lobbyScreen.playerQuit(Integer.parseInt(tokens[1])));
                         logger.println("Player left lobby, p.id: " + tokens[1], Logger.MessageType.NETWORK);
                         break;
                     case "playerJoinedTable":
