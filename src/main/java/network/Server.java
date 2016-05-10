@@ -97,8 +97,8 @@ public class Server {
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
+        assert table.isSeated(host) : "Host was not seated at table.";
         lobbyTables.put(tableID, table);
-
         //Broadcast new table
         ClientBroadcasts.tableCreated(this, table);
         ClientBroadcasts.tableSettings(this, table);
@@ -283,6 +283,7 @@ public class Server {
                                 }
                                 break;
                             default:
+                                write("errorMessage \"Unknown command\"");
                                 lobbyLogger.println("Unknown command from client: " + line, Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
                         }
                     }
