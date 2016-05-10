@@ -127,7 +127,7 @@ public class Game {
         boolean preFlop = true;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
-        logger.println("\nBLINDS", Logger.MessageType.GAMEPLAY);
+        logger.println("\nBLINDS (Small " + this.gameSettings.getSmallBlind() + ", big " + this.gameSettings.getBigBlind() + ")", Logger.MessageType.GAMEPLAY);
         long currentTime = System.currentTimeMillis();
         // Increase blinds
         if (currentTime - (gameSettings.getLevelDuration()*60*1000) > lastBlindRaiseTime) {
