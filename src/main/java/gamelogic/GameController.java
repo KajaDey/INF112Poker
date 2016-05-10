@@ -93,14 +93,14 @@ public class GameController {
      * @param showCards If all players hole cards should be visible or not
      */
     public Thread initGame(boolean showCards, List<Socket> clientSockets) throws Game.InvalidGameSettingsException {
+        if (!gameSettings.valid())
+            throw new Game.InvalidGameSettingsException(gameSettings.getErrorMessage());
+
         //Make a new Game object and validate
         game = new Game(gameSettings, this, logger);
         this.showAllPlayerCards = showCards;
 
         GUIMain.replayLogPrint("SETTINGS\n" + gameSettings.toString());
-
-        if (!gameSettings.valid())
-            throw new Game.InvalidGameSettingsException(gameSettings.getErrorMessage());
 
         NameGenerator.readNewSeries();
 

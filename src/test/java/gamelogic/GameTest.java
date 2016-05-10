@@ -32,10 +32,12 @@ public class GameTest {
      * @param numPlayers number of AIs to add
      * @throws Exception
      */
-    private void setupGameWithAIs(AIType aiType, int numPlayers) throws Exception {
-        GameSettings gameSettings = new GameSettings(5000, 500, 250, numPlayers, 10, aiType, 30);
+    private void setupGameWithAIs(int BB, int SB, AIType aiType, int numPlayers) throws Exception {
+        GameSettings gameSettings = spy(new GameSettings(5000, BB, SB, numPlayers, 10, aiType, 30));
+        when(gameSettings.valid()).thenReturn(true);
+
         gameControllerSpy = spy(new GameController(gameSettings));
-        gameSpy = spy(new Game(new GameSettings(GameSettings.DEFAULT_SETTINGS), gameControllerSpy, logger));
+        gameSpy = spy(new Game(gameSettings, gameControllerSpy, logger));
 
         // Replaces getAIDecision-method in GameController to avoid unnecessary delay
         doAnswer((Answer<Decision>) arg ->
@@ -66,14 +68,14 @@ public class GameTest {
 
     @Test
     public void testPlayGameWithSixSimpleAIs() throws Exception {
-        setupGameWithAIs(AIType.SIMPLE_AI, 6);
+        setupGameWithAIs(500, 250, AIType.SIMPLE_AI, 6);
 
         Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
         gameThread.join();
     }
     @Test
     public void testPlayGameWithSixMCTSAIs() throws Exception {
-        setupGameWithAIs(AIType.MCTS_AI, 6);
+        setupGameWithAIs(500, 250, AIType.MCTS_AI, 6);
 
         Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
         gameThread.join();
@@ -81,9 +83,21 @@ public class GameTest {
 
     @Test
     public void testPlayGameWithSixMixedAIs() throws Exception {
-        setupGameWithAIs(AIType.MIXED, 6);
+        setupGameWithAIs(500, 250, AIType.MIXED, 6);
 
         Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
         gameThread.join();
+    }
+
+    @Test
+    public void testPlayGameWithTwoMCTSAIsIllegalSizedBlinds() throws Exception {
+
+        for (int i = 0; i < 10; i++) {
+            System.out.println(i);
+            setupGameWithAIs(2005, 700, AIType.MCTS_AI, 2);
+
+            Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
+            gameThread.join();
+        }
     }
 }

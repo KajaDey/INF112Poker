@@ -115,7 +115,6 @@ public class MainScreen {
                 }
             } catch (UnknownHostException ex) {
                 System.out.println("Invalid IP-address");
-                // TODO show error message next to textfield
                 return null;
             }
             window.close();

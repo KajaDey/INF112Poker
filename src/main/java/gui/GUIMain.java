@@ -88,7 +88,6 @@ public class GUIMain extends Application{
     public GUIClient displayReplayScreen(int userID, ReplayReader reader) {
         this.gameScreen = new GameScreen(userID, logger);
         this.client = new ReplayClient(userID, gameScreen, reader, logger);
-        ButtonListeners.setClient(client); //TODO: I don't think this is needed
 
         Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(), "GameScreen"));
         return client;

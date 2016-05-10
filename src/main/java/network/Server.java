@@ -97,8 +97,8 @@ public class Server {
     private void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
+        assert table.isSeated(host) : "Host was not seated at table.";
         lobbyTables.put(tableID, table);
-
         //Broadcast new table
         ClientBroadcasts.tableCreated(this, table);
         ClientBroadcasts.tableSettings(this, table);
@@ -170,7 +170,6 @@ public class Server {
                         continue;
                     }
                     try {
-                        tokenSwitch:
                         switch (tokens[0]) {
                             case "quit": //quit
                                 removeClient(id);
@@ -242,6 +241,7 @@ public class Server {
                                         changeSetting(tokens);
                                     }
                                 } catch (PokerProtocolException e) {
+                                    lobbyLogger.println(e.getMessage(), Logger.MessageType.NETWORK);
                                     receivedIllegalCommandFrom(this, line);
                                 }
                                 break;
@@ -283,6 +283,7 @@ public class Server {
                                 }
                                 break;
                             default:
+                                write("errorMessage \"Unknown command\"");
                                 lobbyLogger.println("Unknown command from client: " + line, Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
                         }
                     }
@@ -335,19 +336,24 @@ public class Server {
                 String settingsString = tokens[2];
                 Optional<String []> settingsTokens = UpiUtils.tokenize(settingsString);
                 if (settingsTokens.isPresent()) {
-                    for (int i = 0; i < settingsTokens.get().length; i += 2)
-                        UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i+1]);
+                    try {
+                        for (int i = 0; i < settingsTokens.get().length; i += 2)
+                            UpiUtils.parseSetting(t.settings, settingsTokens.get()[i], settingsTokens.get()[i + 1]);
+                    } catch (PokerProtocolException ppe) {
+                        lobbyLogger.print(ppe.getMessage());
+                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
+                        t.settings = oldSettings;
+                        return;
+                    }
 
-                    if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size() && t.settings.valid()) {
+                    if (t.settings.getMaxNumberOfPlayers() < t.seatedPlayers.size()) {
                         write("errorMessage \"Too many players already seated, cannot set to " + t.settings.getMaxNumberOfPlayers() + "\"");
                         t.settings.setMaxNumberOfPlayers(oldSettings.getMaxNumberOfPlayers());
                     }
-                    if (t.settings.valid())
-                        ClientBroadcasts.tableSettings(Server.this, t);
-                    else {
-                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
-                        t.settings = oldSettings;
-                    }
+
+                    assert t.settings.valid();
+
+                    ClientBroadcasts.tableSettings(Server.this, t);
                 }
             }
         }
@@ -398,13 +404,6 @@ public class Server {
      */
     private void receivedIllegalCommandFrom(LobbyPlayer player, String command) {
         lobbyLogger.println("Received illegal command from client " + player + ", ignoring command \"" + command + "\"", Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
-    }
-
-    /**
-     * Gets a handle to the thread listening for connection
-     */
-    public Thread getServerThread() {
-        return server;
     }
 
     static class ClientBroadcasts {
@@ -483,9 +482,7 @@ public class Server {
 
             List<Socket> sockets = seatedPlayers.stream().map(p -> p.socket).collect(Collectors.toList());
             lobbyLogger.println("Starting game for " + seatedPlayers.toString(), Logger.MessageType.INIT, Logger.MessageType.NETWORK);
-            seatedPlayers.forEach(p -> {
-                p.readyToStartGame = true;
-            });
+            seatedPlayers.forEach(p -> p.readyToStartGame = true);
 
             this.seatedPlayers.forEach(player -> player.write("startGame"));
             seatedPlayers.forEach(p -> {
@@ -503,7 +500,6 @@ public class Server {
                 lobbyLogger.println("Error while starting game", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 lobbyLogger.println(e.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 lobbyLogger.println("Game was not started", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
-                return;
             }
         }
 
