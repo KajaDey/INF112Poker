@@ -221,6 +221,7 @@ public class ServerLobbyCommunicator {
                 case "bigBlind":
                 case "levelDuration":
                 case "playerClock":
+                case "aiType":
                     table.parseSetting(tokens[i], tokens[i + 1]);
                     break;
             }
