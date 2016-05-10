@@ -48,9 +48,13 @@ public class GameController {
      * Used by Server to create a new GameController for a network game
      */
     public GameController(GameSettings settings) {
+        this(settings, new Logger("ServerGame", ""));
+    }
+
+    public GameController(GameSettings settings, Logger logger) {
+        this.logger = logger;
         this.guiMain = Optional.empty();
         this.gameSettings = settings;
-        this.logger = new Logger("ServerGame", "");
         this.game = new Game(settings, this, logger);
 
         clients = new HashMap<>();

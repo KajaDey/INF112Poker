@@ -36,7 +36,7 @@ public class GameTest {
         GameSettings gameSettings = spy(new GameSettings(5000, BB, SB, numPlayers, 10, aiType, 30));
         when(gameSettings.valid()).thenReturn(true);
 
-        gameControllerSpy = spy(new GameController(gameSettings));
+        gameControllerSpy = spy(new GameController(gameSettings, logger));
         gameSpy = spy(new Game(gameSettings, gameControllerSpy, logger));
 
         // Replaces getAIDecision-method in GameController to avoid unnecessary delay

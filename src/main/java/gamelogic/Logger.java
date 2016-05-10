@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Optional;
@@ -39,8 +40,19 @@ public class Logger {
             this.logFolder = Optional.of(logFolder);
         }
         Path path = Paths.get("logs", logFolder.get(), type.toString().toLowerCase() + ".log");
-        Path logFile = Files.createFile(path);
-        logWriters.put(type, Files.newBufferedWriter(logFile));
+        if (Files.exists(path)) {
+            if (Files.isWritable(path)) {
+                logWriters.put(type, Files.newBufferedWriter(path, StandardOpenOption.APPEND));
+                System.out.println("Started writing to an already open log");
+            }
+            else {
+                System.out.println("Another logger is already writing to the file");
+            }
+        }
+        else {
+            logWriters.put(type, Files.newBufferedWriter(path));
+        }
+
     }
 
     public void print(String message, MessageType ... messageTypes) {

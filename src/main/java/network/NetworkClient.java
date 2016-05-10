@@ -117,6 +117,7 @@ public class NetworkClient implements GameClient {
         // Add dummy data to the blocking queues, in case someone is waiting for them
         decisionBlockingQueue.add(Decision.fold);
         nameBlockingQueue.add("");
+        this.closeSocket();
     }
 
     @Override

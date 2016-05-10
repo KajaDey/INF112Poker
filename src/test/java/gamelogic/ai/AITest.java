@@ -1,9 +1,6 @@
 package gamelogic.ai;
 
-import gamelogic.Card;
-import gamelogic.Decision;
-import gamelogic.GameClient;
-import gamelogic.Logger;
+import gamelogic.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -400,6 +397,51 @@ public class AITest {
             ai.getDecision(timeToThink / 5);
             ai.playerMadeDecision(0, new Decision(Decision.Move.CALL));
             ai.setFlop(Card.of(14, Card.Suit.DIAMONDS).get(), Card.of(13, Card.Suit.HEARTS).get(), Card.of(13, Card.Suit.SPADES).get());
+        }
+    }
+
+    @Test
+    public void testBigBlindAsAllIn() {
+
+        for (int i = 0; i < 20; i++) {
+            // A blind post as all in may by either a call or raise of the small blind. Test for both.
+            boolean allInIsRaise = Math.random() > 0.5;
+            System.out.println("All in is " + (allInIsRaise ? "raise" : "call"));
+
+            Deck deck = new Deck();
+            MCTSAI ai = new MCTSAI(0, logger);
+            ai.setHandForClient(0, deck.draw().get(), deck.draw().get());
+
+            HashMap<Integer, Integer> positions = new HashMap<>();
+            HashMap<Integer, String> names = new HashMap<>();
+            HashMap<Integer, Long> stackSizes = new HashMap<>();
+            positions.put(0, 1);
+            if (allInIsRaise) {
+                stackSizes.put(0, 225L);
+            }
+            else {
+                stackSizes.put(0, 175L);
+            }
+            names.put(0, "Morten");
+            positions.put(1, 0);
+            stackSizes.put(1, 29575L);
+            names.put(1, "Flynn");
+
+            ai.setAmountOfPlayers(2);
+            ai.setStackSizes(stackSizes);
+            ai.setPlayerNames(names);
+            ai.setPositions(positions);
+            ai.setSmallBlind(200);
+            ai.setBigBlind(400);
+
+            ai.playerMadeDecision(1, new Decision(Decision.Move.SMALL_BLIND));
+            ai.playerMadeDecision(0, new Decision(Decision.Move.ALL_IN));
+            if (allInIsRaise) {
+                ai.playerMadeDecision(1, new Decision(Decision.Move.CALL));
+            }
+            ai.setFlop(deck.draw().get(), deck.draw().get(), deck.draw().get());
+            ai.setTurn(deck.draw().get());
+            ai.setRiver(deck.draw().get());
         }
     }
 

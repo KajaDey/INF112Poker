@@ -141,12 +141,10 @@ public class Game {
         refreshAllStackSizes();
         printAllPlayerStacks();
 
-        //First betting round (preflop)
+        //First betting round (pre flop)
         logger.println("\nPRE FLOP:", Logger.MessageType.GAMEPLAY);
-
         boolean handContinues = bettingRound(preFlop);
         if (skipBettingRound() && playersStillInCurrentHand.size() > 1) {
-            displayHoleCards();
             delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
         }
         if (!handContinues) {
@@ -210,7 +208,7 @@ public class Game {
         }
 
         //Check if all players are all in and betting round should be skipped
-        if (skipBettingRound()) {
+        if (skipBettingRound() ) {
             displayHoleCards();
             delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             return true;
@@ -429,14 +427,12 @@ public class Game {
         delay(HAND_OVER_DELAY);
 
         //If a player that was in this hand now has zero chips, it means he just busted
-        for (Player p : playersStillInCurrentHand) {
-            if (p.getStackSize() == 0) {
-                gameController.bustClient(p.getID(), finishedInPosition);
-                rankingTable.put(p.getID(), finishedInPosition);
-                finishedInPosition--;
-                remainingPlayers--;
-            }
-        }
+        playersStillInCurrentHand.stream().filter(p -> p.getStackSize() == 0).forEach(p -> {
+            gameController.bustClient(p.getID(), finishedInPosition);
+            rankingTable.put(p.getID(), finishedInPosition);
+            finishedInPosition--;
+            remainingPlayers--;
+        });
     }
 
     /**
@@ -490,7 +486,10 @@ public class Game {
     private boolean skipBettingRound() {
         return playersStillInCurrentHand.stream()
                 .filter(Player::isAllIn)
-                .count() >= playersStillInCurrentHand.size() - 1;
+                .count() >= playersStillInCurrentHand.size() - 1
+                && playersStillInCurrentHand.stream()
+                .filter(p -> p.putOnTable() <= highestAmountPutOnTable && !p.isAllIn())
+                .count() == 0;
     }
 
     /**
