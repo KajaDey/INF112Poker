@@ -1,0 +1,35 @@
+Møte 15 - 04.15.2016, kl 1415
+Sekretær: Vegar
+
+Oppmøte:
+- Kaja 
+- Vegar
+- André
+- Mariah
+- Simon
+- Henrik
+- Morten
+- Ragnhild
+Borte: 
+- Kristian
+
+Hva er gjort siden sist:
+Jobba videre med nettverk
+Main screen rework
+Jobbet med lobby
+Starta arbeid med å tilrettelegge chat
+
+
+Diskusjon:
+Splitta chat/log/ignore chat button
+GUI får inn ein input stream med chat og logg, så deala GUI med filtrering for kva som blir vist alt etter kva bruker vil.
+Loggfillesing har ikkje blitt påbegynt
+
+Plan til neste møte:
+Testing (Ragnhild)
+Networking (Morten)
+Fikse logg/lage ny logg (André)
+
+
+Tid for neste møte:
+Lørdag 07.05.2016 kl. 1200
