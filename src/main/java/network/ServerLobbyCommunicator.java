@@ -152,6 +152,9 @@ public class ServerLobbyCommunicator {
                         System.out.println("Table deleted, tableID: " + tokens[1]);
                         Platform.runLater(() -> lobbyScreen.removeTable(Integer.parseInt(tokens[1])));
                         break;
+                    case "errorMessage":
+                        Platform.runLater(() -> lobbyScreen.displayErrorMessage(tokens[1]));
+                        break;
                     default:
                         System.out.println("Unknown command \"" + tokens[0] + "\", ignoring...");
                 }

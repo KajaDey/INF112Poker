@@ -287,6 +287,8 @@ public class Server {
 
                     if (t.settings.valid())
                         ClientBroadcasts.tableSettings(Server.this, t);
+                    else
+                        write("errorMessage \"" + t.settings.getErrorMessage() + "\"");
                 }
             }
 
