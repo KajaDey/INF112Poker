@@ -65,7 +65,7 @@ public class NetworkClientTest {
                     Socket clientSocket = new Socket(InetAddress.getLocalHost(), 39100);
                     BufferedReader socketInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
                     BufferedWriter socketOutput = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
-                    ServerGameCommunicator communicator = new ServerGameCommunicator(socketOutput, socketInput, "Morten-" + i2);
+                    ServerGameCommunicator communicator = new ServerGameCommunicator(socketOutput, socketInput, "Morten-" + i2, null);
                     communicator.startUpi();
                 } catch (IOException e) {
                     e.printStackTrace();

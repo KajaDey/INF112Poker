@@ -240,7 +240,7 @@ public class NetworkClient implements GameClient {
      * @param message
      */
     /*private void failedToWriteToPlayer(String message) {
-        System.out.println("Failed to write to client " + this + ", dropping player.");
+        logger.println("Failed to write to client " + this + ", dropping player.");
         this.removeClient(player.id);
     }*/
 

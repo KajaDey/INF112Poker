@@ -53,7 +53,7 @@ public class Logger {
                     createLogFor(messageType);
                 } catch (IOException e) {
                     System.out.println("Failed to create log file for " + messageType + ": ");
-                    e.printStackTrace();
+                    System.err.println("Failed to create log file for " + messageType + ": ");
                     return;
                 }
             }

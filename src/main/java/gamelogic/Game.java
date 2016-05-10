@@ -29,7 +29,7 @@ public class Game {
     private int smallBlindIndex = 0;
 
     //Round specific
-    private Pot pot = new Pot();
+    private Pot pot;
     private int roundNumber = 0;
     private long highestAmountPutOnTable = 0, currentMinimumRaise = 0;
     private Map<Integer, Long> stackSizes;
@@ -55,6 +55,7 @@ public class Game {
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
         this.names = new HashMap<>();
+        this.pot = new Pot(logger);
     }
 
     /**
@@ -101,7 +102,7 @@ public class Game {
             refreshAllStackSizes();
             gameController.setPositions(positions);
 
-            pot = new Pot();
+            pot = new Pot(logger);
 
             //Deal all hole cards and save community cards for later use
             deck = new Deck();
@@ -113,7 +114,7 @@ public class Game {
 
         //Deal with who won the game.. (should be the only player with chips left
         assert numberOfPlayersWithChipsLeft() == 1 : "Game over but " + numberOfPlayersWithChipsLeft() + " had chips left";
-        pot = new Pot();
+        pot = new Pot(logger);
         refreshAllStackSizes();
 
         gameOver();
@@ -450,7 +451,7 @@ public class Game {
         gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         logger.println("\n"+winner.getName()+" won the hand", Logger.MessageType.GAMEPLAY);
-        pot = new Pot();
+        pot = new Pot(logger);
         delay(EVERYONE_FOLDED_DELAY);
     }
 

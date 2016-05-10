@@ -3,6 +3,7 @@ package gui;
 import gamelogic.*;
 import gamelogic.ai.GameState;
 import javafx.application.Platform;
+import jdk.management.resource.internal.inst.WindowsAsynchronousFileChannelImplRMHooks;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -34,9 +35,12 @@ public class GUIClient implements GameClient {
     private long smallBlind, bigBlind;
     private boolean playersSeated = false;
 
-    public GUIClient(int id, GameScreen gameScreen) {
+    private final Logger logger;
+
+    public GUIClient(int id, GameScreen gameScreen, Logger logger) {
         this.id = id;
         this.gameScreen = gameScreen;
+        this.logger = logger;
     }
 
     @Override
@@ -112,18 +116,18 @@ public class GUIClient implements GameClient {
      */
     private boolean validMove(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
-            GUIMain.debugPrintln("You don't have this much in your stack. Stack size=" + stackSizes.get(id) + ", moveSize=" + moveSize);
+            logger.println("You don't have this much in your stack. Stack size=" + stackSizes.get(id) + ", moveSize=" + moveSize);
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
         else if (move == Decision.Move.RAISE && moveSize- highestAmountPutOnTable < Math.max(bigBlind, minimumRaise) &&
                 (moveSize != stackSizes.get(id))) {
-            GUIMain.debugPrint("Raise is too small");
+            logger.println("Raise is too small");
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
         else if (move == Decision.Move.BET && moveSize < bigBlind) {
-            GUIMain.debugPrint("Bet is too small, must be a minimum of " + bigBlind);
+            logger.println("Bet is too small, must be a minimum of " + bigBlind);
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
         }
@@ -227,7 +231,7 @@ public class GUIClient implements GameClient {
         Map<Integer, Long> clonedStackSizes = new HashMap<>();
         stackSizes.forEach(clonedStackSizes::put);
         gameState = Optional.of(new GameState(amountOfPlayers, positions.get(),
-                clonedStackSizes, names.get(), smallBlind, bigBlind));
+                clonedStackSizes, names.get(), smallBlind, bigBlind, logger));
     }
 
     @Override

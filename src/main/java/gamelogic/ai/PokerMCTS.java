@@ -53,9 +53,9 @@ public class PokerMCTS {
             }
         }
         catch (Exception e) {
-            System.out.println("Error: AI crashed");
+            logger.println("Error: AI crashed", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             e.printStackTrace();
-            System.out.println("AI is folding...");
+            logger.println("AI is folding...", Logger.MessageType.AI, Logger.MessageType.WARNINGS);
             return Decision.fold;
         }
 
@@ -469,7 +469,7 @@ public class PokerMCTS {
 
         GameState newGameState = new GameState(gameState);
         double[] eval = new double[newGameState.amountOfPlayers];
-        Pot pot = new Pot();
+        Pot pot = new Pot(gameState.logger);
         for (Player player : newGameState.players) {
             if (player.holeCards.size() < 2) {
                 newGameState.giveHoleCards(player.id);

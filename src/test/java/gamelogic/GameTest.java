@@ -24,7 +24,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 public class GameTest {
     private GameController gameControllerMock, gameControllerSpy;
     private Game gameSpy;
-    static final Logger logger = new Logger("GameTest", "");
+    static final Logger logger = new Logger("Test-game", "");
 
     /**
      * Creates spy-objects of GameController and Game

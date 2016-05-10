@@ -47,7 +47,7 @@ public class MCTSAI implements GameClient {
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         assert smallBlindAmount > 0 && bigBlindAmount > 0 : "AI was sent decision with receiving blinds";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount, logger));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
 
@@ -122,7 +122,7 @@ public class MCTSAI implements GameClient {
         assert holeCards.size() == 2 : "MCTSAi received a decision without being dealt hole cards";
         assert smallBlindAmount > 0 && bigBlindAmount > 0 : "AI was sent decision with receiving blinds";
         if (!gameState.isPresent()) {
-            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount));
+            gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount, logger));
             gameState.get().giveHoleCards(this.playerId, holeCards);
         }
         assert playerId == gameState.get().currentPlayer.id

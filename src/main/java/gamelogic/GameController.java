@@ -37,7 +37,7 @@ public class GameController {
     public GameController(GameSettings settings, GUIMain guiMain) {
         this.guiMain = Optional.of(guiMain);
         this.gameSettings = settings;
-        this.logger = new Logger("Client", "");
+        this.logger = guiMain.logger;
         this.game = new Game(settings, this, logger);
 
         clients = new HashMap<>();
@@ -293,7 +293,7 @@ public class GameController {
             String replayName = reader.getNextName();
             int replayId = clients.size();
 
-            GameClient replayClient = new ReplayClient(replayId, reader);
+            GameClient replayClient = new ReplayClient(replayId, reader, logger);
             clients.put(replayId, replayClient);
             game.addPlayer(replayName, replayId);
             names.put(replayId, replayName);

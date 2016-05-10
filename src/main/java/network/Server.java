@@ -108,7 +108,7 @@ public class Server {
         }
     }
 
-    private void addNewTable(GameSettings settings, LobbyPlayer host) {
+    private synchronized void addNewTable(GameSettings settings, LobbyPlayer host) {
         int tableID = tableIdCounter++;
         LobbyTable table = new LobbyTable(tableID, settings, host);
         lobbyTables.put(tableID, table);
@@ -438,7 +438,7 @@ public class Server {
                 this.delete();
             } catch (Game.InvalidGameSettingsException e) {
                 lobbyLogger.println("Error while starting game", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
-                System.out.println(e.getMessage());
+                lobbyLogger.println(e.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 lobbyLogger.println("Game was not started", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK, Logger.MessageType.INIT);
                 return;
             }

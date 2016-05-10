@@ -24,7 +24,7 @@ public class AITest {
     static long bigBlind = 50;
     static long startStack = 2500L;
     static long timeToThink = 2000L;
-    static Logger logger = new Logger("AI-test", "");
+    static Logger logger = new Logger("Test-AI", "");
 
     @Test
     public void testAllInAsCall() {

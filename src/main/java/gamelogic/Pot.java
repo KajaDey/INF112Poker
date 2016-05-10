@@ -14,7 +14,9 @@ public class Pot {
     private long potSize;
     private Map<Integer, Long> amountPlayerCanClaim;
 
-    public Pot() {
+    private final Logger logger;
+    public Pot(Logger logger) {
+        this.logger = logger;
         this.potSize = 0;
         this.amountPlayerCanClaim = new HashMap<>();
     }
@@ -90,7 +92,7 @@ public class Pot {
 
             //If there was a rounding error, the split pot is handed out to a random winner
             if (potShare - handedOut > 0) {
-                GUIMain.debugPrintln(minPlayer.getName() + " got the spare pot of " + (potShare - handedOut));
+                logger.println(minPlayer.getName() + " got the spare pot of " + (potShare - handedOut), Logger.MessageType.DEBUG);
                 minPlayer.incrementStack(potShare-handedOut);
             }
 

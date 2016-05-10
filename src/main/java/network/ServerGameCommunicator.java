@@ -2,6 +2,7 @@ package network;
 
 import gamelogic.Decision;
 import gamelogic.GameClient;
+import gamelogic.Logger;
 import gui.GUIMain;
 
 import java.io.*;
@@ -18,17 +19,20 @@ public class ServerGameCommunicator {
     private Optional<GameClient> gameClient = Optional.empty();
     private final BufferedReader socketReader;
     private final BufferedWriter socketWriter;
+    private final Logger logger;
 
     /**
      * * Creates a new ServerGameCommunicator to the given ip, but does not start communication
      * @param out An open output stream to the Server TCP socket
      * @param in An open input stream from the Server TCP socket
      * @param playerName The player's chosen name
+     * @param logger
      */
-    public ServerGameCommunicator(BufferedWriter out, BufferedReader in, String playerName) {
+    public ServerGameCommunicator(BufferedWriter out, BufferedReader in, String playerName, Logger logger) {
         this.socketReader = in;
         this.socketWriter = out;
         this.playerName = playerName;
+        this.logger = logger;
     }
 
     /**
@@ -43,7 +47,7 @@ public class ServerGameCommunicator {
         if (!input.equals("upiok"))
             throw new IOException("Received " + input + " from server, expected upiok");
          else
-            System.out.println("Client " + playerName + " received upiok from server");
+            logger.println("Client " + playerName + " received upiok from server", Logger.MessageType.NETWORK, Logger.MessageType.INIT);
 
         while (true) {
             input = socketReader.readLine();
@@ -74,7 +78,7 @@ public class ServerGameCommunicator {
                     try { // Wait for a bit for the GUI to get ready
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        System.out.println("Thread " + Thread.currentThread() + " interrupted.");
+                        logger.println("Thread " + Thread.currentThread() + " interrupted.", Logger.MessageType.DEBUG, Logger.MessageType.WARNINGS);
                     }
                     //Set the chat listener
                     gameClient.get().setChatListener(this::chatListener);
@@ -87,8 +91,8 @@ public class ServerGameCommunicator {
                             playerNames.put(Integer.parseInt(tokens[i]), tokens[i + 1]);
                         }
                     } catch (RuntimeException e) {
-                        System.out.println(e.getMessage());
-                        System.out.println("Failed to parse " + input);
+                        logger.println(e.getMessage(), Logger.MessageType.NETWORK, Logger.MessageType.INIT, Logger.MessageType.WARNINGS);
+                        logger.println("Failed to parse " + input, Logger.MessageType.NETWORK, Logger.MessageType.INIT, Logger.MessageType.WARNINGS);
                         break;
                     }
                     gameClient.get().setPlayerNames(playerNames);
@@ -141,7 +145,6 @@ public class ServerGameCommunicator {
                 case "showdown":
                     assert gameClient.isPresent();
                     String[] lines = Arrays.copyOfRange(tokens, 1, tokens.length);
-                    System.out.println("Sending " + Arrays.toString(lines) + " to the client");
                     gameClient.get().showdown(lines);
                     break;
                 case "getDecision": {
@@ -156,7 +159,7 @@ public class ServerGameCommunicator {
                     assert gameClient.isPresent();
                     Optional<Decision> decision = UpiUtils.parseDecision(tokens[3]);
                     if (!decision.isPresent()) {
-                        System.out.println("Couldn't parse decision " + tokens[2]);
+                        logger.println("Couldn't parse decision " + tokens[2], Logger.MessageType.NETWORK);
                     }
                     int id = Integer.parseInt(tokens[1]);
                     gameClient.get().playerMadeDecision(id, decision.get());
@@ -167,7 +170,7 @@ public class ServerGameCommunicator {
                         gameClient.get().printToLogField(tokens[1]);
                     break;
                 default:
-                    System.out.println("Received unrecognized command \"" + input + "\"");
+                    logger.println("Received unrecognized command \"" + input + "\"", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
             }
         }
     }
@@ -192,6 +195,6 @@ public class ServerGameCommunicator {
      */
     public void chatListener(String chatMessage) {
         if (!writeToSocket("chat \"" + chatMessage + "\""))
-            System.out.println("Failed to write chat message, " + chatMessage);
+            logger.println("Failed to write chat message, " + chatMessage, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
     }
 }

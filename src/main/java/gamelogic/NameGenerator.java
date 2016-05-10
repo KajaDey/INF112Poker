@@ -72,7 +72,7 @@ public class NameGenerator {
             while ((currentLine = reader.readLine()) != null)
                 characterNames.add(currentLine);
         } catch (IOException e) {
-            GUIMain.debugPrintln("Error reading file: " + pathOfSeries);
+            System.out.println("Error reading file: " + pathOfSeries);
             e.printStackTrace();
         }
     }

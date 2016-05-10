@@ -235,7 +235,7 @@ public class ServerLobbyCommunicator {
     public void goToGameScreen() {
         int id = lobbyScreen.getID();
         logger.println("Client " + id + ": Going to game screen", Logger.MessageType.NETWORK);
-        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id));
+        ServerGameCommunicator serverGameCommunicator = new ServerGameCommunicator(socketWriter, socketReader, names.get(id), logger);
 
         logger.println("Client " + id + ": Starting upi communication", Logger.MessageType.NETWORK);
         try {
