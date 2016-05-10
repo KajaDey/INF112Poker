@@ -318,7 +318,7 @@ public class Game {
 
             case CALL:
                 assert highestAmountPutOnTable >= 0 : playerToAct.getName() + " tried to call when amount put on table was " + highestAmountPutOnTable;
-                if (highestAmountPutOnTable < stackSize)
+                if (highestAmountPutOnTable < stackSize + playerToAct.putOnTable())
                     return decision;
                 else {
                     logger.print("Got decision call but highest amount was " + highestAmountPutOnTable +
