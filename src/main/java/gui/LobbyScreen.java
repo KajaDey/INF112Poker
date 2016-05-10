@@ -35,6 +35,7 @@ public class LobbyScreen {
     static Pane gameInfo;
     static Label player;
     static Label names;
+    static Button takeASeat;
     private ServerLobbyCommunicator serverLobbyCommunicator;
     private Map<Integer, LobbyTable> tables;
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
@@ -126,7 +127,10 @@ public class LobbyScreen {
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(550);
 
-        Button takeASeat = ObjectStandards.makeButtonForLobbyScreen("Take a seat");
+        if(!table.isSeated(ID))
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen("Take a seat");
+        else
+            takeASeat = ObjectStandards.makeButtonForLobbyScreen("Leave table");
 
         takeASeat.setLayoutX(200);
         takeASeat.setLayoutY(425);
@@ -230,7 +234,14 @@ public class LobbyScreen {
         serverLobbyCommunicator.makeNewTable();
     }
     private void takeASeatButtonListener(LobbyTable table) {
-        serverLobbyCommunicator.takeSeat(table.id);
+        if(takeASeat.getText().equals("Take a seat")) {
+            serverLobbyCommunicator.takeSeat(table.id);
+        }
+        else if(takeASeat.getText().equals("Leave game")){
+            //TODO: Make it possible to leave table
+            //serverLobbyCommunicator.leaveTable(table);
+        }
+
     }
     private void moreInfoButtonListener(LobbyTable table) {
         this.displayGameInfo(table);

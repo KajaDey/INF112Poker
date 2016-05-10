@@ -51,4 +51,8 @@ public class LobbyTable {
 
         assert !playerIds.contains(playerID) : "Removed p.id " + playerID + "from table " + this.id + ", but he wasn't removed";
     }
+
+    public boolean isSeated(int playerID) {
+        return playerIds.contains(playerID);
+    }
 }
