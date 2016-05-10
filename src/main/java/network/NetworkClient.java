@@ -58,6 +58,7 @@ public class NetworkClient implements GameClient {
             while (true) {
                 try {
                     String input = socketInput.readLine();
+                    logger.println("Client #" + playerId + ": " + input, Logger.MessageType.NETWORK);
                     Optional<String[]> tokens = UpiUtils.tokenize(input);
                     if (tokens.isPresent() && tokens.get().length != 0) {
                         switch (tokens.get()[0]) {
@@ -261,7 +262,7 @@ public class NetworkClient implements GameClient {
             try {
                 while (!outstandingWrites.isEmpty()) {
                     socketOutput.write(outstandingWrites.peek() + "\n");
-                    outstandingWrites.poll();
+                    logger.println("Server to #" + playerId + ": " + outstandingWrites.poll(), Logger.MessageType.NETWORK);
                 }
             }
             catch (IOException e) {
