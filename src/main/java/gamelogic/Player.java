@@ -17,7 +17,7 @@ public class Player {
     private final GameSettings gameSettings;
     private long putOnTableThisRound = 0;
     private Card[] holeCards;
-    private boolean allIn = false, hasActed = false;
+    private boolean allIn = false, hasActed = false, isBust = false;
 
     //Statistics
     private int handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
@@ -199,6 +199,10 @@ public class Player {
         incrementStack(pot);
     }
 
+    public void bustPlayer() {
+        isBust = true;
+    }
+    public boolean isBust() { return isBust; }
 
     public String getName() {
         return name;

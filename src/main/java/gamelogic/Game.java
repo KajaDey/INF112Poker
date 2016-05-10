@@ -429,6 +429,7 @@ public class Game {
 
         //If a player that was in this hand now has zero chips, it means he just busted
         playersStillInCurrentHand.stream().filter(p -> p.getStackSize() == 0).forEach(p -> {
+            p.bustPlayer();
             gameController.bustClient(p.getID(), finishedInPosition);
             rankingTable.put(p.getID(), finishedInPosition);
             finishedInPosition--;
@@ -484,6 +485,10 @@ public class Game {
      *  @return True if betting round should be skipped
      */
     private boolean skipBettingRound() {
+        for (Player p : playersStillInCurrentHand)
+            if (!p.isAllIn() && p.putOnTable() < highestAmountPutOnTable)
+                return false;
+
         return playersStillInCurrentHand.stream()
                 .filter(Player::isAllIn)
                 .count() >= playersStillInCurrentHand.size() - 1;
@@ -549,7 +554,7 @@ public class Game {
         HashMap<Integer, Long> stacks = new HashMap<>();
 
         for (Player p : players) {
-            if (p.getStackSize() > 0) {
+            if (!p.isBust()) {
                 stacks.put(p.getID(), p.getStackSize());
                 totalChipsInPlay += p.getStackSize();
             }
