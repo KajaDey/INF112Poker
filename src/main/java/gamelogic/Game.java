@@ -44,6 +44,7 @@ public class Game {
     private boolean replay = false;
 
     private final Logger logger;
+    private boolean skipRound = false;
 
     public Game(GameSettings gameSettings, GameController gameController, Logger logger) {
         this.gameController = gameController;
@@ -144,7 +145,7 @@ public class Game {
         //First betting round (pre flop)
         logger.println("\nPRE FLOP:", Logger.MessageType.GAMEPLAY);
         boolean handContinues = bettingRound(preFlop);
-        if (skipBettingRound() && playersStillInCurrentHand.size() > 1) {
+        if (skipRound || skipBettingRound() && playersStillInCurrentHand.size() > 1) {
             delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
         }
         if (!handContinues) {
@@ -208,7 +209,7 @@ public class Game {
         }
 
         //Check if all players are all in and betting round should be skipped
-        if (skipBettingRound() ) {
+        if (skipRound || skipBettingRound()) {
             displayHoleCards();
             delay(WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
             return true;
@@ -479,17 +480,13 @@ public class Game {
     }
 
     /**
-     * Used to check if a betting round should be skipped (all (or all but one) players are all in)
-     *
-     *  @return True if betting round should be skipped, false if not
+     *  Used to check if a betting round should be skipped (all (or all but one) players are all in)
+     *  @return True if betting round should be skipped
      */
     private boolean skipBettingRound() {
-        return playersStillInCurrentHand.stream()
+        return skipRound = playersStillInCurrentHand.stream()
                 .filter(Player::isAllIn)
-                .count() >= playersStillInCurrentHand.size() - 1
-                && playersStillInCurrentHand.stream()
-                .filter(p -> p.putOnTable() <= highestAmountPutOnTable && !p.isAllIn())
-                .count() == 0;
+                .count() >= playersStillInCurrentHand.size() - 1;
     }
 
     /**
