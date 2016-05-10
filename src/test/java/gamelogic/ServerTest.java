@@ -1,9 +1,6 @@
 package gamelogic;
 
-import gamelogic.ai.AITest;
-import gamelogic.ai.MCTSAI;
 import gui.GUIMain;
-import gui.GameSettings;
 import gui.LobbyScreen;
 import javafx.application.Platform;
 import network.*;
@@ -14,20 +11,16 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.mockito.stubbing.Answer;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
-
-import org.powermock.reflect.Whitebox;
 
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by morten on 27.04.16.
@@ -35,15 +28,9 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServerGameCommunicator.class, Platform.class})
 
-public class NetworkClientTest {
+public class ServerTest {
 
-    final long timeToThink = 500L;
-    int amountOfPlayers;
-    Deck deck;
-    ServerSocket socketListener;
-    List<GameClient> players;
     ServerLobbyCommunicator lobbyCommunicator;
-    ServerGameCommunicator gameCommunicator;
     public static Stack<String> inputStrings;
     ArrayList<Socket> clientSockets;
     ArrayList<BufferedReader> readers;
@@ -53,30 +40,66 @@ public class NetworkClientTest {
 
     @Test
     public void testHandshakeWithServer() throws Exception {
-        setupServerTestFourClients();
+        connectClientsToServer(4);
 
-        new Server();
-
-        connectClients(4);
+        assertClientsNotifiedWhenNewPlayerJoined(4);
     }
 
     @Test
-    public void testPlayerMadeTable() throws Exception {
-        setupServerTestFourClients();
-
-        new Server();
-
-        connectClients(4);
-
-        assertClientsNotifiedWhenNewPlayerJoined(4);
+    public void testCreateTable() throws Exception {
+        connectClientsToServer(4);
+        readAndIgnoreAnswersWhenPlayersJoined(4);
 
         writeToSocket(0, "createTable");
+        assertWhenTableCreatedCorrectAnswersReceived();
 
+        writeToSocket(0, "createTable"); // Tries to create second table
+        assertErrorMessageWhenAlreadySeatedAtATable();
+    }
+
+    @Test
+    public void testLeaveSeat() throws Exception {
+        connectClientsToServer(4);
+        readAndIgnoreAnswersWhenPlayersJoined(4);
+
+        writeToSocket(0, "leaveSeat");
+    }
+
+    @Test
+    public void testIllegalMessageSent() throws Exception {
+        connectClientsToServer(2);
+        System.out.println("Conected clients");
+        readAndIgnoreAnswersWhenPlayersJoined(2);
+
+        writeToSocket(0, "Something illegal");
+
+        String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
+        assertEquals("Unknown command", answer[1]);
+    }
+
+    private void assertErrorMessageWhenAlreadySeatedAtATable() throws IOException {
         String answer = readFromSocket(0);
-        assert answer.equals("tableCreated 0") : "Got message "+ answer +", expected tableCreated 0";
+         // TODO fix
 
-        // createtable --> tableCreated, settings, playerjoined
-        // other players takeseat
+
+        assert answer.equals("errorMessage \"You are already seated at a table\"") :
+                "Didn't get error message when trying to create table while already seated at another table. Got message: "+answer;
+
+        writeToSocket(0, "takeSeat 0");
+        answer = readFromSocket(0);
+        assert answer.equals("errorMessage \"You are already seated at a table\"") :
+                "Didn't get error message when trying to take seat at a table you are already seated on.";
+    }
+
+    private void assertWhenTableCreatedCorrectAnswersReceived() throws IOException {
+        String [] answer = UpiUtils.tokenize(readFromSocket(0)).get();
+
+        assertEquals(answer[0], "tableCreated");
+        assertEquals(answer[1], "0");
+
+        assertEquals(readFromSocket(0), "tableSettings 0 maxNumberOfPlayers 6 startStack 5000 smallBlind 25 bigBlind 50 levelDuration 10 playerClock 30");
+
+        assertEquals(readFromSocket(0), "playerJoinedTable 0 0");
     }
 
     private void assertClientsNotifiedWhenNewPlayerJoined(int numClients) throws IOException {
@@ -88,13 +111,24 @@ public class NetworkClientTest {
         }
     }
 
-    private void setupServerTestFourClients() throws IOException {
+    private void readAndIgnoreAnswersWhenPlayersJoined(int numClients) throws Exception {
+        for (int i = 0; i < numClients; i++) {
+            for (int j = i; j < numClients; j++) {
+                readFromSocket(i);
+            }
+        }
+    }
+
+    private void connectClientsToServer(int numClients) throws Exception {
         socketAddress = new InetSocketAddress(InetAddress.getLocalHost(), 39100);
         clientSockets = new ArrayList<>();
         readers = new ArrayList<>();
         writers = new ArrayList<>();
         names = new Stack();
-        names.addAll(Arrays.asList("Ragnhild", "Kristian", "Morten", "Mariah"));
+        names.addAll(Arrays.asList("Kaja", "Simon", "Vegar", "Ragnhild", "Kristian", "Morten", "Mariah"));
+
+        new Server();
+        connectClients(numClients);
     }
 
     /**
@@ -158,7 +192,7 @@ public class NetworkClientTest {
     }
 
     private void setupServerLobbyTest() throws Exception {
-        Server server = new Server();
+        new Server();
 
         inputStrings = new Stack<>();
         inputStrings.addAll(Arrays.asList("startGame", "playerJoinedTable 0 0",
@@ -179,7 +213,7 @@ public class NetworkClientTest {
                 public String answer(InvocationOnMock invocation) throws Throwable {
                     if (inputStrings.isEmpty()) System.exit(0);
 
-                    return NetworkClientTest.inputStrings.pop();
+                    return ServerTest.inputStrings.pop();
                 }
             }).when(lobbyCommunicator, "readFromServer");
 
@@ -187,19 +221,6 @@ public class NetworkClientTest {
             doNothing().when(Platform.class, "runLater", any(Runnable.class));
 
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void createServerGameCommunicatorSpy(BufferedWriter socketOutput, BufferedReader socketInput, String playerName) {
-        gameCommunicator = spy(new ServerGameCommunicator(socketOutput, socketInput, playerName, GUIMain.guiMain.logger));
-
-        try {
-            doAnswer((Answer<Optional<GameClient>>) arg -> {
-                int userID = ((int) arg.getArguments()[1]);
-                return Optional.of(new MCTSAI(userID, GUIMain.guiMain.logger));
-            }).when(gameCommunicator, "createGUIClient", any(GameSettings.class), anyInt());
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
