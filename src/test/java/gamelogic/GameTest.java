@@ -2,7 +2,6 @@ package gamelogic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import gui.GUIMain;
@@ -17,6 +16,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 
 /**
  * Created by Ragnhild Aalvik on 03/05/16.
+ *  Tests for GameLogic
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Game.class, GameController.class, GUIMain.class})
@@ -92,11 +92,18 @@ public class GameTest {
     @Test
     public void testPlayGameWithTwoMCTSAIsIllegalSizedBlinds() throws Exception {
         for (int i = 0; i < 10; i++) {
-            System.out.println(i);
-            setupGameWithAIs(2005, 700, AIType.MCTS_AI, 2);
+            setupGameWithAIs(2000, 700, AIType.MCTS_AI, 2);
 
             Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
             gameThread.join();
         }
+    }
+
+    @Test
+    public void testPlayGameWithTwoMCTSAIsWhereBlindsAreEqualToStackSizes() throws Exception {
+        setupGameWithAIs(5000, 5000, AIType.MCTS_AI, 2);
+
+        Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
+        gameThread.join();
     }
 }
