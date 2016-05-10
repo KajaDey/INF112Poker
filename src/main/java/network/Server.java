@@ -518,7 +518,7 @@ public class Server {
                 ClientBroadcasts.playerLeftTable(Server.this, player, this);
             }
             ClientBroadcasts.tableDeleted(Server.this, this);
-            Server.this.lobbyTables.remove(this);
+            Server.this.lobbyTables.remove(this.tableID);
         }
 
 
