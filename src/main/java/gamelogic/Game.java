@@ -17,7 +17,7 @@ public class Game {
     public static final long EVERYONE_FOLDED_DELAY = 3000L;
 
     //Controls
-    private Player [] players;
+    private Player[] players;
     private GameController gameController;
     private GameSettings gameSettings;
 
@@ -38,7 +38,7 @@ public class Game {
     private Map<Integer, Integer> positions;
     private Map<Integer, Integer> rankingTable;
     private Map<Integer, String> names;
-    private Card [] communityCards;
+    private Card[] communityCards;
     private Deck deck;
     private ArrayDeque<Card> cardQueue;
     private boolean replay = false;
@@ -50,7 +50,7 @@ public class Game {
         this.gameSettings = gameSettings;
         this.logger = logger;
 
-        this.finishedInPosition =  gameSettings.getMaxNumberOfPlayers();
+        this.finishedInPosition = gameSettings.getMaxNumberOfPlayers();
         this.players = new Player[gameSettings.getMaxNumberOfPlayers()];
         this.stackSizes = new HashMap<>();
         this.rankingTable = new HashMap<>();
@@ -62,7 +62,7 @@ public class Game {
      * Adds a new player to the game. The player is given a start stack size.
      *
      * @param name Name of the player
-     * @param ID Player-ID
+     * @param ID   Player-ID
      * @return true if player was added successfully, else false
      */
     public boolean addPlayer(String name, int ID) {
@@ -91,7 +91,7 @@ public class Game {
     public void playGame() {
         lastBlindRaiseTime = System.currentTimeMillis();
 
-        while(numberOfPlayersWithChipsLeft() > 1) {
+        while (numberOfPlayersWithChipsLeft() > 1) {
             logger.println("\nNew hand", Logger.MessageType.GAMEPLAY);
             //Tell all clients that a new hand has started and update all players stack sizes
             refreshAllStackSizes();
@@ -130,7 +130,7 @@ public class Game {
         logger.println("\nBLINDS (Small " + this.gameSettings.getSmallBlind() + ", big " + this.gameSettings.getBigBlind() + ")", Logger.MessageType.GAMEPLAY);
         long currentTime = System.currentTimeMillis();
         // Increase blinds
-        if (currentTime - (gameSettings.getLevelDuration()*60*1000) > lastBlindRaiseTime) {
+        if (currentTime - (gameSettings.getLevelDuration() * 60 * 1000) > lastBlindRaiseTime) {
             gameSettings.increaseBlinds();
             logger.println("Blinds increased to " + gameSettings.getSmallBlind() + ", " + gameSettings.getBigBlind(), Logger.MessageType.GAMEPLAY);
             gameController.setBlinds();
@@ -186,9 +186,10 @@ public class Game {
 
 
     /**
-     *   Play one complete betting round (where all players act until everyone agree (or everyone but 1 folds))
-     * @param isPreFlop  True if this is the pre flop betting round
-     * @return  True if the hand continues, false if the hand is over
+     * Play one complete betting round (where all players act until everyone agree (or everyone but 1 folds))
+     *
+     * @param isPreFlop True if this is the pre flop betting round
+     * @return True if the hand continues, false if the hand is over
      */
     private boolean bettingRound(boolean isPreFlop) {
         GUIMain.replayLogPrint("\nDECISIONS");
@@ -222,10 +223,11 @@ public class Game {
     }
 
     /**
-     *   Get decision from all players until all agressive moves have been responded to
-     * @param actingPlayerIndex  Index of the player who starts the acting
-     * @param isPreFlop  true if the betting round is pre flop, false if not
-     * @return  True if the hand continues past this betting round, false if everyone but 1 folded
+     * Get decision from all players until all agressive moves have been responded to
+     *
+     * @param actingPlayerIndex Index of the player who starts the acting
+     * @param isPreFlop         true if the betting round is pre flop, false if not
+     * @return True if the hand continues past this betting round, false if everyone but 1 folded
      */
     private boolean getDecisions(int actingPlayerIndex, boolean isPreFlop) {
         while (true) {
@@ -248,7 +250,7 @@ public class Game {
             gameController.setDecisionForClient(playerToAct.getID(), decision);
 
             //Update players left in hand and number of players that have acted since the last aggressor
-            switch(decision.move) {
+            switch (decision.move) {
                 case BET:
                     highestAmountPutOnTable = decision.getSize();
                     break;
@@ -257,10 +259,10 @@ public class Game {
                     currentMinimumRaise = decision.getSize();
                     break;
                 case ALL_IN:
-                    if(playerToAct.putOnTable() >= highestAmountPutOnTable+currentMinimumRaise) {
+                    if (playerToAct.putOnTable() >= highestAmountPutOnTable + currentMinimumRaise) {
                         currentMinimumRaise = playerToAct.putOnTable() - highestAmountPutOnTable;
                         highestAmountPutOnTable = playerToAct.putOnTable();
-                    } else if (playerToAct.putOnTable() > highestAmountPutOnTable){
+                    } else if (playerToAct.putOnTable() > highestAmountPutOnTable) {
                         highestAmountPutOnTable = playerToAct.putOnTable();
                     }
                     break;
@@ -269,12 +271,12 @@ public class Game {
                     break;
             }
 
-            logger.println(playerToAct.getName()  + " acted: " + decision +  ", stack size = " + playerToAct.getStackSize(), Logger.MessageType.GAMEPLAY);
+            logger.println(playerToAct.getName() + " acted: " + decision + ", stack size = " + playerToAct.getStackSize(), Logger.MessageType.GAMEPLAY);
 
             //Check if the hand is over (only one player left)
             if (playersStillInCurrentHand.size() <= 1)
                 return false;
-            else if(allPlayersActed())
+            else if (allPlayersActed())
                 return true;
 
             //If player folded actingPlayerIndex should not be incremented because playersInHand.size() is decremented
@@ -294,59 +296,61 @@ public class Game {
         boolean playerCanCheckBigBlind =
                 isPreFlop && playerToAct.putOnTable() == gameSettings.getBigBlind() && highestAmountPutOnTable == gameSettings.getBigBlind();
 
-        while(true) {
-            //Get a decision for playerToAct from GameController
-            Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
+        //Get a decision for playerToAct from GameController
+        Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
 
-            GUIMain.replayLogPrint("\n" + playerToAct.getID() +" "+ decision);
+        GUIMain.replayLogPrint("\n" + playerToAct.getID() + " " + decision);
 
-            //Test if decision is valid
-            switch(decision.move) {
-                case FOLD: case ALL_IN:
+        //Test if decision is valid
+        switch (decision.move) {
+            case FOLD:
+            case ALL_IN:
+                return decision;
+
+            case CHECK:
+                if (highestAmountPutOnTable == 0)
                     return decision;
 
-                case CHECK:
-                    if (highestAmountPutOnTable == 0)
-                        return decision;
+                if (playerCanCheckBigBlind) {
+                    return decision;
+                }
+                break;
 
-                    if (playerCanCheckBigBlind) {
-                        return decision;
-                    }
+            case CALL:
+                assert highestAmountPutOnTable >= 0 : playerToAct.getName() + " tried to call when amount put on table was " + highestAmountPutOnTable;
+                if (highestAmountPutOnTable < stackSize)
+                    return decision;
+                else {
+                    logger.print("Got decision call but highest amount was " + highestAmountPutOnTable +
+                    " and stack size was " + stackSize + ", returned decision all in instead", Logger.MessageType.DEBUG);
+                    return new Decision(Decision.Move.ALL_IN);
+                }
+
+            case BET:
+                if (highestAmountPutOnTable == 0)
+                    return decision;
+                break;
+
+            case RAISE:
+                assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.getSize() + " when highest amount put on table was 0";
+                if ((decision.getSize() + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
+                    logger.println(playerToAct.getName() + " tried to raise to " + (decision.getSize() + highestAmountPutOnTable) + " but only has " + stackSize, Logger.MessageType.GAMEPLAY);
                     break;
-
-                case CALL:
-                    assert highestAmountPutOnTable >= 0 : playerToAct.getName() + " tried to call when amount put on table was " + highestAmountPutOnTable;
-                    if (highestAmountPutOnTable < stackSize)
-                        return decision;
-                    else
-                        return new Decision(Decision.Move.ALL_IN);
-
-                case BET:
-                    if (highestAmountPutOnTable == 0)
-                        return decision;
-                    break;
-
-                case RAISE:
-                    assert highestAmountPutOnTable > 0 : playerToAct.getName() + " tried to raise by " + decision.getSize() + " when highest amount put on table was 0";
-                    if ((decision.getSize() + highestAmountPutOnTable - playerToAct.putOnTable()) > stackSize) {
-                        logger.println(playerToAct.getName() + " tried to raise to " + (decision.getSize() + highestAmountPutOnTable) + " but only has " + stackSize, Logger.MessageType.GAMEPLAY);
-                        break;
-                    }
-                    if (decision.getSize() >= currentMinimumRaise)
-                        return decision;
-                    break;
-                default: logger.println("Unknown move: " + decision.move, Logger.MessageType.DEBUG, Logger.MessageType.GAMEPLAY, Logger.MessageType.WARNINGS);
-            }
-
-
-            logger.println("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**", Logger.MessageType.WARNINGS, Logger.MessageType.GAMEPLAY, Logger.MessageType.DEBUG);
-
-            //Temp hack for testing
-            if (highestAmountPutOnTable > 0)
-                return new Decision(Decision.Move.CALL);
-            else
-                return new Decision(Decision.Move.CHECK);
+                }
+                if (decision.getSize() >= currentMinimumRaise)
+                    return decision;
+                break;
+            default:
+                logger.println("Unknown move: " + decision.move, Logger.MessageType.DEBUG, Logger.MessageType.GAMEPLAY, Logger.MessageType.WARNINGS);
         }
+
+        logger.println("**Invalid decision from " + playerToAct.getName() + ": " + decision + " - Return dummy decision**", Logger.MessageType.WARNINGS, Logger.MessageType.GAMEPLAY, Logger.MessageType.DEBUG);
+
+        //Temp hack for testing
+        if (highestAmountPutOnTable > 0)
+            return new Decision(Decision.Move.CALL);
+        else
+            return new Decision(Decision.Move.CHECK);
     }
 
     /**
@@ -385,7 +389,7 @@ public class Game {
     /**
      * Returns a list of the players who still have chips left (player.getStackSize() > 0).
      * Order: Small blind, big blind, UTG...
-     *
+     * <p>
      * return Ordered list of players still in the game
      */
     private List<Player> getOrderedListOfPlayersStillPlaying() {
@@ -448,7 +452,7 @@ public class Game {
         Player winner = playersStillInCurrentHand.get(0);
         gameController.preShowdownWinner(winner.getID());
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
-        logger.println("\n"+winner.getName()+" won the hand", Logger.MessageType.GAMEPLAY);
+        logger.println("\n" + winner.getName() + " won the hand", Logger.MessageType.GAMEPLAY);
         pot = new Pot(logger);
         delay(EVERYONE_FOLDED_DELAY);
     }
@@ -481,8 +485,9 @@ public class Game {
     }
 
     /**
-     *  Used to check if a betting round should be skipped (all (or all but one) players are all in)
-     *  @return True if betting round should be skipped
+     * Used to check if a betting round should be skipped (all (or all but one) players are all in)
+     *
+     * @return True if betting round should be skipped
      */
     private boolean skipBettingRound() {
         for (Player p : playersStillInCurrentHand)
@@ -495,9 +500,10 @@ public class Game {
     }
 
     /**
-     *   Check if all the players have acted in this betting round
-     *   A player is finished acting if he is all in or he matches the highest amount put on the table
-     *   @return True if all players are done acting this betting round
+     * Check if all the players have acted in this betting round
+     * A player is finished acting if he is all in or he matches the highest amount put on the table
+     *
+     * @return True if all players are done acting this betting round
      */
     private boolean allPlayersActed() {
         int count = 0;
@@ -514,7 +520,7 @@ public class Game {
     /**
      * @return The total number of players with chips left (in the game, not the hand)
      */
-    public int numberOfPlayersWithChipsLeft(){
+    public int numberOfPlayersWithChipsLeft() {
         assert players != null : "List of players was null";
         int count = 0;
         for (int i = 0; i < players.length; i++) {
@@ -527,7 +533,8 @@ public class Game {
     }
 
     /**
-     *  Method to set new positions on the table
+     * Method to set new positions on the table
+     *
      * @param orderedPlayerList Ordered list of the players still playing (stack > 0)
      */
     private void setNewPositions(List<Player> orderedPlayerList) {
@@ -567,7 +574,7 @@ public class Game {
     }
 
     /**
-     *  Updates the small/big blind index. Called at the start of every hand
+     * Updates the small/big blind index. Called at the start of every hand
      */
     private void updateBlindIndexes() {
         //SmallBlindIndex skips players who are bust
@@ -584,6 +591,7 @@ public class Game {
 
     /**
      * Randomly generates and returns five community cards from the deck.
+     *
      * @return Array of community cards
      */
     private Card[] generateCommunityCards() {
@@ -684,6 +692,7 @@ public class Game {
     /**
      * Set the replay card queue
      * Only used if the game is a replay. Use this queue instead of deck.draw()
+     *
      * @param cardQueue The queue of cards from the replay file
      */
     public void setReplayCardQueue(ArrayDeque<Card> cardQueue) {
@@ -692,6 +701,8 @@ public class Game {
     }
 
     public static class InvalidGameSettingsException extends Exception {
-        public InvalidGameSettingsException(String message) { super(message); }
+        public InvalidGameSettingsException(String message) {
+            super(message);
+        }
     }
 }

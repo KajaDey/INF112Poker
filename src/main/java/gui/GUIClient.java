@@ -115,7 +115,7 @@ public class GUIClient implements GameClient {
      * @return True if the move was valid
      */
     private boolean validMove(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id) ) {
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
             logger.println("You don't have this much in your stack. Moving all in");
             decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
             return false;
