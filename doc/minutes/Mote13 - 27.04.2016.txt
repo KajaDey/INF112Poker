@@ -1,0 +1,26 @@
+Møte 13 - 27.04.2016 kl 14:15
+
+Sekretær: Kristian
+
+Oppmøte: Alle
+
+Hva er gjort siden sist: 
+Implementert game clock
+
+
+Diskusjon:
+Forrige sprint
+Hva gikk bra: God kommunikasjon mellom de forskjellige teamene. God bruk av bugtracker. Gjort det lett for oss selv å implementere nettverk i denne sprinten. Gode tester. 
+Hva gikk dårlig: Tidsbruk, burde ha pushet alt før fristen. Burde fordelt arbeid med diagrammer bedre. Burde ha fikset alle testene før innlevering.
+Denne sprinten
+Hvordan vil vi gjøre nettverk:
+André jobber med lobby
+Kristian lager server på heroku (Pass: java>rust)
+Ragnhild implementerer blinds som øker pr. Tid
+Kaja lager nettverksprotokoll for ServerLobbyCommunicator
+Morten lager nettverksprotokoll for ServerGameCommunicator og starter på implementasjon
+
+
+Plan til neste møte:
+	
+Tid for neste møte: 01.05.16, kl 12.00
