@@ -70,7 +70,13 @@ public class NetworkClientTest {
 
         assertClientsNotifiedWhenNewPlayerJoined(4);
 
+        writeToSocket(0, "createTable");
 
+        String answer = readFromSocket(0);
+        assert answer.equals("tableCreated 0") : "Got message "+ answer +", expected tableCreated 0";
+
+        // createtable --> tableCreated, settings, playerjoined
+        // other players takeseat
     }
 
     private void assertClientsNotifiedWhenNewPlayerJoined(int numClients) throws IOException {
