@@ -1,0 +1,23 @@
+Møte 18 - 11.05.16, 14:15
+Sekretær: André
+
+Oppmøte:
+Alle
+
+Hva er gjort siden sist:
+Exceptions i nameGenerator
+Skrevet tester
+Laget nettverk
+
+Diskusjon:
+Teste hva som skjer hvis en person forlater spillet på sin egen screen.
+Få server hos Didrik.
+Forandre en spiller til AI hvis spilleren forlater spillet. (nedstemt)
+
+Plan til neste møte:
+Maven sin clean, skal fjerne loggfiler.
+Ha forskjellige farger på chat.
+Fikse shortcuts
+Fikse bug når programmet regner ut vinnersansynlighet
+Exit i lobbyscreen
+Vise ip-en til serveren du er i.
