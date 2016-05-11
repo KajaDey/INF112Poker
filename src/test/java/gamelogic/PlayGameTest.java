@@ -98,12 +98,4 @@ public class PlayGameTest {
             gameThread.join();
         }
     }
-
-    @Test
-    public void testPlayGameWithTwoMCTSAIsWhereBlindsAreEqualToStackSizes() throws Exception {
-        setupGameWithAIs(5000, 5000, AIType.MCTS_AI, 2);
-
-        Thread gameThread = gameControllerSpy.initGame(false, new ArrayList<>());
-        gameThread.join();
-    }
 }
