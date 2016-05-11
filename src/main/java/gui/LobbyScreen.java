@@ -44,10 +44,12 @@ public class LobbyScreen {
     private int ID;
     private Optional<LobbyTable> currentTable = Optional.empty();
     private final Logger logger;
+    private String ipAdress = "";
 
     private String [] buttonTexts = {"Take seat", "Leave table", "Delete table", "Change settings", "Start game"};
 
     public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
+        this.ipAdress = IPAddress.getHostAddress();
         this.gameController = gameController;
         this.logger = logger;
         this.tables = new HashMap<>();
@@ -56,6 +58,10 @@ public class LobbyScreen {
         Pane pane = new Pane();
         Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
         newLobby.setOnAction(event -> makeNewLobbyButtonListener());
+        Label serverIPLabel = ObjectStandards.makeLobbyLabelWhite("Server IP:","\n"+ipAdress);
+        serverIPLabel.setLayoutX(1000);
+        serverIPLabel.setLayoutY(50);
+
 
         sideMenu.getChildren().addAll(newLobby);
         sideMenu.setLayoutX(1000);
@@ -72,9 +78,10 @@ public class LobbyScreen {
         gameInfo.setMinWidth(850);
 
         fullLayout.setStyle("-fx-background-color: #602121");
-        fullLayout.getChildren().addAll(sideMenu, pane, gameInfo);
+        fullLayout.getChildren().addAll(sideMenu, pane, gameInfo,serverIPLabel);
 
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
+
 
         try {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress, GUIMain.guiMain.logger);
