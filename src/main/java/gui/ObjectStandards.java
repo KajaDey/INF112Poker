@@ -281,7 +281,7 @@ public class ObjectStandards {
         MenuItem aboutKeyCombo = new MenuItem("About Key Combinations");
 
 
-        check.setAccelerator(KeyCodeCombination.valueOf(KeyCode.SPACE + ""));
+        check.setAccelerator(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHIFT_DOWN));
         call.setAccelerator(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHIFT_DOWN));
         betRaise.setAccelerator(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN));
         fold.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE, KeyCombination.SHIFT_DOWN));
