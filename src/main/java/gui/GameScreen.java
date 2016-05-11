@@ -206,6 +206,8 @@ public class GameScreen {
             pane.requestFocus();
         });
 
+        chatField.setFocusTraversable(false);
+
         //Set listeners for chat field
         chatField.setOnAction(event -> chatTask.run());
         sendTextButton.setOnAction(event -> chatTask.run());
