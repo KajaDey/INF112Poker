@@ -3,7 +3,6 @@ package gamelogic.network;
 import gui.GameSettings;
 import network.*;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
