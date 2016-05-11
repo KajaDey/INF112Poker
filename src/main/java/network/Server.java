@@ -77,13 +77,15 @@ public class Server {
     private synchronized void removeClient(int ID) {
         Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == ID).findAny();
         if (op.isPresent()) {
-            lobbyLogger.println("Removing player " + op.get() + " from lobby");
+            lobbyLogger.println("Removing player " + op.get() + " from lobby", Logger.MessageType.NETWORK);
             //If this player was host for a table, this table is removed. Client side handles this
             Optional<LobbyTable> opTable = lobbyTables.values().stream().filter(t -> t.host == op.get()).findAny();
             opTable.ifPresent(t -> lobbyTables.remove(t.tableID));
 
             LobbyPlayer player = op.get();
-            lobbyPlayers.remove(player);
+            if (!lobbyPlayers.remove(player)) {
+                lobbyLogger.println("Attempted to remove player " + player + ", but couldn't find it in lobbyPlayers: " + lobbyPlayers, Logger.MessageType.NETWORK, Logger.MessageType.NETWORK_DEBUG, Logger.MessageType.WARNINGS);
+            }
             ClientBroadcasts.playerLeftLobby(this, player);
             if (!player.socket.isClosed()) {
                 try {

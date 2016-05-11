@@ -125,6 +125,8 @@ public class MainScreen {
 
         enter.setOnAction(e -> enterGameScreen.get());
 
+        IPIn.setOnAction(event -> enterGameScreen.get());
+
         nameIn.setOnAction(e -> enterGameScreen.get());
 
         numOfPlayersIn.setOnAction(e -> enterGameScreen.get());
