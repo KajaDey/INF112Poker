@@ -100,7 +100,7 @@ public class GameScreen {
         this.stackSizes.put(userID, 0L);
 
         if (userID == playerID) {
-            PlayerLayout pLayout = new PlayerLayout(userID,name);
+            PlayerLayout pLayout = new PlayerLayout(name);
             playerLayout = pLayout;
             pLayout.setLayoutX(scene.getWidth()/4);
             pLayout.setLayoutY(scene.getHeight()-190);
@@ -108,7 +108,7 @@ public class GameScreen {
             allPlayerLayouts.put(userID, pLayout);
         } else {
             int oppPosition = positions[opponentsAdded];
-            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition, logger);
+            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition);
 
             //Set X/Y-layout of this opponent
             double height = scene.getHeight(), width = scene.getWidth();
@@ -365,8 +365,7 @@ public class GameScreen {
         String decisionText = decision.move.toString() + " ";
 
         //Init putOnTable-map
-        if (putOnTable.get(ID) == null)
-            putOnTable.put(ID, 0L);
+            putOnTable.putIfAbsent(ID, 0L);
 
         switch (decision.move) {
             case CALL:
