@@ -408,12 +408,17 @@ public class LobbyScreen {
      * Remove player from any table he is seated at
      */
     public void playerQuit(int playerID) {
-        tables.values().forEach(t -> t.removePlayer(playerID));
+        //If this player is the host of a table, remove this table
+        Optional<LobbyTable> hostTable = tables.values().stream().filter(t -> t.getHost() == playerID).findAny();
+        if (hostTable.isPresent())
+            removeTable(hostTable.get().id);
 
+        //Remove player from any other table (should not be any if the player was host of a game)
+        tables.values().stream().forEach(t -> t.removePlayer(playerID));
+
+        //Re-display table info
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
-        else
-            System.out.println("LobbyScreen: No current table");
     }
 
 }
