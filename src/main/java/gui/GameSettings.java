@@ -144,7 +144,8 @@ public class GameSettings {
             error = "Number of players must be between 2-6";
         } else if(bigBlind <= 0) {
             error = "Blind level must be a positive whole number";
-        }
+        } else if (playerClock < 5 || playerClock > 60)
+            error = "The player clock must be between 5 and 60 seconds";
 
         return error;
     }
