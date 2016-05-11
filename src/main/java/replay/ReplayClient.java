@@ -24,12 +24,12 @@ public class ReplayClient extends GUIClient {
 
     /**
      *  This constructor is used if the replay client should have an attached GUI.
-     * @param id Client ID
+     * @param ID Client ID
      * @param gameScreen Game screen
      * @param logger
      */
-    public ReplayClient(int id, GameScreen gameScreen, ReplayReader replayReader, Logger logger) {
-        super(id, gameScreen, logger);
+    public ReplayClient(int ID, GameScreen gameScreen, ReplayReader replayReader, Logger logger) {
+        super(ID, gameScreen, logger);
         this.logger = logger;
         gui = true;
 
@@ -39,11 +39,11 @@ public class ReplayClient extends GUIClient {
     /**
      *  This constructor is used if the replay client should not have an attached GUI.
      *  This object will not use any of the information passed to it.
-     * @param id ID of this client
+     * @param ID ID of this client
      * @param logger
      */
-    public ReplayClient(int id, ReplayReader replayReader, Logger logger) {
-        super(id, null, logger);
+    public ReplayClient(int ID, ReplayReader replayReader, Logger logger) {
+        super(ID, null, logger);
         this.logger = logger;
         gui = false;
 
@@ -132,9 +132,9 @@ public class ReplayClient extends GUIClient {
     }
 
     @Override
-    public void playerMadeDecision(Integer playerId, Decision decision) {
+    public void playerMadeDecision(Integer playerID, Decision decision) {
         if (gui)
-            super.playerMadeDecision(playerId, decision);
+            super.playerMadeDecision(playerID, decision);
     }
 
     @Override
