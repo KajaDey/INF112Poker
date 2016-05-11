@@ -391,7 +391,7 @@ public class GameScreen {
      */
     private String evaluateDecision(int ID, Decision decision) {
         long newStackSize = stackSizes.get(ID);
-        String decisionText = decision.move.toString() + " ";
+        String decisionText = decision.move.toGUIString() + " ";
 
         //Init putOnTable-map
             putOnTable.putIfAbsent(ID, 0L);
