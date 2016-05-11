@@ -140,7 +140,7 @@ public class HandCalculator {
                         .map(scenariosWon::get)
                         .reduce(0, Integer::sum);
                 if (totalScenariosPlayed % 500 == 0 && totalScenariosPlayed > 0) {
-                    if (totalScenariosPlayed >= 5000000 && Thread.currentThread().isInterrupted()) {
+                    if (totalScenariosPlayed >= 5000000 || Thread.currentThread().isInterrupted()) {
                         return percentagesFromScenariosWon(scenariosWon);
                     }
                     progressCallback.accept(percentagesFromScenariosWon(scenariosWon));
