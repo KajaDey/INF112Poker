@@ -143,7 +143,7 @@ public class HandCalculator {
         int totalScenariosPlayed = scenariosWon.keySet().stream()
                 .map(scenariosWon::get)
                 .reduce(0, Integer::sum);
-        if (totalScenariosPlayed % 200 == 0 && totalScenariosPlayed > 0) {
+        if (totalScenariosPlayed % 1000 == 0 && totalScenariosPlayed > 0) {
             if (Thread.currentThread().isInterrupted()) {
                 //System.out.println(System.currentTimeMillis() % 10000 + "Thread has been interrupted, returning");
                 return;
@@ -162,7 +162,7 @@ public class HandCalculator {
         List<Card> newCommunityCards = new ArrayList<>(communityCards);
 
         for (int i = startIndex; i < unusedCards.size(); i++) {
-            if (totalScenariosPlayed % 200 == 0) {
+            if (totalScenariosPlayed % 1000 == 0) {
                 if (Thread.currentThread().isInterrupted()) {
                     //System.out.println(System.currentTimeMillis() % 10000 + "Thread has been interrupted, returning");
                     return;

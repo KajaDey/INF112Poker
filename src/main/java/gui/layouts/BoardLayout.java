@@ -70,7 +70,7 @@ public class BoardLayout extends VBox {
      * Set the pot
      */
     public void setPotLabel(String pot) {
-        potLabel.setText("$" + pot);
+        potLabel.setText(pot);
     }
 
     /**

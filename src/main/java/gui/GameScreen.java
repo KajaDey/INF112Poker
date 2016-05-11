@@ -180,6 +180,7 @@ public class GameScreen {
         Button sendTextButton = ObjectStandards.makeStandardButton("Send");
         sendTextButton.setLayoutX(230);
         sendTextButton.setLayoutY(scene.getHeight() - 40);
+        sendTextButton.setFocusTraversable(false);
 
         pane.getChildren().addAll(chatField, sendTextButton);
 
@@ -188,6 +189,7 @@ public class GameScreen {
             if (chatListener.isPresent())
                 chatListener.get().accept(chatField.getText());
             chatField.setText("");
+            pane.requestFocus();
         });
 
         //Set listeners for chat field
@@ -466,7 +468,7 @@ public class GameScreen {
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
-        boardLayout.setPotLabel("Pot: " + potString);
+        boardLayout.setPotLabel("Pot $" + potString);
     }
 
     /**

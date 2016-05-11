@@ -155,6 +155,8 @@ public class ButtonListeners {
      * @param file File selected by user to read replay from
      */
     public static void startReplayButtonListener(GameController gameController, File file) {
+        if (file == null)
+            return;
         gameController.startReplay(file);
     }
 
