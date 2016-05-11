@@ -201,8 +201,6 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         amountTextField.setVisible(visible);
         slider.setVisible(visible);
         progressBar.setVisible(visible);
-
-        this.requestFocus();
     }
 
     public void setPositionLabel(String pos, Image buttonImage){
@@ -213,8 +211,14 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     public void setStackLabel(String stack) {
         //If stack is a number, set stackSize to this number
         try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
-        if (stack.equals("0")) stack = "All in";
-        stackLabel.setText("$" + stack);
+        if (stack.equals("0"))
+            stackLabel.setText("All in");
+        else
+            stackLabel.setText("$" + stack);
+    }
+
+    public void setBustLabel(String bustText) {
+        stackLabel.setText(bustText);
     }
 
     public void setLastMove(String lastMove, Image chipImage) {
@@ -243,11 +247,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     /**
-     *
      * Set card image and make them visible
-     *
-     * @param leftImage
-     * @param rightImage
      */
     public synchronized void setCardImage(Image leftImage, Image rightImage) {
         DropShadow dropShadow = new DropShadow();
@@ -266,7 +266,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     public void bustPlayer(String bustedText) {
         setLastMove("", null);
         setPercentLabel("");
-        setStackLabel(bustedText);
+        setBustLabel(bustedText);
         setPositionLabel("", null);
         setCardImage(null, null);
         slider.setVisible(false);

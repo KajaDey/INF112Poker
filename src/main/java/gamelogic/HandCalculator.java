@@ -105,7 +105,7 @@ public class HandCalculator {
      * @return A map from player ids to their probability of winning
      */
     public static Map<Integer, Double> getNewWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards) {
-        return getNewWinningPercentages(holeCards, communityCards, (s) -> {}, 0L);
+        return getNewWinningPercentages(holeCards, communityCards, (s) -> {});
     }
 
     /**
@@ -113,12 +113,12 @@ public class HandCalculator {
      * @param holeCards The holecards for each player
      * @param communityCards The community cards, which may be empty
      * @param progressCallback If you do not want to wait for the percentages to be calulated precisely, this function will be called with preliminary results
-     * @param maxTime Maximum amount of time to take, in milliseconds
      * @return A map from player ids to their probability of winning
      */
     public static Map<Integer, Double> getNewWinningPercentages(Map<Integer, Card[]> holeCards, List<Card> communityCards,
-                                                                Consumer<Map<Integer, Double>> progressCallback, long maxTime) {
+                                                                Consumer<Map<Integer, Double>> progressCallback) {
         holeCards = new HashMap<>(holeCards);
+        communityCards = communityCards == null ? new ArrayList<>() : new ArrayList<>(communityCards);
         Map<Integer, Integer> scenariosWon = new HashMap<>();
         ArrayList<Card> unusedCards = new ArrayList<>(Arrays.asList(Card.getAllCards()));
 
@@ -129,14 +129,14 @@ public class HandCalculator {
         unusedCards.removeAll(communityCards);
         Collections.shuffle(unusedCards);
 
-        addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0, progressCallback, maxTime > 0 ? maxTime + System.currentTimeMillis() : Long.MAX_VALUE);
+        addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0, progressCallback);
 
         return percentagesFromScenariosWon(scenariosWon);
     }
 
     private static void addWinningPercentages(Map<Integer, Card[]> holeCards, Map<Integer, Integer> scenariosWon,
                                               List<Card> communityCards, ArrayList<Card> unusedCards, int startIndex,
-                                              Consumer<Map<Integer, Double>> progressCallback, long timeToStop) {
+                                              Consumer<Map<Integer, Double>> progressCallback) {
         if (startIndex == unusedCards.size()) {
             return;
         }
@@ -144,13 +144,15 @@ public class HandCalculator {
                 .map(scenariosWon::get)
                 .reduce(0, Integer::sum);
         if (totalScenariosPlayed % 1000 == 0 && totalScenariosPlayed > 0) {
-            if (System.currentTimeMillis() > timeToStop) {
+            if (Thread.currentThread().isInterrupted()) {
+                //System.out.println(System.currentTimeMillis() % 10000 + "Thread has been interrupted, returning");
                 return;
             }
             progressCallback.accept(percentagesFromScenariosWon(scenariosWon));
         }
         if (communityCards.size() == 5) {
             Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
+            assert !holeCards.isEmpty();
             Card[] max = Collections.max(holeCards.values(), comp);
             holeCards.forEach((id, hc) -> {
                 if (Arrays.equals(hc, max))
@@ -161,8 +163,13 @@ public class HandCalculator {
         List<Card> newCommunityCards = new ArrayList<>(communityCards);
 
         for (int i = startIndex; i < unusedCards.size(); i++) {
+            if (totalScenariosPlayed % 1000 == 0) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+            }
             newCommunityCards.add(unusedCards.get(i));
-            addWinningPercentages(holeCards, scenariosWon, newCommunityCards, unusedCards, i + 1, progressCallback, timeToStop);
+            addWinningPercentages(holeCards, scenariosWon, newCommunityCards, unusedCards, i + 1, progressCallback);
             newCommunityCards.remove(newCommunityCards.size() - 1);
         }
     }

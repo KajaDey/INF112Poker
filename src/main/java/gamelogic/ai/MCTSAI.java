@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public class MCTSAI implements GameClient {
 
     public final double contemptFactor;
-    private final int playerId;
+    private final int playerID;
     private int amountOfPlayers;
     private long smallBlindAmount;
     private long bigBlindAmount;
@@ -21,37 +21,36 @@ public class MCTSAI implements GameClient {
     private Optional<Map<Integer, Long>> stackSizes;
     private Optional<Map<Integer, Integer>> positions;
     private Optional<Map<Integer, String>> names;
-    private Consumer<String> chatListener;
     private final Logger logger;
 
-    public MCTSAI(int playerId, double contemptFactor, Logger logger) {
+    public MCTSAI(int playerID, double contemptFactor, Logger logger) {
         this.logger = logger;
         gameState = Optional.empty();
         stackSizes = Optional.empty();
         positions = Optional.empty();
         names = Optional.empty();
-        this.playerId = playerId;
+        this.playerID = playerID;
         this.contemptFactor = contemptFactor;
     }
 
-    public MCTSAI(int playerId, Logger logger) {
-        this(playerId, 1.0, logger);
+    public MCTSAI(int playerID, Logger logger) {
+        this(playerID, 1.0, logger);
     }
 
     @Override
     public Decision getDecision(long timeToThink) {
         assert stackSizes.isPresent();
-        assert holeCards.size() == 2: "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
-        assert stackSizes.get().get(playerId) > 0: "AI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerId) + ")";
+        assert holeCards.size() == 2 : "AI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
+        assert stackSizes.get().get(playerID) > 0 : "AI was asked to make a decicion after going all in (stacksize=" + stackSizes.get().get(playerID) + ")";
         assert positions.isPresent() : "AI was asked to make a decision without receiving positions";
         assert names.isPresent() : "AI was asked to make a decision without receiving names";
         assert smallBlindAmount > 0 && bigBlindAmount > 0 : "AI was sent decision with receiving blinds";
         if (!gameState.isPresent()) {
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount, logger));
-            gameState.get().giveHoleCards(this.playerId, holeCards);
+            gameState.get().giveHoleCards(this.playerID, holeCards);
         }
 
-        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerId, Math.sqrt(contemptFactor), logger);
+        PokerMCTS mcts = new PokerMCTS(gameState.get(), amountOfPlayers, playerID, Math.sqrt(contemptFactor), logger);
         return mcts.calculateFor(timeToThink);
     }
 
@@ -79,7 +78,8 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void gameOver(Statistics statistics) { }
+    public void gameOver(Statistics statistics) {
+    }
 
     @Override
     public void printToLogField(String output) {
@@ -112,7 +112,7 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void playerMadeDecision(Integer playerId, Decision decision) {
+    public void playerMadeDecision(Integer playerID, Decision decision) {
         assert stackSizes.isPresent() : " MCTSAI was sent a decicion without first receving stacksizes";
         assert stackSizes.get().size() == amountOfPlayers : "MCTSAI received stackSizes for " + positions.get().size() + " players, but there are " + amountOfPlayers + " in the game";
         assert positions.isPresent() : "MCTSAI was sent a decision without receiving positions";
@@ -123,10 +123,10 @@ public class MCTSAI implements GameClient {
         assert smallBlindAmount > 0 && bigBlindAmount > 0 : "AI was sent decision with receiving blinds";
         if (!gameState.isPresent()) {
             gameState = Optional.of(new GameState(amountOfPlayers, positions.get(), stackSizes.get(), names.get(), smallBlindAmount, bigBlindAmount, logger));
-            gameState.get().giveHoleCards(this.playerId, holeCards);
+            gameState.get().giveHoleCards(this.playerID, holeCards);
         }
-        assert playerId == gameState.get().currentPlayer.id
-                : "Received decision " + decision + " for player " + playerId + " at position " + positions.get().get(playerId) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
+        assert playerID == gameState.get().currentPlayer.id
+                : "Received decision " + decision + " for player " + playerID + " at position " + positions.get().get(playerID) + ", but currentPlayer is " + gameState.get().currentPlayer.id + " at position " + gameState.get().currentPlayer.position;
         try {
             gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
         } catch (IllegalDecisionException e) {
@@ -152,14 +152,15 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void setSmallBlind(long smallBlind) { smallBlindAmount = smallBlind;
+    public void setSmallBlind(long smallBlind) {
+        smallBlindAmount = smallBlind;
     }
 
     @Override
     public void setPositions(Map<Integer, Integer> positions) {
         assert positions.size() == amountOfPlayers :
                 "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
-        assert positions.get(playerId) != null : "AI received positions object which didn't contain its own position";
+        assert positions.get(playerID) != null : "AI received positions object which didn't contain its own position";
 
         this.positions = Optional.of(positions);
     }
@@ -170,7 +171,8 @@ public class MCTSAI implements GameClient {
     }
 
     @Override
-    public void setLevelDuration(int levelDuration) { }
+    public void setLevelDuration(int levelDuration) {
+    }
 
     @Override
     public void setFlop(Card card1, Card card2, Card card3) {
@@ -222,6 +224,5 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setChatListener(Consumer<String> chatListener) {
-        this.chatListener = chatListener;
     }
 }

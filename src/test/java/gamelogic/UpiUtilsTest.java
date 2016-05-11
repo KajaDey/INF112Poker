@@ -47,12 +47,12 @@ public class UpiUtilsTest {
 
     @Test
     public void testParsingStatisticsObjectBackAndForth() {
-        NameGenerator.readNewSeries();
+        String [] nameArray = new String[]{"Kristian", "Ragnhild", "Morten", "Andre", "Jostein", "Kaja", "Vegar"};
         HashMap<Integer, Integer> rankingTable = new HashMap<>();
         HashMap<Integer, String> names = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             rankingTable.put(i, i + 1);
-            names.put(i, NameGenerator.getRandomName());
+            names.put(i, nameArray[i]);
         }
 
         Statistics stats = new Statistics(0, rankingTable, names, 10, 20, 5, 30, 15, "Royal Straight Flush");

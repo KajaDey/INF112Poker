@@ -42,7 +42,7 @@ Tells the client that a whole new game is being played, with new players and new
 \subsection*{newHand}
 Tells the client that a new hand is starting.
 
-\subsection*{clientId \textlangle{}id\textrangle{}}
+\subsection*{clientId \textlangle{}ID\textrangle{}}
 Sends the client's ID in the game. Each player on the table has a unique non-negative ID, which is used when sending names, positions, etc. This should be sent immediately after a newgame command, before amountOfPlayers and other information about the players.
 
 \subsection*{amountOfPlayers \textlangle{}n\textrangle{}}
@@ -66,8 +66,8 @@ Sends the big blind.
 \subsection*{levelDuration \textlangle{}n\textrangle{}}
 Sends the duration of each blind level, in minutes.
 
-\subsection*{setHand \textlangle{}id\textrangle{} \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}}
-Sends the hole cards of the player's id. The client's own hole cards are sent at the start of each hand; other players' hole cards are sent during showdown, or when reviewing games.
+\subsection*{setHand \textlangle{}ID\textrangle{} \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}}
+Sends the hole cards of the player's ID. The client's own hole cards are sent at the start of each hand; other players' hole cards are sent during showdown, or when reviewing games.
 
 \subsection*{setFlop \textlangle{}card1\textrangle{} \textlangle{}card2\textrangle{}  \textlangle{}card3\textrangle{}}
 Sends the flop cards to the client. See section ``decision and card formats'' for the format for cards.
@@ -78,7 +78,7 @@ Sends the turn card to the client. See section ``decision and card formats'' for
 \subsection*{setRiver \textlangle{}card\textrangle{}}
 Sends the river card to the client. See section ``decision and card formats'' for the format for cards.
 
-\subsection{playerBust <id> <rank>}
+\subsection{playerBust <ID> <rank>}
 Sent when a player is busted (is out of the game). Also sends the position the player lost in.
 
 \subsection{showdown <line1> <line2> ... }
@@ -87,7 +87,7 @@ Sent after a showdown, sending n lines of text describing who won the pot and an
 \subsection*{getDecision \textlangle{}timeToThink\textrangle{}}
 It's the client's turn, and the server is asking for a decision. The server expect a decision command in return. The timeToThink field is the time the client has to think, in milliseconds. If the client does not return a decision in time, the server may give the client a ``default'' decision, or otherwise override the client's wishes.
 
-\subsection*{playerMadeDecision \textlangle{}id\textrangle{} \textlangle{}decision\textrangle{}}
+\subsection*{playerMadeDecision \textlangle{}ID\textrangle{} \textlangle{}decision\textrangle{}}
 Sent to every client whenever any player makes a decision in the game. Clients are also sent their own decisions this way. See section ``decision and card formats'' for the format for decisions.
 
 \section{Client to server}

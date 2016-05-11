@@ -3,7 +3,6 @@ package gui;
 import gamelogic.*;
 import gamelogic.ai.GameState;
 import javafx.application.Platform;
-import jdk.management.resource.internal.inst.WindowsAsynchronousFileChannelImplRMHooks;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -20,13 +19,14 @@ import java.util.stream.Collectors;
 
 public class GUIClient implements GameClient {
 
-    private int id;
+    private int ID;
     private GameScreen gameScreen;
 
     private Optional<GameState> gameState = Optional.empty();
     private Optional<Map<Integer, Integer>> positions = Optional.empty();
     private Optional<Map<Integer, String>> names = Optional.empty();
     private Map<Integer, Card[]> holeCards = new HashMap<>();
+    private List<Card> communityCards = new ArrayList<>();
     private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(3);
 
     private int amountOfPlayers;
@@ -37,8 +37,8 @@ public class GUIClient implements GameClient {
 
     private final Logger logger;
 
-    public GUIClient(int id, GameScreen gameScreen, Logger logger) {
-        this.id = id;
+    public GUIClient(int ID, GameScreen gameScreen, Logger logger) {
+        this.ID = ID;
         this.gameScreen = gameScreen;
         this.logger = logger;
     }
@@ -86,13 +86,13 @@ public class GUIClient implements GameClient {
 
         switch (move) {
             case BET:
-                if (moveSize == stackSizes.get(this.id))
+                if (moveSize == stackSizes.get(this.ID))
                     decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
                 else
                     decisionBlockingQueue.add(new Decision(move, moveSize));
                 break;
             case RAISE:
-                if (moveSize == stackSizes.get(this.id))
+                if (moveSize == stackSizes.get(this.ID))
                     decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
                 else
                     decisionBlockingQueue.add(new Decision(move, moveSize - highestAmountPutOnTable));
@@ -115,13 +115,13 @@ public class GUIClient implements GameClient {
      * @return True if the move was valid
      */
     private boolean validMove(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(ID)) {
             logger.println("You don't have this much in your stack. Moving all in");
             decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
             return false;
         }
         else if (move == Decision.Move.RAISE && moveSize- highestAmountPutOnTable < Math.max(bigBlind, minimumRaise) &&
-                (moveSize != stackSizes.get(id))) {
+                (moveSize != stackSizes.get(ID))) {
             logger.println("Raise is too small");
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
@@ -145,13 +145,18 @@ public class GUIClient implements GameClient {
     public void setHandForClient(int userID, Card card1, Card card2) {
         this.holeCards.put(userID, new Card[]{card1, card2});
         Platform.runLater(() -> gameScreen.setHandForUser(userID, card1, card2));
+        showPercentagesIfAppropriate();
+    }
 
-        // Wait for the GUI to update, so that showPercentages can see the cards. If the wait is sometimes too short, that's fine
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) { }
-        if (gameState.isPresent() && this.holeCards.size() >= gameState.get().getPlayersAllIn() && userID != id) {
-            gameScreen.showPercentages();
+    public void showPercentagesIfAppropriate() {
+        System.out.println("Has " + holeCards.size() + " hole cards, " + gameState.get().getPlayersAllIn() + " all in, " + gameState.get().getPlayersLeftInHand() + " playing");
+        if (gameState.isPresent() && this.holeCards.size() >= gameState.get().getPlayersAllIn() + gameState.get().getPlayersLeftInHand() && this.holeCards.size() > 1) {
+            Map<Integer, Card[]> holeCardsStillInHand = new HashMap<>();
+            this.holeCards.keySet().stream().filter(id -> {
+                gamelogic.ai.Player player = gameState.get().players.stream().filter(p -> p.id == id).findAny().get();
+                return player.isAllIn || player.isInHand;
+            }).forEach(id -> holeCardsStillInHand.put(id, holeCards.get(id).clone()));
+            gameScreen.showPercentages(holeCardsStillInHand, this.communityCards);
         }
     }
 
@@ -164,6 +169,11 @@ public class GUIClient implements GameClient {
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
         }
+        communityCards.add(card1);
+        communityCards.add(card2);
+        communityCards.add(card3);
+
+        showPercentagesIfAppropriate();
         Platform.runLater(() -> gameScreen.displayFlop(card1, card2, card3));
         newBettingRound();
     }
@@ -175,6 +185,8 @@ public class GUIClient implements GameClient {
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
         }
+        communityCards.add(turn);
+        showPercentagesIfAppropriate();
         Platform.runLater(() -> gameScreen.displayTurn(turn));
         newBettingRound();
     }
@@ -186,13 +198,18 @@ public class GUIClient implements GameClient {
         } catch (IllegalDecisionException e) {
             e.printStackTrace();
         }
+        communityCards.add(river);
+        showPercentagesIfAppropriate();
         Platform.runLater(() -> gameScreen.displayRiver(river));
         newBettingRound();
     }
 
     @Override
     public void startNewHand() {
+        communityCards.clear();
         Platform.runLater(() -> gameScreen.startNewHand());
+        Thread.yield();
+
         gameState = Optional.empty();
         newBettingRound();
         holeCards.clear();
@@ -238,7 +255,11 @@ public class GUIClient implements GameClient {
         if (!gameState.isPresent()) {
             initGameState();
         }
-
+        try {
+            gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
+        } catch (IllegalDecisionException e) {
+            assert false : "Illegal decision " + e;
+        }
         switch (decision.move) {
             case SMALL_BLIND: case BIG_BLIND:
                 highestAmountPutOnTable = decision.move == Decision.Move.BIG_BLIND ? bigBlind : smallBlind;
@@ -252,12 +273,11 @@ public class GUIClient implements GameClient {
                 break;
             case ALL_IN:
                 break;
+            case FOLD:
+                showPercentagesIfAppropriate();
+                break;
         }
-        try {
-            gameState.get().makeGameStateChange(new GameState.PlayerDecision(decision));
-        } catch (IllegalDecisionException e) {
-            assert false : "Illegal decision " + e;
-        }
+
         Platform.runLater(() -> gameScreen.playerMadeDecision(playerId, decision));
 
         GameState.NodeType nextNodeType = gameState.get().getNextNodeType();
@@ -298,7 +318,7 @@ public class GUIClient implements GameClient {
         if (!playersSeated) {
             List<Integer> ids = positions.keySet().stream().sorted((i,j) -> positions.get(i).compareTo(positions.get(j))).collect(Collectors.toList());
             for (int i = 0; i < positions.size(); i++) {
-                int playerID = ids.get((ids.indexOf(this.id) + i) % positions.size());
+                int playerID = ids.get((ids.indexOf(this.ID) + i) % positions.size());
                 Platform.runLater(() -> gameScreen.insertPlayer(playerID, this.names.get().get(playerID)));
             }
             playersSeated = true;

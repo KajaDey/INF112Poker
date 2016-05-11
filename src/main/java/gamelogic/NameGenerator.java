@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -21,6 +22,7 @@ public class NameGenerator {
 
     private static String filePath;
     public static ArrayList<String> names = new ArrayList<>();
+    public static String backupNames = "Kristian,Ragnhild,André,Henrik,Simon,Jostein,Vegar,Morten,Mariah,Kaja";
     public static ArrayList<String> characterNames = new ArrayList<>();
     public static ArrayList<String> pathsOfSeries = new ArrayList<>();
     public static String pathOfSeries = "";
@@ -55,13 +57,15 @@ public class NameGenerator {
         characterNames = new ArrayList<>();
         pathsOfSeries = new ArrayList<>();
 
-        String url = "resources/nameList/";
-        ArrayList<String> names = new ArrayList<>(Arrays.asList(new File(url).list()));
+        try {
+            String url = "resources/nameList/";
+            ArrayList<String> names = new ArrayList<>(Arrays.asList(new File(url).list()));
 
-        for (String name : names) {
-            name = url + name;
-            pathsOfSeries.add(name);
-        }
+            for (String name : names) {
+                name = url + name;
+                pathsOfSeries.add(name);
+            }
+
 
         //get random filepath from a list
         pathOfSeries = pathsOfSeries.get(random.nextInt(pathsOfSeries.size()));
@@ -74,6 +78,12 @@ public class NameGenerator {
         } catch (IOException e) {
             System.out.println("Error reading file: " + pathOfSeries);
             e.printStackTrace();
+        }
+        }catch (NullPointerException e){
+            String[] array = backupNames.split(",");
+            for (String s : array) {
+                characterNames.add(s);
+            }
         }
     }
 }

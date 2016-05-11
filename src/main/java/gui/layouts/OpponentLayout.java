@@ -165,8 +165,9 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     @Override
     public void setStackLabel(String s){
         if (s.equals("0"))
-            s = "All in";
-        stackSizeLabel.setText("$" + s);
+            stackSizeLabel.setText("All in");
+        else
+            stackSizeLabel.setText("$" + s);
     }
 
     /**
@@ -226,7 +227,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     public synchronized void bustPlayer(String bustedText) {
         isBust = true;
         setLastMove("", null);
-        setStackLabel(bustedText);
+        setBustLabel(bustedText);
         setPositionLabel("", null);
         setCardImage(null, null);
         setPercentLabel("");
@@ -235,6 +236,10 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     @Override
     public boolean isBust() {
         return isBust;
+    }
+
+    public void setBustLabel(String bustText) {
+        stackSizeLabel.setText(bustText);
     }
 
     public synchronized void highlightTurn(boolean highlight) {

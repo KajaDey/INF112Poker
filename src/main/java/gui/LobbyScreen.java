@@ -31,23 +31,25 @@ public class LobbyScreen {
 
     GameController gameController;
 
-    static VBox settings;
-    static VBox sideMenu = new VBox();
-    static Pane fullLayout = new Pane();
-    static Pane gameInfo;
-    static Label numberOfPlayer;
-    static Label names;
-    static Button takeASeat;
+    private VBox settings;
+    private VBox sideMenu = new VBox();
+    private Pane fullLayout = new Pane();
+    private Pane gameInfo;
+    private Label numberOfPlayer;
+    private Label names;
+    private Button takeASeat;
     private ServerLobbyCommunicator serverLobbyCommunicator;
     private Map<Integer, LobbyTable> tables;
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
     private int ID;
     private Optional<LobbyTable> currentTable = Optional.empty();
     private final Logger logger;
+    private String ipAdress = "";
 
     private String [] buttonTexts = {"Take seat", "Leave table", "Delete table", "Change settings", "Start game"};
 
     public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
+        this.ipAdress = IPAddress.getHostAddress();
         this.gameController = gameController;
         this.logger = logger;
         this.tables = new HashMap<>();
@@ -56,6 +58,10 @@ public class LobbyScreen {
         Pane pane = new Pane();
         Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
         newLobby.setOnAction(event -> makeNewLobbyButtonListener());
+        Label serverIPLabel = ObjectStandards.makeLobbyLabelWhite("Server IP:","\n"+ipAdress);
+        serverIPLabel.setLayoutX(1000);
+        serverIPLabel.setLayoutY(50);
+
 
         sideMenu.getChildren().addAll(newLobby);
         sideMenu.setLayoutX(1000);
@@ -72,9 +78,10 @@ public class LobbyScreen {
         gameInfo.setMinWidth(850);
 
         fullLayout.setStyle("-fx-background-color: #602121");
-        fullLayout.getChildren().addAll(sideMenu, pane, gameInfo);
+        fullLayout.getChildren().setAll(sideMenu, pane, gameInfo,serverIPLabel);
 
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
+
 
         try {
             serverLobbyCommunicator = new ServerLobbyCommunicator(name, this, IPAddress, GUIMain.guiMain.logger);
@@ -100,12 +107,12 @@ public class LobbyScreen {
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
         vBox.setStyle(styling);
-        hBox.getChildren().addAll(names, numberOfPlayer);
+        hBox.getChildren().setAll(names, numberOfPlayer);
 
         hBox.setMinWidth(150);
         vBox.setMinHeight(75);
 
-        vBox.getChildren().addAll(hBox, moreInfo);
+        vBox.getChildren().setAll(hBox, moreInfo);
 
         moreInfo.setOnAction(event -> moreInfoButtonListener(table));
 
@@ -347,7 +354,11 @@ public class LobbyScreen {
      * @param playerID The players id
      */
     public void removePlayer(int playerID, int tableID ) {
-        getTable(tableID).removePlayer(playerID);
+        LobbyTable t = getTable(tableID);
+        if (t.getHost() == playerID)
+            removeTable(tableID);
+        else
+            t.removePlayer(playerID);
 
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
@@ -404,12 +415,17 @@ public class LobbyScreen {
      * Remove player from any table he is seated at
      */
     public void playerQuit(int playerID) {
-        tables.values().forEach(t -> t.removePlayer(playerID));
+        //If this player is the host of a table, remove this table
+        Optional<LobbyTable> hostTable = tables.values().stream().filter(t -> t.getHost() == playerID).findAny();
+        if (hostTable.isPresent())
+            removeTable(hostTable.get().id);
 
+        //Remove player from any other table (should not be any if the player was host of a game)
+        tables.values().stream().forEach(t -> t.removePlayer(playerID));
+
+        //Re-display table info
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
-        else
-            System.out.println("LobbyScreen: No current table");
     }
 
 }
