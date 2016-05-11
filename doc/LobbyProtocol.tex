@@ -11,9 +11,9 @@
 When a new client connects, they need to be sent all information about the lobby. This should only be sent once during initialization.
 
 \subsection*{playerNames <id1 name1> <id2 name2> ...}
-The id and name of all the players in the lobby, including those on unstarted tables
+The ID and name of all the players in the lobby, including those on unstarted tables
 
-\subsection*{table <id> settings <{}<setting1 value1> <settings2 value2> ...> players <{}<id1> <id2> ...>}
+\subsection*{table <ID> settings <{}<setting1 value1> <settings2 value2> ...> players <{}<id1> <id2> ...>}
 Sends information about a single table. If there are many open tables, this must be sent for each of them.
 
 \subsection*{lobbySent}
@@ -23,16 +23,16 @@ The server is finished sending lobby information. After this, the client should 
 \section{Sending lobby updates}
 When a client has received the initial lobby, all further lobby changes are sent as lobby updates.
 
-\subsection*{playerJoinedLobby <id> <name>}
+\subsection*{playerJoinedLobby <ID> <name>}
 A new player connected to the lobby
 
-\subsection*{playerLeftLobby <id>}
+\subsection*{playerLeftLobby <ID>}
 A player left the lobby
 
-\subsection*{playerJoinedTable <playerId> <tableId>}
+\subsection*{playerJoinedTable <playerID> <tableId>}
 A player joined the table
 
-\subsection*{playerLeftTable <playerId> <tableId>}
+\subsection*{playerLeftTable <playerID> <tableId>}
 A player left the table
 
 \subsection*{tableCreated <tableId>}

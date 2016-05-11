@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class GUIClient implements GameClient {
 
-    private int id;
+    private int ID;
     private GameScreen gameScreen;
 
     private Optional<GameState> gameState = Optional.empty();
@@ -37,8 +37,8 @@ public class GUIClient implements GameClient {
 
     private final Logger logger;
 
-    public GUIClient(int id, GameScreen gameScreen, Logger logger) {
-        this.id = id;
+    public GUIClient(int ID, GameScreen gameScreen, Logger logger) {
+        this.ID = ID;
         this.gameScreen = gameScreen;
         this.logger = logger;
     }
@@ -86,13 +86,13 @@ public class GUIClient implements GameClient {
 
         switch (move) {
             case BET:
-                if (moveSize == stackSizes.get(this.id))
+                if (moveSize == stackSizes.get(this.ID))
                     decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
                 else
                     decisionBlockingQueue.add(new Decision(move, moveSize));
                 break;
             case RAISE:
-                if (moveSize == stackSizes.get(this.id))
+                if (moveSize == stackSizes.get(this.ID))
                     decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
                 else
                     decisionBlockingQueue.add(new Decision(move, moveSize - highestAmountPutOnTable));
@@ -115,13 +115,13 @@ public class GUIClient implements GameClient {
      * @return True if the move was valid
      */
     private boolean validMove(Decision.Move move, long moveSize) {
-        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(id)) {
+        if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(ID)) {
             logger.println("You don't have this much in your stack. Moving all in");
             decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
             return false;
         }
         else if (move == Decision.Move.RAISE && moveSize- highestAmountPutOnTable < Math.max(bigBlind, minimumRaise) &&
-                (moveSize != stackSizes.get(id))) {
+                (moveSize != stackSizes.get(ID))) {
             logger.println("Raise is too small");
             Platform.runLater(() -> gameScreen.setErrorStateOfAmountTextField(true));
             return false;
@@ -318,7 +318,7 @@ public class GUIClient implements GameClient {
         if (!playersSeated) {
             List<Integer> ids = positions.keySet().stream().sorted((i,j) -> positions.get(i).compareTo(positions.get(j))).collect(Collectors.toList());
             for (int i = 0; i < positions.size(); i++) {
-                int playerID = ids.get((ids.indexOf(this.id) + i) % positions.size());
+                int playerID = ids.get((ids.indexOf(this.ID) + i) % positions.size());
                 Platform.runLater(() -> gameScreen.insertPlayer(playerID, this.names.get().get(playerID)));
             }
             playersSeated = true;
