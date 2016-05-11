@@ -183,12 +183,14 @@ public class Server {
                                 return;
                             case "upi":
                                 if (tokens.length < 1) {
+                                    write("errorMessage \"Handshake error, no upi version submitted\"");
                                     receivedIllegalCommandFrom(this, line);
                                     return;
                                 }
                                 if (!tokens[1].equalsIgnoreCase(CURRENT_UPI_VERSION)) {
                                     lobbyLogger.println("Client " + this.id + "s upi version("+ tokens[1]+") does not match server version (" +
                                             CURRENT_UPI_VERSION + ")", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS );
+                                    write("errorMessage \"You are running the wrong upi version. Server version is " + CURRENT_UPI_VERSION + "\"");
                                     receivedIllegalCommandFrom(this, line);
                                     return;
                                 }
