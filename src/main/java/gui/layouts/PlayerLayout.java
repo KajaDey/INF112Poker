@@ -218,7 +218,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
         if (stack.equals("0"))
             stackLabel.setText("All in");
         else
-            stackLabel.setText("$" + stack);
+            stackLabel.setText("" + stack);
     }
 
     private void setBustLabel(String bustText) {
