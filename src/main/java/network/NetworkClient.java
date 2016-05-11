@@ -82,7 +82,7 @@ public class NetworkClient implements GameClient {
                         continue;
                     }
 
-                    logger.println("Client #" + playerID + ": " + input, Logger.MessageType.NETWORK);
+                    logger.println("Client #" + playerID + ": " + input, Logger.MessageType.NETWORK_DEBUG);
                     Optional<String[]> tokens = UpiUtils.tokenize(input);
                     if (tokens.isPresent() && tokens.get().length != 0) {
                         switch (tokens.get()[0]) {
@@ -100,7 +100,7 @@ public class NetworkClient implements GameClient {
                                 nameBlockingQueue.add(tokens.get()[1]);
                                 break;
                             default:
-                                logger.println("Unrecognized input", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+                                logger.println("Unrecognized input", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK_DEBUG);
                         }
                     }
                 }
@@ -144,6 +144,7 @@ public class NetworkClient implements GameClient {
             }
         }
         else {
+            logger.println("Client #" + playerID + " is dropped, cannot ask for decision", Logger.MessageType.NETWORK_DEBUG);
             return Decision.fold;
         }
     }
@@ -297,7 +298,7 @@ public class NetworkClient implements GameClient {
         }
         outstandingWrites.add(output);
         if (socket.isClosed() || !socket.isConnected()) {
-            logger.println("Socket for " + this + " is not connected, cannot do write", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+            logger.println("Socket for " + this + " is not connected, cannot do write", Logger.MessageType.NETWORK_DEBUG, Logger.MessageType.WARNINGS);
             return false;
         }
         int attempts = 10;
@@ -305,11 +306,11 @@ public class NetworkClient implements GameClient {
             try {
                 while (!outstandingWrites.isEmpty()) {
                     socketOutput.write(outstandingWrites.peek() + "\n");
-                    logger.println("Server to #" + playerID + ": " + outstandingWrites.poll(), Logger.MessageType.NETWORK);
+                    logger.println("Server to #" + playerID + ": " + outstandingWrites.poll(), Logger.MessageType.NETWORK_DEBUG);
                 }
             }
             catch (IOException e) {
-                logger.println("Failed to write \"" + outstandingWrites.peek() + "\" to " + this + ", retry #" + i + " (" + outstandingWrites.size() + " outstand writes waiting", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+                logger.println("Failed to write \"" + outstandingWrites.peek() + "\" to " + this + ", retry #" + i + " (" + outstandingWrites.size() + " outstand writes waiting", Logger.MessageType.NETWORK_DEBUG, Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e1) { }
@@ -319,7 +320,7 @@ public class NetworkClient implements GameClient {
                 socketOutput.flush();
                 return true;
             } catch (IOException e) {
-                logger.println("Failed to flush socket after writing \"" + output + "\" to " + this + ". (" + outstandingWrites.size() + " outstand writes waiting)", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
+                logger.println("Failed to flush socket after writing \"" + output + "\" to " + this + ". (" + outstandingWrites.size() + " outstand writes waiting)", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK_DEBUG, Logger.MessageType.NETWORK);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e1) { }

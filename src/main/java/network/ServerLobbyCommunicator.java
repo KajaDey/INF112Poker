@@ -92,7 +92,7 @@ public class ServerLobbyCommunicator {
         getInit: while (true) {
             String input = readFromServer();
             String[] tokens = UpiUtils.tokenize(input).get();
-            logger.println("Server: " + input, Logger.MessageType.NETWORK);
+            logger.println("Server: " + input, Logger.MessageType.NETWORK_DEBUG);
 
             switch (tokens[0]) {
                 case "lobbySent":

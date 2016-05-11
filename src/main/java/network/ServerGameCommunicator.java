@@ -157,7 +157,7 @@ public class ServerGameCommunicator {
                     assert gameClient.isPresent();
                     Optional<Decision> decision = UpiUtils.parseDecision(tokens[3]);
                     if (!decision.isPresent()) {
-                        logger.println("Couldn't parse decision " + tokens[2], Logger.MessageType.NETWORK);
+                        logger.println("Couldn't parse decision " + tokens[2], Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                     }
                     int id = Integer.parseInt(tokens[1]);
                     gameClient.get().playerMadeDecision(id, decision.get());
