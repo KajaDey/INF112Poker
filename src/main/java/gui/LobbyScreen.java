@@ -347,7 +347,11 @@ public class LobbyScreen {
      * @param playerID The players id
      */
     public void removePlayer(int playerID, int tableID ) {
-        getTable(tableID).removePlayer(playerID);
+        LobbyTable t = getTable(tableID);
+        if (t.getHost() == playerID)
+            removeTable(tableID);
+        else
+            t.removePlayer(playerID);
 
         if (currentTable.isPresent())
             displayGameInfo(currentTable.get());
