@@ -52,6 +52,8 @@ public class ServerGameCommunicator {
 
         while (true) {
             input = socketReader.readLine();
+            if (input == null)
+                return; //Stop reading
 
             logger.println("Server: " + input, Logger.MessageType.NETWORK_DEBUG);
             String[] tokens = UpiUtils.tokenize(input).get();
