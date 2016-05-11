@@ -42,7 +42,7 @@ public class ServerGameCommunicator {
      * @throws IOException
      */
     public void startUpi() throws IOException {
-        writeToSocket("upi 0.1");
+        writeToSocket("upi 1.0");
 
         String input = socketReader.readLine();
         if (!input.equals("upiok"))
@@ -52,8 +52,10 @@ public class ServerGameCommunicator {
 
         while (true) {
             input = socketReader.readLine();
-            if (input == null)
-                return; //Stop reading
+            if (input == null) {
+                logger.println("Received null from server, closing connection", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+                return;
+            }
 
             logger.println("Server: " + input, Logger.MessageType.NETWORK_DEBUG);
             String[] tokens = UpiUtils.tokenize(input).get();
