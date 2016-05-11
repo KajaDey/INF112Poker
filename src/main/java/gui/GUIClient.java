@@ -355,7 +355,7 @@ public class GUIClient implements GameClient {
      * @param message The message to be printed
      */
     public void printToLogField(String message) {
-        Platform.runLater(() -> gameScreen.printToLogField(message));
+        Platform.runLater(() -> gameScreen.printChatToLogField(message));
     }
 
     public void preShowdownWinner(int winnerID) {
