@@ -270,8 +270,8 @@ public class ObjectStandards {
         MenuItem mute = new MenuItem("Mute Sound");
 
         Menu keyCodes = new Menu("Key Combinations");
-        MenuItem check = new MenuItem("Check");
         MenuItem call = new MenuItem("Call");
+        MenuItem check = new MenuItem("Check");
         MenuItem fold = new MenuItem("Fold");
         MenuItem betRaise = new MenuItem("Bet/raise");
         MenuItem raiseBetAmountBy1BB = new MenuItem("Raise bet by 1xBB");
@@ -281,8 +281,8 @@ public class ObjectStandards {
         MenuItem aboutKeyCombo = new MenuItem("About Key Combinations");
 
 
-        check.setAccelerator(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHIFT_DOWN));
-        call.setAccelerator(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHIFT_DOWN));
+        call.setAccelerator(KeyCombination.valueOf(KeyCode.SPACE + ""));
+        check.setAccelerator(KeyCombination.valueOf(KeyCode.SPACE + ""));
         betRaise.setAccelerator(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN));
         fold.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE, KeyCombination.SHIFT_DOWN));
         raiseBetAmountBy1BB.setAccelerator(KeyCodeCombination.valueOf(KeyCode.UP + ""));
@@ -290,11 +290,10 @@ public class ObjectStandards {
         raiseBetAmountBy10BB.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.SHIFT_DOWN));
         lowerBetAmountBy10BB.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHIFT_DOWN));
 
-        keyCodes.getItems().addAll(check, call, betRaise, fold, raiseBetAmountBy1BB, lowerBetAmountBy1BB,
+        keyCodes.getItems().addAll(call, check, betRaise, fold, raiseBetAmountBy1BB, lowerBetAmountBy1BB,
                 raiseBetAmountBy10BB, lowerBetAmountBy10BB, aboutKeyCombo);
 
 
-        System.out.println(KeyCodeCombination.valueOf(KeyCode.SPACE.getName() + " (Single tap)"));
         //Adding sub menus and items to parent menus
         licenses.getItems().addAll(softwareLicense,cardSpriteLicense);
         about.getItems().addAll(licenses, aboutTexasHoldem);

@@ -5,3 +5,7 @@ and the combinations will work alongside the buttons.
 
 To be able to use the key combinations, you cannot have anything in focus.
 This means that neither of the input fields, nor the log field can be focused.
+
+In regards of the key combinations for call and check:
+Call can be done by single tapping SPACE,while Check can be done by
+double tapping it.
