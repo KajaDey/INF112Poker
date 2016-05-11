@@ -31,13 +31,13 @@ public class LobbyScreen {
 
     GameController gameController;
 
-    static VBox settings;
-    static VBox sideMenu = new VBox();
-    static Pane fullLayout = new Pane();
-    static Pane gameInfo;
-    static Label numberOfPlayer;
-    static Label names;
-    static Button takeASeat;
+    private VBox settings;
+    private VBox sideMenu = new VBox();
+    private Pane fullLayout = new Pane();
+    private Pane gameInfo;
+    private Label numberOfPlayer;
+    private Label names;
+    private Button takeASeat;
     private ServerLobbyCommunicator serverLobbyCommunicator;
     private Map<Integer, LobbyTable> tables;
     private Map<Integer, VBox> tableBoxes; //Map from the VBoxes in the left side menu to table IDs
@@ -78,7 +78,7 @@ public class LobbyScreen {
         gameInfo.setMinWidth(850);
 
         fullLayout.setStyle("-fx-background-color: #602121");
-        fullLayout.getChildren().addAll(sideMenu, pane, gameInfo,serverIPLabel);
+        fullLayout.getChildren().setAll(sideMenu, pane, gameInfo,serverIPLabel);
 
         SceneBuilder.showCurrentScene(fullLayout, "Lobby Screen");
 
@@ -107,12 +107,12 @@ public class LobbyScreen {
         Button moreInfo = ObjectStandards.makeStandardButton("Info");
 
         vBox.setStyle(styling);
-        hBox.getChildren().addAll(names, numberOfPlayer);
+        hBox.getChildren().setAll(names, numberOfPlayer);
 
         hBox.setMinWidth(150);
         vBox.setMinHeight(75);
 
-        vBox.getChildren().addAll(hBox, moreInfo);
+        vBox.getChildren().setAll(hBox, moreInfo);
 
         moreInfo.setOnAction(event -> moreInfoButtonListener(table));
 
