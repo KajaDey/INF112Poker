@@ -84,6 +84,8 @@ public class GUIClient implements GameClient {
         if (!decisionBlockingQueue.isEmpty() || !validMove(move, moveSize))
             return;
 
+        decisionBlockingQueue.clear();
+
         switch (move) {
             case BET:
                 if (moveSize == stackSizes.get(this.ID))
@@ -117,7 +119,8 @@ public class GUIClient implements GameClient {
     private boolean validMove(Decision.Move move, long moveSize) {
         if ((move == Decision.Move.BET || move == Decision.Move.RAISE) && moveSize > stackSizes.get(ID)) {
             logger.println("You don't have this much in your stack. Moving all in");
-            decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
+            if (decisionBlockingQueue.remainingCapacity() > 0)
+                decisionBlockingQueue.add(new Decision(Decision.Move.ALL_IN));
             return false;
         }
         else if (move == Decision.Move.RAISE && moveSize- highestAmountPutOnTable < Math.max(bigBlind, minimumRaise) &&

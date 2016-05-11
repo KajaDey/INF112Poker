@@ -19,7 +19,7 @@ public class Server {
 
     private int playerIDCounter = 0, tableIDCounter = 0;
     public ServerSocket serverSocket;
-    public ArrayList<LobbyPlayer> lobbyPlayers = new ArrayList<>();
+    public List<LobbyPlayer> lobbyPlayers = new Vector<>();
     public Map<Integer, LobbyTable> lobbyTables = new HashMap<>();
     private final Logger lobbyLogger;
 
@@ -91,7 +91,7 @@ public class Server {
                 }
             }
             else {
-                lobbyLogger.println("Warning: Tried to remove player " + player + ", but socket was already closed", Logger.MessageType.NETWORK);
+                lobbyLogger.println("Warning: Tried to close socket for " + player + ", but socket was already closed", Logger.MessageType.NETWORK);
             }
         }
         else {

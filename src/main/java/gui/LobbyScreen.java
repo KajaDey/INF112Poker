@@ -293,7 +293,10 @@ public class LobbyScreen {
      * @param tableID Id of the table to remove
      */
     public void removeTable(int tableID) {
-        assert tables.get(tableID) != null;
+        if (tables.get(tableID) == null) {
+            logger.println("Tried to remove table " + tableID + ", but it was not found in tables", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
+            return;
+        }
         tables.remove(tableID);
         sideMenu.getChildren().remove(tableBoxes.get(tableID));
         tableBoxes.remove(tableID);
