@@ -216,7 +216,7 @@ public class GameScreen {
     }
 
     /**
-     * Adds text to the previously made log field.
+     * Adds chat text to the previously made log field.
      * @param printInfo The text to add to the field.
      */
     public void printChatToLogField(String printInfo){
@@ -226,6 +226,9 @@ public class GameScreen {
         logField.getChildren().addAll(text);
     }
 
+    /**
+     * Adds the menubar to the game screen
+     */
     public void addMenuBarToGameScreen(){
         MenuBar menuBar = ObjectStandards.createMenuBar();
         menuBar.setLayoutX(0);
