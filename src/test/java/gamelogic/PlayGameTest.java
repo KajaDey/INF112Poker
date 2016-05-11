@@ -21,12 +21,11 @@ import static org.powermock.api.mockito.PowerMockito.*;
  *  Tests for GameLogic
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Game.class, GameController.class, GUIMain.class, Logger.class})
-
+@PrepareForTest({Game.class, GameController.class, GUIMain.class})
 public class PlayGameTest {
     private GameController gameControllerMock, gameControllerSpy;
     private Game gameSpy;
-    static final Logger logger = spy(new Logger());
+    static final Logger logger = new Logger();
 
     /**
      * Creates spy-objects of GameController and Game. Removes delays.
