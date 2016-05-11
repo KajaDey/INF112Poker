@@ -200,7 +200,7 @@ public class GameState {
 
                     // If all in was a blind post
                     if (getCurrentPot() + currentPlayer.stackSize <= bigBlindAmount + smallBlindAmount) {
-                        System.out.println("All in was blind post");
+                        logger.println("All in was blind post", Logger.MessageType.AI);
                         playersToMakeDecision--;
                         // If player is big blind and all in is a call, the small blind should not make another decision
                         // If by some miracle the small blind-player was all in as well, do not make them do another decision
@@ -290,7 +290,6 @@ public class GameState {
 
             // Small blind moves first post-flop
             if (playersToMakeDecision == 0) {
-                //System.out.println("Everyone has made decisions");
                 if (amountOfPlayers == 2) {
                     currentPlayer = players.get(0);
                 }
@@ -305,14 +304,12 @@ public class GameState {
             for (int i = currentPlayer.position + 1; i < players.size(); i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    //System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
             for (int i = 0; i < currentPlayer.position; i++) {
                 if (players.get(i).isInHand && !players.get(i).isAllIn) {
                     currentPlayer = players.get(i);
-                    //System.out.println("Gamestate: currentplayer now has position " + i);
                     return;
                 }
             }
@@ -340,14 +337,12 @@ public class GameState {
                     if (currentPlayer.holeCards.size() == 0) {
                         double handQuality = deck.get(randomCardIndex).rank;
                         if (handQuality / (14 - j / 2) > currentPlayer.riskTaken(allChipsOnTable)) {
-                            //System.out.println("Rejected " + j + " while giving first hole card");
                             return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), currentPlayer.position));
                         }
                     }
                     else {
                         double handQuality = HandEstimator.handQuality(currentPlayer.holeCards.get(0), deck.get(randomCardIndex), communityCards);
                         if (handQuality / (50 - j) > currentPlayer.riskTaken(allChipsOnTable)) {
-                            //System.out.println("Rejected " + j + " while giving second hole card");
                             return Optional.of(new CardDealtToPlayer(deck.get(randomCardIndex), currentPlayer.position));
                         }
                     }
@@ -473,7 +468,7 @@ public class GameState {
     public void giveHoleCards(int playerId) {
         List<Card> newHoleCards = new ArrayList<>();
         while (players.stream().filter(p -> p.id == playerId).findFirst().get().holeCards.size() + newHoleCards.size() < 2) {
-            newHoleCards.add(deck.get((int)Math.random()));
+            newHoleCards.add(deck.get((int)(Math.random() * deck.size())));
         }
         giveHoleCards(playerId, newHoleCards);
     }
