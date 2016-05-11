@@ -236,10 +236,10 @@ public class LobbyScreen {
     private VBox displayTableSettings(LobbyTable table){
         VBox vBox = new VBox();
 
-        Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",table.settings.getStartStack()+"$");
+        Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ","$" + table.settings.getStartStack());
         Label numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ",table.settings.getMaxNumberOfPlayers()+"");
-        Label bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ",table.settings.getBigBlind()+"$");
-        Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", table.settings.getSmallBlind()+"$");
+        Label bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ","$" + table.settings.getBigBlind());
+        Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", "$" + table.settings.getSmallBlind());
         Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",table.settings.getLevelDuration()+"min");
         Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",table.settings.getAiType()+"");
         Label playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",table.settings.getPlayerClock()+"sec");
@@ -293,7 +293,10 @@ public class LobbyScreen {
      * @param tableID Id of the table to remove
      */
     public void removeTable(int tableID) {
-        assert tables.get(tableID) != null;
+        if (tables.get(tableID) == null) {
+            logger.println("Tried to remove table " + tableID + ", but it was not found in tables", Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK);
+            return;
+        }
         tables.remove(tableID);
         sideMenu.getChildren().remove(tableBoxes.get(tableID));
         tableBoxes.remove(tableID);
