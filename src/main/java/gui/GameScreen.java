@@ -468,7 +468,7 @@ public class GameScreen {
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
-        boardLayout.setPotLabel("Pot $" + potString);
+        boardLayout.setPotLabel("Pot " + potString);
     }
 
     /**

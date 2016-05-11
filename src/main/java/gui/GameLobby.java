@@ -50,10 +50,10 @@ public class GameLobby {
         Button leaveLobby = ObjectStandards.makeButtonForLobbyScreen("Leave lobby");
         CheckBox showAllPlayerCards = new CheckBox("Show all players cards");
 
-        amountOfChips = ObjectStandards.makeLobbyLabelWhite("Chips: ",gameSettings.getStartStack()+"$");
+        amountOfChips = ObjectStandards.makeLobbyLabelWhite("Chips: ",gameSettings.getStartStack()+"");
         numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");
-        bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ", gameSettings.getBigBlind()+"$");
-        smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ",gameSettings.getSmallBlind()+"$");
+        bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ", gameSettings.getBigBlind()+"");
+        smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ",gameSettings.getSmallBlind()+"");
         levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ", gameSettings.getLevelDuration() + "min");
         playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",gameSettings.getPlayerClock() + "sec");
         headLine = ObjectStandards.makeLabelForHeadLine("Game Lobby");

@@ -167,7 +167,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         if (s.equals("0"))
             stackSizeLabel.setText("All in");
         else
-            stackSizeLabel.setText("$" + s);
+            stackSizeLabel.setText("" + s);
     }
 
     /**
