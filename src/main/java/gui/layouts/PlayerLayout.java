@@ -15,7 +15,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Created by ady on 04/04/16.
+ * This class contains all the objects to make a player layout
+ *
+ * @author André Dyrstad
  */
 
 public class PlayerLayout extends VBox implements IPlayerLayout {
@@ -30,7 +32,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private long stackSize;
 
 
-    public PlayerLayout(int playerID, String name){
+    public PlayerLayout(String name){
         //Make ALL the boxes
         HBox fullBox = new HBox();
         VBox fullBoxWithLastMove = new VBox();
@@ -210,14 +212,16 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
     public void setStackLabel(String stack) {
         //If stack is a number, set stackSize to this number
-        try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {}
+        try { stackSize = Long.parseLong(stack); } catch (NumberFormatException e) {
+            System.out.println("SetStackLabel" + e);
+        }
         if (stack.equals("0"))
             stackLabel.setText("All in");
         else
-            stackLabel.setText("$" + stack);
+            stackLabel.setText("" + stack);
     }
 
-    public void setBustLabel(String bustText) {
+    private void setBustLabel(String bustText) {
         stackLabel.setText(bustText);
     }
 
@@ -312,8 +316,10 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     }
 
     /**
-     *  Reset the time to think progress bar
+     * Reset the time to think progress bar
+     * @param gameScreen
      * @param timeToThink
+     * @param moveToExecute
      */
     public void startTimer(GameScreen gameScreen, long timeToThink, Decision.Move moveToExecute) {
         progressBar.setTimer(gameScreen, timeToThink, moveToExecute);

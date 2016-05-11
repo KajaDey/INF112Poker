@@ -1,9 +1,7 @@
 package gamelogic;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockSettings;
 import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import gui.GUIMain;
@@ -14,7 +12,6 @@ import java.util.ArrayList;
 
 import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
-
 
 /**
  * Created by Ragnhild Aalvik on 03/05/16.

@@ -1,6 +1,5 @@
 package gui;
 import gamelogic.AIType;
-import gamelogic.GameController;
 
 /**
  * A class that contains all the settings in a game

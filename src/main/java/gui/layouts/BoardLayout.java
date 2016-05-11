@@ -11,7 +11,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
- * Created by ady on 04/04/16.
+ * This class contains all the objects to make a board layout
+ *
+ * @author André Dyrstad
  */
 public class BoardLayout extends VBox {
 
