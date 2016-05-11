@@ -53,9 +53,11 @@ public class ServerGameCommunicator {
         while (true) {
             input = socketReader.readLine();
 
+            logger.println("Server: " + input, Logger.MessageType.NETWORK_DEBUG);
             String[] tokens = UpiUtils.tokenize(input).get();
             if (tokens.length == 0) {
-                throw new IOException("Received empty command \"" + input + "\" from server");
+                logger.println("Received empty command \"" + input + "\" from server, ignoring...", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+                continue;
             }
 
             switch (tokens[0]) {
