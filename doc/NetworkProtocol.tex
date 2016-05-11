@@ -8,7 +8,9 @@
 \maketitle
 
 \section{Introduction}
-A protocol for playing poker remotely via a text interface, usually (but not necessarily) over a network. The protocol is based on passing text commands between the server and a client. Each command is terminated by a newline, and commands are separated into tokens delimited by one or more whitespace characters. The first token is always the command name. If the client or server receives a command with an unknown command name, the whole command should be ignored, and communication should continue as normal afterwards. If a known command is illegally formatted, however, the client should show an error.
+A protocol for playing poker remotely via a text interface, usually (but not necessarily) over a network. The protocol is based on passing text commands between the server and a client, containing all the necessary information to play the game. The server will send the settings, information about the other players, and their decisions as they are made. The client will wait for their turn, and send ack decisions after the server requests it.
+
+Each command is terminated by a newline, and commands are separated into tokens as specified in the ``tokens'' section. The first token is always the command name. If the client or server receives a command with an unknown command name, the whole command should be ignored, and communication should continue as normal afterwards. If a known command is illegally formatted, however, the client should show an error.
 
 \section{Tokens}
 Each command consists of one or more tokens. Normally, each token is a single ``word'' (sequence of characters delimited by one or more whitespaces), but a token can also be several words inside ascii quotation marks. For example:
@@ -124,12 +126,15 @@ Sends the client's decision to the server. See section ``decision and card forma
 \item [Server] playerNames 0 Morten 1 Kristian 2 Doyle
 \item [Server] playerPosition 0 0 1 1 2 2
 \item [Server] stackSizes 0 5000 1 5000 2 5000
+\item [Server] setHand 2 diamonds14 ace14
 \item [Server] playerMadeDecision 0 smallBlind
 \item [Server] playerMadeDecision 1 bigBlind
 \item [Server] getDecision 5000
 \item [Client] decision call
+\item [Client] playerMadeDecision 2 call
 \item [Server] playerMadeDecision 0 fold
 \item [Server] playerMadeDecision 1 check
+\item [Server] set
 \end{description}
 }
 

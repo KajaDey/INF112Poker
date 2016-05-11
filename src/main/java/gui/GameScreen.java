@@ -760,7 +760,8 @@ public class GameScreen {
                         + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
             }
         }));
-        winningPercentageComputer.get().start();
+        if (winningPercentageComputer.isPresent())
+            winningPercentageComputer.get().start();
     }
 
     public void setChatListener(Consumer<String> chatListener) {
