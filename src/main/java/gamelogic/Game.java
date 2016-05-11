@@ -16,7 +16,7 @@ public class Game {
 
     public static final long WAIT_FOR_COMMUNITY_CARD_DELAY = 1000L;
     public static final long WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY = 4000L;
-    public static final long HAND_OVER_DELAY = 7000L;
+    public static final long HAND_OVER_DELAY = 10000L;
     public static final long EVERYONE_FOLDED_DELAY = 3000L;
 
     //Controls

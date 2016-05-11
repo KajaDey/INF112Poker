@@ -768,6 +768,7 @@ public class GameScreen {
      */
     public void showPercentages(Map<Integer, Card[]> holeCardsStillInHand, List<Card> communityCards) {
         assert holeCardsStillInHand != null;
+        List<Card> clonedCommunityCards = new ArrayList<>(communityCards);
 
         Consumer<Map<Integer, Double>> callBack = (percentages) -> {
             // Make sure another, older thread cannot simultaneously modify the GUI
@@ -781,10 +782,10 @@ public class GameScreen {
 
         winningPercentageComputer.ifPresent(Thread::interrupt);
         winningPercentageComputer = Optional.of(new Thread(() ->  {
-            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(holeCardsStillInHand, communityCards, callBack);
+            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(holeCardsStillInHand, clonedCommunityCards, callBack);
             if (!Thread.currentThread().isInterrupted()) {
                 callBack.accept(percentages);
-                logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
+                logger.println("Computed winning percentages for " + clonedCommunityCards.size() + " community cards: "
                         + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
             }
         }));
