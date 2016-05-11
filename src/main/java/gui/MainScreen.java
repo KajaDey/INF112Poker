@@ -109,7 +109,7 @@ public class MainScreen {
             InetAddress inetAddress;
             try {
                 if (IPIn.getText() == null || IPIn.getText().isEmpty())
-                    inetAddress = InetAddress.getLocalHost();
+                    inetAddress = InetAddress.getByName("luguber.no");
                 else {
                     inetAddress = InetAddress.getByName(IPIn.getText());
                 }
