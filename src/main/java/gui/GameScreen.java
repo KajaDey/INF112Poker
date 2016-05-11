@@ -213,7 +213,6 @@ public class GameScreen {
         Text text = new Text();
         text.setText("\n" + printInfo);
         logField.getChildren().addAll(text);
-        System.out.println(printInfo);
     }
 
     /**
@@ -225,7 +224,6 @@ public class GameScreen {
         text.setText("\n" + printInfo);
         text.setStyle("-fx-font-weight: bold");
         logField.getChildren().addAll(text);
-        System.out.println(printInfo);
     }
 
     public void addMenuBarToGameScreen(){
@@ -510,11 +508,9 @@ public class GameScreen {
         printToLogField(" ------ New hand ------");
         if (communityCards == null) {
             communityCards = new ArrayList<>();
-            System.out.println("Community cards were null");
         }
         else {
             communityCards.clear();
-            System.out.println("Community cards cleared");
         }
 
         //Set opponent hands
