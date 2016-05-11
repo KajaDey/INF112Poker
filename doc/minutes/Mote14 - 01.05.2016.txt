@@ -1,35 +1,34 @@
-Møte 14 - 01.05.16, kl 12.00
-Sekretær: Mariah Vårum
+MÃ¸te 14 - 01.05.16, kl 12.00
+SekretÃ¦r: Mariah VÃ¥rum
 
-Oppmøte:
+OppmÃ¸te:
 - Henrik
 - Kristian
 - Kaja
 - Vegar
-- André
+- Andre
 - Ragnhild
 - Simon
 - Mariah
-Fraværende: 
+FravÃ¦rende:
 - Jostein
 
 Hva er gjort siden sist:
-Startet implementasjon av nettverksprotokollene. 
+Startet implementasjon av nettverksprotokollene.
 
 Diskusjon:
-Starte med testing. 
-Avklaring ang. Implementasjon av mulitplayer. 
-Hvordan skal vi lagre logg-filene? Diskusjon rundt det. 
-Skal vi ha en Chat-funksjon. 
-Kommando funksjon? 
+Starte med testing
+Avklaring ang. implementasjon av mulitplayer.
+Hvordan skal vi lagre logg-filene? Diskusjon rundt det.
+Skal vi ha en Chat-funksjon.
+Kommando funksjon?
 
-
-Plan til neste møte:
-Teste GameLogic (Ragnhild)
-Starte med kommunikasjons-diagram (Kaja og... )
-Koble sammen lobby + nettverk. 
-Metode som kan lese logg-filer. 
+Plan til neste mÃ¸te:
+Teste GameLogic (Ragnhild hovedansvar)
+Starte med kommunikasjons-diagram (Kaja og Morten/Kristian)
+Koble sammen lobby + nettverk.
+Metode som kan lese logg-filer.
 Chat i lobby og spill (Henrik)
 
-Tid for neste møte:
+Tid for neste mÃ¸te:
 Onsdag 04.05.16

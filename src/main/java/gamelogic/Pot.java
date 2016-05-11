@@ -1,7 +1,5 @@
 package gamelogic;
 
-import gui.GUIMain;
-
 import java.util.*;
 
 /**

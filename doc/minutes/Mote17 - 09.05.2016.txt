@@ -1,31 +1,32 @@
-Møte 17 - 09.05.2016, kl 13:00
-Sekretær:Simon
+MÃ¸te 17 - 09.05.2016, kl 13:00
+SekretÃ¦r: Simon
 
-Oppmøte:
+OppmÃ¸te:
 - Simon
-- André
+- Andre
 - Vegar
 - Kristian
 - Kaja
 - Ragnhild
 - Morten
-Borte: 
+FravÃ¦rende:
 - Mariah
 - Jostein
 
-
 Hva er gjort siden sist:
-Fått nettverk til å fungere
+FÃ¥tt nettverk til Ã¥ fungere
 Replay-funksjonen fungerer
 Fjernet det meste av hardkoding i GUI
+Kommet igang med testing av game logic og nettverk ved bruk av Mockito og PowerMockito
 
 Diskusjon:
 Ble enig om feature freeze tirsdag 10.05.2016 klokken 12:00
 
-Plan til neste møte:
-Få settings til å fungere både for multiplayer og singleplayer
+Plan til neste mÃ¸te:
+FÃ¥ settings til  fungere bÃ¥de for multiplayer og singleplayer
 Exceptions i namegenerator
 Bug fixing og refactoring i nettverk
+Ferdigstille tester
 
-Tid for neste møte: 
+Tid for neste mÃ¸te:
 Onsdag 11.05.2016 klokken 12:00
