@@ -113,7 +113,7 @@ public class Card implements Comparable<Card> {
         return rankString;
     }
 
-    public static enum Suit {
+    public enum Suit {
         SPADES, HEARTS, DIAMONDS, CLUBS;
 
         @Override

@@ -1,7 +1,9 @@
 package gamelogic;
 
 /**
- * Created by morten on 19.04.16.
+ * Exception thrown if an illegal decision is made and accepted by Game
+ *
+ * @author Morten Lohne
  */
 public class IllegalDecisionException extends Throwable {
     public IllegalDecisionException() {}

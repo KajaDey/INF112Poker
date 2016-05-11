@@ -5,7 +5,6 @@ import network.UpiUtils;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
@@ -68,7 +67,10 @@ public class Statistics {
             File statsFile = new File("stats/Game" + gameID + ".txt");
 
             //Create the directory if it doesn't exist
-            new File("stats").mkdir();
+
+            if (!new File("stats").mkdir()) {
+                throw new IOException("Failed to create stats dir");
+            }
             PrintWriter fw = new PrintWriter(statsFile, "UTF-8");
 
             //Write stats to file

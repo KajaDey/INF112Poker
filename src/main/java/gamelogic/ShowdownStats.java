@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by kristianrosland on 09.04.2016.
+ * An object that contains all the info about a showdown (such as players, (side)pots, etc..)
+ *
+ * @author Kristian Rosland
  */
 public class ShowdownStats {
     private List<List<Player>> sidePots;
@@ -27,20 +29,15 @@ public class ShowdownStats {
         sidePotSizes.add(size);
     }
 
-    public int numberOfPlayers() {
-        return allPlayers.size();
-    }
-
     public Map<Integer, Card[]> getHoleCards() {
         Map<Integer, Card[]> holeCards = new HashMap<>();
         allPlayers.stream().forEach(p -> holeCards.put(p.getID(), p.getHoleCards()));
         return holeCards;
     }
 
-    public List<Player> getAllPlayers() {
-        return allPlayers;
-    }
-
+    /**
+     * @return A text containing who won the pot(s), e.g.: "Kristian won the main pot of 1000 with ..."
+     */
     public String getWinnerText() {
         String printable = "";
 

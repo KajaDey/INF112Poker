@@ -52,7 +52,7 @@ public class MenuBarScreens {
             window.setTitle("Card Sprite License");
         }
         else if (windowType.startsWith("About")){
-            scene = new Scene(pane, 615, 175);
+            scene = new Scene(pane, 615, 225);
             label = ObjectStandards.makeStandardLabelWhite(menuBarFileReader("resources/keyComboInfo.txt"), "");
             window.setTitle("About Key Combinations");
         }
