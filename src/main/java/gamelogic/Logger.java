@@ -1,5 +1,7 @@
 package gamelogic;
 
+import sun.plugin2.message.Message;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -21,7 +24,16 @@ public class Logger {
     public boolean printToSysout = true;
 
     public enum MessageType {
-        DEBUG, AI, GAMEPLAY, WARNINGS, NETWORK, GUI, INIT
+        DEBUG(true), AI(false), GAMEPLAY(true), WARNINGS(true), NETWORK(true), GUI(true), INIT(true), NETWORK_DEBUG(false), ALL(false);
+
+        /* For message types with this enabled, all log prints will also be printed to sysout
+         * Overriden by Logger.printToSysout
+         */
+        boolean printToSysoutByDefault;
+
+        MessageType(boolean printToSysoutByDefault) {
+            this.printToSysoutByDefault = printToSysoutByDefault;
+        }
     }
 
     public Logger() {
@@ -60,6 +72,14 @@ public class Logger {
         if (messageTypes.length == 0) {
             messageTypes = new MessageType[]{MessageType.DEBUG};
         }
+        messageTypes = Arrays.stream(messageTypes).filter(type -> type !=  MessageType.ALL).toArray(MessageType[]::new);
+        assert !Arrays.stream(messageTypes).filter(type -> type == MessageType.ALL).findFirst().isPresent() : "Cannot write directly to \"all\" log file (tried to write to logs " + Arrays.toString(messageTypes) + ")";
+
+        // Add "all" to message types, so that it is always printed to
+        messageTypes = Arrays.copyOf(messageTypes, messageTypes.length + 1);
+        messageTypes[messageTypes.length - 1] = MessageType.ALL;
+
+        boolean hasPrintedToSysout = false;
         for (MessageType messageType : messageTypes) {
             if (!logWriters.containsKey(messageType)) {
                 try {
@@ -90,8 +110,9 @@ public class Logger {
             } catch (IOException e) {
                 System.out.println("Failed to write to " + messageType + " logfile");
             }
-            if (messageType == messageTypes[0] && printToSysout) {
+            if (printToSysout && !hasPrintedToSysout && messageType.printToSysoutByDefault) {
                 System.out.print(wholeMessage);
+                hasPrintedToSysout = true;
             }
         }
     }

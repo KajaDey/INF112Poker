@@ -1,6 +1,5 @@
 package gui.layouts;
 
-import gamelogic.Logger;
 import gui.GUIMain;
 import gui.ImageViewer;
 import gui.ObjectStandards;
@@ -18,7 +17,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Created by ady on 04/04/16.
+ * This class contains all the objects to make a opponent layout
+ *
+ * @author André Dyrstad
  */
 public class OpponentLayout extends HBox implements IPlayerLayout{
 
@@ -28,10 +29,8 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
     private Label nameLabel, stackSizeLabel, positionLabel, lastMoveLabel, percentLabel;
     private ImageView leftCardImage, rightCardImage, chipImage, dealerButtonImage;
     private boolean isBust = false;
-    private final Logger logger;
 
-    public OpponentLayout(String name, int position, Logger logger) {
-        this.logger = logger;
+    public OpponentLayout(String name, int position) {
         leftCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
         rightCardImage = ImageViewer.getEmptyImageView(ImageViewer.Image_type.OPPONENT);
 
@@ -130,8 +129,6 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
             cards.setAlignment(Pos.CENTER_RIGHT);
             this.setAlignment(Pos.CENTER_RIGHT);
         }
-        else
-            logger.println("Invalid position from OpponentLayout", Logger.MessageType.WARNINGS);
 
         nameLabel.setMinWidth(150);
         stackSizeLabel.setMinWidth(150);
@@ -238,7 +235,7 @@ public class OpponentLayout extends HBox implements IPlayerLayout{
         return isBust;
     }
 
-    public void setBustLabel(String bustText) {
+    private void setBustLabel(String bustText) {
         stackSizeLabel.setText(bustText);
     }
 
