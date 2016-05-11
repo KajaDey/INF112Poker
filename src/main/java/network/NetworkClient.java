@@ -93,11 +93,13 @@ public class NetworkClient implements GameClient {
                             case "decision":
                                 //Parse decision and queue it. If it can't be parsed, queue FOLD
                                 decision = UpiUtils.parseDecision(input.substring("decision ".length()));
-                                decisionBlockingQueue.add(decision.isPresent() ? decision.get() : Decision.fold);
+                                if (decisionBlockingQueue.remainingCapacity() > 0)
+                                    decisionBlockingQueue.add(decision.isPresent() ? decision.get() : Decision.fold);
                                 break;
                             case "playerName":
                                 //Queue name so that getName will be unlocked
-                                nameBlockingQueue.add(tokens.get()[1]);
+                                if (nameBlockingQueue.remainingCapacity() > 0)
+                                    nameBlockingQueue.add(tokens.get()[1]);
                                 break;
                             default:
                                 logger.println("Unrecognized input", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK_DEBUG);
@@ -110,13 +112,23 @@ public class NetworkClient implements GameClient {
             }
         }
 
+    /**
+     * Drop a this client and set isDropped to true, so that this client will return fold whenever asked for decisions
+     */
     public void dropClient() {
         isDropped = true;
         logger.println("Gave up connecting to " + this + ", dropping...", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
 
-        // Add dummy data to the blocking queues, in case someone is waiting for them
-        decisionBlockingQueue.add(Decision.fold);
-        nameBlockingQueue.add("");
+        try {
+            // Add dummy data to the blocking queues, in case someone is waiting for them
+            if (decisionBlockingQueue.remainingCapacity() > 0)
+                decisionBlockingQueue.add(Decision.fold);
+
+            if (nameBlockingQueue.remainingCapacity() > 0)
+                nameBlockingQueue.add("");
+        } catch (IllegalStateException ie) {
+            logger.println("Tried to add to a full queue, " + ie.getMessage(), Logger.MessageType.WARNINGS, Logger.MessageType.DEBUG);
+        }
         this.closeSocket();
     }
 

@@ -406,7 +406,7 @@ public class AITest {
         for (int i = 0; i < 20; i++) {
             // A blind post as all in may by either a call or raise of the small blind. Test for both.
             boolean allInIsRaise = Math.random() > 0.5;
-            System.out.println("All in is " + (allInIsRaise ? "raise" : "call"));
+            //System.out.println("All in is " + (allInIsRaise ? "raise" : "call"));
 
             Deck deck = new Deck();
             MCTSAI ai = new MCTSAI(0, logger);
@@ -450,7 +450,7 @@ public class AITest {
         for (int i = 0; i < 20; i++) {
             // A blind post as all in or just a plain blind post
             boolean blindIsAllIn = Math.random() > 0.5;
-            System.out.println("Blind is " + (blindIsAllIn ? "all in" : "plain blind"));
+            //System.out.println("Blind is " + (blindIsAllIn ? "all in" : "plain blind"));
 
             Deck deck = new Deck();
             MCTSAI ai = new MCTSAI(0, logger);
