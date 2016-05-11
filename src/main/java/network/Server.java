@@ -75,6 +75,10 @@ public class Server {
     private synchronized void removeClient(int ID) {
         Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == ID).findAny();
         if (op.isPresent()) {
+            //If this player was host for a table, this table is removed. Client side handles this
+            Optional<LobbyTable> opTable = lobbyTables.values().stream().filter(t -> t.host == op.get()).findAny();
+            opTable.ifPresent(t -> lobbyTables.remove(t.tableID));
+
             LobbyPlayer player = op.get();
             lobbyPlayers.remove(player);
             ClientBroadcasts.playerLeftLobby(this, player);

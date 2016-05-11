@@ -255,7 +255,6 @@ public class Game {
                     highestAmountPutOnTable = decision.getSize();
                     break;
                 case RAISE:
-                    System.out.println("Player raised, " + highestAmountPutOnTable + " + " + decision.getSize());
                     highestAmountPutOnTable += decision.getSize();
                     currentMinimumRaise = decision.getSize();
                     break;

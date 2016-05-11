@@ -26,7 +26,7 @@ public class GUIClient implements GameClient {
     private Optional<Map<Integer, Integer>> positions = Optional.empty();
     private Optional<Map<Integer, String>> names = Optional.empty();
     private Map<Integer, Card[]> holeCards = new HashMap<>();
-    private ArrayList<Card> communityCards = new ArrayList<>();
+    private List<Card> communityCards = new ArrayList<>();
     private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(3);
 
     private int amountOfPlayers;
