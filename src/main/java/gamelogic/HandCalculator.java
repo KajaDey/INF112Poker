@@ -152,6 +152,7 @@ public class HandCalculator {
         }
         if (communityCards.size() == 5) {
             Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
+            assert !holeCards.isEmpty();
             Card[] max = Collections.max(holeCards.values(), comp);
             holeCards.forEach((id, hc) -> {
                 if (Arrays.equals(hc, max))
@@ -164,7 +165,6 @@ public class HandCalculator {
         for (int i = startIndex; i < unusedCards.size(); i++) {
             if (totalScenariosPlayed % 1000 == 0) {
                 if (Thread.currentThread().isInterrupted()) {
-                    //System.out.println(System.currentTimeMillis() % 10000 + "Thread has been interrupted, returning");
                     return;
                 }
             }

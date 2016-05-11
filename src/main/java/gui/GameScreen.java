@@ -741,7 +741,6 @@ public class GameScreen {
     public void showPercentages(Map<Integer, Card[]> holeCardsStillInHand, List<Card> communityCards) {
         assert holeCardsStillInHand != null;
 
-        //System.out.println((System.currentTimeMillis() % 10000) + ": Starting computing winning percentages with " + holeCardsStillInHand.size() + " hole cards and " + communityCards.size() + " community cards");
         Consumer<Map<Integer, Double>> callBack = (percentages) -> {
             // Make sure another, older thread cannot simultaneously modify the GUI
             if (winningPercentageComputer.isPresent() && winningPercentageComputer.get().getId() == Thread.currentThread().getId()) {
@@ -759,9 +758,6 @@ public class GameScreen {
                 callBack.accept(percentages);
                 logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
                         + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
-            }
-            else {
-                //System.out.println((System.currentTimeMillis() % 10000) + "Winning percentages thread has been interrupted by the time it completed");
             }
         }));
         winningPercentageComputer.get().start();
