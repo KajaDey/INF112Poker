@@ -25,7 +25,7 @@ public class NetworkClient implements GameClient {
     private Queue<String> outstandingWrites = new LinkedList<>();
 
     //Blocking queues for locking while reading
-    private ArrayBlockingQueue<String> nameBlockingQueue = new ArrayBlockingQueue<>(1);
+    private ArrayBlockingQueue<String> nameBlockingQueue = new ArrayBlockingQueue<>(2);
     private ArrayBlockingQueue<Decision> decisionBlockingQueue = new ArrayBlockingQueue<>(2);
     private Consumer<String> chatListener;
     private final Logger logger;
