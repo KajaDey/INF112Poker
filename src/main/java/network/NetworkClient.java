@@ -293,7 +293,6 @@ public class NetworkClient implements GameClient {
      */
     private boolean writeToSocket(String output) {
         if (isDropped) {
-            logger.println("Tried to write " + output + " to " + this + ", but client is disconnected", Logger.MessageType.NETWORK);
             return false;
         }
         outstandingWrites.add(output);
