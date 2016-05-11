@@ -52,6 +52,8 @@ public class ServerGameCommunicator {
 
         while (true) {
             input = socketReader.readLine();
+            if (input == null)
+                return; //Stop reading
 
             String[] tokens = UpiUtils.tokenize(input).get();
             if (tokens.length == 0) {
