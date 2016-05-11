@@ -2,6 +2,7 @@ package gamelogic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockSettings;
 import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import gui.GUIMain;
@@ -19,12 +20,12 @@ import static org.powermock.api.mockito.PowerMockito.*;
  *  Tests for GameLogic
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Game.class, GameController.class, GUIMain.class})
+@PrepareForTest({Game.class, GameController.class, GUIMain.class, Logger.class})
 
-public class GameTest {
+public class PlayGameTest {
     private GameController gameControllerMock, gameControllerSpy;
     private Game gameSpy;
-    static final Logger logger = new Logger("Test-game", "");
+    static final Logger logger = spy(new Logger());
 
     /**
      * Creates spy-objects of GameController and Game. Removes delays.
