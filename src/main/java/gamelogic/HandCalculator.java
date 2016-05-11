@@ -129,9 +129,52 @@ public class HandCalculator {
         unusedCards.removeAll(communityCards);
         Collections.shuffle(unusedCards);
 
-        addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0, progressCallback);
+        // Use a different algorithm pre-flop
+        if (communityCards.size() == 0) {
 
-        return percentagesFromScenariosWon(scenariosWon);
+            while (true) {
+                addWinningPercentagesPreFlop(holeCards, scenariosWon, unusedCards, progressCallback);
+                Collections.shuffle(unusedCards);
+
+                int totalScenariosPlayed = scenariosWon.keySet().stream()
+                        .map(scenariosWon::get)
+                        .reduce(0, Integer::sum);
+                if (totalScenariosPlayed % 500 == 0 && totalScenariosPlayed > 0) {
+                    if (totalScenariosPlayed >= 5000000 && Thread.currentThread().isInterrupted()) {
+                        return percentagesFromScenariosWon(scenariosWon);
+                    }
+                    progressCallback.accept(percentagesFromScenariosWon(scenariosWon));
+                }
+            }
+        }
+        else {
+            addWinningPercentages(holeCards, scenariosWon, communityCards, unusedCards, 0, progressCallback);
+
+            return percentagesFromScenariosWon(scenariosWon);
+        }
+    }
+
+    /**
+     * A special algorithm for computing winning percentages pre-flop. Instead of trying to calculate all possiblities,
+     * it just tries random combinations of community cards.
+     */
+    private static void addWinningPercentagesPreFlop(Map<Integer, Card[]> holeCards, Map<Integer, Integer> scenariosWon,
+                                                     ArrayList<Card> unusedCards, Consumer<Map<Integer, Double>> progressCallback) {
+        List<Card> communityCards = new ArrayList<>();
+        for (int i = 0; i < unusedCards.size() - 5; i+= 5) {
+            for (int j = 0; j < 5; j++) {
+                communityCards.add(unusedCards.get(i + j));
+            }
+            Comparator<Card[]> comp = (hc1, hc2) -> new Hand(hc1[0], hc1[1], communityCards).compareTo(new Hand(hc2[0], hc2[1], communityCards));
+            assert !holeCards.isEmpty();
+            assert communityCards.size() == 5;
+            Card[] max = Collections.max(holeCards.values(), comp);
+            holeCards.forEach((id, hc) -> {
+                if (Arrays.equals(hc, max))
+                    scenariosWon.put(id, scenariosWon.get(id) + 1);
+            });
+            communityCards.clear();
+        }
     }
 
     private static void addWinningPercentages(Map<Integer, Card[]> holeCards, Map<Integer, Integer> scenariosWon,
