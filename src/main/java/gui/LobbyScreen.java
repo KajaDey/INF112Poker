@@ -44,12 +44,12 @@ public class LobbyScreen {
     private int ID;
     private Optional<LobbyTable> currentTable = Optional.empty();
     private final Logger logger;
-    private String ipAdress = "";
+    private String ipAddress = "";
 
     private String [] buttonTexts = {"Take seat", "Leave table", "Delete table", "Change settings", "Start game"};
 
     public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
-        this.ipAdress = IPAddress.getHostAddress();
+        this.ipAddress = IPAddress.getHostAddress();
         this.gameController = gameController;
         this.logger = logger;
         this.tables = new HashMap<>();
@@ -58,7 +58,7 @@ public class LobbyScreen {
         Pane pane = new Pane();
         Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
         newLobby.setOnAction(event -> makeNewLobbyButtonListener());
-        Label serverIPLabel = ObjectStandards.makeLobbyLabelWhite("Server IP:","\n"+ipAdress);
+        Label serverIPLabel = ObjectStandards.makeLobbyLabelWhite("Server IP:","\n"+ ipAddress);
         serverIPLabel.setLayoutX(1000);
         serverIPLabel.setLayoutY(50);
 
@@ -236,13 +236,13 @@ public class LobbyScreen {
     private VBox displayTableSettings(LobbyTable table){
         VBox vBox = new VBox();
 
-        Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",table.settings.getStartStack()+"");
+        Label stackSize = ObjectStandards.makeLobbyLabelWhite("Stack size: ",table.settings.getStartStack()+"$");
         Label numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ",table.settings.getMaxNumberOfPlayers()+"");
-        Label bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ",table.settings.getBigBlind()+"");
-        Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", table.settings.getSmallBlind()+"");
-        Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",table.settings.getLevelDuration()+"");
+        Label bigBlind = ObjectStandards.makeLobbyLabelWhite("Big blind: ",table.settings.getBigBlind()+"$");
+        Label smallBlind = ObjectStandards.makeLobbyLabelWhite("Small blind: ", table.settings.getSmallBlind()+"$");
+        Label levelDuration = ObjectStandards.makeLobbyLabelWhite("Level duration: ",table.settings.getLevelDuration()+"min");
         Label aIDifficulty = ObjectStandards.makeLobbyLabelWhite("AI difficulty: ",table.settings.getAiType()+"");
-        Label playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",table.settings.getPlayerClock()+"");
+        Label playerClock = ObjectStandards.makeLobbyLabelWhite("Player clock: ",table.settings.getPlayerClock()+"sec");
 
         vBox.getChildren().addAll(stackSize, numberOfPlayers, bigBlind, smallBlind, levelDuration, playerClock, aIDifficulty);
         return vBox;

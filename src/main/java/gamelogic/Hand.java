@@ -31,7 +31,7 @@ public class Hand implements Comparable<Hand> {
      * @return List of hole cards
      */
     public List<Card> getHoleCards() {
-        List<Card> holeC = new ArrayList<Card>();
+        List<Card> holeC = new ArrayList<>();
         holeC.addAll(holeCards);
 
         return holeC;
@@ -44,7 +44,7 @@ public class Hand implements Comparable<Hand> {
     public Optional<List<Card>> getCommunityCards() {
         if (communityCards.isEmpty())
             return Optional.empty();
-        List<Card> communityC = new ArrayList<Card>();
+        List<Card> communityC = new ArrayList<>();
         communityC.addAll(communityCards);
 
         return Optional.of(communityC);
@@ -55,7 +55,7 @@ public class Hand implements Comparable<Hand> {
      * @return List of all cards
      */
     public List<Card> getAllCards() {
-        List<Card> allC = new ArrayList<Card>();
+        List<Card> allC = new ArrayList<>();
         allC.addAll(allCards);
 
         return allC;

@@ -75,6 +75,7 @@ public class Server {
     private synchronized void removeClient(int ID) {
         Optional<LobbyPlayer> op = lobbyPlayers.stream().filter(client -> client.id == ID).findAny();
         if (op.isPresent()) {
+            lobbyLogger.println("Removing player " + op.get() + " from lobby");
             //If this player was host for a table, this table is removed. Client side handles this
             Optional<LobbyTable> opTable = lobbyTables.values().stream().filter(t -> t.host == op.get()).findAny();
             opTable.ifPresent(t -> lobbyTables.remove(t.tableID));
@@ -141,7 +142,7 @@ public class Server {
 
                 if (input.startsWith("lobby")) {
                     write("lobbyok");
-                    lobbyLogger.println("Client #" + id + ": " + input, Logger.MessageType.NETWORK);
+                    lobbyLogger.println("Client #" + id + ": " + input, Logger.MessageType.NETWORK_DEBUG, Logger.MessageType.NETWORK);
                 } else {
                     write("lobbynotok");
                     removeClient(id);
@@ -158,7 +159,7 @@ public class Server {
                     String line;
                     try {
                         line = reader.readLine();
-                        lobbyLogger.println("Client #" + id + ": " + line, Logger.MessageType.NETWORK);
+                        lobbyLogger.println("Client #" + id + ": " + line, Logger.MessageType.NETWORK_DEBUG);
                     } catch (IOException e) {
                         failedToReadFromPlayer(this);
                         return;
@@ -238,7 +239,7 @@ public class Server {
                                         UpiUtils.parseSetting(settings, settingsTokens[i], settingsTokens[i+1]);
                                 } catch (PokerProtocolException e) {
                                     settings = new GameSettings();
-                                    lobbyLogger.print("Missing settings for new table to be created");
+                                    lobbyLogger.println("Missing settings for new table to be created", Logger.MessageType.WARNINGS);
                                 }
 
                                 addNewTable(settings, this);
@@ -293,7 +294,7 @@ public class Server {
                                 break;
                             default:
                                 write("errorMessage \"Unknown command\"");
-                                lobbyLogger.println("Unknown command from client: " + line, Logger.MessageType.NETWORK, Logger.MessageType.DEBUG);
+                                lobbyLogger.println("Unknown command from client: " + line, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
                         }
                     }
                     catch (PokerProtocolException e) {
@@ -379,7 +380,7 @@ public class Server {
         public void write(String msg) {
             try {
                 writer.write(msg + "\n");
-                lobbyLogger.println("Server to #" + this.id + ": " + msg, Logger.MessageType.NETWORK);
+                lobbyLogger.println("Server to #" + this.id + ": " + msg, Logger.MessageType.NETWORK_DEBUG);
             }
             catch (IOException e) {
                 failedToWriteToPlayer(this, msg + "\n");

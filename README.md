@@ -84,3 +84,25 @@ Terms of Use:
 - Personal use only!
 
 --------------------------- http://wheels-cards.wc.lt/ ---------------------------
+
+## Mockito license
+---
+--------------------------- https://opensource.org/licenses/MIT ------------------
+
+PowerMockito (extension to Mockito) is a testing framework released under the MIT License. We used PowerMockito to make it easier to test game logic and networking.
+Using PowerMockito we were able to write fast unit tests by removing GUI when simulating games, and by removing hard coded delays inserted to make the user experience 
+smoother. 
+
+Copyright (c) 2016 Mockito
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the 
+    Software is furished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included
+    in all copies of substantial portions of the Software.
+
+--------------------------- https://opensource.org/licenses/MIT ------------------

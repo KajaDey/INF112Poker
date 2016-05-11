@@ -183,5 +183,5 @@ public class MainScreen {
         return horizontalFull;
     }
 
-    public static enum GameType { SINGLE_PLAYER, MULTI_PLAYER, WATCH_GAME }
+    public enum GameType { SINGLE_PLAYER, MULTI_PLAYER, WATCH_GAME }
 }

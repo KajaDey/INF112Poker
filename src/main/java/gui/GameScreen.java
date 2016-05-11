@@ -6,6 +6,7 @@ import gui.layouts.IPlayerLayout;
 import gui.layouts.OpponentLayout;
 import gui.layouts.PlayerLayout;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +15,8 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -49,7 +52,8 @@ public class GameScreen {
     private PlayerLayout playerLayout;
     private BoardLayout boardLayout;
     private Map<Integer, IPlayerLayout> allPlayerLayouts;
-    private TextArea logField = new TextArea();
+    private TextFlow logField = new TextFlow();
+    private ScrollPane scrollPane = new ScrollPane();
     private TextField chatField = new TextField();
     private SoundPlayer soundPlayer = new SoundPlayer();
     private Optional<Consumer<String>> chatListener = Optional.empty();
@@ -100,7 +104,7 @@ public class GameScreen {
         this.stackSizes.put(userID, 0L);
 
         if (userID == playerID) {
-            PlayerLayout pLayout = new PlayerLayout(userID,name);
+            PlayerLayout pLayout = new PlayerLayout(name);
             playerLayout = pLayout;
             pLayout.setLayoutX(scene.getWidth()/4);
             pLayout.setLayoutY(scene.getHeight()-190);
@@ -108,7 +112,7 @@ public class GameScreen {
             allPlayerLayouts.put(userID, pLayout);
         } else {
             int oppPosition = positions[opponentsAdded];
-            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition, logger);
+            OpponentLayout oppLayout = new OpponentLayout(name, oppPosition);
 
             //Set X/Y-layout of this opponent
             double height = scene.getHeight(), width = scene.getWidth();
@@ -147,22 +151,26 @@ public class GameScreen {
      * It is put in the lower, left corner.
      */
     public void insertLogField(){
-        logField.setMaxWidth(300);
-        logField.setMaxHeight(100);
-        logField.setEditable(false);
-        logField.setLayoutX(5);
-        logField.setLayoutY(scene.getHeight() - 140);
-        logField.setWrapText(true);
-        pane.getChildren().add(logField);
-        logField.setOpacity(0.9);
+        scrollPane.setMaxWidth(300);
+        scrollPane.setMinWidth(300);
+        scrollPane.setMaxHeight(100);
+        scrollPane.setMinHeight(100);
+        scrollPane.setLayoutX(5);
+        scrollPane.setLayoutY(scene.getHeight() - 140);
+        scrollPane.setContent(logField);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        pane.getChildren().add(scrollPane);
+        scrollPane.setOpacity(0.9);
+        logField.setPrefWidth(280);
+        logField.setPadding(new Insets(5,5,5,5));
 
-        //Add listener to listen for changes and automatically scroll to the bottom
-        logField.textProperty().addListener((observable, oldValue, newValue) -> {
-            logField.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+        logField.heightProperty().addListener((observable, oldValue, newValue) -> {
+            scrollPane.setVvalue((Double) newValue);
         });
 
-        //Remove highlight of textfield
         logField.setFocusTraversable(false);
+
     }
 
 
@@ -202,10 +210,25 @@ public class GameScreen {
      * @param printInfo The text to add to the field.
      */
     public void printToLogField(String printInfo){
-        logField.appendText("\n" + printInfo);
-        System.out.println(printInfo);
+        Text text = new Text();
+        text.setText("\n" + printInfo);
+        logField.getChildren().addAll(text);
     }
 
+    /**
+     * Adds chat text to the previously made log field.
+     * @param printInfo The text to add to the field.
+     */
+    public void printChatToLogField(String printInfo){
+        Text text = new Text();
+        text.setText("\n" + printInfo);
+        text.setStyle("-fx-font-weight: bold");
+        logField.getChildren().addAll(text);
+    }
+
+    /**
+     * Adds the menubar to the game screen
+     */
     public void addMenuBarToGameScreen(){
         MenuBar menuBar = ObjectStandards.createMenuBar();
         menuBar.setLayoutX(0);
@@ -365,8 +388,7 @@ public class GameScreen {
         String decisionText = decision.move.toString() + " ";
 
         //Init putOnTable-map
-        if (putOnTable.get(ID) == null)
-            putOnTable.put(ID, 0L);
+            putOnTable.putIfAbsent(ID, 0L);
 
         switch (decision.move) {
             case CALL:
@@ -468,7 +490,7 @@ public class GameScreen {
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
-        boardLayout.setPotLabel("Pot $" + potString);
+        boardLayout.setPotLabel("Pot " + potString);
     }
 
     /**
@@ -489,11 +511,9 @@ public class GameScreen {
         printToLogField(" ------ New hand ------");
         if (communityCards == null) {
             communityCards = new ArrayList<>();
-            System.out.println("Community cards were null");
         }
         else {
             communityCards.clear();
-            System.out.println("Community cards cleared");
         }
 
         //Set opponent hands
@@ -760,7 +780,8 @@ public class GameScreen {
                         + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
             }
         }));
-        winningPercentageComputer.get().start();
+        if (winningPercentageComputer.isPresent())
+            winningPercentageComputer.get().start();
     }
 
     public void setChatListener(Consumer<String> chatListener) {

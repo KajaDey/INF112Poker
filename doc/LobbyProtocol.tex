@@ -7,6 +7,18 @@
 \begin{document}
 \maketitle
 
+\section{Introduction}
+A protocol for client-server communcation in a table lobby, where a player can browse open games and join them. Players can also create their own tables, and change settings for them. The protocol has two phases: when a player joins the lobby, they will receive the entire state of the lobby. Afterwards, they only receive \textit{updates} to the lobby, i.e. when other players enter/leave and join/leave tables. The client passively receives information from the server and must keep track of that, and cannot request specific pieces of information.
+
+The protocol is based on passing simple text commands. Each command is terminated by a newline, and commands are separated into tokens as specified in the ``tokens'' section. The first token is always the command name. If the client or server receives a command with an unknown command name, the whole command should be ignored, and communication should continue as normal afterwards. If a known command is illegally formatted, however, the client should show an error.
+
+\section{Tokens}
+Each command consists of one or more tokens. Normally, each token is a single ``word'' (sequence of characters delimited by one or more whitespaces), but a token can also be several words inside ascii quotation marks. For example:
+\begin{itemize}
+\item \textbf{stackSizes 0 1000 1 1000} tokenizes to [``stacksizes'', ``0'', ``1000'', ``1'', ``1000'']
+\item \textbf{name ``Svein Jonny''} tokenizes to [``name'', ``Svein Jonny'']
+\end{itemize}
+
 \section{Sending the whole lobby}
 When a new client connects, they need to be sent all information about the lobby. This should only be sent once during initialization.
 
@@ -44,6 +56,9 @@ A table was deleted, either because the owner chose to disband it, or because th
 \subsection*{tableSettings <tableID> <{}<setting1 value1> <setting2 value2> ...>}
 Sends the table's settings. All the table's settings should generally be sent every time on is changed, but if a setting is not sent, the old/default one should be kept.
 
+\subsection*{errorMessage <message>}
+Sent if the client tried to do something illegal, like joining a full table. Is usually only sent to the player that did the action.
+
 \subsubsection*{Possible table settings:}
 \begin{description}
 \item[maxNumberOfPlayers <n>]
@@ -51,6 +66,8 @@ Sends the table's settings. All the table's settings should generally be sent ev
 \item[smallBlind <n>]
 \item[bigBlind <n>]
 \item[levelDuration <n>]
+\item[playerClock <n>] Time the player has to make each move, in seconds.
+\item[aiType <Simple | Mixed | Advanced>] The type of AI you want to play against, if there are not enough human players
 \end{description}
 
 \section{Example playthrough}
