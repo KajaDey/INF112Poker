@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
  */
 public class Server {
 
+    private static final String CURRENT_UPI_VERSION = "1.0";
+
     private int playerIDCounter = 0, tableIDCounter = 0;
     public ServerSocket serverSocket;
     public List<LobbyPlayer> lobbyPlayers = new Vector<>();
@@ -178,10 +180,20 @@ public class Server {
                     }
                     try {
                         switch (tokens[0]) {
-                            case "quit": //quit
+                            case "quit":
                                 removeClient(id);
                                 return;
                             case "upi":
+                                if (tokens.length < 1) {
+                                    receivedIllegalCommandFrom(this, line);
+                                    return;
+                                }
+                                if (!tokens[1].equalsIgnoreCase(CURRENT_UPI_VERSION)) {
+                                    lobbyLogger.println("Client " + this.id + "s upi version("+ tokens[1]+") does not match server version (" +
+                                            CURRENT_UPI_VERSION + ")", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS );
+                                    receivedIllegalCommandFrom(this, line);
+                                    return;
+                                }
                                 if (readyToStartGame) {
                                     lobbyLogger.println("Lobby received upi from #" + this.id + " (" + this.playerName + ")", Logger.MessageType.NETWORK);
                                     return;

@@ -152,7 +152,6 @@ public class GUIClient implements GameClient {
     }
 
     public void showPercentagesIfAppropriate() {
-        System.out.println("Has " + holeCards.size() + " hole cards, " + gameState.get().getPlayersAllIn() + " all in, " + gameState.get().getPlayersLeftInHand() + " playing");
         if (gameState.isPresent() && this.holeCards.size() >= gameState.get().getPlayersAllIn() + gameState.get().getPlayersLeftInHand() && this.holeCards.size() > 1) {
             Map<Integer, Card[]> holeCardsStillInHand = new HashMap<>();
             this.holeCards.keySet().stream().filter(id -> {
