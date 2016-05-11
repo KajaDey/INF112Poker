@@ -45,9 +45,11 @@ public class ServerGameCommunicator {
         writeToSocket("upi 1.0");
 
         String input = socketReader.readLine();
-        if (!input.equals("upiok"))
-            throw new IOException("Received " + input + " from server, expected upiok");
-         else
+        String [] handshakeTokens = UpiUtils.tokenize(input).get();
+
+        if (handshakeTokens.length < 1 || handshakeTokens[0].equals("errorMessage"))
+            throw new IOException("Received wrong handshake, " + input);
+        else if (handshakeTokens[0].equals("upiok"))
             logger.println("Client " + playerName + " received upiok from server", Logger.MessageType.NETWORK, Logger.MessageType.INIT);
 
         while (true) {

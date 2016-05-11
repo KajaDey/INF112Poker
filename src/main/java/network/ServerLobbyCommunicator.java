@@ -281,7 +281,7 @@ public class ServerLobbyCommunicator {
         try {
             serverGameCommunicator.startUpi();
         } catch (IOException e) {
-            e.printStackTrace();
+            Platform.runLater(() -> lobbyScreen.displayErrorMessage(e.getMessage()));
         }
     }
 
