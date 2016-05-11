@@ -40,6 +40,16 @@ server. If a payer wants to join another server, he/she can enter the IP address
 enter, to connect. Any player connected to a server can make a lobby for others to join. Only the lobby host can edit the settings
 and delete his/hers lobby.
 
+Short keys:
+ -Check: SPACE x2
+ -Bet/Raise: SHIFT + ENTER
+ -Fold: SPACE
+ -Raise bet by 1xBB: ARROW UP
+ -Lower bet by 1xBB: ARROW DOWN
+ -Raise bet by 10xBB: SHIFT + ARROW UP
+ -Lower bet by 10xBB: SHIFT + ARROW DOWN
+
+
 ## Usage of software
 ---
 * To try our software, either for development reasons and/or to try the program you can clone the project using git. You must have java 1.8 and maven installed.
