@@ -1,5 +1,6 @@
 package gamelogic;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
@@ -33,6 +34,7 @@ public class GameTest {
      * @throws Exception
      */
     private void setupGameWithAIs(int BB, int SB, AIType aiType, int numPlayers) throws Exception {
+        logger.printToSysout = false;
         GameSettings gameSettings = spy(new GameSettings(5000, BB, SB, numPlayers, 10, aiType, 30));
         when(gameSettings.valid()).thenReturn(true);
 
@@ -54,6 +56,7 @@ public class GameTest {
 
     @Test
     public void testGameTwoPlayersBothAllIn() throws Exception {
+        logger.printToSysout = false;
         gameControllerMock = mock(GameController.class);
         PowerMockito.doReturn(new Decision(Decision.Move.ALL_IN)).when(gameControllerMock).getDecisionFromClient(anyInt());
 

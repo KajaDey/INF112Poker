@@ -18,6 +18,7 @@ public class Logger {
     private final String fileNamePrefix;
     private final String logMessagePrefix;
     private final HashMap<MessageType, BufferedWriter> logWriters = new HashMap<>();
+    public boolean printToSysout = true;
 
     public enum MessageType {
         DEBUG, AI, GAMEPLAY, WARNINGS, NETWORK, GUI, INIT
@@ -89,7 +90,7 @@ public class Logger {
             } catch (IOException e) {
                 System.out.println("Failed to write to " + messageType + " logfile");
             }
-            if (messageType == messageTypes[0]) {
+            if (messageType == messageTypes[0] && printToSysout) {
                 System.out.print(wholeMessage);
             }
         }
