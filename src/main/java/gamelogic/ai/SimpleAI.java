@@ -14,13 +14,12 @@ public class SimpleAI implements GameClient {
 
     private final double contemptFactor;
 
-    private final int playerId;
+    private final int playerID;
     private int amountOfPlayers;
     private List<Card> holeCards = new ArrayList<>();
     private List<Card> communityCards = new ArrayList<>();
     private long smallBlindAmount;
     private long bigBlindAmount;
-    private Consumer<String> chatListener;
 
     // The AI keeps track of the stack sizes of all players in stackSizes (Including its own entry)
     private Map<Integer, Long> stackSizes;
@@ -30,16 +29,16 @@ public class SimpleAI implements GameClient {
     private long currentBet; // The amount the SimpleAI needs to put on the table to remain in the hand
     private String name;
 
-    public SimpleAI(int playerId) {
-        this(playerId, 1.0);
+    public SimpleAI(int playerID) {
+        this(playerID, 1.0);
     }
     /**
      * Construct a new SimpleAI with a contempt factor.
      * Default value is 1.0, higher values make it player more aggressively, i.e. raise/call more often.
      * Values higher than 2 will make it raise/call almost always
      */
-    public SimpleAI(int playerId, double contemptFactor) {
-        this.playerId = playerId;
+    public SimpleAI(int playerID, double contemptFactor) {
+        this.playerID = playerID;
         this.contemptFactor = contemptFactor;
     }
 
@@ -48,11 +47,11 @@ public class SimpleAI implements GameClient {
     public Decision getDecision(long timeToThink) {
         assert bigBlindAmount > 0: "Ai was asked to make a decision without receving big blind";
         assert holeCards.size() == 2: "SimpleAI was asked to make a decision after receiving " + holeCards.size() + " hole cards.";
-        assert stackSizes.get(playerId) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get(playerId) + ")";
+        assert stackSizes.get(playerID) > 0: "SimpleAI was asked to make a decicion after going all in (stacksize=" + stackSizes.get(playerID) + ")";
 
         assert minimumRaise > 0;
-        assert stackSizes.get(playerId).equals(stackSizes.get(this.playerId)) :
-                "AI: stacksize mismatch: " + stackSizes.get(playerId) + " != " + stackSizes.get(this.playerId);
+        assert stackSizes.get(playerID).equals(stackSizes.get(this.playerID)) :
+                "AI: stacksize mismatch: " + stackSizes.get(playerID) + " != " + stackSizes.get(this.playerID);
 
         double handQuality = HandEstimator.handQuality(holeCards.get(0), holeCards.get(1), communityCards) * Math.pow(0.95, amountOfPlayers);;
 
@@ -77,7 +76,7 @@ public class SimpleAI implements GameClient {
             if (currentBet == 0) {
                 aiDecision = AIDecision.CHECK;
             }
-            else if (currentBet < stackSizes.get(playerId)  / 20 * randomModifier) { // If it's a small call
+            else if (currentBet < stackSizes.get(playerID)  / 20 * randomModifier) { // If it's a small call
                 aiDecision = AIDecision.CALL;
             }
             else {
@@ -92,7 +91,7 @@ public class SimpleAI implements GameClient {
                 aiDecision = AIDecision.FOLD;
             }
         }
-        return aiDecision.toRealDecision(currentBet, minimumRaise, stackSizes.get(playerId), 2 * minimumRaise, false, betHasBeenPlaced);
+        return aiDecision.toRealDecision(currentBet, minimumRaise, stackSizes.get(playerID), 2 * minimumRaise, false, betHasBeenPlaced);
     }
 
     @Override
@@ -134,11 +133,11 @@ public class SimpleAI implements GameClient {
     @Override
     public void setPlayerNames(Map<Integer, String> names) {
         assert names.size() == amountOfPlayers : "SimpleAI received names for " + names.size() + " players, but there are " + amountOfPlayers + " players playing.";
-        this.name = names.get(playerId);
+        this.name = names.get(playerID);
     }
 
     public int getID() {
-        return playerId;
+        return playerID;
     }
 
     @Override
@@ -155,8 +154,8 @@ public class SimpleAI implements GameClient {
     @Override
     public void setStackSizes(Map<Integer, Long> stackSizes) {
         assert stackSizes.size() == amountOfPlayers;
-        assert stackSizes.containsKey(this.playerId) : "AI " + name + " didn't get its own stack size";
-        assert stackSizes.get(this.playerId) >= 0 : "AI " + name + " was sent a stack size of " + stackSizes.get(this.playerId);
+        assert stackSizes.containsKey(this.playerID) : "AI " + name + " didn't get its own stack size";
+        assert stackSizes.get(this.playerID) >= 0 : "AI " + name + " was sent a stack size of " + stackSizes.get(this.playerID);
         for (int playerId : stackSizes.keySet()) {
             assert stackSizes.get(playerId) >= 0 : "Player " + playerId + "'s stacksize is " + stackSizes.get(playerId);
         }
@@ -181,7 +180,7 @@ public class SimpleAI implements GameClient {
                 minimumRaise = size;
 
                 stackSizes.compute(playerId, (key, val) -> val -= size);
-                if (playerId == this.playerId) {
+                if (playerId == this.playerID) {
                     currentBet = 0;
                 }
                 else {
@@ -190,7 +189,7 @@ public class SimpleAI implements GameClient {
                 break;
 
             case CALL:
-                if (playerId == this.playerId) {
+                if (playerId == this.playerID) {
                     stackSizes.compute(playerId, (key, val) -> val -= currentBet);
                     currentBet = 0;
                 }
@@ -199,7 +198,7 @@ public class SimpleAI implements GameClient {
             case RAISE:
             case BET:
                 stackSizes.put(playerId, stackSizes.get(playerId) - (currentBet + decision.getSize()));
-                if (playerId == this.playerId) {
+                if (playerId == this.playerID) {
                     currentBet = 0;
                 }
                 else {
@@ -235,7 +234,7 @@ public class SimpleAI implements GameClient {
     public void setPositions(Map<Integer, Integer> positions) {
         assert positions.size() == amountOfPlayers :
         "AI received positions " + positions.size() + " for players, but there are " + amountOfPlayers + " playing.";
-        assert positions.get(playerId) != null : "AI " + playerId + " received positions object which didn't contain its own position";
+        assert positions.get(playerID) != null : "AI " + playerID + " received positions object which didn't contain its own position";
     }
 
     @Override
@@ -312,6 +311,5 @@ public class SimpleAI implements GameClient {
 
     @Override
     public void setChatListener(Consumer<String> chatListener) {
-        this.chatListener = chatListener;
     }
 }
