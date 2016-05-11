@@ -137,6 +137,7 @@ public class MainScreen {
             playGameBox.getChildren().addAll(nameIn, enter);
             verticalButtonAndChoiceBox.getChildren().clear();
             verticalButtonAndChoiceBox.getChildren().addAll(titleText, singlePlayer, playGameBox, multiPlayer, watchReplay, exit);
+            nameIn.requestFocus();
         });
 
         multiPlayer.setOnAction(e -> {
@@ -145,6 +146,7 @@ public class MainScreen {
             playGameBox.getChildren().addAll(nameIn, IPIn, enter);
             verticalButtonAndChoiceBox.getChildren().clear();
             verticalButtonAndChoiceBox.getChildren().addAll(titleText, singlePlayer, multiPlayer, playGameBox, watchReplay, exit);
+            nameIn.requestFocus();
         });
 
         watchReplay.setOnAction(e -> {
