@@ -276,6 +276,8 @@ public class GUIClient implements GameClient {
             case ALL_IN:
                 break;
             case FOLD:
+                if (playerId == this.ID)
+                    holeCards.remove(this.ID);
                 showPercentagesIfAppropriate();
                 break;
         }
