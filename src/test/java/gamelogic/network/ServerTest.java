@@ -27,8 +27,8 @@ public class ServerTest {
 
     @Test
     public void testHandshakeWithServer() throws Exception {
-        connectClientsToServer(3, 39100);
-        assertClientsNotifiedWhenNewPlayerJoined(3);
+        connectClientsToServer(2, 49100);
+        assertClientsNotifiedWhenNewPlayerJoined(2);
     }
 
     @Test
@@ -249,17 +249,14 @@ public class ServerTest {
             String name = names.pop();
             writeToSocket(i, "lobby "+ name);
 
-            String answer = readFromSocket(i);
-            assert answer.equals("lobbyok") : "Got handshake "+ answer +", expected lobbyok";
+            assertEquals("lobbyok", readFromSocket(i));
 
-            answer = readFromSocket(i);
-            assert answer.equals("yourId "+ i) : "Got message "+ answer +", expected yourId "+ i;
+            assertEquals("yourId "+ i, readFromSocket(i));
 
-            answer = readFromSocket(i);
-            assert answer.startsWith("playerNames") : "Got message "+ answer +", expected playerNames";
+            String[] tokens = UpiUtils.tokenize(readFromSocket(i)).get();
+            assertEquals("playerNames", tokens[0]);
 
-            answer = readFromSocket(i);
-            assert answer.equals("lobbySent") : "Got message "+ answer + ", expected lobbySent";
+            assertEquals("lobbySent", readFromSocket(i));
 
             Thread.sleep(100L); // To avoid race conditions
         }
