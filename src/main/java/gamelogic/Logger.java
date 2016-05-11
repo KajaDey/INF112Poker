@@ -1,6 +1,5 @@
 package gamelogic;
 
-import sun.plugin2.message.Message;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
