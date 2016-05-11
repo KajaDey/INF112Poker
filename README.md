@@ -25,6 +25,20 @@ and this years task is to engineer an implementation of Texas Hold'em poker, ove
 * We use bitbuckets bug tracker, "Issues", to report bugs when we encounter them, while playing the game.
 * Documentation like minutes, diagrams etc. can be found under docs/ in our repo.
 
+How to play:
+
+Singleplayer:
+This game mode allows a player to play against 1-5 AI's.
+Click the singleplayer button in the Main screen. The user then enters a name of his/hers choise and presses "enter".
+The player can now edit settings or choose to play with default settings. When the user is ready, he/she clicks "start game".
+
+Multiplayer:
+This game mode allow a player to play against 1-5 players. The players could be either a human player or an AI. AI's will be
+added to the game if the game is started with fewer players than what is set in the settings. To play a multiplayer game, a server
+has to be up and running. By only entering a name in the Main screen and pressing enter, the player will connect to a remote
+server. If a payer wants to join another server, he/she can enter the IP address of the player hosting the server and press
+enter, to connect. Any player connected to a server can make a lobby for others to join. Only the lobby host can edit the settings
+and delete his/hers lobby.
 
 ## Usage of software
 ---
