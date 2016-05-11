@@ -42,8 +42,6 @@ public class GameScreen {
     private Map<Integer, Long> stackSizes = new HashMap<>();
     private Map<Integer, Long> putOnTable = new HashMap<>();
     private ArrayList<Card> holeCards, communityCards;
-    private Map<Integer, Card[]> allHoleCards = new HashMap<>();
-    private boolean holeCardsShown = false;
 
     //GUI-elements
     private Scene scene;
@@ -203,6 +201,7 @@ public class GameScreen {
      */
     public void printToLogField(String printInfo){
         logField.appendText("\n" + printInfo);
+        System.out.println(printInfo);
     }
 
     public void addMenuBarToGameScreen(){
@@ -217,9 +216,6 @@ public class GameScreen {
      */
     public void setHandForUser(int userID, Card leftCard, Card rightCard) {
         // If you are sent hole cards for another numberOfPlayer, assume all hole cards will be sent soon
-        if (userID != this.playerID) {
-            holeCardsShown = true;
-        }
         //Images
         Image leftImage = new Image(ImageViewer.returnURLPathForCardSprites(leftCard.getCardNameForGui()));
         Image rightImage = new Image(ImageViewer.returnURLPathForCardSprites(rightCard.getCardNameForGui()));
@@ -232,9 +228,6 @@ public class GameScreen {
             holeCards.add(rightCard);
             updateYourHandLabel();
         }
-        allHoleCards.put(userID, new Card[]{leftCard, rightCard });
-
-
     }
 
 
@@ -492,7 +485,14 @@ public class GameScreen {
     public void startNewHand() {
         new SoundPlayer().playShuffleSound();
         printToLogField(" ------ New hand ------");
-        communityCards = new ArrayList<>();
+        if (communityCards == null) {
+            communityCards = new ArrayList<>();
+            System.out.println("Community cards were null");
+        }
+        else {
+            communityCards.clear();
+            System.out.println("Community cards cleared");
+        }
 
         //Set opponent hands
         Image backImage = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
@@ -501,10 +501,6 @@ public class GameScreen {
                 layout.setCardImage(backImage, backImage);
             layout.setPercentLabel("");
         });
-
-        //Reset hole cards
-        this.holeCardsShown = false;
-        this.allHoleCards = new HashMap<>();
 
         //Reset board
         boardLayout.newHand();
@@ -736,31 +732,35 @@ public class GameScreen {
     }
 
     // The thread that is currently calculating winning percentages. Only one thread should be modifying the GUI at the time
-    private volatile Optional<Thread> winningPercentageComputer;
+    private volatile Optional<Thread> winningPercentageComputer = Optional.empty();
     /**
      * If hole cards are shown, calculate percentages for all players
      */
-    public void showPercentages(Map<Integer, Card[]> holeCardsStillInHand) {
+    public void showPercentages(Map<Integer, Card[]> holeCardsStillInHand, List<Card> communityCards) {
         assert holeCardsStillInHand != null;
-        if (!holeCardsShown) {
-            System.out.println((System.currentTimeMillis() % 10000) + ": Hole cards aren't shown");
-            return;
-        }
-        //System.out.println((System.currentTimeMillis() % 10000) + ": Starting computing wining percentages with " + holeCards.size() + " hole cards.");
+
+        //System.out.println((System.currentTimeMillis() % 10000) + ": Starting computing winning percentages with " + holeCardsStillInHand.size() + " hole cards and " + communityCards.size() + " community cards");
         Consumer<Map<Integer, Double>> callBack = (percentages) -> {
             // Make sure another, older thread cannot simultaneously modify the GUI
             if (winningPercentageComputer.isPresent() && winningPercentageComputer.get().getId() == Thread.currentThread().getId()) {
                 Platform.runLater(() -> {
+                    allPlayerLayouts.forEach((id, layout) -> layout.setPercentLabel(""));
                     percentages.forEach((id, pcnt) -> allPlayerLayouts.get(id).setPercentLabel((int) (pcnt * 100) + "%"));
                 });
             }
         };
 
+        winningPercentageComputer.ifPresent(Thread::interrupt);
         winningPercentageComputer = Optional.of(new Thread(() ->  {
-            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(holeCardsStillInHand, communityCards, callBack, Game.WAIT_FOR_COMMUNITY_CARD_ALL_IN_DELAY);
-            callBack.accept(percentages);
-            logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
-                    + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
+            Map<Integer, Double> percentages = HandCalculator.getNewWinningPercentages(holeCardsStillInHand, communityCards, callBack);
+            if (!Thread.currentThread().isInterrupted()) {
+                callBack.accept(percentages);
+                logger.println("Computed winning percentages for " + communityCards.size() + " community cards: "
+                        + percentages.keySet().stream().map(id -> this.names.get(id) + ": " + percentages.get(id) + ", ").reduce("", String::concat), Logger.MessageType.DEBUG);
+            }
+            else {
+                //System.out.println((System.currentTimeMillis() % 10000) + "Winning percentages thread has been interrupted by the time it completed");
+            }
         }));
         winningPercentageComputer.get().start();
     }

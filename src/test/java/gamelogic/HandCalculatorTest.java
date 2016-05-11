@@ -51,7 +51,7 @@ public class HandCalculatorTest {
                 Card[] cards = new Card[]{deck.draw().get(), deck.draw().get()};
                 holeCards.put(j, cards);
             }
-            HandCalculator.getNewWinningPercentages(holeCards, communityCards, map -> map.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0)), 0L);
+            HandCalculator.getNewWinningPercentages(holeCards, communityCards, map -> map.forEach((id, percentage) -> System.out.printf("#%s: %5.2f%%, ", Arrays.toString(holeCards.get(id)), percentage * 100.0)));
         }
     }
 
