@@ -8,6 +8,9 @@ import java.util.*;
 
 /**
  * Created by Kristian Rosland on 07.03.2016.
+ *
+ *  Class representing the playing of a game. Contains all players, stack sizes etc.
+ *  Uses GameController to get decision from clients corresponding to players (by ID)
  */
 public class Game {
 

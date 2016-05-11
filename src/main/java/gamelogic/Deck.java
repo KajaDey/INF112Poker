@@ -34,12 +34,6 @@ public class Deck {
         return Optional.of(cards.remove(cards.size() - 1));
     }
 
-    /**
-     * Shuffles the remaining cards
-     */
-    public void shuffle() {
-        Collections.shuffle(cards);
-    }
 
     @Override
     public String toString() {
