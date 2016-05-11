@@ -48,7 +48,7 @@ public class GameLobby {
         Button settings = ObjectStandards.makeButtonForLobbyScreen("Settings");
         Button startGame = ObjectStandards.makeButtonForLobbyScreen("Start game");
         Button leaveLobby = ObjectStandards.makeButtonForLobbyScreen("Leave lobby");
-        CheckBox showAllPlayerCards = new CheckBox("Show all players cards");
+        CheckBox showAllPlayerCards = new CheckBox("Show all players' cards");
 
         amountOfChips = ObjectStandards.makeLobbyLabelWhite("Chips: ",gameSettings.getStartStack()+"");
         numberOfPlayers = ObjectStandards.makeLobbyLabelWhite("Number of players: ", gameSettings.getMaxNumberOfPlayers()+"");

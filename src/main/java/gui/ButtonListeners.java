@@ -146,8 +146,7 @@ public class ButtonListeners {
      * What happens when the startGameButton is pushed
      */
     public static void startGameButtonListener(GameController gameController, CheckBox showAllPlayerCards) throws Game.InvalidGameSettingsException {
-        boolean showCards = false;
-        gameController.initGame(showCards, new ArrayList<>());
+        gameController.initGame(showAllPlayerCards.isSelected(), new ArrayList<>());
     }
 
     /**
