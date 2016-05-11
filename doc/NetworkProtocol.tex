@@ -10,6 +10,13 @@
 \section{Introduction}
 A protocol for playing poker remotely via a text interface, usually (but not necessarily) over a network. The protocol is based on passing text commands between the server and a client. Each command is terminated by a newline, and commands are separated into tokens delimited by one or more whitespace characters. The first token is always the command name. If the client or server receives a command with an unknown command name, the whole command should be ignored, and communication should continue as normal afterwards. If a known command is illegally formatted, however, the client should show an error.
 
+\section{Tokens}
+Each command consists of one or more tokens. Normally, each token is a single ``word'' (sequence of characters delimited by one or more whitespaces), but a token can also be several words inside ascii quotation marks. For example:
+\begin{itemize}
+\item \textbf{stackSizes 0 1000 1 1000} tokenizes to [``stacksizes'', ``0'', ``1000'', ``1'', ``1000'']
+\item \textbf{name ``Svein Jonny''} tokenizes to [``name'', ``Svein Jonny'']
+\end{itemize}
+
 \section{Decision and card format}
 \subsection*{Cards}
 Each card is stored as a single text token (no whitespace characters), represented as the suit followed by the rank. The ranks are given by the integers 2-14, the suits are given by their names (diamonds, spades, hearts, clubs). Examples: diamonds14, spades7, clubs10.
@@ -24,7 +31,7 @@ A decision is stored as a single token (no whitespace characters), consisting of
 \item smallBlind
 \item bigBlind
 \item bet\textlangle{}amount\textrangle{} 
-\item raise\textlangle{}amount\textrangle{} Raises \textit{by} the amount given, not \textit{to} the amount.
+\item raise\textlangle{}amount\textrangle{} (Raises \textit{by} the amount given, not \textit{to} the amount)
 \item allIn
 \end{itemize}
 
@@ -78,10 +85,10 @@ Sends the turn card to the client. See section ``decision and card formats'' for
 \subsection*{setRiver \textlangle{}card\textrangle{}}
 Sends the river card to the client. See section ``decision and card formats'' for the format for cards.
 
-\subsection{playerBust <ID> <rank>}
+\subsection*{playerBust <ID> <rank>}
 Sent when a player is busted (is out of the game). Also sends the position the player lost in.
 
-\subsection{showdown <line1> <line2> ... }
+\subsection*{showdown <line1> <line2> ... }
 Sent after a showdown, sending n lines of text describing who won the pot and any side pots. These are meant to displayed in the middle of the GUI.
 
 \subsection*{getDecision \textlangle{}timeToThink\textrangle{}}
@@ -94,6 +101,9 @@ Sent to every client whenever any player makes a decision in the game. Clients a
 
 \subsection*{upi \textlangle{}version\textrangle{}}
 Used to initialize communication over the protocol, and tell the client server that it is using unviersal poker interface. The version parameter is a sequence-based identifier (like 1.0.0). The client should wait for a ``upiok'' command to complete the handshake.
+
+\subsection*{chat textToken}
+Used to send chat messages to other players. The chat message is sent as a single token, so it usually needs to wrapped in quotation marks to be received properly.
 
 \subsection*{name \textlangle{}name\textrangle{}}
 Sends the client's name to the server. Should only be sent after the server requests it with a getName command. The name field may be empty, in which case the server may assign a name to the client. The name cannot contain whitespace characters.
