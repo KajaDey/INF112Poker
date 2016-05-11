@@ -1,26 +1,34 @@
-Møte 13 - 27.04.2016 kl 14:15
+MÃ¸te 13 - 27.04.2016 kl 14:15
 
-Sekretær: Kristian
+SekretÃ¦r: Kristian
 
-Oppmøte: Alle
+OppmÃ¸te: Alle
 
-Hva er gjort siden sist: 
+Hva er gjort siden sist:
 Implementert game clock
 
-
 Diskusjon:
-Forrige sprint
-Hva gikk bra: God kommunikasjon mellom de forskjellige teamene. God bruk av bugtracker. Gjort det lett for oss selv å implementere nettverk i denne sprinten. Gode tester. 
-Hva gikk dårlig: Tidsbruk, burde ha pushet alt før fristen. Burde fordelt arbeid med diagrammer bedre. Burde ha fikset alle testene før innlevering.
-Denne sprinten
-Hvordan vil vi gjøre nettverk:
-André jobber med lobby
-Kristian lager server på heroku (Pass: java>rust)
-Ragnhild implementerer blinds som øker pr. Tid
-Kaja lager nettverksprotokoll for ServerLobbyCommunicator
-Morten lager nettverksprotokoll for ServerGameCommunicator og starter på implementasjon
+Forrige sprint (sprint 2):
+	Hva gikk bra:
+		- God kommunikasjon mellom de forskjellige "teamene".
+		- God bruk av bugtracker.
+		- Gjort det lett for oss selv Ã¥ implementere nettverk i denne sprinten.
+		- Gode tester.
+	Hva gikk dÃ¥rlig:
+		- Tidsbruk, burde ha pushet alt fÃ¸r fristen.
+		- Burde fordelt arbeid med diagrammer bedre.
+		- Burde ha fikset alle testene fÃ¸r innlevering sÃ¥ ingen failet.
+	Denne sprinten:
+	Hvordan vil vi gjÃ¸re nettverk:
+		Andre jobber med lobby
+		Kristian lager server pÃ¥ heroku (Pass: java>rust)
+		Kaja lager nettverksprotokoll for ServerLobbyCommunicator
+		Morten lager nettverksprotokoll for ServerGameCommunicator og starter pÃ¥ implementasjon
+	Ragnhild implementerer blinds som Ã¸ker pr. tid
+	Ragnhild skriver unit tester for spill over nettverk, og tester som simulerer spill med AIer.
 
+Plan til neste mÃ¸te:
+Alle begynner pÃ¥ oppgavene sine for Ã¥ fÃ¥ igang spill over nettverk.
+Ha klar nettverksprotokollene sÃ¥ vi kan begynne implementasjonen.
 
-Plan til neste møte:
-	
-Tid for neste møte: 01.05.16, kl 12.00
+Tid for neste mÃ¸te: 01.05.16, kl 12.00
