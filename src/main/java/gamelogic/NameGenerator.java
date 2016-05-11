@@ -1,15 +1,11 @@
 package gamelogic;
 
-import gui.GUIMain;
-import javafx.application.Platform;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -19,8 +15,7 @@ import java.util.Random;
  */
 public class NameGenerator {
 
-
-    private static String filePath;
+    //private static String filePath;
     public static ArrayList<String> names = new ArrayList<>();
     public static String backupNames = "Kristian,Ragnhild,André,Henrik,Simon,Jostein,Vegar,Morten,Mariah,Kaja";
     public static ArrayList<String> characterNames = new ArrayList<>();
@@ -28,9 +23,9 @@ public class NameGenerator {
     public static String pathOfSeries = "";
     public  static Random random = new Random();
 
-    static {
-        filePath = "resources/nameList/names.txt";
-    }
+    //static {
+      //  filePath = "resources/nameList/names.txt";
+   // }
 
     /**
      *  Get a random playerName from a randomly selected theme series
@@ -81,12 +76,11 @@ public class NameGenerator {
         }
         }catch (NullPointerException e){
             String[] array = backupNames.split(",");
-            for (String s : array) {
-                characterNames.add(s);
+            characterNames.addAll(Arrays.asList(array));
             }
         }
     }
-}
+
 
 
 

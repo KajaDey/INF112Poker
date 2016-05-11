@@ -1,35 +1,34 @@
-Møte 15 - 04.15.2016, kl 1415
-Sekretær: Vegar
+MÃ¸te 15 - 04.15.2016, kl 1415
+SekretÃ¦r: Vegar
 
-Oppmøte:
-- Kaja 
+OppmÃ¸te:
+- Kaja
 - Vegar
-- André
+- Andre
 - Mariah
 - Simon
 - Henrik
 - Morten
 - Ragnhild
-Borte: 
+Borte:
 - Kristian
 
 Hva er gjort siden sist:
 Jobba videre med nettverk
 Main screen rework
 Jobbet med lobby
-Starta arbeid med å tilrettelegge chat
-
+Starta arbeid med Ã¥ tilrettelegge chat
+Begynt Ã¥ se pÃ¥ verktÃ¸yet Mockito for Ã¥ lettere teste game logic
 
 Diskusjon:
 Splitta chat/log/ignore chat button
-GUI får inn ein input stream med chat og logg, så deala GUI med filtrering for kva som blir vist alt etter kva bruker vil.
-Loggfillesing har ikkje blitt påbegynt
+GUI fÃ¸r inn ein input stream med chat og logg, sÃ¥ deala GUI med filtrering for kva som blir vist alt etter kva bruker vil.
+Loggfillesing har ikkje blitt pÃ¥begynt
 
-Plan til neste møte:
+Plan til neste mÃ¸te:
 Testing (Ragnhild)
 Networking (Morten)
-Fikse logg/lage ny logg (André)
+Fikse logg/lage ny logg (Andre)
 
-
-Tid for neste møte:
-Lørdag 07.05.2016 kl. 1200
+Tid for neste mÃ¸te:
+LÃ¸rdag 07.05.2016 kl. 1200

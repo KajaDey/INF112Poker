@@ -1,36 +1,35 @@
-Møte 16 - 07.05.20016, kl 12:00
-Sekretær: Kaja 
+MÃ¸te 16 - 07.05.20016, kl 12:00
+SekretÃ¦r: Kaja
 
-Oppmøte:
+OppmÃ¸te:
 - Mariah
 - Ragnhild
-- Kaja 
-- André
+- Kaja
+- Andre
 - Simon
 - Kristian
 - Morten
-Borte: 
+FravÃ¦rende:
 - Jostein
 - Vegar
 
 Hva er gjort siden sist:
 Javadoc
-lagt til chat (trenger å debugges)
-Fått opp Lobby. Kan nå starte spill over nettverk
-Testing av gamelogic 
+lagt til chat (trenger Ã¥ debugges)
+FÃ¥tt opp Lobby. Kan nÃ¥ starte spill over nettverk
+Testing av gamelogic
 Jobbet med oppdatering av diagrammer
-	
+
 Diskusjon:
-Hva vi ønsker å gjøre med spectators. Hvordan en spiller skal kunne fortsette å se et spill etter at de er busted. 
+Hva vi Ã¸nsker Ã¥ gjÃ¸re med spectators. Hvordan en spiller skal kunne fortsette Ã¥ se et spill etter at de er busted.
 
-
-Plan til neste møte:
-Fikse plasseringer på bordet. 
+Plan til neste mÃ¸te:
+Fikse plasseringer pÃ¥ bordet.
 Fikse exceptions i replay
-Kommunikasjonsdiagram må ferdigstilles
-Diverse nettverksbugs må håndteres
+Kommunikasjonsdiagram mÃ¥ ferdigstilles
+Diverse nettverksbugs mÃ¥ hÃ¥ndteres
 Nettverkstesting
+Oppdatere design model
 
-
-Tid for neste møte:
+Tid for neste mÃ¸te:
 Mandag 09.05.2016	kl. 12: 15

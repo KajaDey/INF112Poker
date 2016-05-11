@@ -3,5 +3,9 @@ About the key combinations:
 The key combinations are shortcuts for making moves whilst in game,
 and the combinations will work alongside the buttons.
 
-The combinations will only work when the input field for moves is
-in focus, NOT when the chat field is focused.
+To be able to use the key combinations, you cannot have anything in focus.
+This means that neither of the input fields, nor the log field can be focused.
+
+In regards of the key combinations for call and check:
+Call can be done by single tapping SPACE,while Check can be done by
+double tapping it.

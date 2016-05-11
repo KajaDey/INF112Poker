@@ -44,12 +44,12 @@ public class LobbyScreen {
     private int ID;
     private Optional<LobbyTable> currentTable = Optional.empty();
     private final Logger logger;
-    private String ipAdress = "";
+    private String ipAddress = "";
 
     private String [] buttonTexts = {"Take seat", "Leave table", "Delete table", "Change settings", "Start game"};
 
     public LobbyScreen(GameController gameController, String name, InetAddress IPAddress, Logger logger) {
-        this.ipAdress = IPAddress.getHostAddress();
+        this.ipAddress = IPAddress.getHostAddress();
         this.gameController = gameController;
         this.logger = logger;
         this.tables = new HashMap<>();
@@ -58,7 +58,7 @@ public class LobbyScreen {
         Pane pane = new Pane();
         Button newLobby = ObjectStandards.makeButtonForLobbyScreen("Make lobby");
         newLobby.setOnAction(event -> makeNewLobbyButtonListener());
-        Label serverIPLabel = ObjectStandards.makeLobbyLabelWhite("Server IP:","\n"+ipAdress);
+        Label serverIPLabel = ObjectStandards.makeLobbyLabelWhite("Server IP:","\n"+ ipAddress);
         serverIPLabel.setLayoutX(1000);
         serverIPLabel.setLayoutY(50);
 
