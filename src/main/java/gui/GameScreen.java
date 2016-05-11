@@ -65,8 +65,14 @@ public class GameScreen {
         this.logger = logger;
 
         //Set onKeyRelease and onMouseClick events for pane
-        pane.setOnKeyReleased(ke -> ButtonListeners.keyReleased(ke, playerLayout, boardLayout, chatField));
-        pane.setOnMouseClicked((event) -> playerLayout.setFocus());
+        pane.setOnKeyReleased(ke ->  {
+            if (!(playerLayout == null || boardLayout == null || chatField == null))
+                ButtonListeners.keyReleased(ke, playerLayout, boardLayout, chatField);
+        });
+        pane.setOnMouseClicked((event) -> {
+            if (playerLayout != null)
+                playerLayout.setFocus();
+        });
 
         //Create the scene
         scene = new Scene(ImageViewer.setBackground("table&background", pane, 1920, 1080), 1280, 720);
@@ -490,7 +496,7 @@ public class GameScreen {
      */
     public void setPot(long pot) {
         String potString = Long.toString(pot);
-        boardLayout.setPotLabel("Pot " + potString);
+        boardLayout.setPotLabel("Pot $" + potString);
     }
 
     /**

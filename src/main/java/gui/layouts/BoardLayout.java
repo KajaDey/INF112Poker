@@ -33,8 +33,8 @@ public class BoardLayout extends VBox {
         VBox statsLayout = new VBox();
 
         this.currentBigBlind = bigBlind;
-        currentBBLabel = ObjectStandards.makeStandardLabelWhite("Current BB: ", "$" + bigBlind);
-        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Current SB: ", "$" + smallBlind);
+        currentBBLabel = ObjectStandards.makeStandardLabelWhite("Big blind ", "$" + bigBlind);
+        currentSBLabel = ObjectStandards.makeStandardLabelWhite("Small blind ", "$" + smallBlind);
         potLabel = ObjectStandards.makeStandardLabelWhite("", "");
         currentBBLabel.setMinWidth(115);
         currentSBLabel.setMinWidth(115);
