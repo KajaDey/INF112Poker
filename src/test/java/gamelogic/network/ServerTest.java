@@ -14,7 +14,10 @@ import java.net.Socket;
 import java.util.*;
 
 /**
- * Created by morten on 27.04.16.
+ * Tests for testing the basic server behaviour
+ *
+ * @author Morten Lohne
+ * @author Ragnhild Aalvik
  */
 public class ServerTest {
 

@@ -69,7 +69,7 @@ public class Statistics {
             //Create the directory if it doesn't exist
 
             if (!new File("stats").mkdir()) {
-                throw new IOException("Failed to create stats dir");
+                //throw new IOException("Failed to create stats dir");
             }
             PrintWriter fw = new PrintWriter(statsFile, "UTF-8");
 

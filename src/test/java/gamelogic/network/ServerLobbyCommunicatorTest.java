@@ -23,7 +23,9 @@ import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
- * Created by Ragnhild Aalvik on 10/05/16.
+ * Tests for ServerLobbyCommunicator.
+ * Mocks
+ * @author Ragnhild Aalvik
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServerLobbyCommunicator.class, Platform.class})

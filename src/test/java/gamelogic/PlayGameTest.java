@@ -14,8 +14,9 @@ import static org.mockito.Matchers.*;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 /**
- * Created by Ragnhild Aalvik on 03/05/16.
- *  Tests for GameLogic
+ *  Tests the GameLogic
+ *
+ *  @author Ragnhild Aalvik
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Game.class, GameController.class, GUIMain.class})
