@@ -1,8 +1,7 @@
 package gamelogic;
 
 
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,10 +16,11 @@ import java.util.Optional;
  */
 public class Logger {
     private Optional<String> logFolder = Optional.empty();
+    private static Optional<PrintWriter> replayWriter = Optional.empty();
     private final String fileNamePrefix;
     private final String logMessagePrefix;
     private final HashMap<MessageType, BufferedWriter> logWriters = new HashMap<>();
-    public boolean printToSysout = true;
+    public boolean printToSysout = true, printToReplay = true;
 
     public enum MessageType {
         DEBUG(true), AI(false), GAMEPLAY(true), WARNINGS(true), NETWORK(true), GUI(true), INIT(true), NETWORK_DEBUG(false), ALL(false);
@@ -112,6 +112,36 @@ public class Logger {
             if (printToSysout && !hasPrintedToSysout && messageType.printToSysoutByDefault) {
                 System.out.print(wholeMessage);
                 hasPrintedToSysout = true;
+            }
+        }
+    }
+
+    /**
+     * This method will save all the information needed to make a complete replay file.
+     *
+     * @param message The message to add to the replay file.
+     */
+    public void replayLogPrint(String message){
+        if (!printToReplay)
+            return;
+
+        if (replayWriter.isPresent()) {
+            replayWriter.get().print(message);
+            replayWriter.get().flush();
+        }
+        else {
+            try {
+                File replayFile = new File("replays/poker" + System.currentTimeMillis() / 1000 + ".log");
+                new File("replays").mkdir();
+                replayWriter = replayWriter.of(new PrintWriter(replayFile, "UTF-8"));
+                replayWriter.get().print(message);
+                replayWriter.get().flush();
+            } catch (FileNotFoundException e) {
+                // If creating the log file fails, do not write to it
+                System.out.println(e);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                System.exit(1);
             }
         }
     }

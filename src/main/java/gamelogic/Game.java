@@ -195,7 +195,7 @@ public class Game {
      * @return True if the hand continues, false if the hand is over
      */
     private boolean bettingRound(boolean isPreFlop) {
-        GUIMain.replayLogPrint("\nDECISIONS");
+        logger.replayLogPrint("\nDECISIONS");
         //Determine who is acting first (based on the isPreFLop-value)
         int actingPlayerIndex;
 
@@ -302,7 +302,7 @@ public class Game {
         //Get a decision for playerToAct from GameController
         Decision decision = gameController.getDecisionFromClient(playerToAct.getID());
 
-        GUIMain.replayLogPrint("\n" + playerToAct.getID() + " " + decision);
+        logger.replayLogPrint("\n" + playerToAct.getID() + " " + decision);
 
         //Test if decision is valid
         switch (decision.move) {
@@ -599,7 +599,7 @@ public class Game {
      * @return Array of community cards
      */
     private Card[] generateCommunityCards() {
-        GUIMain.replayLogPrint("\nCARD");
+        logger.replayLogPrint("\nCARD");
         Card[] commCards = new Card[5];
         for (int i = 0; i < commCards.length; i++)
             commCards[i] = drawCard();
@@ -617,7 +617,7 @@ public class Game {
 
         Card draw = replay ? cardQueue.pop() : deck.draw().get();
 
-        GUIMain.replayLogPrint("\n" + draw.toString());
+        logger.replayLogPrint("\n" + draw.toString());
         return draw;
     }
 
@@ -648,7 +648,7 @@ public class Game {
      * @param playersStillPlaying Players still in the game
      */
     private void dealHoleCards(List<Player> playersStillPlaying) {
-        GUIMain.replayLogPrint("\nCARD");
+        logger.replayLogPrint("\nCARD");
         for (Player p : playersStillPlaying) {
             Card[] cards = {drawCard(), drawCard()};
             p.setHoleCards(cards[0], cards[1]);

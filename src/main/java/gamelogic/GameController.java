@@ -104,7 +104,7 @@ public class GameController {
         game = new Game(gameSettings, this, logger);
         this.showAllPlayerCards = showCards;
 
-        GUIMain.replayLogPrint("SETTINGS\n" + gameSettings.toString());
+        logger.replayLogPrint("SETTINGS\n" + gameSettings.toString());
 
         NameGenerator.readNewSeries();
 
@@ -136,8 +136,8 @@ public class GameController {
         clients.forEach((id, client) -> client.setChatListener(s -> printToLogField(names.get(id) + ": " + s)));
 
         //Print names to replay log
-        GUIMain.replayLogPrint("\nNAMES");
-        names.forEach((id, name) -> GUIMain.replayLogPrint("\n" + name));
+        logger.replayLogPrint("\nNAMES");
+        names.forEach((id, name) -> logger.replayLogPrint("\n" + name));
 
         return startGame();
     }
@@ -193,6 +193,7 @@ public class GameController {
         game.addPlayer(name, 0);
         guiReplayClient.setAmountOfPlayers(gameSettings.getMaxNumberOfPlayers());
         names.put(0, name);
+        logger.printToReplay = false;
         logger.println("Initialized " + guiReplayClient.getClass().getSimpleName() + " " + names.get(0), Logger.MessageType.INIT);
     }
 

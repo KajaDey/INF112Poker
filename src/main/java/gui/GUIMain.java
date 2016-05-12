@@ -7,12 +7,7 @@ import gamelogic.*;
 import replay.ReplayClient;
 import replay.ReplayReader;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.util.Optional;
 
 /**
  * This is the main method of the game and contains prints to file
@@ -23,7 +18,6 @@ import java.util.Optional;
  */
 public class GUIMain extends Application{
 
-    private static Optional<PrintWriter> replayWriter = Optional.empty();
     public static GUIMain guiMain;
 
     private GameController gameController;
@@ -88,33 +82,5 @@ public class GUIMain extends Application{
 
         Platform.runLater(() -> SceneBuilder.showCurrentScene(gameScreen.createSceneForGameScreen(), "GameScreen"));
         return client;
-    }
-
-    /**
-     * This method will save all the information needed to make a complete replay file.
-     *
-     * @param message The message to add to the replay file.
-     */
-    public static void replayLogPrint(String message){
-
-        if (replayWriter.isPresent()) {
-            replayWriter.get().print(message);
-            replayWriter.get().flush();
-        }
-        else {
-            try {
-                File replayFile = new File("replays/poker" + System.currentTimeMillis() / 1000 + ".log");
-                new File("replays").mkdir();
-                replayWriter = replayWriter.of(new PrintWriter(replayFile, "UTF-8"));
-                replayWriter.get().print(message);
-                replayWriter.get().flush();
-            } catch (FileNotFoundException e) {
-                // If creating the log file fails, do not write to it
-                System.out.println(e);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }
     }
 }
