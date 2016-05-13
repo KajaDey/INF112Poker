@@ -74,6 +74,7 @@ public class Logger {
         messageTypes = Arrays.stream(messageTypes).filter(type -> type !=  MessageType.ALL).toArray(MessageType[]::new);
         assert !Arrays.stream(messageTypes).filter(type -> type == MessageType.ALL).findFirst().isPresent() : "Cannot write directly to \"all\" log file (tried to write to logs " + Arrays.toString(messageTypes) + ")";
 
+        
         // Add "all" to message types, so that it is always printed to
         messageTypes = Arrays.copyOf(messageTypes, messageTypes.length + 1);
         messageTypes[messageTypes.length - 1] = MessageType.ALL;

@@ -137,6 +137,10 @@ public class ServerLobbyCommunicator {
                 String input;
                 try {
                     input = readFromServer();
+                    if (input == null) {
+                        logger.println("Received null from server, shutting down.", Logger.MessageType.NETWORK);
+                        return;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;

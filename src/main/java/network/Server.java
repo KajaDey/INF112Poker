@@ -440,9 +440,12 @@ public class Server {
     static class ClientBroadcasts {
         private static void broadCast(Server server, String string) {
             synchronized (server) {
-                for (LobbyPlayer player : server.lobbyPlayers) {
-                    player.write(string);
-                }
+                LobbyPlayer [] hackArray = new LobbyPlayer[server.lobbyPlayers.size()];
+                for (int i = 0; i < hackArray.length; i++)
+                    hackArray[i] = server.lobbyPlayers.get(i);
+
+                for (LobbyPlayer p : hackArray)
+                    p.write(string);
             }
         }
         public static void playedJoinedLobby(Server server, LobbyPlayer player) {
