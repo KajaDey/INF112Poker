@@ -28,9 +28,10 @@ public class ReplayReader {
     private ArrayDeque<Decision> decisions = new ArrayDeque<>();
     private ArrayDeque<Card> cardQueue = new ArrayDeque<>();
     private ArrayDeque<String> names = new ArrayDeque<>();
+    private ArrayDeque<Long> timeQueue = new ArrayDeque<>();
 
     public enum InfoType{
-        NAMES,CARD,DECISION,SETTINGS
+        NAMES,CARD,DECISION, TIME, SETTINGS
     }
 
     /**
@@ -65,8 +66,10 @@ public class ReplayReader {
                     case "NAMES":
                         currentType = InfoType.NAMES;
                         break;
+                    case "TIME":
+                        currentType = InfoType.TIME;
+                        break;
                     default:
-
                         switch (currentType) {
                             case NAMES:
                                 names.add(line);
@@ -79,6 +82,9 @@ public class ReplayReader {
                                 break;
                             case DECISION:
                                 decisions.add(makeDecision(line));
+                                break;
+                            case TIME:
+                                timeQueue.add(Long.parseLong(line));
                                 break;
                             default:
                                 break;
@@ -142,6 +148,13 @@ public class ReplayReader {
      */
     public String getNextName() {
         return names.pop();
+    }
+
+    /**
+     * @return A queue containing the time of each step of the game
+     */
+    public ArrayDeque<Long> getTimeQueue() {
+        return timeQueue;
     }
 
     /**

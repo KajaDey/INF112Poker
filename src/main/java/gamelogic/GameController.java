@@ -177,7 +177,7 @@ public class GameController {
         initClients();
 
         //Override the drawCard()-method in Game so that it draws cards from the replay queue instead of deck
-        game.setReplayCardQueue(replayReader.getCardQueue());
+        game.setReplayQueues(replayReader.getCardQueue(), replayReader.getTimeQueue());
 
         //Start the game replay
         startGame();

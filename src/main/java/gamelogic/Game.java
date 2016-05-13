@@ -3,6 +3,7 @@ package gamelogic;
 import gui.GUIMain;
 import gui.GameScreen;
 import gui.GameSettings;
+import network.Server;
 
 import java.util.*;
 
@@ -44,7 +45,10 @@ public class Game {
     private Card[] communityCards;
     private Deck deck;
     private ArrayDeque<Card> cardQueue;
+
+    //Replay
     private boolean replay = false;
+    private Optional<Queue<Long>> replayTimeQueue = Optional.empty();
 
     private final Logger logger;
 
@@ -92,7 +96,8 @@ public class Game {
      * Plays a game until a player has won.
      */
     public void playGame() {
-        lastBlindRaiseTime = System.currentTimeMillis();
+        lastBlindRaiseTime = getTime();
+        logger.replayLogPrint("\nTIME\n"+lastBlindRaiseTime);
 
         while (numberOfPlayersWithChipsLeft() > 1) {
             logger.println("\nNew hand", Logger.MessageType.GAMEPLAY);
@@ -130,8 +135,10 @@ public class Game {
         boolean preFlop = true;
         //Makes the small and big blind pay their blind by forcing an act. Updates stackSizes
 
+        long currentTime = getTime();
         logger.println("\nBLINDS (Small " + this.gameSettings.getSmallBlind() + ", big " + this.gameSettings.getBigBlind() + ")", Logger.MessageType.GAMEPLAY);
-        long currentTime = System.currentTimeMillis();
+        logger.replayLogPrint("\nTIME\n"+currentTime);
+
         // Increase blinds
         if (currentTime - (gameSettings.getLevelDuration() * 60 * 1000) > lastBlindRaiseTime) {
             gameSettings.increaseBlinds();
@@ -694,13 +701,28 @@ public class Game {
     }
 
     /**
+     * Get the current time
+     * @return If this is a replay, this method will return the replayed games time, else it returns the current time in millis
+     */
+    private long getTime() {
+        if (replay)
+            if (replayTimeQueue.isPresent() && !replayTimeQueue.get().isEmpty())
+                return this.replayTimeQueue.get().poll();
+            else
+                throw new NoSuchElementException("Replay time queue not present or empty");
+        else
+            return System.currentTimeMillis();
+    }
+
+    /**
      * Set the replay card queue
      * Only used if the game is a replay. Use this queue instead of deck.draw()
      *
      * @param cardQueue The queue of cards from the replay file
      */
-    public void setReplayCardQueue(ArrayDeque<Card> cardQueue) {
+    public void setReplayQueues(ArrayDeque<Card> cardQueue, ArrayDeque<Long> replayTimeQueue) {
         this.cardQueue = cardQueue;
+        this.replayTimeQueue = Optional.of(replayTimeQueue);
         this.replay = true;
     }
 
