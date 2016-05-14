@@ -59,6 +59,7 @@ public class GameScreen {
     private Optional<Consumer<String>> chatListener = Optional.empty();
 
     private final Logger logger;
+    private Consumer<Boolean> callBack;
 
     public GameScreen(int ID, Logger logger) {
         this.playerID = ID;
@@ -795,5 +796,9 @@ public class GameScreen {
 
     public void setChatListener(Consumer<String> chatListener) {
         this.chatListener = Optional.of(chatListener);
+    }
+
+    public void setCallBack(Consumer<Boolean> callback) {
+        playerLayout.setCallBacks(callback);
     }
 }

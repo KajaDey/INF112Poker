@@ -137,4 +137,7 @@ public interface GameClient {
      * @param chatListener A chat listener to be fired if the client chats
      */
     void setChatListener(Consumer<String> chatListener);
+
+
+    void setCallback(Consumer<Boolean> callback);
 }

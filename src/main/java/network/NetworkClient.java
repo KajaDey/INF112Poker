@@ -31,6 +31,7 @@ public class NetworkClient implements GameClient {
     private final Logger logger;
 
     private volatile boolean isDropped = false;
+    private Optional<Consumer<Boolean>> showCardCallback = Optional.empty();
 
     /**
      * Initializes the network client, and does the upi handshake with the remote client
@@ -100,6 +101,10 @@ public class NetworkClient implements GameClient {
                                 //Queue name so that getName will be unlocked
                                 if (nameBlockingQueue.remainingCapacity() > 0)
                                     nameBlockingQueue.add(tokens.get()[1]);
+                                break;
+                            case "showCards":
+                                if (tokens.get().length > 1) // if second token is 1, show the cards
+                                    showCardCallback.ifPresent(t -> t.accept(tokens.get()[1].trim().equals("1")));
                                 break;
                             default:
                                 logger.println("Unrecognized input", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS, Logger.MessageType.NETWORK_DEBUG);
@@ -353,5 +358,13 @@ public class NetworkClient implements GameClient {
      */
     public void setChatListener(Consumer<String> chatListener) {
         this.chatListener = chatListener;
+    }
+
+    /**
+     * Set a callback that should be invoked if client on clicks his own hole cards
+     * @param callback
+     */
+    public void setCallback(Consumer<Boolean> callback) {
+        this.showCardCallback = Optional.of(callback);
     }
 }

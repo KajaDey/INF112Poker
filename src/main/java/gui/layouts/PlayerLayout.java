@@ -7,12 +7,16 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.SepiaTone;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import java.util.function.Consumer;
 
 /**
  * This class contains all the objects to make a player layout
@@ -30,6 +34,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private Button betRaiseButton, checkCallButton, foldButton;
     private boolean isBust = false, isActing = false;
     private long stackSize;
+    private boolean showCards = false;
 
 
     public PlayerLayout(String name){
@@ -309,17 +314,12 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     public String getCheckCallButtonText() { return checkCallButton.getText(); }
     public String getBetRaiseButtonText() { return betRaiseButton.getText(); }
     public TextField getAmountTextField() { return amountTextField; }
-
-    public void setStackSize(long stackSize) { this.stackSize = stackSize; }
     public long getStackSize() {
         return this.stackSize;
     }
 
     /**
      * Reset the time to think progress bar
-     * @param gameScreen
-     * @param timeToThink
-     * @param moveToExecute
      */
     public void startTimer(GameScreen gameScreen, long timeToThink, Decision.Move moveToExecute) {
         progressBar.setTimer(gameScreen, timeToThink, moveToExecute);
@@ -331,5 +331,15 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
 
     public boolean isActing() {
         return isActing;
+    }
+
+    public void setCallBacks(Consumer<Boolean> callback) {
+        Runnable task = (() -> {
+            callback.accept(showCards = !showCards);
+            leftCardImage.setEffect(showCards ? new SepiaTone() : new DropShadow());
+            rightCardImage.setEffect(showCards ? new SepiaTone() : new DropShadow());
+        });
+        leftCardImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> task.run());
+        rightCardImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> task.run());
     }
 }

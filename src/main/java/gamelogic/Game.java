@@ -83,6 +83,7 @@ public class Game {
                 players[i] = p;
                 numberOfPlayers++;
                 remainingPlayers++;
+                gameController.setCallback(p.getID(), p::showCards);
                 break;
             }
         }
@@ -461,7 +462,7 @@ public class Game {
 
         //Hand out the pot to the remaining player in the hand
         Player winner = playersStillInCurrentHand.get(0);
-        gameController.preShowdownWinner(winner.getID());
+        gameController.preShowdownWinner(winner.getID(), winner.showCards);
         winner.handWon(winner.getHand(Arrays.asList(communityCards)), pot.getPotSize());
         logger.println("\n" + winner.getName() + " won the hand", Logger.MessageType.GAMEPLAY);
         pot = new Pot(logger);

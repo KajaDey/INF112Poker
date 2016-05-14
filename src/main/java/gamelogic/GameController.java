@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created by kristianrosland on 07.03.2016.
@@ -30,6 +31,7 @@ public class GameController {
     private boolean showAllPlayerCards;
     private MainScreen.GameType gameType;
     private final Logger logger;
+    private Map<Integer, Card[]> holeCards = new HashMap<>();
 
     /**
      * Used by GUI to create a new single player game
@@ -392,13 +394,12 @@ public class GameController {
      * @param card2 Card two in the hand
      */
     public void setHandForClient(int clientID, Card card1, Card card2) {
-        if (showAllPlayerCards) { // Send everyone's hole cards to everyone
+        if (showAllPlayerCards) // Send everyone's hole cards to everyone
             clients.forEach((id, client) -> client.setHandForClient(clientID, card1, card2));
-        }
-        else {
-            GameClient c = clients.get(clientID);
-            c.setHandForClient(clientID, card1, card2);
-        }
+        else
+            clients.get(clientID).setHandForClient(clientID, card1, card2);
+
+        holeCards.put(clientID, new Card[]{card1, card2});
     }
 
     /**
@@ -457,6 +458,7 @@ public class GameController {
      */
     public void startNewHand() {
         clients.forEach((id, client) -> client.startNewHand());
+        holeCards.clear();
     }
 
     /**
@@ -488,9 +490,18 @@ public class GameController {
     /**
      *  Called every time a hand is won before showdown (everyone but 1 player folded)
      *  Prints a text showing who won the pot and how much it was. Also prints to log field
+     *
+     *  @param showCards If true, broadcast winners hole cards to all clients
      */
-    public void preShowdownWinner(int winnerID) {
-        clients.forEach((id, client) -> client.preShowdownWinner(winnerID));
+    public void preShowdownWinner(int winnerID, boolean showCards) {
+        clients.forEach((id, client) -> {
+            client.preShowdownWinner(winnerID);
+
+            System.out.println("Show cards = " + showCards);
+
+            if (showCards && holeCards.get(id) != null)
+                client.setHandForClient(winnerID, holeCards.get(winnerID)[0], holeCards.get(winnerID)[1]);
+        });
     }
     /**
      * Called every time a player is bust to inform all clients
@@ -516,5 +527,12 @@ public class GameController {
                 holeCards.forEach((id, cards) ->
                         client.setHandForClient(id, cards[0], cards[1]))
         );
+    }
+
+    /**
+     * Set callbacks for card clicked event
+     */
+    public void setCallback(int id, Consumer<Boolean> callback){
+        this.clients.get(id).setCallback(callback);
     }
 }

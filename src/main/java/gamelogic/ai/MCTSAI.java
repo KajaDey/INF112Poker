@@ -225,4 +225,9 @@ public class MCTSAI implements GameClient {
     @Override
     public void setChatListener(Consumer<String> chatListener) {
     }
+
+    @Override
+    public void setCallback(Consumer<Boolean> callBack) {
+
+    }
 }

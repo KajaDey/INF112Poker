@@ -23,6 +23,7 @@ public class Player {
     private int handsWon = 0, handsPlayed = 0, foldsPreFlop = 0;
     private int numberOfAggressiveMoves = 0, numberOfPassiveMoves = 0;
     private Hand bestHand;
+    public boolean showCards = false;
 
     public Player(String name, GameSettings gameSettings, int ID) {
         this.name = name;
@@ -134,6 +135,7 @@ public class Player {
         this.putOnTableThisRound = 0;
         this.allIn = false;
         this.hasActed = false;
+        this.showCards = false;
     }
 
     /**
@@ -206,6 +208,10 @@ public class Player {
 
     public String getName() {
         return name;
+    }
+
+    public void showCards(boolean show) {
+        this.showCards = show;
     }
 
     /** Statistics-getters  **/

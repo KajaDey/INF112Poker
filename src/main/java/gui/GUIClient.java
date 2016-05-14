@@ -36,6 +36,7 @@ public class GUIClient implements GameClient {
     private boolean playersSeated = false;
 
     private final Logger logger;
+    private Optional<Consumer<Boolean>> callback = Optional.empty();
 
     public GUIClient(int ID, GameScreen gameScreen, Logger logger) {
         this.ID = ID;
@@ -323,7 +324,11 @@ public class GUIClient implements GameClient {
             List<Integer> ids = positions.keySet().stream().sorted((i,j) -> positions.get(i).compareTo(positions.get(j))).collect(Collectors.toList());
             for (int i = 0; i < positions.size(); i++) {
                 int playerID = ids.get((ids.indexOf(this.ID) + i) % positions.size());
-                Platform.runLater(() -> gameScreen.insertPlayer(playerID, this.names.get().get(playerID)));
+                Platform.runLater(() ->  {
+                    gameScreen.insertPlayer(playerID, this.names.get().get(playerID));
+                    if (playerID == this.ID && callback.isPresent())
+                        gameScreen.setCallBack(callback.get());
+                });
             }
             playersSeated = true;
         }
@@ -369,5 +374,9 @@ public class GUIClient implements GameClient {
     @Override
     public void setChatListener(Consumer<String> chatListener) {
         Platform.runLater(() -> gameScreen.setChatListener(chatListener));
+    }
+
+    public void setCallback(Consumer<Boolean> callback) {
+        this.callback = Optional.of(callback);
     }
 }

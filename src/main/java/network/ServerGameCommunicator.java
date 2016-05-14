@@ -88,6 +88,7 @@ public class ServerGameCommunicator {
                     }
                     //Set the chat listener
                     gameClient.get().setChatListener(this::chatListener);
+                    gameClient.get().setCallback(this::showCards);
                     break;
                 case "playerNames":
                     assert gameClient.isPresent();
@@ -213,5 +214,12 @@ public class ServerGameCommunicator {
     public void chatListener(String chatMessage) {
         if (!writeToSocket("chat \"" + chatMessage + "\""))
             logger.println("Failed to write chat message, " + chatMessage, Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+    }
+
+    public void showCards(boolean show) {
+        if (!writeToSocket("showCards " + (show ? "1" : "0"))) {
+            logger.println("Failed to inform server that client wanted to show/hide cards on showdown", Logger.MessageType.NETWORK, Logger.MessageType.WARNINGS);
+        }
+
     }
 }
