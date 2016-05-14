@@ -495,12 +495,10 @@ public class GameController {
      */
     public void preShowdownWinner(int winnerID, boolean showCards) {
         clients.forEach((id, client) -> {
-            client.preShowdownWinner(winnerID);
-
-            System.out.println("Show cards = " + showCards);
-
             if (showCards && holeCards.get(id) != null)
                 client.setHandForClient(winnerID, holeCards.get(winnerID)[0], holeCards.get(winnerID)[1]);
+
+            client.preShowdownWinner(winnerID);
         });
     }
     /**

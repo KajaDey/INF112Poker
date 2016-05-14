@@ -518,12 +518,10 @@ public class GameScreen {
     public void startNewHand() {
         new SoundPlayer().playShuffleSound();
         printToLogField(" ------ New hand ------");
-        if (communityCards == null) {
+        if (communityCards == null)
             communityCards = new ArrayList<>();
-        }
-        else {
+        else
             communityCards.clear();
-        }
 
         //Set opponent hands
         Image backImage = ImageViewer.getImage(ImageViewer.Image_type.CARD_BACK);
@@ -536,6 +534,7 @@ public class GameScreen {
         //Reset board
         boardLayout.newHand();
         putOnTable.forEach((id, putIn) -> putOnTable.put(id, 0L));
+        playerLayout.showCards = false;
         potSize = 0;
         updatePot();
     }
@@ -692,10 +691,14 @@ public class GameScreen {
      *   Sent if the hand is over before showdown
      * @param winnerID  The numberOfPlayer that was left in the hand
      */
-    public void preShowdownWinner(int winnerID) {
+    public void preShowdownWinner(int winnerID, Optional<Card[]> holeCards) {
         updatePot();
+
+        boolean showCards = holeCards.isPresent() && (!(winnerID == playerID) || playerLayout.showCards);
+
         boardLayout.setWinnerLabel(names.get(winnerID) + " won the pot of " + String.valueOf(potSize));
-        printToLogField(names.get(winnerID) + " won the pot of " + potSize);
+        printToLogField(names.get(winnerID) + " won the pot of " + potSize +
+                (showCards ? " with " + holeCards.get()[0] + holeCards.get()[1] : ""));
     }
 
     /**

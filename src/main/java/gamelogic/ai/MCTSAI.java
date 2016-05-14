@@ -22,6 +22,7 @@ public class MCTSAI implements GameClient {
     private Optional<Map<Integer, Integer>> positions;
     private Optional<Map<Integer, String>> names;
     private final Logger logger;
+    private Optional<Consumer<Boolean>> callback = Optional.empty();
 
     public MCTSAI(int playerID, double contemptFactor, Logger logger) {
         this.logger = logger;
@@ -103,6 +104,9 @@ public class MCTSAI implements GameClient {
         assert holeCards.size() == 0;
         holeCards.add(card1);
         holeCards.add(card2);
+
+        Random rand = new Random();
+        callback.ifPresent(t -> t.accept(rand.nextDouble() < 0.25));
     }
 
     @Override
@@ -224,10 +228,11 @@ public class MCTSAI implements GameClient {
 
     @Override
     public void setChatListener(Consumer<String> chatListener) {
+
     }
 
     @Override
     public void setCallback(Consumer<Boolean> callBack) {
-
+        this.callback = Optional.of(callBack);
     }
 }

@@ -34,7 +34,7 @@ public class PlayerLayout extends VBox implements IPlayerLayout {
     private Button betRaiseButton, checkCallButton, foldButton;
     private boolean isBust = false, isActing = false;
     private long stackSize;
-    private boolean showCards = false;
+    public boolean showCards = false;
 
 
     public PlayerLayout(String name){

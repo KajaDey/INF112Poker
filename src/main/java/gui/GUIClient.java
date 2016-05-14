@@ -368,7 +368,7 @@ public class GUIClient implements GameClient {
     }
 
     public void preShowdownWinner(int winnerID) {
-        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID));
+        Platform.runLater(() -> gameScreen.preShowdownWinner(winnerID, Optional.ofNullable(holeCards.get(winnerID))));
     }
 
     @Override
